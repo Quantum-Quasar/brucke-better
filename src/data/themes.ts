@@ -73,7 +73,7 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "bg": "#1c1c1c",
     "caret": "#e3e3e3",
     "main": "#dfd7af",
-    "sub": "#858585",
+    "sub": "#a0a0a0",
     "subAlt": "#242424",
     "text": "#f5f3ed",
     "error": "#af5f5f",
