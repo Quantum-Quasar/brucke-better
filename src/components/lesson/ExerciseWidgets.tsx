@@ -15,6 +15,7 @@ import { VariantEnglishExercise } from "./VariantEnglishExercise";
 import { PronounCompressionExercise } from "./PronounCompressionExercise";
 import { SpokenTurnReplyExercise } from "./SpokenTurnReplyExercise";
 import { evaluateAnswerAccuracy, evaluateBestOf } from "@/lib/letter-diff";
+import { matchingPairForKey } from "@/lib/matching";
 import { diagnoseAttempt, affirmationFor } from "@/lib/shift-diagnosis";
 import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
@@ -428,8 +429,10 @@ const LegacyExerciseWidget: React.FC<Omit<ExerciseWidgetProps, never>> = ({
       }
 
       // 5. Cognate matching cards:
-      // If no English pair selected yet: 1-N selects available English card
-      // If English pair selected: 1-N selects available German card; Escape cancels selection
+      // Keys are fixed to card positions for the whole exercise, so matching
+      // pairs never renumber the cards that are left.
+      // If no English pair selected yet: 1-N selects an English card
+      // If English pair selected: 1-N selects a German card; Escape cancels
       if (exercise.type === "matching_pairs" && exercise.matching_pairs && status === "idle") {
         if (e.key === "Escape") {
           e.preventDefault();
@@ -439,17 +442,16 @@ const LegacyExerciseWidget: React.FC<Omit<ExerciseWidgetProps, never>> = ({
         const num = parseInt(e.key, 10);
         if (!isNaN(num) && num >= 1) {
           if (!selectedEnglish) {
-            const unmatched = exercise.matching_pairs.filter((p) => !matchedPairs.includes(p.id));
-            if (num <= unmatched.length) {
+            const chosen = matchingPairForKey(exercise.matching_pairs, matchedPairs, num);
+            if (chosen) {
               e.preventDefault();
-              setSelectedEnglish(unmatched[num - 1].english);
+              setSelectedEnglish(chosen.english);
               return;
             }
           } else {
-            const unmatched = displayGermanPairs.filter((p) => !matchedPairs.includes(p.id));
-            if (num <= unmatched.length) {
+            const chosen = matchingPairForKey(displayGermanPairs, matchedPairs, num);
+            if (chosen) {
               e.preventDefault();
-              const chosen = unmatched[num - 1];
               handleSelectGerman(chosen.german, chosen.id, chosen.english);
               return;
             }
@@ -812,16 +814,13 @@ const LegacyExerciseWidget: React.FC<Omit<ExerciseWidgetProps, never>> = ({
               </span>
               {!selectedEnglish && (
                 <span className="text-[10px] text-[var(--sub-color)]">
-                  1–{exercise.matching_pairs.filter((p) => !matchedPairs.includes(p.id)).length}
+                  1–{exercise.matching_pairs.length}
                 </span>
               )}
             </div>
-            {exercise.matching_pairs.map((pair) => {
+            {exercise.matching_pairs.map((pair, index) => {
               const isMatched = matchedPairs.includes(pair.id);
               const isSelected = selectedEnglish === pair.english;
-              const unmatchedIndex = !isMatched
-                ? exercise.matching_pairs!.filter((p) => !matchedPairs.includes(p.id)).findIndex((p) => p.id === pair.id)
-                : -1;
               return (
                 <button
                   key={`en_${pair.id}`}
@@ -838,9 +837,9 @@ const LegacyExerciseWidget: React.FC<Omit<ExerciseWidgetProps, never>> = ({
                   }`}
                 >
                   <span className="flex items-center gap-2">
-                    {settings.showKeyTips && unmatchedIndex !== -1 && (
+                    {settings.showKeyTips && !isMatched && (
                       <span className="keycap text-[10px]">
-                        {unmatchedIndex + 1}
+                        {index + 1}
                       </span>
                     )}
                     <span>{pair.english}</span>
@@ -859,16 +858,13 @@ const LegacyExerciseWidget: React.FC<Omit<ExerciseWidgetProps, never>> = ({
               </span>
               {selectedEnglish && (
                 <span className="text-[10px] text-[var(--main-color)]">
-                  1–{displayGermanPairs.filter((p) => !matchedPairs.includes(p.id)).length} · esc
+                  1–{displayGermanPairs.length} · esc
                 </span>
               )}
             </div>
-            {displayGermanPairs.map((pair) => {
+            {displayGermanPairs.map((pair, index) => {
               const isMatched = matchedPairs.includes(pair.id);
               const isSelected = false;
-              const unmatchedIndex = !isMatched
-                ? displayGermanPairs.filter((p) => !matchedPairs.includes(p.id)).findIndex((p) => p.id === pair.id)
-                : -1;
               return (
                 <button
                   key={`de_${pair.id}`}
@@ -883,9 +879,9 @@ const LegacyExerciseWidget: React.FC<Omit<ExerciseWidgetProps, never>> = ({
                   }`}
                 >
                   <span className="flex items-center gap-2">
-                    {settings.showKeyTips && selectedEnglish && unmatchedIndex !== -1 && (
+                    {settings.showKeyTips && selectedEnglish && !isMatched && (
                       <span className="keycap text-[10px]">
-                        {unmatchedIndex + 1}
+                        {index + 1}
                       </span>
                     )}
                     <span lang={language.id}>{pair.german}</span>

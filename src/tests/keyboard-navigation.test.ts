@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { useAppStore } from "../lib/store";
 import { evaluateAnswerAccuracy } from "../lib/letter-diff";
-import type { ExerciseItem } from "../lib/types";
+import { matchingPairForKey } from "../lib/matching";
 
 describe("Keyboard Navigation & Interactive Exercise Controls", () => {
   beforeEach(() => {
@@ -95,52 +95,54 @@ describe("Keyboard Navigation & Interactive Exercise Controls", () => {
     expect(sentence).toBe("Wir haben das Buch gelesen");
   });
 
-  it("verifies 2-step keyboard matching pairs flow (1-N English -> 1-N German)", () => {
-    const matchingPairs = [
+  it("keeps matching keybindings stable when earlier pairs are matched", () => {
+    const english = [
       { id: "p1", english: "water", german: "Wasser" },
       { id: "p2", english: "foot", german: "Fuß" },
       { id: "p3", english: "pipe", german: "Pfeife" },
     ];
+    // the German column renders in a rotated order (last pair first)
+    const german = [english[2], english[0], english[1]];
 
     let selectedEnglish: string | null = null;
-    let matchedIds: string[] = [];
+    const matchedIds: string[] = [];
 
     const selectEnglishByKey = (numKey: number) => {
-      const unmatched = matchingPairs.filter((p) => !matchedIds.includes(p.id));
-      if (numKey >= 1 && numKey <= unmatched.length) {
-        selectedEnglish = unmatched[numKey - 1].english;
-      }
+      const pair = matchingPairForKey(english, matchedIds, numKey);
+      if (pair) selectedEnglish = pair.english;
     };
 
     const matchGermanByKey = (numKey: number) => {
       if (!selectedEnglish) return;
-      const unmatched = matchingPairs.filter((p) => !matchedIds.includes(p.id));
-      if (numKey >= 1 && numKey <= unmatched.length) {
-        const candidate = unmatched[numKey - 1];
-        if (candidate.english === selectedEnglish) {
-          matchedIds.push(candidate.id);
-        }
+      const pair = matchingPairForKey(german, matchedIds, numKey);
+      if (pair && pair.english === selectedEnglish) {
+        matchedIds.push(pair.id);
         selectedEnglish = null;
       }
     };
 
-    // 1. Select 'water' (key 1)
+    // 1. 'water' is English key 1, 'Wasser' is German key 2 in the rotated column
     selectEnglishByKey(1);
     expect(selectedEnglish).toBe("water");
-
-    // 2. Match with 'Wasser' (key 1 in unmatched)
-    matchGermanByKey(1);
-    expect(matchedIds).toContain("p1");
+    matchGermanByKey(2);
+    expect(matchedIds).toEqual(["p1"]);
     expect(selectedEnglish).toBeNull();
 
-    // 3. Select 'foot' (now key 1 in remaining unmatched)
+    // 2. the matched card's key goes dead; 'foot' keeps key 2 instead of shifting to 1
     selectEnglishByKey(1);
+    expect(selectedEnglish).toBeNull();
+    selectEnglishByKey(2);
     expect(selectedEnglish).toBe("foot");
+    matchGermanByKey(3);
+    expect(matchedIds).toEqual(["p1", "p2"]);
 
-    // Match with 'Fuß'
-    matchGermanByKey(1);
-    expect(matchedIds).toContain("p2");
-    expect(matchedIds.length).toBe(2);
+    // 3. 'pipe' still owns key 3 on the English side
+    selectEnglishByKey(3);
+    expect(selectedEnglish).toBe("pipe");
+
+    // 4. out-of-range and already-matched keys do nothing
+    expect(matchingPairForKey(english, [], 4)).toBeNull();
+    expect(matchingPairForKey(english, ["p1"], 1)).toBeNull();
   });
 
   it("progresses lesson segments via Enter key simulation", () => {
