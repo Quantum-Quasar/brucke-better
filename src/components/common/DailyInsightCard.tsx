@@ -42,7 +42,10 @@ Principle: ${insight.takeaway_principle}`;
   };
 
   return (
-    <article className={`p-4 sm:p-5 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-3 font-sans ${className}`}>
+    <article
+      key={insight.day}
+      className={`p-4 sm:p-5 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-3 font-sans animate-in fade-in duration-300 ${className}`}
+    >
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-1.5 text-xs font-mono text-[var(--sub-color)]">

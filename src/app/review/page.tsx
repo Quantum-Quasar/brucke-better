@@ -62,13 +62,6 @@ type DeckType = ReviewDeckType;
 /** Sentinel select value meaning "every family" / "every domain". */
 const ALL_ID = ALL_FAMILIES_ID;
 
-interface PendingDeckStart {
-  deck: DeckType;
-  customCards?: SRSCard[];
-  /** Human label for the mode-selector title (e.g. a domain's display name). */
-  deckLabel?: string;
-}
-
 interface ReviewSessionStats {
   reviewed: number;
   correct: number;
@@ -165,13 +158,11 @@ export default function ReviewPage() {
   const hasSeenGenderIntro = useAppStore((s) => s.hasSeenGenderIntro);
   const [reviewMode, setReviewMode] = useState<ReviewMode>(preferredReviewMode || "flashcard");
   const [isModeSelectorOpen, setIsModeSelectorOpen] = useState(false);
-  const [pendingDeck, setPendingDeck] = useState<PendingDeckStart | null>(null);
   const [rememberPreference, setRememberPreference] = useState(true);
   const modeDialogRef = useRef<HTMLDivElement>(null);
 
   const closeModeSelector = () => {
     setIsModeSelectorOpen(false);
-    setPendingDeck(null);
   };
 
   useDialogFocus({
@@ -506,31 +497,24 @@ export default function ReviewPage() {
     }
   };
 
-  // Request deck start: checks DECK_CAPABILITIES[deck].supportedModes.
-  // If the deck only supports a single mode (e.g. "articles" -> ["mcq"]), starts immediately in that mode!
-  const requestDeckStart = (deck: DeckType, customCards?: SRSCard[], deckLabel?: string) => {
+  // Deck start is immediate: the current style (or the deck's only supported
+  // style) runs the session — the style picker is an explicit "change style"
+  // action, never a roadblock between a click and the first card.
+  const requestDeckStart = (deck: DeckType, customCards?: SRSCard[]) => {
     const spec = DECK_CAPABILITIES[deck];
     if (spec && spec.supportedModes.length === 1) {
       setReviewMode(spec.supportedModes[0]);
-      startDeck(deck, customCards);
-      return;
     }
-    setPendingDeck({ deck, customCards, deckLabel });
-    setIsModeSelectorOpen(true);
+    startDeck(deck, customCards);
   };
 
-  // Execute deck start with selected mode (e.g. from modal style chooser or hotkeys 1-4)
-  const selectModeAndStart = (mode: ReviewMode) => {
+  // Apply a style chosen in the preference picker (or via its 1–4 hotkeys).
+  const selectReviewStyle = (mode: ReviewMode) => {
     setReviewMode(mode);
     if (rememberPreference) {
       setPreferredReviewMode(mode);
     }
     setIsModeSelectorOpen(false);
-
-    if (pendingDeck) {
-      startDeck(pendingDeck.deck, pendingDeck.customCards);
-      setPendingDeck(null);
-    }
   };
 
   const currentCard = sessionCards[currentIndex];
@@ -858,20 +842,19 @@ export default function ReviewPage() {
       if (isModeSelectorOpen) {
         if (e.key === "1") {
           e.preventDefault();
-          selectModeAndStart("flashcard");
+          selectReviewStyle("flashcard");
         } else if (e.key === "2") {
           e.preventDefault();
-          selectModeAndStart("mcq");
+          selectReviewStyle("mcq");
         } else if (e.key === "3") {
           e.preventDefault();
-          selectModeAndStart("tiles");
+          selectReviewStyle("tiles");
         } else if (e.key === "4") {
           e.preventDefault();
-          selectModeAndStart("typing");
+          selectReviewStyle("typing");
         } else if (e.key === "Escape") {
           e.preventDefault();
           setIsModeSelectorOpen(false);
-          setPendingDeck(null);
         }
         return;
       }
@@ -1055,7 +1038,7 @@ export default function ReviewPage() {
         </div>
         <h1 className="text-2xl font-bold font-mono text-[var(--text-color)] tracking-tight">review</h1>
         <p className="text-[var(--sub-color)] text-sm font-mono">
-          recall practice powered by {recallSource} and the sm-2 interval algorithm.
+          recall practice powered by {recallSource} — hard words come back sooner, easy ones later.
         </p>
       </div>
 
@@ -1132,10 +1115,7 @@ export default function ReviewPage() {
             </select>
             <button
               type="button"
-              onClick={() => {
-                setPendingDeck(null);
-                setIsModeSelectorOpen(true);
-              }}
+              onClick={() => setIsModeSelectorOpen(true)}
               className="text-[11px] font-mono text-[var(--sub-color)] hover:text-[var(--main-color)] underline underline-offset-2 ml-1 cursor-pointer"
               title="Select review style"
             >
@@ -1712,7 +1692,9 @@ export default function ReviewPage() {
                 </span>
               </div>
               <p className="text-sm font-mono text-[var(--sub-color)]">
-                scheduled by sm-2 spacing interval for optimal memory consolidation.
+                {dueCount === 0
+                  ? "nothing due right now — words you meet today join this queue tomorrow."
+                  : "cards come back right before you'd forget them — sooner when hard, later when easy."}
               </p>
             </div>
 
@@ -1829,13 +1811,7 @@ export default function ReviewPage() {
               </div>
 
               <button
-                onClick={() =>
-                  requestDeckStart(
-                    "shift",
-                    undefined,
-                    selectedShiftId === ALL_ID ? `every ${familyNoun}` : selectedShiftFamily?.name
-                  )
-                }
+                onClick={() => requestDeckStart("shift")}
                 disabled={shiftCount === 0}
                 className="w-full py-2 rounded-lg bg-[var(--bg-color)] hover:bg-[var(--main-color)]/10 border border-[var(--sub-color)]/20 text-xs font-mono font-bold text-[var(--text-color)] hover:text-[var(--main-color)] transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >
@@ -1873,15 +1849,7 @@ export default function ReviewPage() {
               </div>
 
               <button
-                onClick={() =>
-                  requestDeckStart(
-                    "domain",
-                    undefined,
-                    selectedDomainId === ALL_ID
-                      ? "every domain"
-                      : domainGroups.find((g) => g.id === selectedDomainId)?.label
-                  )
-                }
+                onClick={() => requestDeckStart("domain")}
                 disabled={domainCount === 0}
                 className="w-full py-2 rounded-lg bg-[var(--bg-color)] hover:bg-[var(--main-color)]/10 border border-[var(--sub-color)]/20 text-xs font-mono font-bold text-[var(--text-color)] hover:text-[var(--main-color)] transition disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
               >
@@ -1982,7 +1950,7 @@ export default function ReviewPage() {
               </div>
 
               <button
-                onClick={() => requestDeckStart("sentences", undefined, "sentence patterns")}
+                onClick={() => requestDeckStart("sentences")}
                 disabled={sentenceCount === 0}
                 className="w-full py-2 rounded-lg bg-[var(--bg-color)] hover:bg-[var(--main-color)]/10 border border-[var(--main-color)]/30 text-xs font-mono font-bold text-[var(--main-color)] transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >
@@ -2009,7 +1977,7 @@ export default function ReviewPage() {
               </div>
 
               <button
-                onClick={() => requestDeckStart("articles", undefined, "article & gender drill")}
+                onClick={() => requestDeckStart("articles")}
                 disabled={articleCount === 0}
                 className="w-full py-2 rounded-lg bg-[var(--bg-color)] hover:bg-[var(--main-color)]/10 border border-[var(--main-color)]/30 text-xs font-mono font-bold text-[var(--main-color)] transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >
@@ -2036,7 +2004,7 @@ export default function ReviewPage() {
               </div>
 
               <button
-                onClick={() => requestDeckStart("everything", undefined, "everything")}
+                onClick={() => requestDeckStart("everything")}
                 disabled={everythingTotal === 0}
                 className="w-full py-2 rounded-lg bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] text-xs font-mono font-bold transition cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
               >
@@ -2065,28 +2033,10 @@ export default function ReviewPage() {
                 review style
               </span>
               <h2 id="review-style-title" className="text-xl font-bold font-mono text-[var(--text-color)]">
-                {pendingDeck
-                  ? `how do you want to review ${
-                      pendingDeck.deckLabel
-                        ? pendingDeck.deckLabel
-                        : pendingDeck.deck === "due"
-                        ? "due cards"
-                        : pendingDeck.deck === "shift"
-                        ? selectedShiftId === ALL_ID
-                          ? `every ${familyNoun}`
-                          : selectedShiftFamily?.name ?? familyNoun
-                        : pendingDeck.deck === "weakest"
-                        ? "weakest words"
-                        : pendingDeck.deck === "recent"
-                        ? "recent lessons"
-                        : pendingDeck.deck === "everything"
-                        ? "everything"
-                        : "compounds & traps"
-                    }?`
-                  : "how do you want to review?"}
+                pick your review style
               </h2>
               <p className="text-sm font-mono text-[var(--sub-color)]">
-                pick your preferred exercise style below. all styles advance the same sm-2 interval queue.
+                every style runs the same schedule, and you can switch mid-session at any time.
               </p>
             </div>
 
@@ -2094,7 +2044,7 @@ export default function ReviewPage() {
               {/* Option 1: Free recall (flashcards) */}
               <button
                 type="button"
-                onClick={() => selectModeAndStart("flashcard")}
+                onClick={() => selectReviewStyle("flashcard")}
                 className={`w-full text-left p-4 rounded-lg bg-[var(--sub-alt-color)] hover:border-[var(--main-color)] border transition cursor-pointer flex items-center justify-between group ${
                   reviewMode === "flashcard"
                     ? "border-[var(--main-color)] ring-1 ring-[var(--main-color)]/40"
@@ -2128,7 +2078,7 @@ export default function ReviewPage() {
               {/* Option 2: Multiple Choice (MCQ) */}
               <button
                 type="button"
-                onClick={() => selectModeAndStart("mcq")}
+                onClick={() => selectReviewStyle("mcq")}
                 className={`w-full text-left p-4 rounded-lg bg-[var(--sub-alt-color)] hover:border-[var(--main-color)] border transition cursor-pointer flex items-center justify-between group ${
                   reviewMode === "mcq"
                     ? "border-[var(--main-color)] ring-1 ring-[var(--main-color)]/40"
@@ -2158,7 +2108,7 @@ export default function ReviewPage() {
               {/* Option 3: Tile Builder */}
               <button
                 type="button"
-                onClick={() => selectModeAndStart("tiles")}
+                onClick={() => selectReviewStyle("tiles")}
                 className={`w-full text-left p-4 rounded-lg bg-[var(--sub-alt-color)] hover:border-[var(--main-color)] border transition cursor-pointer flex items-center justify-between group ${
                   reviewMode === "tiles"
                     ? "border-[var(--main-color)] ring-1 ring-[var(--main-color)]/40"
@@ -2188,7 +2138,7 @@ export default function ReviewPage() {
               {/* Option 4: Derivation Typing (Last) */}
               <button
                 type="button"
-                onClick={() => selectModeAndStart("typing")}
+                onClick={() => selectReviewStyle("typing")}
                 className={`w-full text-left p-4 rounded-lg bg-[var(--sub-alt-color)] hover:border-[var(--main-color)] border transition cursor-pointer flex items-center justify-between group ${
                   reviewMode === "typing"
                     ? "border-[var(--main-color)] ring-1 ring-[var(--main-color)]/40"
@@ -2231,7 +2181,6 @@ export default function ReviewPage() {
                 type="button"
                 onClick={() => {
                   setIsModeSelectorOpen(false);
-                  setPendingDeck(null);
                 }}
                 className="text-sm font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] px-3 py-1.5 rounded hover:bg-[var(--sub-alt-color)] transition cursor-pointer flex items-center gap-1.5"
               >

@@ -16,12 +16,18 @@ export function localDateKey(date = new Date()): string {
 }
 
 export function createInitialCard(word_id: string): SRSCard {
+  // Meeting a word in a lesson is its first exposure, so — like a first
+  // "Good" grade (interval 1) — its earliest scheduled review is tomorrow.
+  // This keeps finishing a lesson from dumping its whole word cohort into
+  // today's due queue the moment it ends.
+  const firstDue = new Date();
+  firstDue.setDate(firstDue.getDate() + 1);
   return {
     word_id,
     interval: 0,
     repetitions: 0,
     ease_factor: 2.5,
-    due_date: localDateKey(),
+    due_date: localDateKey(firstDue),
     lapses: 0,
     last_reviewed: null,
   };

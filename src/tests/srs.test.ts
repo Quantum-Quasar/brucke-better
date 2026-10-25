@@ -1,14 +1,19 @@
 import { describe, it, expect } from "vitest";
-import { createInitialCard, gradeCard, isMastered, getDueCards, getWeakestCards, getCardsByShift } from "../lib/srs";
+import { createInitialCard, gradeCard, isMastered, getDueCards, getWeakestCards, getCardsByShift, localDateKey } from "../lib/srs";
 
 describe("SM-2 Spaced Repetition Engine", () => {
-  it("initializes a card due today", () => {
+  it("initializes a card with a one-day grace (first review tomorrow)", () => {
     const card = createInitialCard("hoffen");
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
     expect(card.word_id).toBe("hoffen");
     expect(card.interval).toBe(0);
     expect(card.repetitions).toBe(0);
     expect(card.ease_factor).toBe(2.5);
     expect(card.lapses).toBe(0);
+    // First exposure today → earliest scheduled review is tomorrow, matching a
+    // first "Good" grade, so finishing a lesson never floods today's queue.
+    expect(card.due_date).toBe(localDateKey(tomorrow));
   });
 
   it("calculates correct progression for successful reviews (Good / Easy)", () => {

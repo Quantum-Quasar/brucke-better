@@ -56,12 +56,15 @@ describe("SRS timezone boundary handling", () => {
     expect(card.due_date).toBe("2026-01-02");
   });
 
-  it("a card created near local midnight is due today, not tomorrow (UTC-12)", () => {
+  it("a card created near local midnight is due tomorrow LOCAL, not a UTC day off (UTC-12)", () => {
     process.env.TZ = "Etc/GMT+12";
-    // createInitialCard uses the real clock; with the TZ pinned we can only
-    // assert the invariant that matters: due_date equals today's LOCAL key.
+    // createInitialCard uses the real clock; with the TZ pinned we assert the
+    // invariant that matters: the +1-day grace lands on tomorrow's LOCAL key
+    // (local arithmetic + local formatting, never toISOString).
     const card = createInitialCard("hoffen");
-    expect(card.due_date).toBe(localDateKey(new Date()));
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    expect(card.due_date).toBe(localDateKey(tomorrow));
     expect(card.due_date).toMatch(/^\d{4}-\d{2}-\d{2}$/);
   });
 

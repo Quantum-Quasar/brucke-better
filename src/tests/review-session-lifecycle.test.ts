@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, beforeAll, afterAll } from "vitest";
 import { useAppStore } from "../lib/store";
 import { compendium } from "../data/compendium";
-import { createInitialCard, gradeCard, isMastered, getDueCards, getWeakestCards, getCardsByShift } from "../lib/srs";
+import { createInitialCard, gradeCard, isMastered, getDueCards, getWeakestCards, getCardsByShift, localDateKey } from "../lib/srs";
 import type { ReviewGrade } from "../lib/srs";
 import type { WordEntity } from "../lib/types";
 
@@ -54,8 +54,18 @@ describe("Full Review Session Lifecycle Integration", () => {
     const cards = currentState.srsCards;
     expect(Object.keys(cards)).toHaveLength(5);
 
-    // 1. Due Deck: All newly seeded cards are due today
-    const dueCards = getDueCards(cards);
+    // 1. Newly met words carry a one-day grace: none are due today…
+    expect(getDueCards(cards)).toHaveLength(0);
+    // …but they all join the due queue on the same tomorrow key.
+    const tomorrowKey = cards.hand?.due_date;
+    expect(tomorrowKey).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(Object.values(cards).every((c) => c.due_date === tomorrowKey)).toBe(true);
+
+    // 2. A day later the whole cohort is due — the due deck assembles from it.
+    const agedCards = Object.fromEntries(
+      Object.entries(cards).map(([id, card]) => [id, { ...card, due_date: "2026-01-01" }])
+    );
+    const dueCards = getDueCards(agedCards, "2026-01-01");
     expect(dueCards.length).toBe(5);
     for (const card of dueCards) {
       const entity = compendium.words[card.word_id];
@@ -63,12 +73,12 @@ describe("Full Review Session Lifecycle Integration", () => {
       expect(entity.target_word).toBeTruthy();
     }
 
-    // 2. Sound Shift Deck: Filter by th_to_d (should include Bruder)
+    // 3. Sound Shift Deck: Filter by th_to_d (should include Bruder)
     const dentalShiftCards = getCardsByShift(cards, compendium.words, "th_to_d");
     expect(dentalShiftCards.length).toBeGreaterThanOrEqual(1);
     expect(dentalShiftCards.some((c) => c.word_id === "bruder")).toBe(true);
 
-    // 3. Weakest Deck: Seed a lapse and verify sorting
+    // 4. Weakest Deck: Seed a lapse and verify sorting
     store.recordReview("wasser", 1); // Grade 1 = Again (failure)
     const afterLapseState = useAppStore.getState();
     const weakestCards = getWeakestCards(afterLapseState.srsCards);
@@ -166,15 +176,18 @@ describe("Full Review Session Lifecycle Integration", () => {
     const due = getDueCards(emptyCards);
     expect(due).toEqual([]);
 
-    // Single card queue completion
+    // Single card queue completion: a fresh encounter sits in its grace day…
     store.markWordEncountered("nacht");
-    const singleQueue = getDueCards(useAppStore.getState().srsCards);
+    const graceQueue = getDueCards(useAppStore.getState().srsCards);
+    expect(graceQueue).toHaveLength(0);
+    // …and joins the due queue tomorrow.
+    const dayAfterGrace = new Date();
+    dayAfterGrace.setDate(dayAfterGrace.getDate() + 1);
+    const singleQueue = getDueCards(useAppStore.getState().srsCards, localDateKey(dayAfterGrace));
     expect(singleQueue).toHaveLength(1);
 
     // Process and push due date into future
     store.recordReview("nacht", 4);
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
     const todayStr = new Date().toISOString().split("T")[0];
 
     const remainingDue = getDueCards(useAppStore.getState().srsCards, todayStr);

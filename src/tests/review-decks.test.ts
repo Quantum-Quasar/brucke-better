@@ -58,7 +58,7 @@ describe("review decks", () => {
 });
 
 describe("seedSrsCards", () => {
-  it("creates cards due today for new words only, leaving existing cards untouched", async () => {
+  it("creates cards with a one-day grace for new words only, leaving existing cards untouched", async () => {
     const { useAppStore } = await import("../lib/store");
     const { localDateKey } = await import("../lib/srs");
     const st = useAppStore.getState();
@@ -68,7 +68,9 @@ describe("seedSrsCards", () => {
     useAppStore.getState().seedSrsCards(["hand", "arm", "arm", " "]);
     const cards = useAppStore.getState().srsCards;
     expect(cards["hand"]).toEqual(before);
-    expect(cards["arm"].due_date).toBe(localDateKey());
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    expect(cards["arm"].due_date).toBe(localDateKey(tomorrow));
     expect(Object.keys(cards).sort()).toEqual(["arm", "hand"]);
   });
 });
