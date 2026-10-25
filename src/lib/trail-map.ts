@@ -15,12 +15,13 @@ import type { LessonStar, TopicCluster, TrailBranch, TrailGate } from "./types";
 //   · the spine core(n)—core(n+1) is the only required sequence; sprigs and
 //     branches hang off cores, so every side lesson can be skipped
 //
-// Layout rules (top → bottom, like a reading page):
-//   · topic 1 sits at the top so a first visit lands on the start of the
-//     trail instead of the end of a 30-topic graph
+// Layout rules (bottom → top, like climbing a trail):
+//   · topic 1 sits at the bottom, so the map starts where a learner starts
+//     and progress visibly climbs upward through the later topics
 //   · a gentle serpentine swings the spine sideways on wide canvases
 //   · sprigs fan out beside their core (left, right, then second row)
-//   · branches chain horizontally on the freer side, falling back to below
+//   · branches chain horizontally on the freer side, tucking into a pocket
+//     beside the cluster
 // ---------------------------------------------------------------------------
 
 /** Everything the engine needs about one language's trail. */
@@ -109,6 +110,7 @@ const SIDE_GAP = 16;
 const EDGE_PAD = 10;
 const TOP_PAD = 54;
 const BOTTOM_PAD = 64;
+const ANCHOR_H = 20;
 
 export const nodeSize = (kind: NodeKind) =>
   kind === "core" ? { w: CORE_W, h: CORE_H } : kind === "sprig" ? { w: SPRIG_W, h: SPRIG_H } : { w: BRANCH_W, h: BRANCH_H };
@@ -267,18 +269,22 @@ export function buildTrailLayout(width: number, data: TrailData = GERMAN_TRAIL_D
 
   const height = cursor - TOPIC_GAP + BOTTOM_PAD;
 
-  // Topic 1 stays at the top. Integer geometry keeps SSR and client SVG/CSS
-  // output byte-identical.
+  // The trail climbs: topic 1 sits at the bottom. Build top-down for simple
+  // stacking, then mirror the whole map around its horizontal midline.
+  // Integer geometry keeps SSR and client SVG/CSS output byte-identical.
   for (const node of nodes) {
     node.x = Math.round(node.x);
-    node.y = Math.round(node.y);
+    node.y = Math.round(height - node.y - node.h);
   }
   for (const anchor of anchors) {
     anchor.x = Math.round(anchor.x);
-    anchor.y = Math.round(anchor.y);
+    anchor.y = Math.round(height - anchor.y - ANCHOR_H);
   }
 
-  const decorations = buildDecorations(w, height, decoChars);
+  const decorations = buildDecorations(w, height, decoChars).map((decoration) => ({
+    ...decoration,
+    y: Math.max(0, Math.round(height - decoration.y - decoration.size)),
+  }));
 
   // gate checkpoint pills sit on the spine line between the gated pair of cores
   const nodeById = new Map(nodes.map((n) => [n.id, n]));

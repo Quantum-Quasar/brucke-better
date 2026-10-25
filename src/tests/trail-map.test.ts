@@ -248,11 +248,11 @@ describe("Trail layout", () => {
     }
   });
 
-  it("starts at the top and reads downward", () => {
+  it("starts at the bottom and climbs upward", () => {
     const layout = buildTrailLayout(640);
     const first = layout.nodes.find((n) => n.id === 1)!;
     const last = layout.nodes.find((n) => n.id === 30)!;
-    expect(first.y).toBeLessThan(last.y);
+    expect(first.y).toBeGreaterThan(last.y);
   });
 
   it("contains every curriculum node exactly once", () => {

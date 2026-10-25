@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { BookOpen, Share2, Check } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { BookOpen, Check, Share2, X } from "lucide-react";
 import type { DailyInsight } from "@/lib/types";
 
 interface DailyInsightCardProps {
@@ -11,12 +11,36 @@ interface DailyInsightCardProps {
   languageName?: string;
 }
 
+const DISMISSED_KEY = "brucke_etymology_note_dismissed";
+
+/**
+ * Small corner note on the trail home. It is deliberately out of the page flow
+ * and hidden on phones so the map keeps the screen; the X hides that entry for
+ * the rest of its day (or until the same entry comes round again).
+ */
 export const DailyInsightCard: React.FC<DailyInsightCardProps> = ({
   insight,
   className = "",
   languageName = "German",
 }) => {
   const [copied, setCopied] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const dismissKey = `${languageName}:${insight.day}`;
+
+  useEffect(() => {
+    try {
+      setVisible(localStorage.getItem(DISMISSED_KEY) !== dismissKey);
+    } catch {
+      setVisible(true);
+    }
+  }, [dismissKey]);
+
+  const handleDismiss = () => {
+    setVisible(false);
+    try {
+      localStorage.setItem(DISMISSED_KEY, dismissKey);
+    } catch {}
+  };
 
   const handleShare = async () => {
     const textToShare = `${languageName} Etymology Note:
@@ -41,54 +65,58 @@ Principle: ${insight.takeaway_principle}`;
     }
   };
 
+  if (!visible) return null;
+
   return (
-    <article
-      key={insight.day}
-      className={`p-4 sm:p-5 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-3 font-sans animate-in fade-in duration-300 ${className}`}
+    <aside
+      aria-label="Etymology note"
+      className={`fixed bottom-[5.25rem] right-3 z-30 hidden w-[17rem] rounded-lg border border-[var(--sub-color)]/20 bg-[var(--sub-alt-color)] p-3 font-sans shadow-lg shadow-black/10 animate-in fade-in duration-300 sm:block xl:bottom-6 xl:right-4 xl:w-[18rem] ${className}`}
     >
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-xs font-mono text-[var(--sub-color)]">
-          <BookOpen className="w-3.5 h-3.5 text-[var(--main-color)]" />
-          <span>etymological note · entry {insight.day}</span>
+      <div className="flex items-center justify-between gap-2">
+        <span className="flex min-w-0 items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-[var(--sub-color)]">
+          <BookOpen className="h-3.5 w-3.5 shrink-0 text-[var(--main-color)]" />
+          <span className="truncate">etymology · entry {insight.day}</span>
+        </span>
+        <div className="flex shrink-0 items-center">
+          <button
+            type="button"
+            onClick={handleShare}
+            className="rounded p-1 text-[var(--sub-color)] transition hover:bg-[var(--sub-color)]/10 hover:text-[var(--text-color)] cursor-pointer"
+            aria-label="Copy or share this note"
+            title="Copy/share"
+          >
+            {copied ? (
+              <Check className="h-3.5 w-3.5 text-[var(--main-color)]" />
+            ) : (
+              <Share2 className="h-3.5 w-3.5" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={handleDismiss}
+            className="rounded p-1 text-[var(--sub-color)] transition hover:bg-[var(--sub-color)]/10 hover:text-[var(--text-color)] cursor-pointer"
+            aria-label="Dismiss etymology note"
+            title="Dismiss"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
         </div>
-        <button
-          type="button"
-          onClick={handleShare}
-          className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-[var(--bg-color)] hover:bg-[var(--sub-color)]/10 text-xs font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
-          title="Copy/Share this note"
-        >
-          {copied ? (
-            <>
-              <Check className="w-3 h-3 text-[var(--main-color)]" />
-              <span className="text-[var(--main-color)] text-[11px]">copied</span>
-            </>
-          ) : (
-            <>
-              <Share2 className="w-3 h-3" />
-              <span className="text-[11px]">share</span>
-            </>
-          )}
-        </button>
       </div>
 
-      {/* Expression & Meaning */}
-      <div>
-        <h4 className="text-base sm:text-lg font-bold font-mono text-[var(--text-color)] tracking-tight">
+      <div className="mt-2">
+        <h2 className="truncate font-mono text-sm font-bold tracking-tight text-[var(--text-color)]">
           {insight.german_expression}
-        </h4>
-        <p className="text-sm font-mono text-[var(--main-color)]">{insight.english_meaning}</p>
+        </h2>
+        <p className="font-mono text-[11px] text-[var(--main-color)]">{insight.english_meaning}</p>
       </div>
 
-      {/* Cultural Etymology Text */}
-      <p className="text-sm text-[var(--text-color)]/85 leading-relaxed font-sans">
+      <p className="mt-1.5 text-[11px] leading-snug text-[var(--text-color)]/85">
         {insight.cultural_etymology}
       </p>
 
-      {/* Takeaway Principle */}
-      <div className="pt-2 border-t border-[var(--sub-color)]/15 text-sm text-[var(--sub-color)] font-mono">
-        <span>heuristic: {insight.takeaway_principle}</span>
-      </div>
-    </article>
+      <p className="mt-1.5 line-clamp-3 border-t border-[var(--sub-color)]/15 pt-1.5 font-mono text-[10px] leading-snug text-[var(--sub-color)]">
+        heuristic: {insight.takeaway_principle}
+      </p>
+    </aside>
   );
 };

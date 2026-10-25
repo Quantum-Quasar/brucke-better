@@ -13,14 +13,6 @@ import { LessonNodeDrawer, GateDrawer } from "./LessonNodeDrawer";
 const GOLD_STAR = "#eab308";
 const PURPLE_STAR = "#a78bfa";
 
-const SEGMENT_LABEL: Record<string, string> = {
-  hook: "Part 1 of 5",
-  pattern: "Part 2 of 5",
-  table: "Part 3 of 5",
-  practice: "Part 4 of 5",
-  summary: "Part 5 of 5",
-};
-
 interface NodeGroup {
   topicId: number;
   anchor: { x: number; y: number; title: string } | null;
@@ -44,11 +36,14 @@ const groupNodesByTopic = (
   const topicIds = new Set<number>([...byTopic.keys(), ...anchorById.keys()]);
   return [...topicIds].map((topicId) => {
     const groupNodes = byTopic.get(topicId) ?? [];
-    const top = Math.min(...groupNodes.map((n) => n.y), anchorById.get(topicId)?.y ?? Infinity) - 46;
-    const bottom = Math.max(...groupNodes.map((n) => n.y + n.h), 0) + 12;
+    const anchor = anchorById.get(topicId) ?? null;
+    const top = Math.min(...groupNodes.map((n) => n.y), anchor?.y ?? Infinity) - 46;
+    // The anchor sits *below* its cluster now that the trail climbs upward,
+    // so the section box must grow to keep the label inside its paint bounds.
+    const bottom = Math.max(...groupNodes.map((n) => n.y + n.h), anchor ? anchor.y + 34 : 0) + 12;
     return {
       topicId,
-      anchor: anchorById.get(topicId) ?? null,
+      anchor,
       nodes: groupNodes,
       top,
       height: bottom - top,
@@ -62,6 +57,7 @@ export const TrailMap: React.FC = () => {
   const lessonStars = useAppStore((s) => s.lessonStars);
   const lessonProgress = useAppStore((s) => s.lessonProgress);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
+  const storeHydrated = useAppStore((s) => s.storeHydrated);
 
   // the trail graph is language-scoped: German data by default, the French
   // bundle when French is active (see lib/trail-map.ts TrailData)
@@ -79,7 +75,6 @@ export const TrailMap: React.FC = () => {
 
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [width, setWidth] = useState(640);
-  const [mapExpanded, setMapExpanded] = useState(false);
   const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
   const [selectedGateId, setSelectedGateId] = useState<number | null>(null);
 
@@ -103,9 +98,31 @@ export const TrailMap: React.FC = () => {
   const nodeById = useMemo(() => new Map(layout.nodes.map((n) => [n.id, n])), [layout]);
   const groups = useMemo(() => groupNodesByTopic(layout.nodes, layout.topicAnchors), [layout]);
 
-  // No auto-scroll on load: the map is tall, and jumping thousands of pixels
-  // destroyed the explanatory header above it. The continue card below gives
-  // the same guidance without moving the page under the visitor.
+  // Open the map at the learner's current lesson (topic 1 sits at the bottom),
+  // then glide upward whenever the recommendation advances. The first scroll
+  // must also re-run after the ResizeObserver settles the real map width,
+  // otherwise phones scroll to coordinates from the 640px placeholder layout.
+  const autoScrollRef = useRef<{ id: number | null; width: number }>({ id: null, width: 0 });
+  useEffect(() => {
+    if (!storeHydrated || state.recommendedId === null) return;
+    const target = wrapRef.current?.querySelector<HTMLElement>(
+      `[data-trail-node-id="${state.recommendedId}"]`
+    );
+    if (!target) return;
+    const previous = autoScrollRef.current;
+    const first = previous.id === null;
+    const idChanged = previous.id !== state.recommendedId;
+    const widthChanged = previous.width !== width;
+    autoScrollRef.current = { id: state.recommendedId, width };
+    const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    const behavior: ScrollBehavior =
+      !first && idChanged && !widthChanged && !reduceMotion ? "smooth" : "auto";
+    const frame = requestAnimationFrame(() => {
+      target.scrollIntoView({ behavior, block: "center" });
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [storeHydrated, state.recommendedId, width]);
+
   const recommended = state.recommendedId ? nodeById.get(state.recommendedId) : null;
   const selected = selectedNodeId !== null ? nodeById.get(selectedNodeId) ?? null : null;
   const selectedGate = selectedGateId !== null ? layout.gates.find((g) => g.id === selectedGateId) ?? null : null;
@@ -150,41 +167,7 @@ export const TrailMap: React.FC = () => {
 
   return (
     <div ref={wrapRef} className="relative w-full">
-      {/* What to do next, and what the map means — always above the canvas */}
-      <div className="mt-3 mb-3 rounded-lg border border-[var(--sub-color)]/25 bg-[var(--sub-alt-color)] p-3.5 flex flex-wrap items-center justify-between gap-3">
-        <div className="min-w-0">
-          <div className="text-[10px] font-mono uppercase tracking-widest text-[var(--main-color)] font-semibold">
-            {recommendedProgress
-              ? "resume where you stopped"
-              : hasAnyProgress
-              ? "continue where you left off"
-              : "start here"}
-          </div>
-          <div className="text-sm font-semibold text-[var(--text-color)] truncate">
-            {upNextLabel}
-            {recommended ? ` — ${recommended.title}` : " · every authored lesson is finished"}
-            {recommendedProgress
-              ? ` · ${SEGMENT_LABEL[recommendedProgress.segment] ?? "in progress"}`
-              : ""}
-          </div>
-          <div className="text-[11px] font-mono text-[var(--sub-color)]">
-            {recommended
-              ? "the highlighted node below is the recommended next step"
-              : "pick any optional lesson below, or revisit a completed one"}
-          </div>
-        </div>
-        {recommended && (
-          <button
-            type="button"
-            onClick={() => router.push(lessonHref(activeLanguageId, recommended.id))}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] font-bold text-xs font-mono transition cursor-pointer shrink-0"
-          >
-            {recommendedProgress ? "resume" : hasAnyProgress ? "continue" : "start lesson"}
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-        )}
-      </div>
-
+      {/* Map legend — the next step is the fixed resume control below */}
       <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] font-mono text-[var(--sub-color)]">
         <span className="inline-flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-sm bg-[var(--main-color)]" aria-hidden /> main topic
@@ -206,11 +189,6 @@ export const TrailMap: React.FC = () => {
         </span>
       </div>
 
-      <div
-        className={`relative ${
-          mapExpanded ? "" : "max-h-[70vh] overflow-hidden md:max-h-none md:overflow-visible"
-        }`}
-      >
       <div className="relative mx-auto" style={{ width: layout.width, height: layout.height, maxWidth: "100%" }}>
         {/* faint germanic watermark decorations */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none select-none" aria-hidden>
@@ -365,21 +343,25 @@ export const TrailMap: React.FC = () => {
         )}
       </div>
 
-      {!mapExpanded && (
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[var(--bg-color)] to-transparent md:hidden" />
+      {recommended && (
+        <div className="fixed bottom-[5.25rem] left-3 z-30 xl:bottom-6 xl:left-4">
+          <button
+            type="button"
+            onClick={() => router.push(lessonHref(activeLanguageId, recommended.id))}
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--sub-color)]/30 bg-[var(--bg-color)]/95 px-3.5 py-2 font-mono text-xs shadow-lg shadow-black/10 backdrop-blur transition hover:border-[var(--main-color)] cursor-pointer"
+            aria-label={`${
+              recommendedProgress ? "Resume" : hasAnyProgress ? "Continue" : "Start"
+            } ${upNextLabel}: ${recommended.title}`}
+            title={`${upNextLabel} — ${recommended.title}`}
+          >
+            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--main-color)]">
+              {recommendedProgress ? "resume" : hasAnyProgress ? "continue" : "start"}
+            </span>
+            <span className="truncate font-semibold text-[var(--text-color)]">{upNextLabel}</span>
+            <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[var(--main-color)]" />
+          </button>
+        </div>
       )}
-      </div>
-
-      <button
-        type="button"
-        onClick={() => setMapExpanded((expanded) => !expanded)}
-        className="md:hidden w-full mt-2 px-4 py-2.5 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 text-xs font-mono font-bold text-[var(--text-color)] hover:border-[var(--main-color)] transition cursor-pointer"
-        aria-expanded={mapExpanded}
-      >
-        {mapExpanded
-          ? "collapse to the first topics"
-          : `show the full ${trailData.totalTopics}-topic map`}
-      </button>
 
       {selected && (
         <LessonNodeDrawer
@@ -447,6 +429,7 @@ const MapNode: React.FC<MapNodeProps> = ({ node, sectionTop, view, hasProgress, 
       onClick={onClick}
       aria-label={label}
       title={node.title}
+      data-trail-node-id={node.id}
       className={`absolute flex items-center justify-center text-left transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--main-color)] ${statusStyle} ${
         locked ? "cursor-default" : "cursor-pointer"
       }`}
