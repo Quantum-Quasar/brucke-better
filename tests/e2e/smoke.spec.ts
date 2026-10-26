@@ -52,6 +52,20 @@ const THREE_FINISHED_LESSONS: Record<string, unknown> = {
     3: { segment: "summary", practiceIndex: 0, completedSegments: ["hook", "pattern", "table", "practice", "summary"] },
   },
   lessonStars: { 1: "gold", 2: "gold", 3: "gold" },
+  // Deck clicks start immediately in the stored style, so pin the style these
+  // tests grade in instead of relying on the app's default.
+  preferredReviewMode: "flashcard",
+};
+
+/** A card that is already due, used to unlock the review hub's stats bar. */
+const DUE_CARD: SRSCard = {
+  word_id: "arm",
+  interval: 1,
+  repetitions: 0,
+  ease_factor: 2.5,
+  due_date: "2020-01-01",
+  lapses: 0,
+  last_reviewed: null,
 };
 
 /** The session counter, e.g. "card 3 / 29" (rendered uppercase via CSS). */
@@ -98,9 +112,8 @@ async function openRecentReviewSession(page: Page) {
   await expect(recent).toBeEnabled();
   await recent.click();
 
-  // the review-style selector opens; pick flashcards
-  await expect(page.locator("#review-style-title")).toBeVisible();
-  await page.getByRole("button", { name: /recall \(flashcard\)/i }).click();
+  // a deck click starts the session straight away in the stored style; the
+  // style picker is no longer a gate between the click and the first card
   await expect(page.getByText(CARD_COUNTER).first()).toBeVisible();
 }
 
@@ -231,6 +244,30 @@ test.describe("browser smoke", () => {
         (card) => (card as SRSCard | undefined) !== undefined && (card as SRSCard).repetitions >= 1
       ).length;
       expect(gradedCount).toBe(1);
+    });
+
+    test("review style picker opens only from the explicit change-style control", async ({ page }) => {
+      await seedAppState(page, {
+        ...THREE_FINISHED_LESSONS,
+        srsCards: { [DUE_CARD.word_id]: DUE_CARD },
+      });
+      await page.goto("/review");
+
+      // a deck click starts the session in the stored style — no picker gate
+      const recent = page.getByRole("button", { name: /review recent/i });
+      await expect(recent).toBeEnabled();
+      await recent.click();
+      await expect(page.getByText(CARD_COUNTER).first()).toBeVisible();
+      await expect(page.locator("#review-style-title")).toBeHidden();
+
+      // leaving the session returns to the hub, where the picker is reachable
+      await page.keyboard.press("Escape");
+      await expect(page.getByRole("heading", { name: /due today/i })).toBeVisible();
+
+      await page.getByRole("button", { name: /change style/i }).click();
+      await expect(page.locator("#review-style-title")).toBeVisible();
+      await page.keyboard.press("Escape");
+      await expect(page.locator("#review-style-title")).toBeHidden();
     });
 
     test("static routes render and unknown dynamic params 404", async ({ page }) => {
