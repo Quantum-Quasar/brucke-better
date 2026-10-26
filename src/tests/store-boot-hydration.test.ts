@@ -88,7 +88,7 @@ describe("boot hydration snapshot", () => {
       practiceIndex: 0,
       completedSegments: ["hook"],
     });
-    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).completedLessons).toEqual([]);
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).progressByLanguage.de.completedLessons).toEqual([]);
 
     store.useAppStore.getState().hydrateFromStorage();
 
@@ -102,8 +102,8 @@ describe("boot hydration snapshot", () => {
     // The storage the clobbering write damaged must be repaired, otherwise the
     // next reload hydrates from the defaults.
     const persisted = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
-    expect(persisted.completedLessons).toEqual([1, 2, 3]);
-    expect(persisted.lessonProgress["2"].segment).toBe("practice");
+    expect(persisted.progressByLanguage.de.completedLessons).toEqual([1, 2, 3]);
+    expect(persisted.progressByLanguage.de.lessonProgress["2"].segment).toBe("practice");
     expect(persisted.hasCompletedOnboarding).toBe(true);
 
     // Strict Mode runs the layout's mount effect twice. A clobbered storage
@@ -198,7 +198,7 @@ describe("boot hydration snapshot", () => {
     // The next ordinary save in this tab must not write the stale list back.
     store.useAppStore.getState().setPreferredReviewMode("mcq");
     const persisted = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
-    expect(persisted.completedLessons).toEqual([]);
+    expect(persisted.completedLessons).toBeUndefined(); // schema v2: slice only
     expect(persisted.progressByLanguage.de.completedLessons).toEqual([]);
   });
 

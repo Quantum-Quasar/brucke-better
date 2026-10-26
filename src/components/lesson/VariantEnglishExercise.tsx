@@ -154,7 +154,7 @@ export const VariantEnglishExercise: React.FC<VariantEnglishExerciseProps> = ({
       )}
 
       {state === "correct" && (
-        <div className="space-y-2">
+        <div className="space-y-2" aria-live="polite" role="status">
           <p className="text-sm text-[var(--main-color)] font-semibold">
             {affirmation || `Every one of those is the same thought. ${language.name} has one shape for all of them.`}
           </p>

@@ -2,7 +2,7 @@ import React from "react";
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { AppShell } from "@/components/common/AppShell";
-import { THEME_VARS_CACHE_KEY } from "@/data/themes";
+import { THEME_VARS_CACHE_KEY } from "@/lib/theme-runtime";
 import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "@/lib/storage-keys";
 
 const SITE_TITLE = "Brücke — Learn through the words you already know";

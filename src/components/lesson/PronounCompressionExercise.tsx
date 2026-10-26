@@ -18,7 +18,7 @@ import {
 import { GermanCharBar } from "@/components/common/GermanCharBar";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
-import { arrangeTilesDeterministically } from "./ExerciseWidgets";
+import { arrangeTilesDeterministically } from "./exercise-tiles";
 import { evaluateAnswerAccuracy } from "@/lib/letter-diff";
 import { diagnoseAttempt, affirmationFor } from "@/lib/shift-diagnosis";
 import { DIAGNOSIS_BY_LANGUAGE, GERMAN_DIAGNOSIS } from "@/data/shift-diagnosis-table";
@@ -419,7 +419,7 @@ export const PronounCompressionExercise: React.FC<PronounCompressionExerciseProp
 
       {/* Footer */}
       <div className="pt-3 border-t border-[var(--sub-color)]/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div>
+        <div aria-live="polite" role="status">
           {feedbackNote && (
             <p
               className={`text-xs font-mono flex items-center gap-1.5 ${

@@ -139,6 +139,7 @@ English and German are sibling West Germanic languages sharing over 60% of core 
 │   │   │   ├── LessonReader.tsx       # 5-step wizard container with progress bar & Atlas bridge
 │   │   │   ├── ProgressBar5.tsx       # 5-segment interactive step navigation bar
 │   │   │   ├── ExerciseWidgets.tsx    # Morpheme tiles, matching pairs, shift select, syntax builder, dictation, family grid, variant English
+│   │   │   ├── exercise-tiles.ts      # Deterministic hash/shuffle/tile-order helpers (imported by the widget and every per-type chunk)
 │   │   │   ├── DictationExercise.tsx  # TM-6 played-audio listening drill with a capped replay budget
 │   │   │   ├── FamilyMatrixExercise.tsx # TM-6 prefix × base grid: one cell graded, the family revealed
 │   │   │   ├── VariantEnglishExercise.tsx # TM-6 every honest English rendering + word-match traps
@@ -216,7 +217,7 @@ All commands should be executed from `/home/shaurya/gemini-tmp/german-app-thinki
 # 1. Run Data Compilation Pipeline
 bun run parse-data
 
-# 2. Run All Automated Test Suites (37 test files / 367 tests)
+# 2. Run All Automated Test Suites (37 test files / 375 tests)
 bun run test
 
 # 3. Compile Production Build (Turbopack + SSG verification)
@@ -252,5 +253,5 @@ When auditing the codebase, verify:
   - State changes in Zustand persist to `localStorage`.
   - Cookie backup stays within safe browser limits (lean payload ≤ 2048 URL-encoded bytes).
 - [ ] **Build & Tests**:
-  - `bun run test` (Vitest) passes with 0 failures across all 37 test files (367 tests).
+  - `bun run test` (Vitest) passes with 0 failures across all 37 test files (375 tests).
   - `bun run build` generates all static pages (8 static routes + 28 atlas family pages + 178 lesson pages) without TypeScript or Turbopack errors.

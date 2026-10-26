@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
   RotateCcw,
@@ -15,19 +15,15 @@ import {
   Palette,
   ShieldAlert,
   Search,
-  Check,
   Zap,
-  Sparkles,
   Download,
   Upload,
-  RefreshCw,
-  HelpCircle,
   Languages,
 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { SettingItem } from "@/components/settings/SettingItem";
 import { VoiceStatusBanner } from "@/components/common/VoiceStatusBanner";
-import { THEME_LIST } from "@/data/themes";
+import { THEME_COUNT } from "@/lib/theme-runtime";
 import { FONT_LIST } from "@/data/fonts";
 import { LANGUAGES, getLanguageDefinition } from "@/data/languages";
 import {
@@ -705,7 +701,7 @@ export default function SettingsPage() {
             id="active-theme"
             icon={Palette}
             title="color scheme"
-            description={`Currently active theme: ${theme}. Choose from ${THEME_LIST.length} Monkeytype color schemes.`}
+            description={`Currently active theme: ${theme}. Choose from ${THEME_COUNT} Monkeytype color schemes.`}
             matchesSearch={matches(["color scheme", "theme", "colors", "alduin"])}
           >
             <button
@@ -714,7 +710,7 @@ export default function SettingsPage() {
               className="flex items-center gap-2 px-3 py-1.5 rounded text-xs font-mono bg-[var(--sub-alt-color)] hover:border-[var(--main-color)] border border-[var(--sub-color)]/20 text-[var(--main-color)] transition cursor-pointer"
             >
               <span>{theme}</span>
-              <span className="text-[10px] text-[var(--sub-color)]">browse {THEME_LIST.length} themes</span>
+              <span className="text-[10px] text-[var(--sub-color)]">browse {THEME_COUNT} themes</span>
             </button>
           </SettingItem>
 

@@ -25,7 +25,6 @@ import { ExampleSentence } from "@/components/common/ExampleSentence";
 import { clozeSentence } from "@/lib/sentence";
 import { ShiftPair } from "@/components/common/ShiftPair";
 import { GermanCharBar } from "@/components/common/GermanCharBar";
-import { GenderBadge } from "@/components/common/GenderBadge";
 import { GenderGuideBanner } from "@/components/common/GenderGuideBanner";
 import { useAppStore } from "@/lib/store";
 import { lessonHref } from "@/lib/routes";

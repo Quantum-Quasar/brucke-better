@@ -97,6 +97,7 @@ export default async function LessonPage({ params }: PageProps) {
       }}
       lessonTitles={lessonTitles}
       nextLesson={nextLesson ? { id: nextLesson.id, title: nextLesson.title } : undefined}
+      nextLessonId={nextLessonId}
     />
   );
 }

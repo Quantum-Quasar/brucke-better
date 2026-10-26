@@ -32,6 +32,7 @@ interface LessonDetailClientProps {
   curriculum: LessonCurriculum;
   lessonTitles: Record<number, string>;
   nextLesson?: { id: number; title: string };
+  nextLessonId?: number | null;
 }
 
 export function LessonDetailClient({
@@ -43,6 +44,7 @@ export function LessonDetailClient({
   curriculum,
   lessonTitles,
   nextLesson,
+  nextLessonId,
 }: LessonDetailClientProps) {
   const storeHydrated = useAppStore((s) => s.storeHydrated);
   const setActiveLanguage = useAppStore((s) => s.setActiveLanguage);
@@ -132,6 +134,8 @@ export function LessonDetailClient({
         languageId={languageId}
         compendium={compendium}
         nextLesson={nextLesson}
+        nextLessonId={nextLessonId}
+        totalTopics={curriculum.totalTopics}
         preview={Boolean(isLocked)}
       />
     </>

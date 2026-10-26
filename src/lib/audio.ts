@@ -167,7 +167,7 @@ export function playTargetAudio(text: string, locale?: string): boolean {
     if (window.speechSynthesis.paused) {
       window.speechSynthesis.resume();
     }
-    const cleanText = text.replace(/^[\[\(].*?[\]\)]\s*/, "").trim();
+    const cleanText = text.replace(/^[[(].*?[)\]]\s*/, "").trim();
     if (!cleanText) return false;
 
     const utterance = new SpeechSynthesisUtterance(cleanText);

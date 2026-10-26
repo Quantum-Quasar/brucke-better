@@ -1,6 +1,5 @@
-import { describe, it, expect, beforeEach, beforeAll, afterAll } from "vitest";
-import { DEFAULT_SETTINGS, type CustomizationSettings } from "../data/settings";
-import { applyAppearanceSettings } from "../lib/appearance";
+import { describe, it, expect, beforeEach } from "vitest";
+import { DEFAULT_SETTINGS } from "../data/settings";
 import { useAppStore } from "../lib/store";
 
 describe("Settings & Store Architecture", () => {

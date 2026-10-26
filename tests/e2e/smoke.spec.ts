@@ -11,9 +11,18 @@ const STORAGE_KEY = "brucke_app_state_v1";
 
 /** Read the persisted app state from the page's localStorage. */
 async function readAppState(page: Page): Promise<any> {
+  // saveState() coalesces writes into an idle callback. pagehide is the store's
+  // own flush path for a closing tab, so dispatching it makes the read
+  // deterministic without waiting out the debounce.
+  await page.evaluate(() => window.dispatchEvent(new Event("pagehide")));
   return page.evaluate((key) => {
     const raw = window.localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    // schema v2 keeps progress only in the active language's slice; expose it
+    // at the top level so assertions read the same shape as the store
+    const parsed = JSON.parse(raw);
+    const slice = parsed?.progressByLanguage?.[parsed.activeLanguageId];
+    return slice ? { ...parsed, ...slice } : parsed;
   }, STORAGE_KEY);
 }
 

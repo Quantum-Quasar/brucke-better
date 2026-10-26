@@ -26,11 +26,19 @@ async function seed(page: Page) {
   );
 }
 
-const readAppState = (page: Page) =>
-  page.evaluate((key) => {
+const readAppState = async (page: Page) => {
+  // Flush the store's idle-deferred write first, like a closing tab would.
+  await page.evaluate(() => window.dispatchEvent(new Event("pagehide")));
+  return page.evaluate((key) => {
     const raw = window.localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    // schema v2 keeps progress only in the active language's slice; expose it
+    // at the top level so assertions read the same shape as the store
+    const parsed = JSON.parse(raw);
+    const slice = parsed?.progressByLanguage?.[parsed.activeLanguageId];
+    return slice ? { ...parsed, ...slice } : parsed;
   }, STORAGE_KEY);
+};
 
 /* -------------------------------------------------------------------------- */
 /* Authored lesson data                                                       */

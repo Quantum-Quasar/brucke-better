@@ -12,6 +12,15 @@ type CompendiumPayload = Omit<CompendiumData, "wordList">;
 
 const AVAILABLE_LANGUAGES = new Set(["de", "fr", "es"]);
 
+// Content hash baked in at build time (next.config.mjs). Versioned URLs let
+// the server mark /data/* immutable without risking stale content after a deploy.
+const CONTENT_VERSION = process.env.NEXT_PUBLIC_CONTENT_VERSION;
+
+function dataUrl(languageId: string, file: string): string {
+  const base = `/data/${languageId}/${file}`;
+  return CONTENT_VERSION ? `${base}?v=${CONTENT_VERSION}` : base;
+}
+
 const cache = new Map<string, Promise<unknown>>();
 
 function loadJson<T>(url: string): Promise<T> {
@@ -19,7 +28,13 @@ function loadJson<T>(url: string): Promise<T> {
   if (cached) return cached;
   const promise = fetch(url)
     .then(async (response) => {
-      if (!response.ok) throw new Error(`failed to load ${url} (${response.status})`);
+      if (!response.ok) {
+        const error = new Error(`failed to load ${url} (${response.status})`) as Error & {
+          status?: number;
+        };
+        error.status = response.status;
+        throw error;
+      }
       return (await response.json()) as T;
     })
     .catch((error: unknown) => {
@@ -32,7 +47,7 @@ function loadJson<T>(url: string): Promise<T> {
 
 export function loadCompendium(languageId: string): Promise<CompendiumData> {
   if (!AVAILABLE_LANGUAGES.has(languageId)) return Promise.resolve(EMPTY_COMPENDIUM);
-  return loadJson<CompendiumPayload>(`/data/${languageId}/compendium.json`).then((payload) => ({
+  return loadJson<CompendiumPayload>(dataUrl(languageId, "compendium.json")).then((payload) => ({
     ...payload,
     wordList: Object.values(payload.words),
   }));
@@ -40,7 +55,7 @@ export function loadCompendium(languageId: string): Promise<CompendiumData> {
 
 export function loadLessonIndex(languageId: string): Promise<LessonIndexEntry[]> {
   if (!AVAILABLE_LANGUAGES.has(languageId)) return Promise.resolve([]);
-  return loadJson<LessonIndexEntry[]>(`/data/${languageId}/lesson-index.json`);
+  return loadJson<LessonIndexEntry[]>(dataUrl(languageId, "lesson-index.json"));
 }
 
 export interface AsyncContent<T> {
@@ -91,6 +106,13 @@ function useResource<T>(key: string, load: (key: string) => Promise<T>): AsyncCo
     loading: current ? state.loading : true,
     retry: () => {
       clearContentCache(key);
+      // A 404 on a versioned /data URL means this tab outlived a deploy; the
+      // file it is asking for no longer exists, so only a reload can recover.
+      const status = (state.error as (Error & { status?: number }) | null)?.status;
+      if (typeof window !== "undefined" && status === 404) {
+        window.location.reload();
+        return;
+      }
       setAttempt((value) => value + 1);
     },
   };
@@ -101,7 +123,7 @@ function clearContentCache(key: string) {
   const kind = key.slice(0, separator);
   const languageId = key.slice(separator + 1);
   const file = kind === "compendium" ? "compendium.json" : "lesson-index.json";
-  cache.delete(`/data/${languageId}/${file}`);
+  cache.delete(dataUrl(languageId, file));
 }
 
 function loadCompendiumKey(key: string): Promise<CompendiumData> {
@@ -118,4 +140,18 @@ export function useCompendium(languageId: string): AsyncContent<CompendiumData> 
 
 export function useLessonIndex(languageId: string): AsyncContent<LessonIndexEntry[]> {
   return useResource(`lesson-index:${languageId}`, loadLessonIndexKey);
+}
+
+/**
+ * Warm the JSON a route will need when the learner shows intent (hover, touch,
+ * keyboard focus). Failures are swallowed: the route's own loader still reports
+ * them with a retry affordance.
+ */
+export function prefetchReviewContent(languageId: string): void {
+  void loadCompendium(languageId).catch(() => {});
+  void loadLessonIndex(languageId).catch(() => {});
+}
+
+export function prefetchAtlasContent(languageId: string): void {
+  void loadCompendium(languageId).catch(() => {});
 }

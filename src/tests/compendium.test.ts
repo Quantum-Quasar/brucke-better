@@ -67,7 +67,7 @@ describe("Brücke Compendium Data Integrity", () => {
   });
 
   it("validates that every sound shift family references existing words", () => {
-    for (const [id, shift] of Object.entries(data.shifts)) {
+    for (const shift of Object.values(data.shifts)) {
       expect(shift.word_ids.length).toBeGreaterThan(0);
       for (const wid of shift.word_ids) {
         expect(data.words[wid]).toBeDefined();

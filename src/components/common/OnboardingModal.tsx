@@ -16,7 +16,7 @@ import {
 import { useAppStore } from "@/lib/store";
 import { LANGUAGES, getLanguageDefinition, isValidLanguageId } from "@/data/languages";
 import { getCourseCounts } from "@/data/word-counts";
-import { THEME_LIST } from "@/data/themes";
+import { THEME_COUNT } from "@/lib/theme-runtime";
 import { FONT_LIST } from "@/data/fonts";
 import { ShiftPair } from "@/components/common/ShiftPair";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
@@ -327,7 +327,7 @@ export const OnboardingModal: React.FC = () => {
               <div className="p-4 rounded-lg border border-[var(--sub-color)]/20 bg-[var(--bg-color)] font-mono text-xs text-[var(--sub-color)] space-y-1.5">
                 <div className="text-[var(--main-color)] font-bold">quick guide</div>
                 <p>
-                  • <strong className="text-[var(--text-color)]">themes</strong>: {THEME_LIST.length} colour
+                  • <strong className="text-[var(--text-color)]">themes</strong>: {THEME_COUNT} colour
                   schemes in the top-right palette control, with {FONT_LIST.length} fonts in settings.
                 </p>
                 <p>

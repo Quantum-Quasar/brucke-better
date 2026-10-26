@@ -1,12 +1,14 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from "vitest";
 import {
   loadSavedState,
   isPlausibleStateObject,
   useAppStore,
   saveState,
+  flushSave,
   STORAGE_KEY,
   STORAGE_COOKIE_KEY,
 } from "../lib/store";
+import { getStorageHealth } from "../lib/storage-health";
 import { DEFAULT_LANGUAGE_ID } from "../data/languages";
 import { getDueCards } from "../lib/srs";
 
@@ -331,9 +333,15 @@ describe("Persistence validation & dual-store fallback merging", () => {
       store.markWordEncountered("haus");
       saveState(useAppStore.getState());
 
-      // simulate a later save that lost everything but the theme
+      // schema v2 writes the slice once; simulate a payload that lost
+      // everything but the theme and the slices
       const full = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ theme: full.theme }));
+      expect(full.schemaVersion).toBe(2);
+      expect(full.completedLessons).toBeUndefined();
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({ theme: full.theme, progressByLanguage: full.progressByLanguage })
+      );
 
       const saved = loadSavedState();
       expect(saved.completedLessons).toEqual([1]);
@@ -374,7 +382,7 @@ describe("Persistence validation & dual-store fallback merging", () => {
       const persisted = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
       expect(persisted.activeLanguageId).toBe("fr");
       expect(persisted.progressByLanguage.fr.completedLessons).toEqual([1, 2, 3, 4, 5]);
-      expect(persisted.completedLessons).toEqual([1, 2, 3, 4, 5]);
+      expect(persisted.completedLessons).toBeUndefined();
     });
 
     it("drops malformed lessonProgress / lessonStars / wordMastery entries", () => {
@@ -433,6 +441,82 @@ describe("Persistence validation & dual-store fallback merging", () => {
       expect(fresh.useAppStore.getState().completedLessons).toEqual([2, 3]);
       expect(fresh.useAppStore.getState().currentLessonId).toBe(4);
       expect(fresh.useAppStore.getState().hasCompletedOnboarding).toBe(true);
+    });
+  });
+
+  describe("schema v2 (slice-only) persistence", () => {
+    it("loads a legacy save that still carries the top-level mirrors", () => {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(leanCookie()));
+      const saved = loadSavedState();
+      expect(saved.completedLessons).toEqual([1, 2, 3]);
+      expect(saved.currentLessonId).toBe(4);
+    });
+
+    it("loads a v2 save with only the slice", () => {
+      const { completedLessons: _c, currentLessonId: _i, wordMastery: _w, ...v2 } = leanCookie();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...v2, schemaVersion: 2 }));
+      const saved = loadSavedState();
+      expect(saved.completedLessons).toEqual([1, 2, 3]);
+      expect(saved.wordMastery?.haus).toBe("mastered");
+    });
+
+    it("writes the progress cookie only when localStorage rejects the write", () => {
+      useAppStore.getState().completeLesson(1);
+      const setItem = vi.spyOn(globalThis.localStorage, "setItem").mockImplementation(() => {
+        throw new Error("denied");
+      });
+      try {
+        saveState({ ...useAppStore.getState(), theme: "forced-change" });
+      } finally {
+        setItem.mockRestore();
+      }
+      const raw = (globalThis as any).document.cookie as string;
+      const value = JSON.parse(decodeURIComponent(raw.split("=").slice(1).join("=").split(";")[0]));
+      expect(value.progressByLanguage.de.completedLessons).toContain(1);
+    });
+  });
+
+  describe("deferred writes", () => {
+    afterEach(() => {
+      flushSave();
+      delete (globalThis as any).requestIdleCallback;
+      delete (globalThis as any).cancelIdleCallback;
+    });
+
+    it("coalesces saves while idle and flushes the latest snapshot on demand", () => {
+      let idleCallback: (() => void) | null = null;
+      (globalThis as any).requestIdleCallback = (callback: () => void) => {
+        idleCallback = callback;
+        return 1;
+      };
+      (globalThis as any).cancelIdleCallback = () => {};
+
+      const base = useAppStore.getState();
+      saveState({ ...base, theme: "deferred-theme" });
+      saveState({ ...base, theme: "latest-theme" });
+
+      // Nothing is written until the browser is idle (or unload/navigation).
+      expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+      expect(idleCallback).not.toBeNull();
+
+      flushSave();
+      const persisted = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
+      expect(persisted.theme).toBe("latest-theme");
+    });
+
+    it("reports a failed localStorage write and clears it on the next success", () => {
+      const setItem = vi.spyOn(globalThis.localStorage, "setItem").mockImplementation(() => {
+        throw new Error("quota exceeded");
+      });
+      try {
+        saveState({ ...useAppStore.getState(), theme: "quota-theme" });
+      } finally {
+        setItem.mockRestore();
+      }
+      expect(getStorageHealth()).toBe("failed");
+
+      saveState({ ...useAppStore.getState(), theme: "recovered-theme" });
+      expect(getStorageHealth()).toBe("ok");
     });
   });
 });

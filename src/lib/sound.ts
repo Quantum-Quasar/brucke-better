@@ -242,3 +242,30 @@ export class SoundEngine {
 }
 
 export const soundEngine = new SoundEngine();
+
+// The default switch pack is only worth downloading once the learner is about
+// to produce a sound (a click or key press). Hydration itself is not intent:
+// preloading there spent a 34 KB request on every first visit.
+let pendingClickPreloadId: string | null = null;
+let clickPreloadListenerAttached = false;
+
+export function preloadClickSoundOnFirstInteraction(clickId: string): void {
+  if (typeof window === "undefined") return;
+  pendingClickPreloadId = clickId;
+  if (clickPreloadListenerAttached) return;
+  if (typeof window.addEventListener !== "function") return;
+  clickPreloadListenerAttached = true;
+
+  const trigger = () => {
+    window.removeEventListener("pointerdown", trigger);
+    window.removeEventListener("keydown", trigger);
+    window.removeEventListener("touchstart", trigger);
+    const id = pendingClickPreloadId;
+    pendingClickPreloadId = null;
+    if (id) void soundEngine.preloadClickSound(id);
+  };
+
+  window.addEventListener("pointerdown", trigger, { once: true, passive: true });
+  window.addEventListener("touchstart", trigger, { once: true, passive: true });
+  window.addEventListener("keydown", trigger, { once: true });
+}

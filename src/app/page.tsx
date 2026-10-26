@@ -7,9 +7,10 @@ import { DailyInsightCard } from "@/components/common/DailyInsightCard";
 import { TrailMap } from "@/components/trail/TrailMap";
 import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
-import { getCurriculum } from "@/data/curriculum-registry";
-import { getInsights } from "@/data/insights-registry";
+import { useCurriculum } from "@/data/curriculum-client";
+import { useInsights } from "@/data/insights-client";
 import { lessonHref } from "@/lib/routes";
+import { isChunkLoadError } from "@/lib/chunk-errors";
 import type { DailyInsight } from "@/lib/types";
 
 export default function HomePage() {
@@ -22,8 +23,9 @@ export default function HomePage() {
   const storeHydrated = useAppStore((s) => s.storeHydrated);
 
   const language = getLanguageDefinition(activeLanguageId);
-  const curriculum = getCurriculum(activeLanguageId);
-  const dailyInsights = getInsights(activeLanguageId) as DailyInsight[];
+  const { curriculum, ready: curriculumReady, error: curriculumError, retry: retryCurriculum } =
+    useCurriculum(activeLanguageId);
+  const dailyInsights: DailyInsight[] = useInsights(activeLanguageId);
 
   useEffect(() => {
     setInsightIndex(new Date().getDate() % (dailyInsights.length || 1));
@@ -72,6 +74,32 @@ export default function HomePage() {
       </div>
 
       {language.status === "available" ? (
+        !curriculumReady ? (
+          curriculumError ? (
+            <div
+              role="alert"
+              className="mt-6 p-8 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--error-color)]/30 text-center space-y-3 font-mono"
+            >
+              <p className="text-sm text-[var(--sub-color)]">the course could not be loaded.</p>
+              <button
+                type="button"
+                onClick={() =>
+                  isChunkLoadError(curriculumError) ? window.location.reload() : retryCurriculum()
+                }
+                className="px-4 py-2 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold text-xs cursor-pointer"
+              >
+                {isChunkLoadError(curriculumError) ? "reload" : "try again"}
+              </button>
+            </div>
+          ) : (
+            <div
+              role="status"
+              className="mt-6 p-8 text-center font-mono text-xs text-[var(--sub-color)]"
+            >
+              loading course…
+            </div>
+          )
+        ) : (
         <>
           {isFirstVisit && (
             <section className="first-visit-hero mt-2 mb-5 rounded-xl border border-[var(--main-color)]/30 bg-[var(--sub-alt-color)] p-5 sm:p-7 space-y-4">
@@ -121,8 +149,11 @@ export default function HomePage() {
           )}
 
           <TrailMap />
-          <DailyInsightCard insight={todayInsight} languageName={language.name} />
+          {todayInsight && (
+            <DailyInsightCard insight={todayInsight} languageName={language.name} />
+          )}
         </>
+        )
       ) : (
         <div className="mt-6 p-8 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 text-center space-y-3">
           <Clock className="w-8 h-8 text-[var(--main-color)] mx-auto" />

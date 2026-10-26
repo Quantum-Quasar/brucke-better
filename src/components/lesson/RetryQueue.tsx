@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { CheckCircle, AlertTriangle, ShieldCheck, HeartHandshake } from "lucide-react";
+import { CheckCircle, AlertTriangle, HeartHandshake } from "lucide-react";
 import { ExerciseWidget } from "./ExerciseWidgets";
 import { useAppStore } from "@/lib/store";
 import type { ExerciseItem } from "@/lib/types";

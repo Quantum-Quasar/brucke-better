@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { THEMES, THEME_LIST, DEFAULT_THEME, POPULAR_THEMES, applyTheme, isColorDark, filterThemes } from "@/data/themes";
+import { THEME_COUNT } from "@/lib/theme-runtime";
 import { TOPICS, TRAIL_BRANCHES, getNextPlayableLessonId } from "@/data/curriculum";
 import { getGenderInfo } from "@/lib/gender";
 import { LESSONS } from "@/data/lessons";
@@ -60,6 +61,7 @@ describe("Theme Architecture & Contrast Verification", () => {
   it("contains all 187 Monkeytype color themes", () => {
     expect(Object.keys(THEMES).length).toBe(187);
     expect(THEME_LIST.length).toBe(187);
+    expect(THEME_COUNT).toBe(THEME_LIST.length);
     expect(THEMES[DEFAULT_THEME]).toBeDefined();
     expect(THEMES["serika_dark"].bg).toBe("#323437");
   });

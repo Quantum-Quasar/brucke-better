@@ -5,7 +5,9 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { TopNav } from "@/components/navigation/TopNav";
 import { BottomNav } from "@/components/navigation/BottomNav";
-import { useAppStore, STORAGE_KEY } from "@/lib/store";
+import { StorageWarningBanner } from "@/components/common/StorageWarningBanner";
+import { LazyLoadBoundary } from "@/components/common/LazyLoadBoundary";
+import { useAppStore, STORAGE_KEY, flushSave } from "@/lib/store";
 
 // ponytail: code-split idle modals & drawer so root chunk doesn't bundle 253KB compendium or 187 themes
 const WordCardDrawer = dynamic(
@@ -35,6 +37,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   // Lesson routes hide the dock, so they must not reserve dock clearance.
   const isLessonRoute = pathname.startsWith("/trail/");
+  // Mount lazy overlays only when they are actually open. Otherwise their
+  // chunks (the theme table in particular) download during hydration even
+  // though the learner never opens them.
+  const isOnboardingOpen = useAppStore((s) => s.isOnboardingOpen);
+  const isThemeSelectorOpen = useAppStore((s) => s.isThemeSelectorOpen);
+  const isFontSelectorOpen = useAppStore((s) => s.isFontSelectorOpen);
+  const activeWordDrawerId = useAppStore((s) => s.activeWordDrawerId);
 
   // Hydrate local progress from localStorage and cookies on client mount
   useEffect(() => {
@@ -50,8 +59,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
+  // Deferred writes are flushed on route changes so a navigation can never
+  // outrun the snapshot it was triggered by.
+  useEffect(() => {
+    flushSave();
+  }, [pathname]);
+
   return (
     <>
+      <StorageWarningBanner />
       <TopNav />
 
       {/* Main Content Viewport (bottom padding clears the fixed game-style dock) */}
@@ -60,10 +76,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <BottomNav />
 
       {/* Global Drawers & Modals */}
-      <WordCardDrawer />
-      <OnboardingModal />
-      <ThemeSelectorModal />
-      <FontSelectorModal />
+      <LazyLoadBoundary label="some panels">
+        {activeWordDrawerId && <WordCardDrawer />}
+        {isOnboardingOpen && <OnboardingModal />}
+        {isThemeSelectorOpen && <ThemeSelectorModal />}
+        {isFontSelectorOpen && <FontSelectorModal />}
+      </LazyLoadBoundary>
     </>
   );
 }

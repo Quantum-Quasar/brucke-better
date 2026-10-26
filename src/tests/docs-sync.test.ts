@@ -44,7 +44,7 @@ function countStaticRoutes(dir: string): number {
   }, 0);
 }
 const STATIC_ROUTE_COUNT = countStaticRoutes(path.join(ROOT, "src", "app"));
-const TEST_COUNT = 367; // update when adding tests
+const TEST_COUNT = 375; // update when adding tests
 const THEME_COUNT = Object.keys(THEMES).length;
 const FONT_COUNT = FONT_LIST.length;
 const TAUGHT_WORDS = 656; // update after running scripts/audit-vocab-balance.ts

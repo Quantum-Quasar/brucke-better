@@ -1,6 +1,8 @@
 // All 187 themes extracted directly from Monkeytype (open-source typing speed platform)
 // Supports dynamic CSS variable injection across the entire application.
 
+import { DEFAULT_THEME, THEME_VARS_CACHE_KEY } from "@/lib/theme-runtime";
+
 export interface MonkeytypeTheme {
   bg: string;
   main: string;
@@ -2317,7 +2319,7 @@ export const POPULAR_THEMES: string[] = [
   "alduin",
 ];
 
-export const DEFAULT_THEME = "alduin";
+export { DEFAULT_THEME, THEME_VARS_CACHE_KEY };
 
 export type ThemeFilterTab = "popular" | "all" | "dark" | "light";
 
@@ -2334,7 +2336,6 @@ export function filterThemes(query: string, tab: ThemeFilterTab): ThemeMeta[] {
   return THEME_LIST;
 }
 
-export const THEME_VARS_CACHE_KEY = "brucke_theme_vars";
 
 export function applyTheme(themeId: string): void {
   if (typeof document === "undefined" || !document?.documentElement?.style) return;
@@ -2377,6 +2378,7 @@ export function applyTheme(themeId: string): void {
       window.localStorage.setItem(
         THEME_VARS_CACHE_KEY,
         JSON.stringify({
+          id: themeId,
           vars: {
             "--bg-color": theme.bg,
             "--main-color": theme.main,

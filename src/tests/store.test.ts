@@ -98,7 +98,7 @@ describe("App Store & User Progress State", () => {
       practiceIndex: 2,
       completedSegments: ["hook", "pattern", "table"],
     });
-    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).lessonProgress[3].segment).toBe("practice");
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).progressByLanguage.de.lessonProgress[3].segment).toBe("practice");
   });
 
   it("manages independent tolerance settings and dismissal thresholds", () => {
@@ -124,15 +124,17 @@ describe("App Store & User Progress State", () => {
     const localRaw = localStorage.getItem(STORAGE_KEY);
     expect(localRaw).toBeTruthy();
     const parsedLocal = JSON.parse(localRaw!);
-    expect(parsedLocal.completedLessons).toContain(1);
-    expect(parsedLocal.wordMastery["Wasser"]).toBe("mastered");
+    expect(parsedLocal.progressByLanguage.de.completedLessons).toContain(1);
+    expect(parsedLocal.progressByLanguage.de.wordMastery["Wasser"]).toBe("mastered");
+    expect(parsedLocal.completedLessons).toBeUndefined();
 
     // Check cookie
     const cookieVal = getCookie(STORAGE_COOKIE_KEY);
     expect(cookieVal).toBeTruthy();
     const parsedCookie = JSON.parse(cookieVal!);
-    expect(parsedCookie.completedLessons).toContain(1);
-    expect(parsedCookie.wordMastery["Wasser"]).toBe("mastered");
+    // progress stays out of the cookie while localStorage works
+    expect(parsedCookie.progressByLanguage).toBeUndefined();
+    expect(parsedCookie.theme).toBe(parsedLocal.theme);
   });
 
   it("hydrates from cookie if localStorage is cleared", () => {
@@ -231,8 +233,8 @@ describe("App Store & User Progress State", () => {
     // The cleared progress is persisted immediately, so a reload cannot
     // resurrect what was just reset — while the preserved preferences survive.
     const persisted = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
-    expect(persisted.completedLessons).toEqual([]);
-    expect(persisted.wordMastery).toEqual({});
+    expect(persisted.progressByLanguage.de.completedLessons).toEqual([]);
+    expect(persisted.progressByLanguage.de.wordMastery).toEqual({});
     expect(persisted.theme).toBe("carbon");
     expect(persisted.settings.soundVolume).toBe(0.8);
 
@@ -240,7 +242,7 @@ describe("App Store & User Progress State", () => {
     store.completeLesson(1);
     const postResetLocal = localStorage.getItem(STORAGE_KEY);
     expect(postResetLocal).toBeTruthy();
-    expect(JSON.parse(postResetLocal!).completedLessons).toContain(1);
+    expect(JSON.parse(postResetLocal!).progressByLanguage.de.completedLessons).toContain(1);
   });
 
   it("manages and persists Monkeytype color scheme themes", () => {

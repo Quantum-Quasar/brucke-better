@@ -10,7 +10,7 @@ import { Zap, Eye, SkipForward, Check, RotateCcw } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { soundEngine } from "@/lib/sound";
 import { getLanguageDefinition } from "@/data/languages";
-import { arrangeTilesDeterministically } from "./ExerciseWidgets";
+import { arrangeTilesDeterministically } from "./exercise-tiles";
 import type { LessonTwist } from "@/lib/types";
 
 interface TwistCardProps {

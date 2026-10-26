@@ -5,12 +5,13 @@
 import { create } from "zustand";
 import type { LessonProgress, LessonSegment, LessonStar, MasteryState, ReviewMode, SRSCard } from "./types";
 import { createInitialCard, gradeCard, isMastered, type ReviewGrade } from "./srs";
-import { applyTheme, DEFAULT_THEME } from "@/data/themes";
+import { applyTheme, DEFAULT_THEME } from "@/lib/theme-runtime";
 import { applyFont, DEFAULT_FONT } from "@/data/fonts";
 import { type CustomizationSettings, DEFAULT_SETTINGS } from "@/data/settings";
 import { DEFAULT_LANGUAGE_ID, getLanguageDefinition, isValidLanguageId } from "@/data/languages";
 import { applyAppearanceSettings } from "./appearance";
-import { soundEngine } from "./sound";
+import { soundEngine, preloadClickSoundOnFirstInteraction } from "./sound";
+import { reportStorageWrite } from "./storage-health";
 import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "./storage-keys";
 
 export interface ToleranceSettings {
@@ -624,6 +625,56 @@ function normalizeParsedState(parsed: Record<string, any>): Partial<AppState> {
 
 let lastSerialized = "";
 
+type IdleWindow = Window & {
+  requestIdleCallback?: (callback: () => void, options?: { timeout?: number }) => number;
+  cancelIdleCallback?: (handle: number) => void;
+};
+
+// Rapid actions (grading, typing-adjacent progress) coalesce into one write per
+// idle period instead of serializing the whole profile on every action. Node
+// test environments have no requestIdleCallback, so saveState() stays
+// synchronous there and the persistence tests keep their deterministic reads.
+let pendingSave: AppState | null = null;
+let idleHandle: number | null = null;
+
+function cancelPendingSave() {
+  pendingSave = null;
+  if (idleHandle !== null) {
+    if (typeof window !== "undefined") {
+      const cancel = (window as IdleWindow).cancelIdleCallback;
+      if (typeof cancel === "function") cancel(idleHandle);
+    }
+    idleHandle = null;
+  }
+}
+
+/** Write any deferred snapshot right now (unload, route change, reset/import). */
+export function flushSave() {
+  const state = pendingSave;
+  cancelPendingSave();
+  if (state) writeState(state);
+}
+
+export function saveState(state: AppState, options?: { immediate?: boolean }) {
+  if (typeof window === "undefined") return;
+  const requestIdle = (window as IdleWindow).requestIdleCallback;
+  if (!options?.immediate && typeof requestIdle === "function") {
+    pendingSave = state;
+    if (idleHandle === null) {
+      idleHandle = requestIdle(
+        () => {
+          idleHandle = null;
+          flushSave();
+        },
+        { timeout: 500 }
+      );
+    }
+    return;
+  }
+  cancelPendingSave();
+  writeState(state);
+}
+
 // Read once, before React mounts, so the first hydrate still has the learner's
 // saved state even if a child mount effect has already written defaults back to
 // storage (see hydrateFromStorage). Declared here rather than seeded into the
@@ -641,7 +692,7 @@ let lastSeenResetAt = 0;
 // not yank the intro open over whatever the user is doing now
 let hasAutoOpenedOnboarding = false;
 
-export function saveState(state: AppState) {
+function writeState(state: AppState) {
   if (typeof window === "undefined") return;
   // the active language's slice is derived from the mirrored top-level fields
   const progressByLanguage: Record<string, LanguageProgress> = {
@@ -657,18 +708,14 @@ export function saveState(state: AppState) {
       lastActivityWeek: state.lastActivityWeek,
     },
   };
+  // Schema v2: the active language's progress lives only in its
+  // progressByLanguage slice. The top-level mirrors are rebuilt on load
+  // (normalizeParsedState), and older saves that still carry them keep loading.
   const toPersist = {
+    schemaVersion: 2,
     activeLanguageId: state.activeLanguageId,
     progressByLanguage,
     seenIntroLanguages: state.seenIntroLanguages,
-    completedLessons: state.completedLessons,
-    currentLessonId: state.currentLessonId,
-    lessonProgress: state.lessonProgress,
-    lessonStars: state.lessonStars,
-    wordMastery: state.wordMastery,
-    srsCards: state.srsCards,
-    weeklyActivity: state.weeklyActivity,
-    lastActivityWeek: state.lastActivityWeek,
     progressResetAt: state.progressResetAt,
     tolerance: state.tolerance,
     preferredReviewMode: state.preferredReviewMode,
@@ -683,39 +730,47 @@ export function saveState(state: AppState) {
   lastSerialized = serialized;
 
   // 1. Save to localStorage
+  let localOk = true;
   try {
     localStorage.setItem(STORAGE_KEY, serialized);
-  } catch {}
+    reportStorageWrite(true);
+  } catch {
+    localOk = false;
+    reportStorageWrite(false);
+  }
 
-  // 2. Also save to cookie with strict encoded size guard <= 2048 bytes (prevents HTTP 431)
+  // 2. Cookie (sent with every document request, so kept <= 2048 encoded
+  // bytes to avoid HTTP 431). The progress copy is only a fallback for when
+  // localStorage is unavailable (privacy modes); otherwise only the small
+  // prefs/theme/onboarding payload is written.
   try {
-    const lean = {
-      activeLanguageId: state.activeLanguageId,
-      progressByLanguage,
-      seenIntroLanguages: state.seenIntroLanguages,
-      completedLessons: state.completedLessons,
-      currentLessonId: state.currentLessonId,
-      wordMastery: state.wordMastery,
-      hasCompletedOnboarding: state.hasCompletedOnboarding,
-      hasSeenGenderIntro: state.hasSeenGenderIntro,
+    const minimal = JSON.stringify({
       theme: state.theme,
       font: state.font,
-    };
-    const leanJson = JSON.stringify(lean);
-    if (encodeURIComponent(leanJson).length <= 2048) {
-      setCookie(STORAGE_COOKIE_KEY, leanJson, 365);
+      activeLanguageId: state.activeLanguageId,
+      seenIntroLanguages: state.seenIntroLanguages,
+      // keep the onboarding flags so losing the larger payload cannot
+      // re-open the wizard for a learner who finished it
+      hasCompletedOnboarding: state.hasCompletedOnboarding,
+      hasSeenGenderIntro: state.hasSeenGenderIntro,
+    });
+    if (localOk) {
+      setCookie(STORAGE_COOKIE_KEY, minimal, 365);
     } else {
-      const minimal = JSON.stringify({
-        theme: state.theme,
-        font: state.font,
+      const leanJson = JSON.stringify({
         activeLanguageId: state.activeLanguageId,
+        progressByLanguage,
         seenIntroLanguages: state.seenIntroLanguages,
-        // keep the onboarding flags in the fallback so losing the larger
-        // payload cannot re-open the wizard for a learner who finished it
         hasCompletedOnboarding: state.hasCompletedOnboarding,
         hasSeenGenderIntro: state.hasSeenGenderIntro,
+        theme: state.theme,
+        font: state.font,
       });
-      setCookie(STORAGE_COOKIE_KEY, minimal, 365);
+      setCookie(
+        STORAGE_COOKIE_KEY,
+        encodeURIComponent(leanJson).length <= 2048 ? leanJson : minimal,
+        365
+      );
     }
   } catch {}
 }
@@ -1257,7 +1312,7 @@ export const useAppStore = create<AppState>((set, get) => ({
           deleteCookie(STORAGE_COOKIE_KEY);
         } catch {}
       }
-      saveState(next);
+      saveState(next, { immediate: true });
       return next;
     });
   },
@@ -1423,7 +1478,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       };
 
       applyAppearanceSettings(nextSettings);
-      saveState(next);
+      saveState(next, { immediate: true });
       return next;
     });
     return true;
@@ -1435,6 +1490,9 @@ export const useAppStore = create<AppState>((set, get) => ({
     // storage copy that a child effect may have already overwritten with the
     // defaults. Only an explicit re-read (cross-tab event, test) is allowed.
     if (hasHydratedFromStorage && !options?.reread) return;
+    // A pending deferred write holds this tab's pre-merge snapshot; flushing it
+    // after adopting another tab's write would clobber that write.
+    if (options?.reread) cancelPendingSave();
     // The FIRST hydration must use the snapshot captured before React mounted.
     // Child mount effects run before the root layout's effect and some of them
     // (LessonReader persists the current segment) write the not-yet-hydrated
@@ -1540,7 +1598,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       const latestSettings = useAppStore.getState().settings;
       applyAppearanceSettings(latestSettings);
       if (latestSettings.playSoundOnClick !== "off") {
-        void soundEngine.preloadClickSound(latestSettings.playSoundOnClick);
+        preloadClickSoundOnFirstInteraction(latestSettings.playSoundOnClick);
       }
     } else if (!hasAutoOpenedOnboarding) {
       // Clean slate first-time user: trigger onboarding (once per page load)!
@@ -1556,12 +1614,18 @@ export const useAppStore = create<AppState>((set, get) => ({
       // state before this effect ran. Put the hydrated state back, bypassing
       // saveState's dedupe (it still holds the clobbering payload).
       lastSerialized = "";
-      saveState(useAppStore.getState());
+      saveState(useAppStore.getState(), { immediate: true });
     }
     // Components that seeded local state from the (default) store at mount can
     // now adopt the real saved values — and an already-open view can re-adopt
     // after a cross-tab save (hydrateEpoch).
     set((s) => ({ ...s, storeHydrated: true, hydrateEpoch: s.hydrateEpoch + 1 }));
+    if (options?.reread) {
+      // Persist the merged union right away: the other tab keeps its own copy,
+      // and the immediate write also means a second cross-tab save from this
+      // tab cannot race a stale pending snapshot.
+      saveState(useAppStore.getState(), { immediate: true });
+    }
   },
 }));
 
@@ -1574,5 +1638,13 @@ if (typeof window !== "undefined") {
     applyAppearanceSettings({ ...DEFAULT_SETTINGS, ...initial.settings });
   } else {
     applyAppearanceSettings(DEFAULT_SETTINGS);
+  }
+
+  // The debounced write must never be the thing a tab close loses.
+  if (typeof window.addEventListener === "function") {
+    window.addEventListener("pagehide", flushSave);
+    window.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "hidden") flushSave();
+    });
   }
 }

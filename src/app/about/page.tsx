@@ -4,7 +4,6 @@ import { ArrowLeft, BookOpen, Compass, ExternalLink, RotateCcw, Sliders } from "
 import type { Metadata } from "next";
 import { LESSONS } from "@/data/lessons";
 import { FR_LESSONS } from "@/data/french/lessons-fr";
-import { ES_LESSONS } from "@/data/spanish/lessons-es";
 import { TOTAL_TOPICS } from "@/data/curriculum";
 import { compendium } from "@/data/compendium";
 import { getAtlasFamilies } from "@/lib/atlas-families";
@@ -27,7 +26,6 @@ const SHIFT_SAMPLES = [
 export default function AboutPage() {
   const germanLessons = LESSONS.length;
   const frenchLessons = FR_LESSONS.length;
-  const spanishLessons = ES_LESSONS.length;
   const familyCount = getAtlasFamilies(compendium).length;
 
   return (

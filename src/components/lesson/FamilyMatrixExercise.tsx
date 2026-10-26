@@ -39,7 +39,6 @@ export const FamilyMatrixExercise: React.FC<FamilyMatrixExerciseProps> = ({
 }) => {
   const [userInput, setUserInput] = useState("");
   const [revealed, setRevealed] = useState(false);
-  const [status, setStatus] = useState<"idle" | "correct" | "almost" | "incorrect">("idle");
   const [verifiedAttemptText, setVerifiedAttemptText] = useState("");
   const [almostWarningNote, setAlmostWarningNote] = useState<string | undefined>(undefined);
   const [showErrorSheet, setShowErrorSheet] = useState(false);
@@ -65,7 +64,6 @@ export const FamilyMatrixExercise: React.FC<FamilyMatrixExerciseProps> = ({
   useEffect(() => {
     setUserInput("");
     setRevealed(false);
-    setStatus("idle");
     setShowErrorSheet(false);
     setShowSuccessSheet(false);
     setVerifiedAttemptText("");
@@ -85,7 +83,6 @@ export const FamilyMatrixExercise: React.FC<FamilyMatrixExerciseProps> = ({
     const evaluation = evaluateAnswerAccuracy(answer, target, evalOptions);
 
     if (evaluation.accuracy === "exact" || evaluation.accuracy === "almost") {
-      setStatus(evaluation.accuracy === "exact" ? "correct" : "almost");
       setVerifiedAttemptText(answer);
       setAlmostWarningNote(evaluation.warningNote);
       setRevealed(true);
@@ -99,7 +96,6 @@ export const FamilyMatrixExercise: React.FC<FamilyMatrixExerciseProps> = ({
       return;
     }
 
-    setStatus("incorrect");
     setFailedAttemptText(answer);
     setFailedDiagnosis(exercise.diagnosis);
     void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);

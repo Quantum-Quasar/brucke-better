@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach, beforeAll, afterAll, vi } from "vitest";
+import { describe, test, expect, beforeEach, beforeAll, afterAll } from "vitest";
 
 // ponytail: language registry sanity + store multi-language behavior
 

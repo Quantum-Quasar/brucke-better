@@ -1,9 +1,8 @@
 import { describe, it, expect, beforeEach, beforeAll, afterAll } from "vitest";
 import { useAppStore } from "../lib/store";
 import { compendium } from "../data/compendium";
-import { createInitialCard, gradeCard, isMastered, getDueCards, getWeakestCards, getCardsByShift, localDateKey } from "../lib/srs";
+import { isMastered, getDueCards, getWeakestCards, getCardsByShift, localDateKey } from "../lib/srs";
 import type { ReviewGrade } from "../lib/srs";
-import type { WordEntity } from "../lib/types";
 
 class LocalStorageMock {
   private store: Record<string, string> = {};

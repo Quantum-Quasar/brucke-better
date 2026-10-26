@@ -212,8 +212,6 @@ export function buildTrailLayout(width: number, data: TrailData = GERMAN_TRAIL_D
     // (span 296 ≤ usable width for every supported canvas), pinning left otherwise
     let left = Math.min(...cluster.map((n) => n.x));
     let right = Math.max(...cluster.map((n) => n.x + n.w));
-    const span = right - left;
-    const usable = w - 2 * EDGE_PAD;
     let shift = 0;
     if (right > w - EDGE_PAD) shift = w - EDGE_PAD - right;
     if (left + shift < EDGE_PAD) shift = EDGE_PAD - left;

@@ -20,18 +20,31 @@ import {
 import { ProgressBar5, type LessonSegment } from "./ProgressBar5";
 import { ShiftPair } from "@/components/common/ShiftPair";
 import { GenderBadge } from "@/components/common/GenderBadge";
-import { ExerciseWidget } from "./ExerciseWidgets";
 import { TwistCard } from "./TwistCard";
 import { useAppStore } from "@/lib/store";
 import { whisperCuesForLesson } from "@/data/posture-cues";
 import { RETRY_INTENT_LINE, retryVariant } from "@/lib/retry-variation";
 import { isListeningSkipped, listeningSkipLabel } from "@/lib/listening";
+import { LazyLoadBoundary } from "@/components/common/LazyLoadBoundary";
 import { consciousnessLineFor } from "@/data/consciousness";
 import { getSoundImportsForLanguage, importLineFor, type SoundImport } from "@/data/sound-imports";
-import { getCurriculum, getNextPlayableLessonIdFor } from "@/data/curriculum-registry";
+
 import { getLanguageDefinition } from "@/data/languages";
 import { lessonHref } from "@/lib/routes";
 import type { CompendiumData, Lesson, ExerciseItem } from "@/lib/types";
+
+/**
+ * The practice segment is the only place that renders an exercise. Keeping the
+ * widget behind a lazy boundary means the hook, pattern, table and summary
+ * segments never download the exercise engine (or its per-type chunks).
+ *
+ * The boundary wraps the whole practice card, not just the widget: the "problem
+ * N of M" header must not appear before the exercise it counts, or the learner
+ * (and the browser suite) sees a step tracker with nothing under it.
+ */
+const ExerciseWidget = React.lazy(() =>
+  import("./ExerciseWidgets").then((module) => ({ default: module.ExerciseWidget }))
+);
 
 interface LessonReaderProps {
   lesson: Lesson;
@@ -41,6 +54,10 @@ interface LessonReaderProps {
   compendium: CompendiumData;
   /** Metadata for the next authored lesson, resolved on the server. */
   nextLesson?: { id: number; title: string };
+  /** Server-resolved next playable lesson id (null = caught up). */
+  nextLessonId?: number | null;
+  /** Server-resolved topic count for the "Topic N of M" label. */
+  totalTopics?: number;
   /** Locked deep links can be walked as a preview, but must not change progress. */
   preview?: boolean;
 }
@@ -50,18 +67,17 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
   languageId,
   compendium,
   nextLesson: nextLessonMeta,
+  nextLessonId: nextLessonIdProp,
+  totalTopics: totalTopicsProp,
   preview = false,
 }) => {
   const router = useRouter();
   const storeLanguageId = useAppStore((s) => s.activeLanguageId);
   const activeLanguageId = languageId ?? storeLanguageId;
   const data = compendium;
-  const totalTopics = getCurriculum(activeLanguageId).totalTopics || 30;
+  const totalTopics = totalTopicsProp || 30;
   const genderSystem = getLanguageDefinition(activeLanguageId).genderSystem;
-  const nextLessonId = React.useMemo(
-    () => getNextPlayableLessonIdFor(activeLanguageId, lesson.id),
-    [activeLanguageId, lesson.id]
-  );
+  const nextLessonId = nextLessonIdProp ?? null;
   const savedProgress = useAppStore((s) => s.lessonProgress[lesson.id]);
   const [currentSegment, setCurrentSegment] = useState<LessonSegment>(savedProgress?.segment || "hook");
   const [practiceIndex, setPracticeIndex] = useState(savedProgress?.practiceIndex || 0);
@@ -120,7 +136,6 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
 
   const primaryShiftId = lesson.shift_categories && lesson.shift_categories[0];
   const primaryShift = primaryShiftId ? data.shifts[primaryShiftId] : null;
-  const isFrench = activeLanguageId === "fr";
   const familyCount = Object.keys(data.shifts).length;
 
   const completeLesson = useAppStore((s) => s.completeLesson);
@@ -720,6 +735,14 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
 
           {/* STEP 4: Interactive Practice Card (ONE AT A TIME + TWIST + SEAMLESS RETRY QUEUE) */}
           {currentSegment === "practice" && (twistPhase ? lesson.twist : currentExercise) && (
+            <LazyLoadBoundary label="this exercise">
+              <React.Suspense
+                fallback={
+                  <div className="py-10 text-center font-mono text-xs text-[var(--sub-color)]" role="status">
+                    loading exercise…
+                  </div>
+                }
+              >
             <div className="space-y-4 animate-in fade-in duration-200">
               {/* TM-4b whisper-cue: pacing/framing micro-line, at most twice per lesson */}
               {!inRetryPhase &&
@@ -932,6 +955,8 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                 )}
               </div>
             </div>
+            </React.Suspense>
+            </LazyLoadBoundary>
           )}
 
           {/* STEP 5: Summary & Retries */}
