@@ -6,22 +6,15 @@ import { usePathname } from "next/navigation";
 import { Compass, Info, Map, RotateCcw, Sliders, Table2 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { getDueCards } from "@/lib/srs";
-import { prefetchAtlasContent, prefetchReviewContent } from "@/lib/content-client";
 
 export const BottomNav: React.FC = () => {
   const pathname = usePathname();
   const srsCards = useAppStore((s) => s.srsCards);
-  const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
 
   const dueCount = mounted ? getDueCards(srsCards).length : 0;
-
-  const prefetch = (href: string) => {
-    if (href === "/atlas") prefetchAtlasContent(activeLanguageId);
-    else if (href === "/review") prefetchReviewContent(activeLanguageId);
-  };
 
   // Lesson pages own the whole mobile viewport: the dock was covering the
   // forward action, so taps landed on Review instead of advancing the lesson.
@@ -57,9 +50,6 @@ export const BottomNav: React.FC = () => {
                 key={tab.href}
                 href={tab.href}
                 aria-current={tab.isActive ? "page" : undefined}
-                onPointerEnter={() => prefetch(tab.href)}
-                onTouchStart={() => prefetch(tab.href)}
-                onFocus={() => prefetch(tab.href)}
                 className={`relative flex flex-col items-center justify-center min-w-[56px] sm:min-w-[68px] py-1 px-2 rounded-xl transition ${
                   tab.isActive
                     ? "bg-[var(--main-color)]/12 text-[var(--main-color)] font-bold"

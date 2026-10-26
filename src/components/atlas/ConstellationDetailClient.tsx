@@ -20,19 +20,9 @@ interface ConstellationDetailClientProps {
    * family belonging to another atlas must still render a real page.
    */
   ownerLanguageIds: string[];
-  /**
-   * The owning family's identity, resolved on the server. The compendium JSON
-   * is fetched on the client, so without this the prerendered HTML for a
-   * family page was a loading skeleton with no heading or description.
-   */
-  serverFamily?: { symbol: string; name: string; phonetic_rule: string };
 }
 
-export function ConstellationDetailClient({
-  familyId,
-  ownerLanguageIds,
-  serverFamily,
-}: ConstellationDetailClientProps) {
+export function ConstellationDetailClient({ familyId, ownerLanguageIds }: ConstellationDetailClientProps) {
   const [isDrillOpen, setIsDrillOpen] = useState(false);
   const [rosterQuery, setRosterQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(60);
@@ -67,33 +57,8 @@ export function ConstellationDetailClient({
 
   if (!activeCompendium.data || !ownerCompendium.data) {
     return (
-      <div className="max-w-5xl mx-auto px-4 py-8 space-y-6 font-sans">
-        <div className="space-y-2">
-          <Link
-            href="/atlas"
-            className="inline-flex items-center gap-1.5 text-xs font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] transition"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" /> back to atlas
-          </Link>
-          {serverFamily && (
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono text-[var(--main-color)] font-bold px-2 py-0.5 rounded bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25">
-                  {serverFamily.symbol}
-                </span>
-                <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-color)] tracking-tight">
-                  {serverFamily.name}
-                </h1>
-              </div>
-              <p className="text-xs sm:text-sm text-[var(--sub-color)] mt-0.5 font-mono">
-                {serverFamily.phonetic_rule}
-              </p>
-            </div>
-          )}
-        </div>
-        <div className="max-w-xl mx-auto py-10 text-center font-mono" role="status">
-          <p className="text-sm text-[var(--sub-color)]">loading constellation…</p>
-        </div>
+      <div className="max-w-xl mx-auto px-4 py-20 text-center font-mono" role="status">
+        <p className="text-sm text-[var(--sub-color)]">loading constellation…</p>
       </div>
     );
   }

@@ -19,7 +19,7 @@ import { GermanCharBar } from "@/components/common/GermanCharBar";
 import { VoiceStatusBanner } from "@/components/common/VoiceStatusBanner";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
-import { arrangeTilesDeterministically } from "./exercise-tiles";
+import { arrangeTilesDeterministically } from "./ExerciseWidgets";
 import { evaluateAnswerAccuracy } from "@/lib/letter-diff";
 import { diagnoseAttempt, affirmationFor } from "@/lib/shift-diagnosis";
 import { DIAGNOSIS_BY_LANGUAGE, GERMAN_DIAGNOSIS } from "@/data/shift-diagnosis-table";

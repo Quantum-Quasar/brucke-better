@@ -27,15 +27,6 @@ function getOwnerLanguageIds(familyId: string): string[] {
   ).map(([languageId]) => languageId);
 }
 
-/** The first authored family with this id, shared by metadata and the page. */
-function resolveFamily(familyId: string) {
-  for (const [languageId, compendium] of COMPENDIA_BY_LANGUAGE) {
-    const match = getAtlasFamilies(compendium).find((entry) => entry.id === familyId);
-    if (match) return { languageId, family: match };
-  }
-  return null;
-}
-
 // Union across languages: each compendium owns its family ids and the client
 // resolves the id against the active language's data, so one static page per
 // family id serves every course.
@@ -55,12 +46,14 @@ interface PageProps {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { family } = await params;
-  const resolved = resolveFamily(family);
-  if (resolved) {
-    return {
-      title: `${resolved.family.name} — Atlas — Brücke`,
-      description: resolved.family.phonetic_rule,
-    };
+  for (const [, compendium] of COMPENDIA_BY_LANGUAGE) {
+    const match = getAtlasFamilies(compendium).find((entry) => entry.id === family);
+    if (match) {
+      return {
+        title: `${match.name} — Atlas — Brücke`,
+        description: match.phonetic_rule,
+      };
+    }
   }
   return { title: "Atlas — Brücke" };
 }
@@ -71,20 +64,5 @@ export default async function ConstellationDetailPage({ params }: PageProps) {
   // Unknown ids already 404 via dynamicParams = false; this guards the case of
   // a family that no authored compendium actually defines.
   if (ownerLanguageIds.length === 0) notFound();
-  const resolved = resolveFamily(family);
-  return (
-    <ConstellationDetailClient
-      familyId={family}
-      ownerLanguageIds={ownerLanguageIds}
-      serverFamily={
-        resolved
-          ? {
-              symbol: resolved.family.symbol,
-              name: resolved.family.name,
-              phonetic_rule: resolved.family.phonetic_rule,
-            }
-          : undefined
-      }
-    />
-  );
+  return <ConstellationDetailClient familyId={family} ownerLanguageIds={ownerLanguageIds} />;
 }

@@ -9,7 +9,7 @@ import React, { useState, useEffect } from "react";
 import { Check, Sparkles } from "lucide-react";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
-import { arrangeTilesDeterministically } from "./exercise-tiles";
+import { arrangeTilesDeterministically } from "./ExerciseWidgets";
 import { evaluateAnswerAccuracy } from "@/lib/letter-diff";
 import { affirmationFor } from "@/lib/shift-diagnosis";
 import { useAppStore } from "@/lib/store";
