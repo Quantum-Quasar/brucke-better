@@ -119,3 +119,17 @@ export function useCompendium(languageId: string): AsyncContent<CompendiumData> 
 export function useLessonIndex(languageId: string): AsyncContent<LessonIndexEntry[]> {
   return useResource(`lesson-index:${languageId}`, loadLessonIndexKey);
 }
+
+/**
+ * Warm the JSON a route will need when the learner shows intent (hover, touch,
+ * keyboard focus). Failures are swallowed: the route's own loader still reports
+ * them with a retry affordance.
+ */
+export function prefetchReviewContent(languageId: string): void {
+  void loadCompendium(languageId).catch(() => {});
+  void loadLessonIndex(languageId).catch(() => {});
+}
+
+export function prefetchAtlasContent(languageId: string): void {
+  void loadCompendium(languageId).catch(() => {});
+}

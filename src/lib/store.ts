@@ -10,7 +10,7 @@ import { applyFont, DEFAULT_FONT } from "@/data/fonts";
 import { type CustomizationSettings, DEFAULT_SETTINGS } from "@/data/settings";
 import { DEFAULT_LANGUAGE_ID, getLanguageDefinition, isValidLanguageId } from "@/data/languages";
 import { applyAppearanceSettings } from "./appearance";
-import { soundEngine } from "./sound";
+import { soundEngine, preloadClickSoundOnFirstInteraction } from "./sound";
 import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "./storage-keys";
 
 export interface ToleranceSettings {
@@ -1540,7 +1540,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       const latestSettings = useAppStore.getState().settings;
       applyAppearanceSettings(latestSettings);
       if (latestSettings.playSoundOnClick !== "off") {
-        void soundEngine.preloadClickSound(latestSettings.playSoundOnClick);
+        preloadClickSoundOnFirstInteraction(latestSettings.playSoundOnClick);
       }
     } else if (!hasAutoOpenedOnboarding) {
       // Clean slate first-time user: trigger onboarding (once per page load)!
