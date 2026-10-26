@@ -3,12 +3,12 @@
 import React from "react";
 import { ShiftPair } from "@/components/common/ShiftPair";
 import { useAppStore } from "@/lib/store";
-import { getLanguageContent, EMPTY_COMPENDIUM } from "@/data/language-content";
 import { hashSeed, mulberry32 } from "@/lib/prng";
-import type { ShiftFamily } from "@/lib/types";
+import type { CompendiumData, ShiftFamily } from "@/lib/types";
 
 interface ConstellationWebProps {
   family: ShiftFamily;
+  data: CompendiumData;
   onPracticeBranch: () => void;
 }
 
@@ -137,14 +137,13 @@ function buildWeb(
 
 export const ConstellationWeb: React.FC<ConstellationWebProps> = ({
   family,
+  data,
   onPracticeBranch,
 }) => {
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => {
     setMounted(true);
   }, []);
-  const activeLanguageId = useAppStore((s) => s.activeLanguageId);
-  const data = getLanguageContent(activeLanguageId).compendium ?? EMPTY_COMPENDIUM;
   const persistedMastery = useAppStore((s) => s.wordMastery);
   const openWordDrawer = useAppStore((s) => s.openWordDrawer);
   // keep mastery-derived classes/counts at defaults on the hydrating render so SSG

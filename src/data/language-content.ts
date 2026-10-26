@@ -8,30 +8,20 @@
 // bundle here and flipping its status to "available" in languages.ts.
 
 import { compendium as germanCompendium } from "./compendium";
-import { TOPICS, TRAIL_BRANCHES, TRAIL_GATES, TOTAL_TOPICS } from "./curriculum";
 import { LESSONS as GERMAN_LESSONS } from "./lessons";
-import germanInsights from "./insights.json";
 import { frenchCompendium } from "./french/compendium-fr";
-import { FR_TOPICS, FR_TRAIL_BRANCHES, FR_TRAIL_GATES, FR_TOTAL_TOPICS } from "./french/curriculum-fr";
 import { FR_LESSONS } from "./french/lessons-fr";
-import { FRENCH_INSIGHTS } from "./french/insights-fr";
 import { spanishCompendium } from "./spanish/compendium-es";
-import { ES_TOPICS, ES_TRAIL_BRANCHES, ES_TRAIL_GATES, ES_TOTAL_TOPICS } from "./spanish/curriculum-es";
 import { ES_LESSONS } from "./spanish/lessons-es";
-import { SPANISH_INSIGHTS } from "./spanish/insights-es";
+import { getCurriculum } from "./curriculum-registry";
+import { getInsights } from "./insights-registry";
+import { EMPTY_COMPENDIUM } from "./empty-compendium";
 import type { CompendiumData, DailyInsight, Lesson } from "@/lib/types";
-import type { LessonShell, TrailBranch, TrailGate, TopicCluster } from "@/lib/types";
+import type { TrailBranch, TrailGate, TopicCluster } from "@/lib/types";
 import { DEFAULT_LANGUAGE_ID } from "./languages";
 
 /** A compendium-shaped bundle with nothing in it (for coming-soon languages). */
-export const EMPTY_COMPENDIUM: CompendiumData = {
-  words: {},
-  wordList: [],
-  shifts: {},
-  compounds: [],
-  falseFriends: [],
-  dailyInsights: [],
-};
+export { EMPTY_COMPENDIUM } from "./empty-compendium";
 
 export interface LanguageContent {
   compendium: CompendiumData | null;
@@ -53,35 +43,26 @@ const EMPTY_CONTENT: LanguageContent = {
   insights: [],
 };
 
-const GERMAN_CONTENT: LanguageContent = {
-  compendium: germanCompendium,
-  topics: TOPICS,
-  trailBranches: TRAIL_BRANCHES,
-  trailGates: TRAIL_GATES,
-  totalTopics: TOTAL_TOPICS,
-  lessons: GERMAN_LESSONS,
-  insights: germanInsights as DailyInsight[],
-};
+function buildContent(
+  languageId: string,
+  compendium: CompendiumData | null,
+  lessons: Lesson[]
+): LanguageContent {
+  const curriculum = getCurriculum(languageId);
+  return {
+    compendium,
+    topics: curriculum.topics,
+    trailBranches: curriculum.trailBranches,
+    trailGates: curriculum.trailGates,
+    totalTopics: curriculum.totalTopics,
+    lessons,
+    insights: getInsights(languageId),
+  };
+}
 
-const FRENCH_CONTENT: LanguageContent = {
-  compendium: frenchCompendium,
-  topics: FR_TOPICS,
-  trailBranches: FR_TRAIL_BRANCHES,
-  trailGates: FR_TRAIL_GATES,
-  totalTopics: FR_TOTAL_TOPICS,
-  lessons: FR_LESSONS,
-  insights: FRENCH_INSIGHTS,
-};
-
-const SPANISH_CONTENT: LanguageContent = {
-  compendium: spanishCompendium,
-  topics: ES_TOPICS,
-  trailBranches: ES_TRAIL_BRANCHES,
-  trailGates: ES_TRAIL_GATES,
-  totalTopics: ES_TOTAL_TOPICS,
-  lessons: ES_LESSONS,
-  insights: SPANISH_INSIGHTS,
-};
+const GERMAN_CONTENT = buildContent("de", germanCompendium, GERMAN_LESSONS);
+const FRENCH_CONTENT = buildContent("fr", frenchCompendium, FR_LESSONS);
+const SPANISH_CONTENT = buildContent("es", spanishCompendium, ES_LESSONS);
 
 const CONTENT_MAP: Record<string, LanguageContent> = {
   de: GERMAN_CONTENT,
@@ -113,42 +94,4 @@ export function getTotalWordCount(languageId: string): number {
 /** Convenience for the default (German) content, for German-specific tooling. */
 export const DEFAULT_CONTENT: LanguageContent = getLanguageContent(DEFAULT_LANGUAGE_ID);
 
-/**
- * The spine topic that owns a trail node — core, sprig or branch lesson.
- * Sprig ids follow `topicId * 100 + index`; branch lessons belong to the
- * topic their branch attaches to. Returns null for ids outside the trail.
- */
-function owningTopicId(content: LanguageContent, nodeId: number): number | null {
-  for (const topic of content.topics) {
-    if (topic.core.id === nodeId) return topic.id;
-    if (topic.sprigs.some((sprig) => sprig.id === nodeId)) return topic.id;
-  }
-  for (const branch of content.trailBranches) {
-    if (branch.lessons.some((lesson) => lesson.id === nodeId)) {
-      const attachTopic = content.topics.find((topic) => topic.core.id === branch.attach);
-      return attachTopic ? attachTopic.id : null;
-    }
-  }
-  // Unlisted sprig ids still decode arithmetically (index 0 is not a node).
-  const series = Math.floor(nodeId / 100);
-  if (series >= 1 && series <= content.totalTopics && nodeId % 100 !== 0) return series;
-  return null;
-}
-
-/**
- * Next authored spine core after the node, in the active language's own
- * curriculum (null = caught up). A sprig or branch lesson answers with the
- * core of the *following* topic; a core answers with the next core; only the
- * last topic returns null.
- */
-export function getNextPlayableLessonIdFor(languageId: string, currentId: number): number | null {
-  const content = getLanguageContent(languageId);
-  const owner = owningTopicId(content, currentId);
-  if (owner === null) return null;
-  for (const topic of content.topics) {
-    if (topic.id > owner && topic.id <= content.totalTopics && topic.core.authored) {
-      return topic.core.id;
-    }
-  }
-  return null;
-}
+export { getNextPlayableLessonIdFor } from "./curriculum-registry";

@@ -8,7 +8,7 @@ import { BranchDrillModal } from "@/components/atlas/BranchDrillModal";
 import { ShiftPair } from "@/components/common/ShiftPair";
 import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
-import { getLanguageContent, EMPTY_COMPENDIUM } from "@/data/language-content";
+import { useCompendium } from "@/lib/content-client";
 import { getAtlasFamily, UNSHIFTED_FAMILY_ID } from "@/lib/atlas-families";
 import type { ShiftFamily } from "@/lib/types";
 
@@ -28,23 +28,54 @@ export function ConstellationDetailClient({ familyId, ownerLanguageIds }: Conste
   const [visibleCount, setVisibleCount] = useState(60);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const setActiveLanguage = useAppStore((s) => s.setActiveLanguage);
-  const data = getLanguageContent(activeLanguageId).compendium ?? EMPTY_COMPENDIUM;
+  // A shared family URL may belong to another course. When the active course
+  // owns it we reuse the same compendium (the loader dedupes); otherwise fetch
+  // the owning course so the fallback preview is real.
+  const ownerLanguageId = ownerLanguageIds.includes(activeLanguageId)
+    ? activeLanguageId
+    : ownerLanguageIds[0] ?? activeLanguageId;
+  const activeCompendium = useCompendium(activeLanguageId);
+  const ownerCompendium = useCompendium(ownerLanguageId);
 
+  if (activeCompendium.error || ownerCompendium.error) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-20 text-center space-y-4 font-mono" role="alert">
+        <p className="text-sm text-[var(--sub-color)]">atlas data could not be loaded.</p>
+        <button
+          type="button"
+          onClick={() => {
+            activeCompendium.retry();
+            ownerCompendium.retry();
+          }}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold text-xs"
+        >
+          <Info className="w-3.5 h-3.5" /> retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!activeCompendium.data || !ownerCompendium.data) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-20 text-center font-mono" role="status">
+        <p className="text-sm text-[var(--sub-color)]">loading constellation…</p>
+      </div>
+    );
+  }
+
+  const data = activeCompendium.data;
   const family: ShiftFamily | undefined = getAtlasFamily(data, familyId || "");
 
   if (!family) {
     // The active atlas does not own this route. Show the owning language's
     // family metadata and offer to switch, so a shared URL (or a prerendered
     // page for another atlas) is never a dead end.
-    const ownerLanguageId = ownerLanguageIds.find((id) => id !== activeLanguageId) ?? ownerLanguageIds[0];
-    const ownerLanguage = ownerLanguageId ? getLanguageDefinition(ownerLanguageId) : null;
-    const ownerCompendium = ownerLanguageId
-      ? (getLanguageContent(ownerLanguageId).compendium ?? EMPTY_COMPENDIUM)
-      : EMPTY_COMPENDIUM;
-    const ownerFamily = ownerLanguageId ? getAtlasFamily(ownerCompendium, familyId) : undefined;
+    const ownerLanguage = getLanguageDefinition(ownerLanguageId);
+    const ownerData = ownerCompendium.data;
+    const ownerFamily = getAtlasFamily(ownerData, familyId);
     const ownerWords = ownerFamily
       ? ownerFamily.word_ids
-          .map((id) => ownerCompendium.words[id])
+          .map((id) => ownerData.words[id])
           .filter(Boolean)
           .slice(0, 6)
       : [];
@@ -164,7 +195,7 @@ export function ConstellationDetailClient({ familyId, ownerLanguageIds }: Conste
       </div>
 
       {/* Web Constellation (Desktop) & List (Mobile) */}
-      <ConstellationWeb family={family} onPracticeBranch={() => setIsDrillOpen(true)} />
+      <ConstellationWeb family={family} data={data} onPracticeBranch={() => setIsDrillOpen(true)} />
 
       {/* Philological & Historical Linguistics Deep-Dive */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -263,6 +294,7 @@ export function ConstellationDetailClient({ familyId, ownerLanguageIds }: Conste
       {/* 5-Question Branch Practice Drill Modal */}
       <BranchDrillModal
         family={family}
+        data={data}
         isOpen={isDrillOpen}
         onClose={() => setIsDrillOpen(false)}
       />

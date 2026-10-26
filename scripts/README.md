@@ -1,8 +1,8 @@
 # `scripts/`
 
 Build and audit tooling. Nothing here is imported by the app at runtime — `bun run
-build` calls one of these (`parse-compendium.ts`) before `next build`, the rest are
-run by hand.
+build` calls `parse-compendium.ts` and `export-client-data.ts` before `next build`,
+the rest are run by hand.
 
 ---
 
@@ -11,6 +11,7 @@ run by hand.
 | Script | Run via | What it does |
 | --- | --- | --- |
 | `parse-compendium.ts` | `bun run parse-data` | **The one script that must run before `next build`.** Parses [`word_connections.md`](../word_connections.md) into `src/data/compendium.json` and `src/data/insights.json`. |
+| `export-client-data.ts` | `bun run export-data` | Exports each language's compendium and compact lesson index to `public/data/<lang>/`, plus the generated `src/data/shift-names.json`. `dev` and `build` run it automatically. |
 | `append-words.mjs` | `bun scripts/append-words.mjs <json…>` | Batch-appends verified records to §2 of `word_connections.md` (numbered after the current max; dedupes by German headword). Run `parse-data` afterwards. |
 
 `word_connections.md` is the hand-maintained source of truth for every word,

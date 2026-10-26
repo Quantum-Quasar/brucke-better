@@ -3,17 +3,11 @@
 // ponytail: comprehensive bite-sized exercise widget with tile assembly, matching cards, empty input protection, and error sheet
 
 import React, { useState, useEffect, useRef } from "react";
+import dynamic from "next/dynamic";
 import { Check, AlertCircle, Sparkles } from "lucide-react";
 import { GermanCharBar } from "@/components/common/GermanCharBar";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
-import { TranscribeExercise } from "./TranscribeExercise";
-import { LiteralGloss } from "./LiteralGloss";
-import { DictationExercise } from "./DictationExercise";
-import { FamilyMatrixExercise } from "./FamilyMatrixExercise";
-import { VariantEnglishExercise } from "./VariantEnglishExercise";
-import { PronounCompressionExercise } from "./PronounCompressionExercise";
-import { SpokenTurnReplyExercise } from "./SpokenTurnReplyExercise";
 import { evaluateAnswerAccuracy, evaluateBestOf } from "@/lib/letter-diff";
 import { matchingPairForKey } from "@/lib/matching";
 import { diagnoseAttempt, affirmationFor } from "@/lib/shift-diagnosis";
@@ -21,6 +15,43 @@ import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
 import { soundEngine } from "@/lib/sound";
 import type { ExerciseDiagnosis, ExerciseItem } from "@/lib/types";
+
+// Each exercise type is its own chunk: a lesson only downloads the widgets it
+// can actually meet, instead of every widget up front.
+const ExerciseLoading = () => (
+  <div className="py-10 text-center font-mono text-xs text-[var(--sub-color)]" role="status">
+    loading exercise…
+  </div>
+);
+
+const TranscribeExercise = dynamic(
+  () => import("./TranscribeExercise").then((module) => module.TranscribeExercise),
+  { loading: ExerciseLoading }
+);
+const LiteralGloss = dynamic(
+  () => import("./LiteralGloss").then((module) => module.LiteralGloss),
+  { loading: ExerciseLoading }
+);
+const DictationExercise = dynamic(
+  () => import("./DictationExercise").then((module) => module.DictationExercise),
+  { loading: ExerciseLoading }
+);
+const FamilyMatrixExercise = dynamic(
+  () => import("./FamilyMatrixExercise").then((module) => module.FamilyMatrixExercise),
+  { loading: ExerciseLoading }
+);
+const VariantEnglishExercise = dynamic(
+  () => import("./VariantEnglishExercise").then((module) => module.VariantEnglishExercise),
+  { loading: ExerciseLoading }
+);
+const PronounCompressionExercise = dynamic(
+  () => import("./PronounCompressionExercise").then((module) => module.PronounCompressionExercise),
+  { loading: ExerciseLoading }
+);
+const SpokenTurnReplyExercise = dynamic(
+  () => import("./SpokenTurnReplyExercise").then((module) => module.SpokenTurnReplyExercise),
+  { loading: ExerciseLoading }
+);
 
 /** Deterministic 32-bit FNV-1a hash — SSR-safe and stable across renders. */
 function hashSeed(input: string): number {

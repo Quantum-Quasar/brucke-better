@@ -5,18 +5,18 @@ import { X, Check } from "lucide-react";
 import { ExerciseWidget } from "@/components/lesson/ExerciseWidgets";
 import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
-import { getLanguageContent, EMPTY_COMPENDIUM } from "@/data/language-content";
 import { generateMCQOptions, generateWordTiles } from "@/lib/review-modes";
-import type { ShiftFamily, ExerciseItem } from "@/lib/types";
+import type { CompendiumData, ShiftFamily, ExerciseItem } from "@/lib/types";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
 
 interface BranchDrillModalProps {
   family: ShiftFamily;
+  data: CompendiumData;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const BranchDrillModal: React.FC<BranchDrillModalProps> = ({ family, isOpen, onClose }) => {
+export const BranchDrillModal: React.FC<BranchDrillModalProps> = ({ family, data, isOpen, onClose }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
@@ -24,7 +24,6 @@ export const BranchDrillModal: React.FC<BranchDrillModalProps> = ({ family, isOp
   const dialogRef = useRef<HTMLDivElement>(null);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
-  const data = getLanguageContent(activeLanguageId).compendium ?? EMPTY_COMPENDIUM;
 
   useDialogFocus({
     open: isOpen,

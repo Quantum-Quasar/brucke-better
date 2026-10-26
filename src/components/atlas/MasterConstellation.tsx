@@ -3,7 +3,8 @@
 import React from "react";
 import { Minus, Plus, RotateCcw, X } from "lucide-react";
 import { useAppStore } from "@/lib/store";
-import { getLanguageContent, EMPTY_COMPENDIUM } from "@/data/language-content";
+import { useCompendium } from "@/lib/content-client";
+import { EMPTY_COMPENDIUM } from "@/data/empty-compendium";
 import { buildMasterGraph, type MasterNode } from "@/lib/master-graph";
 
 const WIDTH = 2600;
@@ -32,7 +33,8 @@ export const MasterConstellation: React.FC = () => {
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
-  const data = getLanguageContent(activeLanguageId).compendium ?? EMPTY_COMPENDIUM;
+  const compendium = useCompendium(activeLanguageId);
+  const data = compendium.data ?? EMPTY_COMPENDIUM;
   const wordMastery = useAppStore((s) => s.wordMastery);
   const openWordDrawer = useAppStore((s) => s.openWordDrawer);
 
@@ -101,6 +103,33 @@ export const MasterConstellation: React.FC = () => {
   };
 
   const resetZoom = () => setZoom(fitZoom());
+
+  if (compendium.error) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center p-8 text-center font-mono" role="alert">
+        <div className="space-y-3">
+          <p className="text-xs text-[var(--sub-color)]">atlas data could not be loaded.</p>
+          <button
+            type="button"
+            onClick={compendium.retry}
+            className="px-3 py-1.5 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold text-xs"
+          >
+            retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!compendium.data) {
+    return (
+      <div className="absolute inset-0 flex items-center justify-center p-8">
+        <p className="text-xs font-mono text-[var(--sub-color)]" role="status">
+          loading the master web…
+        </p>
+      </div>
+    );
+  }
 
   if (!data.wordList.length) {
     return (

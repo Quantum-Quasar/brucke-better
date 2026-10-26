@@ -7,7 +7,8 @@ import { DailyInsightCard } from "@/components/common/DailyInsightCard";
 import { TrailMap } from "@/components/trail/TrailMap";
 import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
-import { getLanguageContent } from "@/data/language-content";
+import { getCurriculum } from "@/data/curriculum-registry";
+import { getInsights } from "@/data/insights-registry";
 import { lessonHref } from "@/lib/routes";
 import type { DailyInsight } from "@/lib/types";
 
@@ -21,8 +22,8 @@ export default function HomePage() {
   const storeHydrated = useAppStore((s) => s.storeHydrated);
 
   const language = getLanguageDefinition(activeLanguageId);
-  const content = getLanguageContent(activeLanguageId);
-  const dailyInsights = content.insights as DailyInsight[];
+  const curriculum = getCurriculum(activeLanguageId);
+  const dailyInsights = getInsights(activeLanguageId) as DailyInsight[];
 
   useEffect(() => {
     setInsightIndex(new Date().getDate() % (dailyInsights.length || 1));
@@ -45,14 +46,14 @@ export default function HomePage() {
   // The lessons array is grouped by kind, not trail order. Use the first
   // authored core topic so "Start topic 1" cannot point at a sprig/branch.
   const firstTopic =
-    content.topics.find((topic) => topic.core.authored) ?? content.topics[0] ?? null;
+    curriculum.topics.find((topic) => topic.core.authored) ?? curriculum.topics[0] ?? null;
   const firstLessonId = firstTopic?.core.id ?? 1;
   // Kept progress-independent on the server (empty default) so the landing
   // copy is in the first paint; the pre-paint script hides it for returning
   // learners and React removes it once progress hydrates.
   const isFirstVisit = completedLessons.length === 0 && !hasStartedLesson;
-  const lessonCount = content.lessons.length;
-  const topicCount = content.totalTopics;
+  const lessonCount = curriculum.lessonCount;
+  const topicCount = curriculum.totalTopics;
 
   const langLabel =
     activeLanguageId === "fr"

@@ -23,21 +23,24 @@ import { GenderBadge } from "@/components/common/GenderBadge";
 import { ExerciseWidget } from "./ExerciseWidgets";
 import { TwistCard } from "./TwistCard";
 import { useAppStore } from "@/lib/store";
-import { getNextPlayableLessonId } from "@/data/curriculum";
 import { whisperCuesForLesson } from "@/data/posture-cues";
 import { RETRY_INTENT_LINE, retryVariant } from "@/lib/retry-variation";
 import { isListeningSkipped, listeningSkipLabel } from "@/lib/listening";
 import { consciousnessLineFor } from "@/data/consciousness";
 import { getSoundImportsForLanguage, importLineFor, type SoundImport } from "@/data/sound-imports";
-import { getLanguageContent, EMPTY_COMPENDIUM, getNextPlayableLessonIdFor } from "@/data/language-content";
+import { getCurriculum, getNextPlayableLessonIdFor } from "@/data/curriculum-registry";
 import { getLanguageDefinition } from "@/data/languages";
 import { lessonHref } from "@/lib/routes";
-import type { Lesson, ExerciseItem } from "@/lib/types";
+import type { CompendiumData, Lesson, ExerciseItem } from "@/lib/types";
 
 interface LessonReaderProps {
   lesson: Lesson;
   /** Language of a language-scoped URL; falls back to the active course. */
   languageId?: string;
+  /** The lesson's words + the language's shift families, sliced on the server. */
+  compendium: CompendiumData;
+  /** Metadata for the next authored lesson, resolved on the server. */
+  nextLesson?: { id: number; title: string };
   /** Locked deep links can be walked as a preview, but must not change progress. */
   preview?: boolean;
 }
@@ -45,14 +48,15 @@ interface LessonReaderProps {
 export const LessonReader: React.FC<LessonReaderProps> = ({
   lesson,
   languageId,
+  compendium,
+  nextLesson: nextLessonMeta,
   preview = false,
 }) => {
   const router = useRouter();
   const storeLanguageId = useAppStore((s) => s.activeLanguageId);
   const activeLanguageId = languageId ?? storeLanguageId;
-  const languageContent = getLanguageContent(activeLanguageId);
-  const data = languageContent.compendium ?? EMPTY_COMPENDIUM;
-  const totalTopics = languageContent.totalTopics || 30;
+  const data = compendium;
+  const totalTopics = getCurriculum(activeLanguageId).totalTopics || 30;
   const genderSystem = getLanguageDefinition(activeLanguageId).genderSystem;
   const nextLessonId = React.useMemo(
     () => getNextPlayableLessonIdFor(activeLanguageId, lesson.id),
@@ -368,9 +372,7 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [preview, currentSegment, retryQueue.length, completedSegments, languageId, storeLanguageId]);
 
-  const nextLesson = nextLessonId
-    ? languageContent.lessons.find((candidate) => candidate.id === nextLessonId)
-    : undefined;
+  const nextLesson = nextLessonId ? nextLessonMeta : undefined;
 
   const markSegmentDone = (seg: LessonSegment, nextSeg: LessonSegment) => {
     setCompletedSegments((prev) => Array.from(new Set([...prev, seg])));

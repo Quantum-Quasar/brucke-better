@@ -6,7 +6,7 @@ import { Compass, Search, ChevronRight } from "lucide-react";
 import { DonutChart } from "@/components/common/DonutChart";
 import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
-import { getLanguageContent, EMPTY_COMPENDIUM } from "@/data/language-content";
+import { useCompendium } from "@/lib/content-client";
 import { getAtlasFamilies } from "@/lib/atlas-families";
 
 export default function AtlasPage() {
@@ -15,11 +15,36 @@ export default function AtlasPage() {
   const wordMastery = useAppStore((s) => s.wordMastery);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
-  const data = getLanguageContent(activeLanguageId).compendium ?? EMPTY_COMPENDIUM;
+  const compendium = useCompendium(activeLanguageId);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  if (compendium.error) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-20 text-center space-y-4 font-mono" role="alert">
+        <p className="text-sm text-[var(--sub-color)]">atlas data could not be loaded.</p>
+        <button
+          type="button"
+          onClick={compendium.retry}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold text-xs"
+        >
+          <Compass className="w-3.5 h-3.5" /> retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!compendium.data) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-20 text-center font-mono" role="status">
+        <p className="text-sm text-[var(--sub-color)]">loading atlas…</p>
+      </div>
+    );
+  }
+
+  const data = compendium.data;
 
   const shiftList = getAtlasFamilies(data);
 

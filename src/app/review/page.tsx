@@ -51,9 +51,9 @@ import { playTargetAudio } from "@/lib/audio";
 import { computeLetterDiff, evaluateAnswerAccuracy } from "@/lib/letter-diff";
 import { soundEngine } from "@/lib/sound";
 import { getLanguageDefinition } from "@/data/languages";
-import { getLanguageContent, EMPTY_COMPENDIUM } from "@/data/language-content";
-import { getWordEntityMap, getSentenceEntities, getArticleEntities } from "@/lib/word-entities";
-import type { ReviewMode, SRSCard, WordEntity } from "@/lib/types";
+import { useCompendium, useLessonIndex } from "@/lib/content-client";
+import { buildWordEntityMaps } from "@/lib/word-entities-core";
+import type { CompendiumData, LessonIndexEntry, ReviewMode, SRSCard, WordEntity } from "@/lib/types";
 import type { ReviewSnapshot } from "@/lib/store";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
 
@@ -103,11 +103,57 @@ function undoGradeInStats(stats: ReviewSessionStats, grade: ReviewGrade): Review
 
 export default function ReviewPage() {
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
+  const compendium = useCompendium(activeLanguageId);
+  const lessonIndex = useLessonIndex(activeLanguageId);
+
+  if (compendium.error || lessonIndex.error) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-20 text-center space-y-4 font-mono" role="alert">
+        <p className="text-sm text-[var(--sub-color)]">
+          review data could not be loaded. check your connection and try again.
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            compendium.retry();
+            lessonIndex.retry();
+          }}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold text-xs"
+        >
+          <RefreshCw className="w-3.5 h-3.5" /> retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!compendium.data || !lessonIndex.data) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-20 text-center font-mono" role="status">
+        <p className="text-sm text-[var(--sub-color)]">loading review data…</p>
+      </div>
+    );
+  }
+
+  return (
+    <ReviewHub
+      key={activeLanguageId}
+      activeLanguageId={activeLanguageId}
+      data={compendium.data}
+      lessons={lessonIndex.data}
+    />
+  );
+}
+
+function ReviewHub({
+  activeLanguageId,
+  data,
+  lessons,
+}: {
+  activeLanguageId: string;
+  data: CompendiumData;
+  lessons: LessonIndexEntry[];
+}) {
   const language = getLanguageDefinition(activeLanguageId);
-  const content = getLanguageContent(activeLanguageId);
-  // coming-soon languages get an empty compendium; the page shows a
-  // construction notice instead of German content below
-  const data = content.compendium ?? EMPTY_COMPENDIUM;
   const [mounted, setMounted] = useState(false);
   const [activeDeck, setActiveDeck] = useState<DeckType | null>(null);
   // Seeded from the active compendium's first atlas family: German, French and
@@ -247,7 +293,11 @@ export default function ReviewPage() {
   }, [preferredReviewMode]);
 
   // Shared map keeps core words, compound calques, and false friends on the same detail path.
-  const allWordsMap: Record<string, WordEntity> = getWordEntityMap(activeLanguageId);
+  const wordEntityMaps = useMemo(
+    () => buildWordEntityMaps(activeLanguageId, data, lessons),
+    [activeLanguageId, data, lessons]
+  );
+  const allWordsMap: Record<string, WordEntity> = wordEntityMaps.entities;
 
   const compoundCards: SRSCard[] = useMemo(() => {
     const fallback = (): SRSCard => ({
@@ -288,10 +338,7 @@ export default function ReviewPage() {
     [compoundCards, learnedFilter, wordMastery, srsCards]
   );
 
-  const sentenceEntities: WordEntity[] = useMemo(
-    () => getSentenceEntities(activeLanguageId),
-    [activeLanguageId]
-  );
+  const sentenceEntities: WordEntity[] = wordEntityMaps.sentences;
 
   const sentenceCards: SRSCard[] = useMemo(() => {
     const completedSet = new Set(completedLessons);
@@ -309,10 +356,7 @@ export default function ReviewPage() {
     return filtered.map((s) => blankCard(s.id));
   }, [sentenceEntities, completedLessons, wordMastery, srsCards, learnedFilter, blankCard]);
 
-  const articleEntities: WordEntity[] = useMemo(
-    () => getArticleEntities(activeLanguageId),
-    [activeLanguageId]
-  );
+  const articleEntities: WordEntity[] = wordEntityMaps.articles;
 
   const articleCards: SRSCard[] = useMemo(() => {
     const filtered = articleEntities.filter((a) => {
@@ -446,12 +490,12 @@ export default function ReviewPage() {
   const recentWordIds = useMemo(
     () =>
       getRecentLessonWordIds(
-        content.lessons,
+        lessons,
         completedLessons,
         3,
         new Set(data.wordList.map((w) => w.id))
       ),
-    [content, completedLessons, data]
+    [lessons, completedLessons, data]
   );
 
   // 1-Click direct deck start
@@ -1059,7 +1103,7 @@ export default function ReviewPage() {
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <Link
-              href={lessonHref(activeLanguageId, content.lessons[0]?.id ?? 1)}
+              href={lessonHref(activeLanguageId, lessons[0]?.id ?? 1)}
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold text-xs font-mono hover:opacity-90 transition"
             >
               Start lesson 1 <ArrowRight className="w-3.5 h-3.5" />

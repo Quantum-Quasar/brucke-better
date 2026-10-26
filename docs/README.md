@@ -31,7 +31,7 @@ Rather than relying on rote memorization or gamified streaks without substance, 
 - **Styling**: Tailwind CSS v4 (native CSS tokens, dark mode default)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) 5 (dual `localStorage` + size-guarded cookie persistence)
 - **Icons**: Lucide React
-- **Testing**: Vitest 5 (`bun run test` → `vitest run`) — 36 test files, 357 automated tests. There is no `bun test` script. <!-- corrected 2026-09-30: was "Vitest / `bun test` (21 test suites, 119 automated tests)" — package.json:12 defines only "test": "vitest run"; counts updated 2026-10-03 with the whole-curriculum integrity, timezone-boundary, persistence-merging, and docs-drift suites -->
+- **Testing**: Vitest 5 (`bun run test` → `vitest run`) — 37 test files, 367 automated tests. There is no `bun test` script. <!-- corrected 2026-09-30: was "Vitest / `bun test` (21 test suites, 119 automated tests)" — package.json:12 defines only "test": "vitest run"; counts updated 2026-10-03 with the whole-curriculum integrity, timezone-boundary, persistence-merging, and docs-drift suites -->
 - **Audio Engine**: Two independent zero-dependency browser-native paths: `window.speechSynthesis` for German pronunciation (`de-DE`, 0.92x) and a Web Audio **sample** engine (`src/lib/sound.ts`) that decodes bundled Monkeytype mechanical-keyboard `.wav` packs with a 24-entry buffer cache and negative URL caching. <!-- corrected 2026-09-30: was "Web Audio click synthesizer" — there is no synthesis; src/lib/sound.ts:48-53 -->
 
 ---
@@ -54,7 +54,7 @@ bun run parse-data
 
 ### Run Automated Tests
 
-Executes the full Vitest suite — 36 test files, 357 automated tests: <!-- corrected 2026-09-30: was "119 unit and integration tests across 21 suites"; counts updated 2026-10-03 -->
+Executes the full Vitest suite — 37 test files, 367 automated tests: <!-- corrected 2026-09-30: was "119 unit and integration tests across 21 suites"; counts updated 2026-10-03 -->
 
 ```bash
 bun run test
@@ -198,7 +198,7 @@ src/
 │   ├── types.ts          # Core domain TypeScript interfaces
 │   ├── use-dialog-focus.ts # Shared Esc-to-close + focus-trap hook
 │   └── word-entities.ts  # Merges compounds + false friends onto the WordEntity map
-└── tests/                # 36 test files (Vitest) <!-- updated 2026-10-03: whole-curriculum integrity + timezone + persistence suites (was "24", already stale before) -->
+└── tests/                # 37 test files (Vitest) <!-- updated 2026-10-03: whole-curriculum integrity + timezone + persistence suites (was "24", already stale before) -->
 ```
 <!-- corrected 2026-09-30: tree previously omitted app/error.tsx, app/fonts.css, app/globals.css, components/settings/, data/compendium.ts, data/insights.json, lib/sound.ts, lib/appearance.ts, lib/word-entities.ts and lib/use-dialog-focus.ts; it also claimed 218 compendium words, lessons "ids 1–10", a "Footer" component that does not exist, "MapNode" (folded into TrailMap.tsx) and "(Vitest / Bun)". Updated 2026-10-03: 619 words, 128 lessons, lib/word-refs-audit.ts added. -->
 

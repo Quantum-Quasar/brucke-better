@@ -45,6 +45,17 @@ const nextConfig = {
           },
         ],
       },
+      {
+        // Fetched on demand per language. Not immutable: the URL stays stable
+        // across deploys, so revalidate hourly instead of pinning stale data.
+        source: "/data/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=3600, stale-while-revalidate=86400",
+          },
+        ],
+      },
     ];
   },
 };

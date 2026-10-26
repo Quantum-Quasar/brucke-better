@@ -424,6 +424,26 @@ export interface Lesson {
   };
 }
 
+/**
+ * The lesson metadata the client needs for review decks, sentence cards and
+ * the word drawer. Excludes prose and exercises, which the lesson route
+ * renders from the server instead.
+ */
+export interface LessonIndexEntry {
+  id: number;
+  slug: string;
+  title: string;
+  subtitle: string;
+  phase: number;
+  shift_categories: string[];
+  word_ids: string[];
+  table_word_ids: string[];
+  summary: {
+    use_example: { german: string; english: string };
+    takeaway: string;
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Baba-style Trail Map — curriculum shells & node graph
 // ---------------------------------------------------------------------------

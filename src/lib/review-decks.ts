@@ -3,7 +3,7 @@
 // the declarative DECK_CAPABILITIES registry where each deck declares which
 // ReviewModes it supports.
 
-import type { CompendiumData, Lesson, MasteryState, ReviewMode, SRSCard, WordEntity } from "./types";
+import type { CompendiumData, MasteryState, ReviewMode, SRSCard, WordEntity } from "./types";
 import { shuffleArray } from "./review-modes";
 import { getAtlasFamilies, getAtlasFamily } from "./atlas-families";
 
@@ -155,7 +155,7 @@ export function filterByLearned<T extends { id: string }>(
  * `completedLessons` is in completion order, so the tail is the most recent.
  */
 export function getRecentLessonWordIds(
-  lessons: Lesson[],
+  lessons: ReadonlyArray<{ id: number; word_ids: string[] }>,
   completedLessons: number[],
   lessonCount = 3,
   validIds?: Set<string>

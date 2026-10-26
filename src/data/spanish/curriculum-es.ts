@@ -515,6 +515,21 @@ export const ES_TRAIL_GATES: TrailGate[] = [
   },
 ];
 
-import { ES_LESSONS } from "./lessons-es";
+// Authored status lives on the shells, so curriculum consumers never pull the
+// full lesson bodies into their bundle.
+const ES_AUTHORED_SHELLS = new Map<number, LessonShell>();
+for (const topic of ES_TOPICS) {
+  if (topic.core.authored) ES_AUTHORED_SHELLS.set(topic.core.id, topic.core);
+  for (const sprig of topic.sprigs) {
+    if (sprig.authored) ES_AUTHORED_SHELLS.set(sprig.id, sprig);
+  }
+}
+for (const branch of ES_TRAIL_BRANCHES) {
+  for (const lesson of branch.lessons) {
+    if (lesson.authored) ES_AUTHORED_SHELLS.set(lesson.id, lesson);
+  }
+}
 
-export const getSpanishAuthoredLesson = (lessonId: number) => ES_LESSONS.find((l) => l.id === lessonId);
+export const ES_AUTHORED_LESSON_COUNT = ES_AUTHORED_SHELLS.size;
+
+export const getSpanishAuthoredLesson = (lessonId: number) => ES_AUTHORED_SHELLS.get(lessonId);

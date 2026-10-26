@@ -1,5 +1,4 @@
 import type { LessonShell, TopicCluster, TrailBranch, TrailGate } from "@/lib/types";
-import { LESSONS } from "./lessons";
 
 // ---------------------------------------------------------------------------
 // The Brücke Trail — 30 topics arranged as a linear spine of clusters.
@@ -741,9 +740,27 @@ export const TRAIL_GATES: TrailGate[] = [
 // Helpers
 // ---------------------------------------------------------------------------
 
-export const getAuthoredLesson = (lessonId: number) => LESSONS.find((l) => l.id === lessonId);
+// Authored status lives on the shells themselves, so this module stays light
+// enough for the trail map and landing page — importing LESSONS here used to
+// pull every lesson body into the client bundle.
+const AUTHORED_SHELLS = new Map<number, LessonShell>();
+for (const topic of TOPICS) {
+  if (topic.core.authored) AUTHORED_SHELLS.set(topic.core.id, topic.core);
+  for (const sprig of topic.sprigs) {
+    if (sprig.authored) AUTHORED_SHELLS.set(sprig.id, sprig);
+  }
+}
+for (const branch of TRAIL_BRANCHES) {
+  for (const lesson of branch.lessons) {
+    if (lesson.authored) AUTHORED_SHELLS.set(lesson.id, lesson);
+  }
+}
 
-export const isAuthoredNode = (nodeId: number) => Boolean(getAuthoredLesson(nodeId));
+export const AUTHORED_LESSON_COUNT = AUTHORED_SHELLS.size;
+
+export const getAuthoredLesson = (lessonId: number) => AUTHORED_SHELLS.get(lessonId);
+
+export const isAuthoredNode = (nodeId: number) => AUTHORED_SHELLS.has(nodeId);
 
 /** Next authored core lesson in spine order after the given one (null = caught up). */
 export const getNextPlayableLessonId = (currentId: number): number | null => {

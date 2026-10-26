@@ -6,7 +6,7 @@ import { ArrowRight, BookOpen, Check, Clock, GitBranch, Lock, Star } from "lucid
 import { useAppStore } from "@/lib/store";
 import { buildTrailEdgePairs, buildTrailLayout, getTrailState, GERMAN_TRAIL_DATA, type TrailData, type TrailNode, type NodeStatus, type GateView } from "@/lib/trail-map";
 import { getLanguageDefinition } from "@/data/languages";
-import { getLanguageContent } from "@/data/language-content";
+import { getCurriculum } from "@/data/curriculum-registry";
 import { lessonHref } from "@/lib/routes";
 import { LessonNodeDrawer, GateDrawer } from "./LessonNodeDrawer";
 
@@ -62,13 +62,13 @@ export const TrailMap: React.FC = () => {
   // the trail graph is language-scoped: German data by default, the French
   // bundle when French is active (see lib/trail-map.ts TrailData)
   const trailData: TrailData = useMemo(() => {
-    const content = getLanguageContent(activeLanguageId);
-    if (content.topics.length === 0) return GERMAN_TRAIL_DATA;
+    const curriculum = getCurriculum(activeLanguageId);
+    if (curriculum.topics.length === 0) return GERMAN_TRAIL_DATA;
     return {
-      topics: content.topics,
-      branches: content.trailBranches,
-      gates: content.trailGates,
-      totalTopics: content.totalTopics,
+      topics: curriculum.topics,
+      branches: curriculum.trailBranches,
+      gates: curriculum.trailGates,
+      totalTopics: curriculum.totalTopics,
     };
   }, [activeLanguageId]);
   const edgePairs = useMemo(() => buildTrailEdgePairs(trailData), [trailData]);

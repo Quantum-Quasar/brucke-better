@@ -515,6 +515,21 @@ export const FR_TRAIL_GATES: TrailGate[] = [
   },
 ];
 
-import { FR_LESSONS } from "./lessons-fr";
+// Authored status lives on the shells, so curriculum consumers never pull the
+// full lesson bodies into their bundle.
+const FR_AUTHORED_SHELLS = new Map<number, LessonShell>();
+for (const topic of FR_TOPICS) {
+  if (topic.core.authored) FR_AUTHORED_SHELLS.set(topic.core.id, topic.core);
+  for (const sprig of topic.sprigs) {
+    if (sprig.authored) FR_AUTHORED_SHELLS.set(sprig.id, sprig);
+  }
+}
+for (const branch of FR_TRAIL_BRANCHES) {
+  for (const lesson of branch.lessons) {
+    if (lesson.authored) FR_AUTHORED_SHELLS.set(lesson.id, lesson);
+  }
+}
 
-export const getFrenchAuthoredLesson = (lessonId: number) => FR_LESSONS.find((l) => l.id === lessonId);
+export const FR_AUTHORED_LESSON_COUNT = FR_AUTHORED_SHELLS.size;
+
+export const getFrenchAuthoredLesson = (lessonId: number) => FR_AUTHORED_SHELLS.get(lessonId);

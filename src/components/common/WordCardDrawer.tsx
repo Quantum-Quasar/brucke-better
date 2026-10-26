@@ -3,7 +3,7 @@
 // ponytail: native css slide-over drawer and mobile bottom sheet with zero heavy drawer libs
 
 import { ExampleSentence } from "@/components/common/ExampleSentence";
-import React, { useRef } from "react";
+import React, { useMemo, useRef } from "react";
 import Link from "next/link";
 import { X, ExternalLink, Compass, BookOpen, CheckCircle2, Circle, Disc, Minus, Volume2 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
@@ -11,37 +11,93 @@ import { GenderBadge } from "@/components/common/GenderBadge";
 import { playTargetAudio } from "@/lib/audio";
 import { getLanguageDefinition } from "@/data/languages";
 import { displayArticle } from "@/lib/gender";
-import { getLanguageContent, EMPTY_COMPENDIUM } from "@/data/language-content";
-import { getWordEntity, getWordLessonMap } from "@/lib/word-entities";
+import { useCompendium, useLessonIndex } from "@/lib/content-client";
+import { buildWordEntityMaps, lookupWordEntity } from "@/lib/word-entities-core";
 import { lessonHref } from "@/lib/routes";
-import type { WordEntity } from "@/lib/types";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
 
 export const WordCardDrawer: React.FC = () => {
   const activeWordId = useAppStore((s) => s.activeWordDrawerId);
+  if (!activeWordId) return null;
+  return <WordCardDrawerContent activeWordId={activeWordId} />;
+};
+
+const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordId }) => {
   const closeDrawer = useAppStore((s) => s.closeWordDrawer);
-  const mastery = useAppStore((s) => (activeWordId ? s.wordMastery[activeWordId] || "unexplored" : "unexplored"));
+  const mastery = useAppStore((s) =>
+    activeWordId ? s.wordMastery[activeWordId] || "unexplored" : "unexplored"
+  );
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
-  const languageContent = getLanguageContent(activeLanguageId);
-  const data = languageContent.compendium ?? EMPTY_COMPENDIUM;
+  const compendium = useCompendium(activeLanguageId);
+  const lessonIndex = useLessonIndex(activeLanguageId);
+  const wordEntityMaps = useMemo(
+    () =>
+      compendium.data
+        ? buildWordEntityMaps(activeLanguageId, compendium.data, lessonIndex.data ?? [])
+        : null,
+    [activeLanguageId, compendium.data, lessonIndex.data]
+  );
   const dialogRef = useRef<HTMLDivElement>(null);
 
   useDialogFocus({
-    open: Boolean(activeWordId),
+    open: true,
     containerRef: dialogRef,
     onEscape: closeDrawer,
   });
 
-  if (!activeWordId) return null;
+  if (compendium.error || lessonIndex.error) {
+    return (
+      <div ref={dialogRef} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Word details unavailable"
+          className="bg-[var(--bg-color)] border border-[var(--sub-color)]/30 p-6 rounded-lg max-w-sm w-full text-center space-y-3"
+        >
+          <p className="text-sm font-mono text-[var(--sub-color)]">word details could not be loaded.</p>
+          <button
+            onClick={closeDrawer}
+            className="px-4 py-1.5 bg-[var(--main-color)] text-[var(--bg-color)] font-mono font-bold rounded text-xs"
+          >
+            close
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-  const word: WordEntity | undefined = getWordEntity(activeWordId, activeLanguageId);
+  if (!compendium.data || !lessonIndex.data || !wordEntityMaps) {
+    return (
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Loading word details"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
+      >
+        <div className="bg-[var(--bg-color)] border border-[var(--sub-color)]/30 p-6 rounded-lg max-w-sm w-full text-center space-y-3">
+          <p className="text-sm font-mono text-[var(--sub-color)]" role="status">
+            loading word…
+          </p>
+          <button
+            onClick={closeDrawer}
+            className="px-4 py-1.5 bg-[var(--main-color)] text-[var(--bg-color)] font-mono font-bold rounded text-xs"
+          >
+            close
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const data = compendium.data;
+  const word = lookupWordEntity(wordEntityMaps, activeWordId);
 
   if (!word) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+      <div ref={dialogRef} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
         <div
-          ref={dialogRef}
           role="dialog"
           aria-modal="true"
           aria-label="Word details unavailable"
@@ -69,8 +125,10 @@ export const WordCardDrawer: React.FC = () => {
         : `${spokenArticle} ${word.target_word}`;
 
   const shiftFamily = word.sound_shift_ids[0] ? data.shifts[word.sound_shift_ids[0]] : null;
-  const lessonId = word ? getWordLessonMap(activeLanguageId)[word.id] : undefined;
-  const sourceLesson = lessonId ? languageContent.lessons.find((lesson) => lesson.id === lessonId) : undefined;
+  const lessonId = wordEntityMaps.wordLesson[word.id];
+  const sourceLesson = lessonId
+    ? lessonIndex.data.find((lesson) => lesson.id === lessonId)
+    : undefined;
   const lessonLabel = sourceLesson
     ? sourceLesson.id <= 30
       ? `Topic ${sourceLesson.id} — ${sourceLesson.title}`
@@ -114,13 +172,12 @@ export const WordCardDrawer: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end bg-black/80 transition-opacity animate-in fade-in duration-200">
+    <div ref={dialogRef} className="fixed inset-0 z-50 flex justify-end bg-black/80 transition-opacity animate-in fade-in duration-200">
       {/* Backdrop click to dismiss */}
       <div className="absolute inset-0" onClick={closeDrawer} />
 
       {/* Drawer Panel: Slide-over on desktop, bottom-sheet on mobile */}
       <div
-        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby="word-drawer-title"

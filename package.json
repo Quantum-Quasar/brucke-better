@@ -5,9 +5,10 @@
   "private": true,
   "scripts": {
     "parse-data": "bun run scripts/parse-compendium.ts",
+    "export-data": "bun run scripts/export-client-data.ts",
     "trail": "bun run scripts/export-trail.ts",
-    "dev": "next dev",
-    "build": "bun run parse-data && next build",
+    "dev": "bun run export-data && next dev",
+    "build": "bun run parse-data && bun run export-data && next build",
     "start": "next start",
     "test": "vitest run",
     "test:e2e": "playwright test",

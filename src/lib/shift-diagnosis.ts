@@ -10,9 +10,12 @@ import {
   GERMAN_DIAGNOSIS,
   type DiagnosisRow,
 } from "@/data/shift-diagnosis-table";
-import { getCompendium } from "@/data/language-content";
+import shiftNamesJson from "@/data/shift-names.json";
 import { useAppStore } from "./store";
 import type { ExerciseDiagnosis } from "./types";
+
+type ShiftName = { id: string; symbol: string; name: string };
+const SHIFT_NAMES = shiftNamesJson as Record<string, ShiftName[]>;
 
 export type DiagnosisTable = Record<string, DiagnosisRow>;
 export type Diagnosis = ExerciseDiagnosis;
@@ -201,7 +204,7 @@ export function affirmationFor(
  */
 export function resolveShiftFamilyName(shiftHint: string, languageId?: string): string {
   const langId = resolveActiveLanguageId(languageId);
-  const families = Object.values(getCompendium(langId).shifts);
+  const families = SHIFT_NAMES[langId] ?? SHIFT_NAMES.de ?? [];
   const hint = shiftHint.trim();
   const hintLhs = hint.split("→")[0]?.trim().toUpperCase();
   let lhsMatch: string | null = null;

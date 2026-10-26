@@ -1,0 +1,121 @@
+"use client";
+
+// On-demand content loading. The heavy per-language data lives under
+// public/data and is fetched once per language, then shared from an in-memory
+// promise cache. Curriculum and insights stay bundled because they are small.
+
+import { useEffect, useState } from "react";
+import { EMPTY_COMPENDIUM } from "@/data/empty-compendium";
+import type { CompendiumData, LessonIndexEntry } from "@/lib/types";
+
+type CompendiumPayload = Omit<CompendiumData, "wordList">;
+
+const AVAILABLE_LANGUAGES = new Set(["de", "fr", "es"]);
+
+const cache = new Map<string, Promise<unknown>>();
+
+function loadJson<T>(url: string): Promise<T> {
+  const cached = cache.get(url) as Promise<T> | undefined;
+  if (cached) return cached;
+  const promise = fetch(url)
+    .then(async (response) => {
+      if (!response.ok) throw new Error(`failed to load ${url} (${response.status})`);
+      return (await response.json()) as T;
+    })
+    .catch((error: unknown) => {
+      cache.delete(url);
+      throw error;
+    });
+  cache.set(url, promise);
+  return promise;
+}
+
+export function loadCompendium(languageId: string): Promise<CompendiumData> {
+  if (!AVAILABLE_LANGUAGES.has(languageId)) return Promise.resolve(EMPTY_COMPENDIUM);
+  return loadJson<CompendiumPayload>(`/data/${languageId}/compendium.json`).then((payload) => ({
+    ...payload,
+    wordList: Object.values(payload.words),
+  }));
+}
+
+export function loadLessonIndex(languageId: string): Promise<LessonIndexEntry[]> {
+  if (!AVAILABLE_LANGUAGES.has(languageId)) return Promise.resolve([]);
+  return loadJson<LessonIndexEntry[]>(`/data/${languageId}/lesson-index.json`);
+}
+
+export interface AsyncContent<T> {
+  data: T | null;
+  error: Error | null;
+  loading: boolean;
+  retry: () => void;
+}
+
+function useResource<T>(key: string, load: (key: string) => Promise<T>): AsyncContent<T> {
+  const [state, setState] = useState<{
+    key: string;
+    data: T | null;
+    error: Error | null;
+    loading: boolean;
+  }>({ key, data: null, error: null, loading: true });
+  const [attempt, setAttempt] = useState(0);
+
+  useEffect(() => {
+    let cancelled = false;
+    setState({ key, data: null, error: null, loading: true });
+    load(key)
+      .then((data) => {
+        if (!cancelled) setState({ key, data, error: null, loading: false });
+      })
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setState({
+            key,
+            data: null,
+            error: error instanceof Error ? error : new Error(String(error)),
+            loading: false,
+          });
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [key, attempt, load]);
+
+  // Ignore a previous language's payload for the one render between a key
+  // change and the effect above resetting state.
+  const current = state.key === key;
+
+  return {
+    data: current ? state.data : null,
+    error: current ? state.error : null,
+    loading: current ? state.loading : true,
+    retry: () => {
+      clearContentCache(key);
+      setAttempt((value) => value + 1);
+    },
+  };
+}
+
+function clearContentCache(key: string) {
+  const separator = key.indexOf(":");
+  const kind = key.slice(0, separator);
+  const languageId = key.slice(separator + 1);
+  const file = kind === "compendium" ? "compendium.json" : "lesson-index.json";
+  cache.delete(`/data/${languageId}/${file}`);
+}
+
+function loadCompendiumKey(key: string): Promise<CompendiumData> {
+  return loadCompendium(key.slice("compendium:".length));
+}
+
+function loadLessonIndexKey(key: string): Promise<LessonIndexEntry[]> {
+  return loadLessonIndex(key.slice("lesson-index:".length));
+}
+
+export function useCompendium(languageId: string): AsyncContent<CompendiumData> {
+  return useResource(`compendium:${languageId}`, loadCompendiumKey);
+}
+
+export function useLessonIndex(languageId: string): AsyncContent<LessonIndexEntry[]> {
+  return useResource(`lesson-index:${languageId}`, loadLessonIndexKey);
+}
