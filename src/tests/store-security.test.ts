@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeAll, afterAll, beforeEach } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
 import { loadSavedState, saveState, useAppStore, STORAGE_KEY, STORAGE_COOKIE_KEY, getCookie } from "../lib/store";
 
 class LocalStorageMock {
@@ -68,13 +68,25 @@ describe("Store Persistence Security & Header Quota Bounds", () => {
         Array.from({ length: 300 }, (_, i) => [`long_german_compound_word_identifier_${i}`, "mastered"])
       ) as any,
     };
-    saveState(largeState);
+    // The full progress cookie is only written when localStorage fails; exercise
+    // that path so the size guard is actually tested instead of the tiny prefs
+    // cookie that normal writes produce.
+    const setItem = vi.spyOn(globalThis.localStorage, "setItem").mockImplementation(() => {
+      throw new Error("denied");
+    });
+    try {
+      saveState(largeState);
+    } finally {
+      setItem.mockRestore();
+    }
 
     const rawCookieVal = getCookie(STORAGE_COOKIE_KEY);
     expect(rawCookieVal).toBeTruthy();
     const encodedLength = encodeURIComponent(rawCookieVal!).length;
     // Cookie must be safely within RFC 6265 bounds (<= 2048 bytes)
     expect(encodedLength).toBeLessThanOrEqual(2048);
+    // An oversized progress payload degrades to the minimal prefs cookie
+    expect(JSON.parse(rawCookieVal!)).not.toHaveProperty("progressByLanguage");
   });
 
   it("rejects non-backup objects instead of reporting success", () => {

@@ -166,7 +166,7 @@ English and German are sibling West Germanic languages sharing over 60% of core 
 │   ├── data/
 │   │   ├── compendium.json    # 1226 words, 9 shifts, 32 compounds, 16 false friends, 28 insights
 │   │   └── lessons.ts         # All 169 authored lesson definitions, exercises, and clues
-│   └── tests/                 # 37 test files (Vitest) — whole-curriculum integrity, timezone boundaries, persistence merging, security
+│   └── tests/                 # 41 test files (Vitest) — whole-curriculum integrity, timezone boundaries, persistence merging, security
 │       ├── store.test.ts
 │       ├── exercises.test.ts
 │       ├── letter-diff.test.ts
@@ -217,7 +217,7 @@ All commands should be executed from `/home/shaurya/gemini-tmp/german-app-thinki
 # 1. Run Data Compilation Pipeline
 bun run parse-data
 
-# 2. Run All Automated Test Suites (37 test files / 375 tests)
+# 2. Run All Automated Test Suites (41 test files / 391 tests)
 bun run test
 
 # 3. Compile Production Build (Turbopack + SSG verification)
@@ -253,5 +253,5 @@ When auditing the codebase, verify:
   - State changes in Zustand persist to `localStorage`.
   - Cookie backup stays within safe browser limits (lean payload ≤ 2048 URL-encoded bytes).
 - [ ] **Build & Tests**:
-  - `bun run test` (Vitest) passes with 0 failures across all 37 test files (375 tests).
+  - `bun run test` (Vitest) passes with 0 failures across all 41 test files (391 tests).
   - `bun run build` generates all static pages (8 static routes + 28 atlas family pages + 178 lesson pages) without TypeScript or Turbopack errors.

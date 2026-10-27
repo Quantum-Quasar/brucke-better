@@ -115,7 +115,7 @@ describe("App Store & User Progress State", () => {
     expect(useAppStore.getState().tolerance.umlautDismissals).toBe(2);
   });
 
-  it("persists progress to both localStorage and local cookies", () => {
+  it("persists progress to localStorage and preferences to the cookie", () => {
     const store = useAppStore.getState();
     store.completeLesson(1);
     store.markWordMastered("Wasser");

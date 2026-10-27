@@ -132,4 +132,38 @@ test.describe("French and Spanish courses", () => {
     }, STORAGE_KEY);
     expect(state?.activeLanguageId).toBe("es");
   });
+
+  test("the French landing page loads its curriculum/insights and warms review on intent", async ({ page }) => {
+    await seed(page, "fr");
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    const dataRequests: string[] = [];
+    page.on("request", (request) => {
+      const url = new URL(request.url());
+      if (url.pathname.startsWith("/data/")) dataRequests.push(url.pathname);
+    });
+
+    await page.goto("/");
+
+    // the French trail and insight arrive from lazy chunks, not the JS bundle
+    await expect(page.locator("header")).toContainText(/french through english/i);
+    // the trail uses content-visibility windowing, so assert the French topic is
+    // mounted (and the German trail is not) rather than relying on viewport paint
+    await expect(page.getByText("The French Inside Your English").first()).toBeAttached();
+    await expect(page.getByText("The Germanic Core")).toHaveCount(0);
+    await expect(page.locator('aside[aria-label="Etymology note"]')).toBeVisible();
+
+    // review JSON is intent-only: nothing should be fetched just by landing
+    expect(dataRequests).toEqual([]);
+
+    await page
+      .getByRole("navigation", { name: /main navigation/i })
+      .getByRole("link", { name: /review/i })
+      .hover();
+    await expect.poll(() => dataRequests).toEqual(
+      expect.arrayContaining(["/data/fr/compendium.json", "/data/fr/lesson-index.json"])
+    );
+    expect(dataRequests.some((path) => path.includes("/data/de/"))).toBe(false);
+    expect(errors, `uncaught page errors: ${errors.join(" | ")}`).toEqual([]);
+  });
 });

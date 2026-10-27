@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import { THEMES, THEME_LIST, DEFAULT_THEME, POPULAR_THEMES, applyTheme, isColorDark, filterThemes } from "@/data/themes";
-import { THEME_COUNT } from "@/lib/theme-runtime";
+import { THEME_COUNT, themeDisplayName } from "@/lib/theme-runtime";
 import { TOPICS, TRAIL_BRANCHES, getNextPlayableLessonId } from "@/data/curriculum";
 import { getGenderInfo } from "@/lib/gender";
 import { LESSONS } from "@/data/lessons";
@@ -62,6 +62,8 @@ describe("Theme Architecture & Contrast Verification", () => {
     expect(Object.keys(THEMES).length).toBe(187);
     expect(THEME_LIST.length).toBe(187);
     expect(THEME_COUNT).toBe(THEME_LIST.length);
+    // the trigger derives the label without loading the theme table
+    expect(themeDisplayName("serika_dark")).toBe("Serika Dark");
     expect(THEMES[DEFAULT_THEME]).toBeDefined();
     expect(THEMES["serika_dark"].bg).toBe("#323437");
   });
@@ -118,6 +120,7 @@ describe("Theme Architecture & Contrast Verification", () => {
     applyTheme("serika_dark");
     expect(mockElement.style["--bg-color"]).toBe("#323437");
     expect(mockElement.style["--main-color"]).toBe("#e2b714");
+    expect(mockElement.attributes["data-theme"]).toBe("serika_dark");
     expect(mockElement.classList.contains("dark")).toBe(true);
     expect(mockElement.classList.contains("light")).toBe(false);
     expect(mockElement.style.colorScheme).toBe("dark");
@@ -126,6 +129,7 @@ describe("Theme Architecture & Contrast Verification", () => {
     applyTheme("9009");
     expect(mockElement.style["--bg-color"]).toBe("#eeebe2");
     expect(mockElement.style["--main-color"]).toBe("#080909");
+    expect(mockElement.attributes["data-theme"]).toBe("9009");
     expect(mockElement.classList.contains("light")).toBe(true);
     expect(mockElement.classList.contains("dark")).toBe(false);
     expect(mockElement.style.colorScheme).toBe("light");
@@ -133,8 +137,13 @@ describe("Theme Architecture & Contrast Verification", () => {
     // Apply 3-digit hex theme "dark"
     applyTheme("dark");
     expect(mockElement.style["--bg-color"]).toBe("#111");
+    expect(mockElement.attributes["data-theme"]).toBe("dark");
     expect(mockElement.classList.contains("dark")).toBe(true);
     expect(mockElement.classList.contains("light")).toBe(false);
+
+    // An unknown id falls back to the default palette and its attribute id
+    applyTheme("not_a_theme");
+    expect(mockElement.attributes["data-theme"]).toBe(DEFAULT_THEME);
   });
 
   it("applies the optional increased-contrast override without changing the selected theme", () => {

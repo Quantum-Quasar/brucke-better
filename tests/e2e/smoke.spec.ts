@@ -303,3 +303,23 @@ test("language-scoped lesson URL opens the named course", async ({ page }) => {
     timeout: 15_000,
   });
 });
+
+test("theme picker mounts on demand and applies the chosen theme", async ({ page }) => {
+  await seedAppState(page);
+  await page.goto("/settings");
+
+  // The theme table is not part of the route bundle; the gated modal chunk
+  // loads only when the learner asks for it.
+  const browse = page.getByRole("button", { name: /browse 187 themes/i });
+  await expect(browse).toBeVisible();
+  await browse.click();
+
+  const dialog = page.getByRole("dialog", { name: "Select Theme" });
+  await expect(dialog).toBeVisible();
+  await dialog.getByPlaceholder(/search themes by name/i).fill("monokai");
+  await dialog.getByRole("button", { name: /monokai/i }).first().click();
+
+  await page.keyboard.press("Escape");
+  await expect(dialog).toBeHidden();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "monokai");
+});

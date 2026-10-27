@@ -2339,10 +2339,14 @@ export function filterThemes(query: string, tab: ThemeFilterTab): ThemeMeta[] {
 
 export function applyTheme(themeId: string): void {
   if (typeof document === "undefined" || !document?.documentElement?.style) return;
-  const theme = THEMES[themeId] || THEMES[DEFAULT_THEME];
+  const resolvedId = THEMES[themeId] ? themeId : DEFAULT_THEME;
+  const theme = THEMES[resolvedId];
   if (!theme) return;
 
   const root = document.documentElement;
+  if (typeof root.setAttribute === "function") {
+    root.setAttribute("data-theme", resolvedId);
+  }
   if (root.style && typeof root.style.setProperty === "function") {
     root.style.setProperty("--bg-color", theme.bg);
     root.style.setProperty("--main-color", theme.main);
@@ -2378,7 +2382,7 @@ export function applyTheme(themeId: string): void {
       window.localStorage.setItem(
         THEME_VARS_CACHE_KEY,
         JSON.stringify({
-          id: themeId,
+          id: resolvedId,
           vars: {
             "--bg-color": theme.bg,
             "--main-color": theme.main,
