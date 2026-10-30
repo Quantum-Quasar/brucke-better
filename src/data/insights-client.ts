@@ -23,7 +23,9 @@ function loadInsights(languageId: string): Promise<DailyInsight[]> {
       ? import("./french/insights-fr").then((m) => m.FRENCH_INSIGHTS)
       : languageId === "es"
         ? import("./spanish/insights-es").then((m) => m.SPANISH_INSIGHTS)
-        : Promise.resolve(NONE);
+        : languageId === "nl"
+          ? import("./dutch/insights-nl").then((m) => m.DUTCH_INSIGHTS)
+          : Promise.resolve(NONE);
   return source.then((data) => {
     loaded.set(languageId, data);
     return data;

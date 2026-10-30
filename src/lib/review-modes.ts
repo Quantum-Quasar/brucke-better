@@ -248,7 +248,7 @@ export function generateWordTiles(
         distractors.push(token);
       }
     }
-    const fallbackDistractors = ["nicht", "heute", "immer", "pas", "très", "hoy", "muy"];
+    const fallbackDistractors = ["nicht", "heute", "immer", "niet", "vandaag", "altijd", "pas", "très", "hoy", "muy"];
     for (const d of fallbackDistractors) {
       if (distractors.length >= 2) break;
       if (!targetChunks.includes(d) && !distractors.includes(d)) {

@@ -166,7 +166,7 @@ English and German are sibling West Germanic languages sharing over 60% of core 
 │   ├── data/
 │   │   ├── compendium.json    # 1226 words, 9 shifts, 32 compounds, 16 false friends, 28 insights
 │   │   └── lessons.ts         # All 169 authored lesson definitions, exercises, and clues
-│   └── tests/                 # 40 test files (Vitest) — whole-curriculum integrity, timezone boundaries, persistence merging, security
+│   └── tests/                 # 41 test files (Vitest) — whole-curriculum integrity, timezone boundaries, persistence merging, security
 │       ├── store.test.ts
 │       ├── exercises.test.ts
 │       ├── letter-diff.test.ts
@@ -196,7 +196,7 @@ English and German are sibling West Germanic languages sharing over 60% of core 
 ## 7. Performance & Resource Optimization Highlights
 
 1. **100% Pre-rendered Static Site Generation (SSG)**:
-   - Dynamic parameter routes `/atlas/[family]` (28 pages across the three atlases) and `/trail/[id]` (178 unique pages — 169 German plus 9 French/Spanish-only ids) export `generateStaticParams()` and set `dynamicParams = false`, so unknown params 404 instead of triggering dynamic server rendering.
+   - Dynamic parameter routes `/atlas/[family]` (37 pages across the four atlases) and `/trail/[id]` (178 unique pages — 169 German plus 9 French/Spanish-only ids) export `generateStaticParams()` and set `dynamicParams = false`, so unknown params 404 instead of triggering dynamic server rendering.
    - All app routes build to static HTML. Navigation between lessons and atlas families is instantaneous with zero runtime server latency.
 2. **Shift Alignment Memoization**:
    - `alignShiftPair` in `src/lib/shift-annotator.ts` uses an in-memory `Map` cache. Redundant letter parsing is eliminated; test suite executes in < 200ms.
@@ -217,7 +217,7 @@ All commands should be executed from `/home/shaurya/gemini-tmp/german-app-thinki
 # 1. Run Data Compilation Pipeline
 bun run parse-data
 
-# 2. Run All Automated Test Suites (40 test files / 394 tests)
+# 2. Run All Automated Test Suites (41 test files / 408 tests)
 bun run test
 
 # 3. Compile Production Build (Turbopack + SSG verification)
@@ -253,5 +253,5 @@ When auditing the codebase, verify:
   - State changes in Zustand persist to `localStorage`.
   - Cookie backup stays within safe browser limits (lean payload ≤ 2048 URL-encoded bytes).
 - [ ] **Build & Tests**:
-  - `bun run test` (Vitest) passes with 0 failures across all 40 test files (394 tests).
-  - `bun run build` generates all static pages (8 static routes + 28 atlas family pages + 178 lesson pages) without TypeScript or Turbopack errors.
+  - `bun run test` (Vitest) passes with 0 failures across all 41 test files (408 tests).
+  - `bun run build` generates all static pages (8 static routes + 37 atlas family pages + 178 lesson pages) without TypeScript or Turbopack errors.

@@ -75,10 +75,24 @@ const FRENCH_LETTER_LAWS: LetterLaw[] = [
   { family: "c_to_ch", from: "ca", to: ["cha", "ch"], tolerance: 1 },
 ];
 
+// Dutch Low Franconian correspondences
+const DUTCH_LETTER_LAWS: LetterLaw[] = [
+  { family: "th_d", from: "th", to: ["d"], tolerance: 1 },
+  { family: "sch_sh", from: "sh", to: ["sch"], tolerance: 1 },
+  { family: "f_v", from: "f", to: ["v"], tolerance: 1 },
+  { family: "s_z", from: "s", to: ["z"], tolerance: 1 },
+  { family: "gh_ch", from: "gh", to: ["ch", "g"], tolerance: 1 },
+  { family: "vowel_ij", from: "i", to: ["ij"], tolerance: 1 },
+  { family: "vowel_ui", from: "ou", to: ["ui"], tolerance: 1 },
+  { family: "vowel_oe", from: "oo", to: ["oe"], tolerance: 1 },
+  { family: "g_y", from: "y", to: ["g"], tolerance: 1 },
+];
+
 const LETTER_LAWS_BY_LANGUAGE: Record<string, LetterLaw[]> = {
   de: GERMAN_LETTER_LAWS,
   es: SPANISH_LETTER_LAWS,
   fr: FRENCH_LETTER_LAWS,
+  nl: DUTCH_LETTER_LAWS,
 };
 
 const VOWELS = /[aeiouäöüáéíóúàâèêëîïôùû]/g;

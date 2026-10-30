@@ -245,6 +245,34 @@ export const PANORAMA_LINK_SPECS: Record<PanoramaLanguageId, PanoramaLinkSpec[]>
       desc: "all 9 Castilian-English philological bridges.",
     },
   ],
+  nl: [
+    {
+      kind: "lesson",
+      lessonTitle: "De & Het: Gender Without Case",
+      desc: "two articles, no noun case, and the adjective -e.",
+    },
+    {
+      kind: "lesson",
+      lessonTitle: "Word Order: The Dutch Bracket",
+      desc: "V2 in main clauses and inversion after a fronted word.",
+    },
+    {
+      kind: "lesson",
+      lessonTitle: "The Perfect Tense",
+      desc: "hebben or zijn plus the ge- participle.",
+    },
+    {
+      kind: "lesson",
+      lessonTitle: "Er: The Little Word That Does Everything",
+      desc: "existential, locative and partitive er.",
+    },
+    {
+      kind: "page",
+      href: "/atlas",
+      label: "The Correspondence Atlas",
+      desc: "all 9 English-Dutch correspondence families.",
+    },
+  ],
 };
 
 const resolvedCache = new Map<PanoramaLanguageId, PanoramaLink[]>();
@@ -266,4 +294,5 @@ export const PANORAMA_LINKS: Record<PanoramaLanguageId, PanoramaLink[]> = {
   de: panoramaLinksFor("de"),
   fr: panoramaLinksFor("fr"),
   es: panoramaLinksFor("es"),
+  nl: panoramaLinksFor("nl"),
 };

@@ -12,9 +12,11 @@ import { fileURLToPath } from "node:url";
 import { compendium as germanCompendium } from "../src/data/compendium";
 import { frenchCompendium } from "../src/data/french/compendium-fr";
 import { spanishCompendium } from "../src/data/spanish/compendium-es";
+import { dutchCompendium } from "../src/data/dutch/compendium-nl";
 import { LESSONS } from "../src/data/lessons";
 import { FR_LESSONS } from "../src/data/french/lessons-fr";
 import { ES_LESSONS } from "../src/data/spanish/lessons-es";
+import { NL_LESSONS } from "../src/data/dutch/lessons-nl";
 import type { CompendiumData, Lesson, LessonIndexEntry, ShiftFamily } from "../src/lib/types";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -31,6 +33,7 @@ const LANGUAGES: LanguageSource[] = [
   { id: "de", compendium: germanCompendium, lessons: LESSONS },
   { id: "fr", compendium: frenchCompendium, lessons: FR_LESSONS },
   { id: "es", compendium: spanishCompendium, lessons: ES_LESSONS },
+  { id: "nl", compendium: dutchCompendium, lessons: NL_LESSONS },
 ];
 
 function writeJson(file: string, value: unknown): number {

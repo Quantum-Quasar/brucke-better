@@ -89,6 +89,8 @@ export default function AtlasPage() {
       ? "Conversion Bridge Families"
       : activeLanguageId === "es"
       ? "Castilian Sound Shift Families"
+      : activeLanguageId === "nl"
+      ? "English–Dutch Correspondence Families"
       : "Sound Shift Families";
 
   const familyCount = shiftList.length;
@@ -97,10 +99,22 @@ export default function AtlasPage() {
       ? `The ${familyCount} conversion bridge families linking English cognates to French vocabulary — plus every dictionary word that sits outside them.`
       : activeLanguageId === "es"
       ? `The ${familyCount} historical sound and suffix shift families linking English & Latin cognates to Spanish vocabulary — plus every dictionary word that sits outside them.`
+      : activeLanguageId === "nl"
+      ? `The ${familyCount} English↔Dutch correspondence families — the consonants Dutch kept and the vowels it turned — plus every dictionary word that sits outside them.`
       : `The ${familyCount} historical sound shift families linking English cognates to High German vocabulary — plus every dictionary word that sits outside them.`;
 
-  const familyWord = activeLanguageId === "fr" ? "conversion families" : "sound shifts";
-  const masterFamilyWord = activeLanguageId === "fr" ? "conversion families" : "shift families";
+  const familyWord =
+    activeLanguageId === "fr"
+      ? "conversion families"
+      : activeLanguageId === "nl"
+      ? "correspondence families"
+      : "sound shifts";
+  const masterFamilyWord =
+    activeLanguageId === "fr"
+      ? "conversion families"
+      : activeLanguageId === "nl"
+      ? "correspondence families"
+      : "shift families";
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-6 font-sans">

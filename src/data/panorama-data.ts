@@ -5,9 +5,9 @@
 // into that chunk. The "where this is taught" links live in panorama-links.ts,
 // which resolves them from the curriculum on the server.
 
-export type PanoramaLanguageId = "de" | "fr" | "es";
+export type PanoramaLanguageId = "de" | "fr" | "es" | "nl";
 
-export const PANORAMA_LANGUAGE_IDS: PanoramaLanguageId[] = ["de", "fr", "es"];
+export const PANORAMA_LANGUAGE_IDS: PanoramaLanguageId[] = ["de", "fr", "es", "nl"];
 
 export function isPanoramaLanguageId(id: string): id is PanoramaLanguageId {
   return (PANORAMA_LANGUAGE_IDS as string[]).includes(id);
@@ -452,8 +452,178 @@ const SPANISH_PANORAMA: LanguagePanorama = {
   ],
 };
 
+const DUTCH_PANORAMA: LanguagePanorama = {
+  id: "nl",
+  name: "Dutch",
+  intro:
+    "Dutch is the West Germanic twin English kept closest: it skipped the High German consonant shift, so the consonants often line up and the work moves to vowels, articles and word order. This panorama stacks the de/het split, the verb's two homes, the tense map and the pronoun machine.",
+  grids: [
+    {
+      title: "Two articles, one adjective ending — de/het without noun case",
+      why: "Dutch merged the old masculine and feminine into common de and kept neuter het. Nouns do not inflect for case; the adjective -e marks definiteness, not gender.",
+      columnHead: ["de (common)", "het (neuter)", "the rule"],
+      rowHead: "context",
+      rows: [
+        {
+          head: "the noun",
+          cells: [
+            { label: "de tafel", note: "common noun" },
+            { label: "het huis", note: "neuter noun" },
+            { label: "the article is lexical" },
+          ],
+        },
+        {
+          head: "definite adjective",
+          cells: [
+            { label: "de grote tafel" },
+            { label: "het grote huis" },
+            { label: "-e after de/het or a possessive" },
+          ],
+        },
+        {
+          head: "indefinite adjective",
+          cells: [
+            { label: "een grote tafel" },
+            { label: "een groot huis" },
+            { label: "no -e after een + a het-word" },
+          ],
+        },
+        {
+          head: "diminutive",
+          cells: [
+            { label: "—" },
+            { label: "het huisje" },
+            { label: "every diminutive is het" },
+          ],
+        },
+      ],
+    },
+    {
+      title: "The verb's two homes — V2 in main clauses, final in subordinates",
+      why: "Dutch main clauses keep the finite verb second; front something and it inverts. Subordinate clauses send the verb to the end. English question inversion is the same instinct, generalised.",
+      columnHead: ["main clause", "fronted element", "subordinate clause"],
+      rowHead: "pattern",
+      rows: [
+        {
+          head: "statement",
+          cells: [
+            { label: "Ik werk vandaag" },
+            { label: "Vandaag werk ik" },
+            { label: "…omdat ik vandaag werk" },
+          ],
+        },
+        {
+          head: "modal",
+          cells: [
+            { label: "Ik kan komen" },
+            { label: "Morgen kan ik komen" },
+            { label: "…omdat ik morgen kan komen" },
+          ],
+        },
+        {
+          head: "separable verb",
+          cells: [
+            { label: "Ik bel je op" },
+            { label: "Morgen bel ik je op" },
+            { label: "…omdat ik je opbel" },
+          ],
+        },
+        {
+          head: "perfect",
+          cells: [
+            { label: "Ik heb gewerkt" },
+            { label: "Gisteren heb ik gewerkt" },
+            { label: "…omdat ik gewerkt heb" },
+          ],
+        },
+      ],
+    },
+    {
+      title: "Time travel — one present, two pasts, a perfect and a future",
+      why: "Dutch marks the past twice: a dental suffix for weak verbs, a vowel change for strong verbs, and a have/be perfect for conversation. The future is a stance choice: gaan, zullen or zou.",
+      columnHead: ["present", "past", "perfect / future"],
+      rowHead: "verb type",
+      rows: [
+        {
+          head: "weak",
+          cells: [
+            { label: "ik werk" },
+            { label: "ik werkte" },
+            { label: "ik heb gewerkt" },
+          ],
+        },
+        {
+          head: "strong",
+          cells: [
+            { label: "ik kom" },
+            { label: "ik kwam" },
+            { label: "ik ben gekomen" },
+          ],
+        },
+        {
+          head: "modal",
+          cells: [
+            { label: "ik kan" },
+            { label: "ik kon" },
+            { label: "ik zou kunnen" },
+          ],
+        },
+        {
+          head: "future",
+          cells: [
+            { label: "ik ga werken" },
+            { label: "ik zou werken" },
+            { label: "ik zal werken" },
+          ],
+        },
+      ],
+    },
+    {
+      title: "The pronoun machine — subjects, objects, reflexives",
+      why: "Nouns lost case; pronouns kept it. Dutch adds a reflexive set (me/je/ons/zich) and the little word er for existence, place and quantity.",
+      columnHead: ["subject", "object", "reflexive / possessive"],
+      rowHead: "person",
+      rows: [
+        {
+          head: "I",
+          cells: [
+            { label: "ik" },
+            { label: "mij / me" },
+            { label: "me / mijn" },
+          ],
+        },
+        {
+          head: "you (informal)",
+          cells: [
+            { label: "jij / je" },
+            { label: "jou / je" },
+            { label: "je / jouw" },
+          ],
+        },
+        {
+          head: "he / she",
+          cells: [
+            { label: "hij / zij" },
+            { label: "hem / haar" },
+            { label: "zich / zijn, haar" },
+          ],
+        },
+        {
+          head: "we / they",
+          cells: [
+            { label: "wij / zij" },
+            { label: "ons / hen" },
+            { label: "ons, zich / ons, hun" },
+          ],
+        },
+      ],
+    },
+  ],
+};
+
 export const PANORAMA_BY_LANG: Record<PanoramaLanguageId, LanguagePanorama> = {
   de: GERMAN_PANORAMA,
   fr: FRENCH_PANORAMA,
   es: SPANISH_PANORAMA,
+  nl: DUTCH_PANORAMA,
 };

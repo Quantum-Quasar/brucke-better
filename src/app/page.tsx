@@ -60,12 +60,7 @@ export default function HomePage() {
   const lessonCount = curriculum.lessonCount;
   const topicCount = curriculum.totalTopics;
 
-  const langLabel =
-    activeLanguageId === "fr"
-      ? "French through English"
-      : activeLanguageId === "es"
-      ? "Spanish through English"
-      : "German through English";
+  const langLabel = `${language.name} through English`;
 
   return (
     <div className="max-w-5xl mx-auto px-4 pt-3 pb-6 font-sans">

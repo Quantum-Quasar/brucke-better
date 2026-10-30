@@ -216,6 +216,51 @@ const FRENCH_ONBOARDING: LanguageOnboarding = {
   },
 };
 
+const DUTCH_ONBOARDING: LanguageOnboarding = {
+  philosophy: {
+    heading: "dutch is the germanic twin english kept",
+    body: "english and dutch both stayed north of the High German consonant shift. where German turned water into Wasser and ship into Schiff, Dutch kept water and schip — thousands of core words line up almost letter for letter. the real work is the vowels, de/het, and the verb-second order english lost.",
+    demoTitle: "english ↔ dutch twin demo:",
+    demos: [
+      {
+        english: "water",
+        target: "water",
+        rule: "direct twin",
+        note: "Dutch and English both kept the Germanic t; German shifted it to Wasser.",
+      },
+      {
+        english: "ship",
+        target: "schip",
+        rule: "sh → sch",
+        note: "English sh is Dutch sch — the same sound in a different spelling.",
+      },
+      {
+        english: "brother",
+        target: "broeder",
+        rule: "th → d",
+        note: "English th hardens to Dutch d, exactly as in German Bruder.",
+      },
+      {
+        english: "book",
+        target: "boek",
+        rule: "spelling: oo ↔ oe",
+        note: "English oo and Dutch oe are spelling twins — book, foot, good. Dutch oe is pronounced /u/; read the spelling bridge first, then the Dutch sound.",
+      },
+    ],
+  },
+  notation: {
+    body: "brücke makes language learning transparent, intuitive, and grounded in living english cognates.",
+    anchorsBody:
+      "we connect dutch words to everyday english: water to water, schip to ship, and broeder to brother.",
+    showGenders: false,
+    noGenderNote:
+      "dutch nouns are de (common) or het (neuter) — two genders and no noun case system. this course decodes them from endings and compounds with azure and emerald badges.",
+  },
+  ready: {
+    body: "the dutch trail is open: the english twins and sound bridges first, then the sentence machine, the past tenses and the deep engine. all progress is stored locally in your browser.",
+  },
+};
+
 export const LANGUAGES: LanguageDefinition[] = [
   {
     id: "de",
@@ -242,6 +287,30 @@ export const LANGUAGES: LanguageDefinition[] = [
     blurb: "The full cognate engine: 30 topics, 9 shift families, 1226 words.",
     decoChars: ["ß", "ü", "ö", "ä", "ß", "§"],
     onboarding: GERMAN_ONBOARDING,
+  },
+  {
+    id: "nl",
+    name: "Dutch",
+    nativeName: "Nederlands",
+    flag: "🇳🇱",
+    ttsLocale: "nl-NL",
+    specialChars: [
+      ["é", "e"],
+      ["ë", "e"],
+      ["ï", "i"],
+      ["ó", "o"],
+      ["ê", "e"],
+    ],
+    charBarLabel: "Accents",
+    genderSystem: {
+      articles: ["de", "het"],
+      labels: ["common", "neuter"],
+      colors: ["blue", "emerald"],
+    },
+    status: "available",
+    blurb: "The West Germanic twin: 30 topics, 75 lessons, 9 correspondence bridges, 390 words.",
+    decoChars: ["ij", "ui", "oe", "sch", "g", "ch", "aa", "ee"],
+    onboarding: DUTCH_ONBOARDING,
   },
   {
     id: "es",

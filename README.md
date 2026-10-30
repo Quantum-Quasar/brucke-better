@@ -23,7 +23,7 @@ Rather than relying on rote memorization or gamified streaks without substance, 
 - **Styling**: Tailwind CSS v4 (native CSS tokens, dark mode default)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) 5 (dual `localStorage` + size-guarded cookie persistence)
 - **Icons**: Lucide React
-- **Testing**: Vitest / `bun run test` (40 test files, 394 automated tests) <!-- corrected 2026-10-08 against the actual vitest run; counts pinned by src/tests/docs-sync.test.ts -->
+- **Testing**: Vitest / `bun run test` (41 test files, 408 automated tests) <!-- corrected 2026-10-08 against the actual vitest run; counts pinned by src/tests/docs-sync.test.ts -->
 - **Audio Engine**: Zero-dependency browser-native Web Speech API (`window.speechSynthesis`) + a Web Audio sample engine that plays bundled `.wav` packs
 
 ---
@@ -46,7 +46,7 @@ bun run parse-data
 
 ### Run Automated Tests
 
-Executes the full Vitest suite — 40 test files, 394 automated tests:
+Executes the full Vitest suite — 41 test files, 408 automated tests:
 
 ```bash
 bun run test
@@ -54,7 +54,7 @@ bun run test
 
 ### Production Build
 
-Pre-renders every route to static HTML (`● SSG`): 8 static routes, 28 `/atlas/[family]` pages (one per family id across the three atlases), one page per authored lesson (178 `/trail/[id]` pages — 169 German ids plus 9 French/Spanish-only ids), and language-scoped aliases at `/trail/[lang]/[id]` so shared lesson links carry their course; unknown ids 404 via `dynamicParams = false`:
+Pre-renders every route to static HTML (`● SSG`): 8 static routes, 37 `/atlas/[family]` pages (one per family id across the four atlases), one page per authored lesson (178 `/trail/[id]` pages — 169 German ids plus 9 French/Spanish-only ids), and language-scoped aliases at `/trail/[lang]/[id]` so shared lesson links carry their course; unknown ids 404 via `dynamicParams = false`:
 
 ```bash
 bun run build
@@ -123,7 +123,7 @@ Visit `http://localhost:3000` in your browser.
    - Educational onboarding & dismissible gender guide banners.
 
 6. **Multi-Language Ready**:
-   - Switch the learning language from Settings or onboarding (German fully authored; French trail open — 30 topics, 123 authored lessons, 9 conversion-bridge families; Spanish trail open — 30 topics, 123 authored lessons, 9 conversion-bridge families).
+   - Switch the learning language from Settings or onboarding (German fully authored; French trail open — 30 topics, 123 authored lessons, 9 conversion-bridge families; Spanish trail open — 30 topics, 123 authored lessons, 9 conversion-bridge families; Dutch trail open — 30 topics, 75 authored Dutch lessons, 9 correspondence families, 390 words).
    - Each language keeps its own progress slice, SRS queue, and onboarding intro (`src/data/language-content.ts`).
    - Components render language-scoped content; languages without authored content show coming-soon states instead of stale German words.
 
@@ -165,7 +165,7 @@ src/
 │   ├── store.ts          # Zustand store with dual persistence (+ lessonStars)
 │   ├── trail-map.ts      # Map graph, responsive layout engine, unlock/recommend logic
 │   └── types.ts          # Core domain TypeScript interfaces
-└── tests/                # 40 test files (Vitest)
+└── tests/                # 41 test files (Vitest)
 ```
 
 ---

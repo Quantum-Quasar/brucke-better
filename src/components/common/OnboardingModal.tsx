@@ -46,7 +46,12 @@ export const OnboardingModal: React.FC = () => {
   const topicCount = counts.topics;
   const wordCount = counts.words;
   const familyCount = counts.families;
-  const familyWord = effectiveLanguageId === "fr" ? "conversion families" : "sound-shift families";
+  const familyWord =
+    effectiveLanguageId === "fr"
+      ? "conversion families"
+      : effectiveLanguageId === "nl"
+        ? "correspondence families"
+        : "sound-shift families";
 
   const availableLanguages = LANGUAGES.filter((l) => l.status === "available");
   const singleLanguage = availableLanguages.length === 1;
@@ -176,7 +181,13 @@ export const OnboardingModal: React.FC = () => {
                 </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div
+                className={`grid grid-cols-1 gap-3 ${
+                  availableLanguages.length >= 4
+                    ? "sm:grid-cols-2 lg:grid-cols-4"
+                    : "sm:grid-cols-3"
+                }`}
+              >
                 {availableLanguages.map((lang) => (
                   <button
                     key={lang.id}

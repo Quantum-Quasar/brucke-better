@@ -5,7 +5,7 @@ export interface SentenceSegment {
   hit: boolean;
 }
 
-const ARTICLE = /^(der|die|das)\s+/i;
+const ARTICLE = /^(der|die|das|de|het|een)\s+/i;
 const TOKEN = /[\p{L}]+/gu;
 /** Case-, umlaut- and ß-insensitive form, so Nuss matches Nüsse and Fuß matches Füße. */
 const fold = (s: string) =>

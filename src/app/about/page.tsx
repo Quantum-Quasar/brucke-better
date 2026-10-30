@@ -4,6 +4,7 @@ import { ArrowLeft, BookOpen, Compass, ExternalLink, RotateCcw, Sliders } from "
 import type { Metadata } from "next";
 import { LESSONS } from "@/data/lessons";
 import { FR_LESSONS } from "@/data/french/lessons-fr";
+import { NL_LESSONS } from "@/data/dutch/lessons-nl";
 import { TOTAL_TOPICS } from "@/data/curriculum";
 import { compendium } from "@/data/compendium";
 import { getAtlasFamilies } from "@/lib/atlas-families";
@@ -11,7 +12,7 @@ import { getAtlasFamilies } from "@/lib/atlas-families";
 export const metadata: Metadata = {
   title: "About — Brücke",
   description:
-    "How Brücke teaches German, French and Spanish through words you already know, using sound shifts, conversion bridges and spaced review.",
+    "How Brücke teaches German, French, Spanish and Dutch through words you already know, using sound shifts, conversion bridges and spaced review.",
 };
 
 const SHIFT_SAMPLES = [
@@ -26,6 +27,7 @@ const SHIFT_SAMPLES = [
 export default function AboutPage() {
   const germanLessons = LESSONS.length;
   const frenchLessons = FR_LESSONS.length;
+  const dutchLessons = NL_LESSONS.length;
   const familyCount = getAtlasFamilies(compendium).length;
 
   return (
@@ -43,7 +45,7 @@ export default function AboutPage() {
           About Brücke
         </h1>
         <p className="text-sm text-[var(--sub-color)] font-mono leading-relaxed">
-          Historical sound shifts and conversion bridges as a language acquisition engine — German, French, and Spanish.
+          Historical sound shifts and conversion bridges as a language acquisition engine — German, French, Spanish, and Dutch.
         </p>
         <p className="text-xs font-mono text-[var(--sub-color)]">
           An independent project · no account · progress stays in your browser.
@@ -81,6 +83,14 @@ export default function AboutPage() {
             French doublets, and the French trail decodes them the same way — conversion bridges instead of consonant
             shifts, one thought at a time. A <strong>Spanish course</strong> applies the same idea to Latin roots and
             Castilian sound changes (initial f- to silent h-, -ct- to -ch-, -tion to -ción).
+          </p>
+          <p>
+            <strong>Dutch</strong> is the reverse case. It is a Low Franconian West Germanic sibling that never
+            underwent the High German shift, so the consonants English kept are usually still there: <span className="font-mono">water</span> is{" "}
+            <span className="font-mono">water</span>, <span className="font-mono">ship</span> is{" "}
+            <span className="font-mono">schip</span>, <span className="font-mono">book</span> is{" "}
+            <span className="font-mono">boek</span>. The Dutch trail spends its energy on the vowels, <span className="font-mono">de/het</span>,
+            and the word-order machine that English lost.
           </p>
         </div>
       </section>
@@ -129,7 +139,7 @@ export default function AboutPage() {
               <p className="text-sm text-[var(--sub-color)] leading-relaxed">
                 {TOTAL_TOPICS} progressive topics and {germanLessons} authored German lessons
                 scaffolding from direct cognates to modal verbs, compound calques, and complex syntax.
-                French and Spanish add {frenchLessons} lessons each.
+                French and Spanish add {frenchLessons} lessons each; Dutch adds {dutchLessons}.
               </p>
             </div>
             <div className="p-3.5 rounded bg-[var(--bg-color)] border border-[var(--sub-color)]/20 space-y-1">
@@ -161,7 +171,7 @@ export default function AboutPage() {
           <div className="space-y-2 text-sm leading-relaxed text-[var(--text-color)]">
             <p>
               Brücke is an independent project by <strong>Shaurya Kad</strong>. The German,
-              French and Spanish curricula are hand-authored, and every word links back to the
+              French, Spanish and Dutch curricula are hand-authored, and every word links back to the
               same compendium.
             </p>
             <p className="text-[var(--sub-color)]">

@@ -6,6 +6,7 @@ export const WORD_COUNTS: Readonly<Record<string, number>> = {
   de: 1226,
   fr: 306,
   es: 293,
+  nl: 390,
 };
 
 export interface CourseCounts {
@@ -21,6 +22,7 @@ export const COURSE_COUNTS: Readonly<Record<string, CourseCounts>> = {
   de: { topics: 30, lessons: 169, families: 10, words: 1226 },
   fr: { topics: 30, lessons: 123, families: 10, words: 306 },
   es: { topics: 30, lessons: 123, families: 10, words: 293 },
+  nl: { topics: 30, lessons: 75, families: 10, words: 390 },
 };
 
 const EMPTY_COUNTS: CourseCounts = { topics: 0, lessons: 0, families: 0, words: 0 };

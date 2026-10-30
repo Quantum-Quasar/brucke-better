@@ -17,11 +17,11 @@ export type PostureCueSlot =
 
 export const POSTURE_CUES: Record<PostureCueSlot, string[]> = {
   transcribe: [
-    "Build the thought first: who, what, when — then let German order them.",
+    "Build the thought first: who, what, when — then let the language order them.",
     "Say it out loud before you type. Your mouth is a second editor.",
   ],
   derive: ["Hear the shift before you spell it — p? t? th? Let the English word tell you."],
-  matching_pairs: ["Don't memorize pairs — read each German word through its shift."],
+  matching_pairs: ["Don't memorize pairs — read each target word through its pattern."],
   syntax_builder: ["Find the verb's seat first. Everything else pours around it."],
   literal_gloss: ["The odd English is the lesson. Ask why it's odd."],
   default: ["Slow is smooth. Think it through, then answer."],

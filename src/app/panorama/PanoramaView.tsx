@@ -58,7 +58,7 @@ export function PanoramaView({ linksByLanguage }: PanoramaViewProps) {
           </Link>
 
           <div className="flex flex-col items-end gap-1">
-            <div className="flex items-center gap-1.5 bg-[var(--sub-alt-color)] p-1 rounded-lg border border-[var(--sub-color)]/20">
+            <div className="flex flex-wrap items-center gap-1.5 bg-[var(--sub-alt-color)] p-1 rounded-lg border border-[var(--sub-color)]/20">
               {PANORAMA_LANGUAGE_IDS.map((lid) => {
               const p = PANORAMA_BY_LANG[lid];
               const active = current.id === lid;

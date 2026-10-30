@@ -2,6 +2,7 @@ import { ConstellationDetailClient } from "@/components/atlas/ConstellationDetai
 import { compendium as data } from "@/data/compendium";
 import { frenchCompendium } from "@/data/french/compendium-fr";
 import { spanishCompendium } from "@/data/spanish/compendium-es";
+import { dutchCompendium } from "@/data/dutch/compendium-nl";
 import { getAtlasFamilies } from "@/lib/atlas-families";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -19,6 +20,7 @@ const COMPENDIA_BY_LANGUAGE: ReadonlyArray<readonly [languageId: string, compend
   ["de", data],
   ["fr", frenchCompendium],
   ["es", spanishCompendium],
+  ["nl", dutchCompendium],
 ];
 
 function getOwnerLanguageIds(familyId: string): string[] {

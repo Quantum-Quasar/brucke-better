@@ -13,6 +13,8 @@ import { frenchCompendium } from "./french/compendium-fr";
 import { FR_LESSONS } from "./french/lessons-fr";
 import { spanishCompendium } from "./spanish/compendium-es";
 import { ES_LESSONS } from "./spanish/lessons-es";
+import { dutchCompendium } from "./dutch/compendium-nl";
+import { NL_LESSONS } from "./dutch/lessons-nl";
 import { getCurriculum } from "./curriculum-registry";
 import { getInsights } from "./insights-registry";
 import { EMPTY_COMPENDIUM } from "./empty-compendium";
@@ -63,11 +65,13 @@ function buildContent(
 const GERMAN_CONTENT = buildContent("de", germanCompendium, GERMAN_LESSONS);
 const FRENCH_CONTENT = buildContent("fr", frenchCompendium, FR_LESSONS);
 const SPANISH_CONTENT = buildContent("es", spanishCompendium, ES_LESSONS);
+const DUTCH_CONTENT = buildContent("nl", dutchCompendium, NL_LESSONS);
 
 const CONTENT_MAP: Record<string, LanguageContent> = {
   de: GERMAN_CONTENT,
   es: SPANISH_CONTENT,
   fr: FRENCH_CONTENT,
+  nl: DUTCH_CONTENT,
 };
 
 /** Content bundle for a language id — empty bundle when nothing is authored yet. */

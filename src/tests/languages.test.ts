@@ -110,7 +110,7 @@ describe("language content registry", () => {
 });
 
 describe("next playable lesson across the trail", () => {
-  const LANGS = ["de", "es", "fr"] as const;
+  const LANGS = ["de", "es", "fr", "nl"] as const;
 
   test("core lessons advance to the next authored core, null only after the last", () => {
     for (const lang of LANGS) {

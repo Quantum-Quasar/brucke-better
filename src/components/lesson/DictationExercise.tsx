@@ -145,9 +145,11 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
           cue:
             activeLanguageId === "de"
               ? "German puts the conjugated verb in position 2 and parks the infinitive at the end — listen for which word carries the ending."
-              : activeLanguageId === "fr"
-                ? "French keeps object pronouns before the verb and the conjugated verb next to the subject — listen for which word comes first."
-                : "Spanish often drops the subject pronoun and leans on the verb ending — listen for which word comes first.",
+              : activeLanguageId === "nl"
+                ? "Dutch puts the finite verb second in main clauses and last in subordinate clauses — listen for which word carries the ending."
+                : activeLanguageId === "fr"
+                  ? "French keeps object pronouns before the verb and the conjugated verb next to the subject — listen for which word comes first."
+                  : "Spanish often drops the subject pronoun and leans on the verb ending — listen for which word comes first.",
         };
       }
     }

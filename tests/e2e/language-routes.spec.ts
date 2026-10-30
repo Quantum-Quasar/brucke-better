@@ -60,7 +60,90 @@ function trackDataRequests(page: Page, languageId: string): string[] {
   return urls;
 }
 
-test.describe("French and Spanish courses", () => {
+test.describe("French, Spanish and Dutch courses", () => {
+  test("the onboarding picker offers Dutch and opens its introduction", async ({ page }) => {
+    await page.goto("/");
+    await page.waitForFunction(
+      () => document.documentElement.getAttribute("data-app-ready") === "true",
+      undefined,
+      { timeout: 30_000 }
+    );
+    await page.getByRole("button", { name: /60-second intro/i }).click();
+
+    const dialog = page.locator('div[aria-label="Brücke introduction"]');
+    await expect(dialog).toBeVisible({ timeout: 45_000 });
+    await expect(dialog.getByRole("heading", { name: /which language do you want to learn/i })).toBeVisible();
+
+    await dialog.getByRole("button", { name: /Dutch/ }).click();
+    await dialog.getByRole("button", { name: /continue with.*Dutch/i }).click();
+    await expect(dialog.getByRole("heading", { name: /dutch is the germanic twin/i })).toBeVisible();
+    await expect(dialog).toContainText(/dutch kept water/i);
+  });
+
+  test("the Dutch review hub loads its own compendium and lesson index", async ({ page }) => {
+    await seed(page, "nl");
+    const dataRequests = trackDataRequests(page, "nl");
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+
+    await page.goto("/review");
+
+    await expect(page.getByRole("heading", { name: /due today/i })).toBeVisible();
+    await expect(page.getByRole("button", { name: /review recent/i })).toBeEnabled();
+    await expect(page.locator("header")).toContainText(/dutch through english/i);
+
+    expect(dataRequests).toEqual(
+      expect.arrayContaining(["/data/nl/compendium.json", "/data/nl/lesson-index.json"])
+    );
+    expect(dataRequests.some((path) => path.includes("/data/de/"))).toBe(false);
+    expect(errors, `uncaught page errors: ${errors.join(" | ")}`).toEqual([]);
+  });
+
+  test("the Dutch atlas renders its correspondence families and family detail", async ({ page }) => {
+    await seed(page, "nl");
+    const dataRequests = trackDataRequests(page, "nl");
+
+    await page.goto("/atlas");
+    await expect(page.getByRole("heading", { name: "English–Dutch Correspondence Families" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "The SCH Bridge" })).toBeVisible();
+    expect(dataRequests).toContain("/data/nl/compendium.json");
+
+    await page.getByRole("heading", { name: "The SCH Bridge" }).click();
+    await expect(page).toHaveURL(/\/atlas\/sch_sh$/);
+    await expect(page.getByRole("heading", { name: "The SCH Bridge" })).toBeVisible();
+    await expect(page.getByText(/Participating Vocabulary/)).toBeVisible();
+    await expect(page.getByText(/belongs to the .* atlas/i)).toBeHidden();
+  });
+
+  test("the Dutch landing page loads its curriculum and shows the Dutch trail", async ({ page }) => {
+    await seed(page, "nl");
+    const errors: string[] = [];
+    page.on("pageerror", (error) => errors.push(error.message));
+    const dataRequests: string[] = [];
+    page.on("request", (request) => {
+      const url = new URL(request.url());
+      if (url.pathname.startsWith("/data/")) dataRequests.push(url.pathname);
+    });
+
+    await page.goto("/");
+
+    await expect(page.locator("header")).toContainText(/dutch through english/i);
+    await expect(page.getByText("The Dutch Inside Your English").first()).toBeAttached();
+    await expect(page.getByText("The Germanic Core")).toHaveCount(0);
+
+    // review JSON is intent-only: nothing should be fetched just by landing
+    expect(dataRequests).toEqual([]);
+
+    await page
+      .getByRole("navigation", { name: /main navigation/i })
+      .getByRole("link", { name: /review/i })
+      .hover();
+    await expect.poll(() => dataRequests).toEqual(
+      expect.arrayContaining(["/data/nl/compendium.json", "/data/nl/lesson-index.json"])
+    );
+    expect(dataRequests.some((path) => path.includes("/data/de/"))).toBe(false);
+    expect(errors, `uncaught page errors: ${errors.join(" | ")}`).toEqual([]);
+  });
   test("the French review hub loads its own compendium and lesson index", async ({ page }) => {
     await seed(page, "fr");
     const dataRequests = trackDataRequests(page, "fr");

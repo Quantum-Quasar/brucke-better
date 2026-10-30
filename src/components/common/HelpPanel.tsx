@@ -41,7 +41,7 @@ const PAGE_HELP: Record<string, { title: string; tips: string[] }> = {
   atlas: {
     title: "the atlas",
     tips: [
-      "Filter families by name, rule, or an English/German word.",
+      "Filter families by name, rule, or an English/target-language word.",
       "Open a family to inspect its cognates and full roster.",
       "Master Web is a zoomable poster of every word and link.",
     ],

@@ -26,6 +26,8 @@ export function loadCurriculum(languageId: string): Promise<CurriculumData> {
       promise = import("./french/curriculum-fr").then((m) => m.FRENCH_CURRICULUM);
     } else if (languageId === "es") {
       promise = import("./spanish/curriculum-es").then((m) => m.SPANISH_CURRICULUM);
+    } else if (languageId === "nl") {
+      promise = import("./dutch/curriculum-nl").then((m) => m.DUTCH_CURRICULUM);
     } else {
       promise = Promise.resolve(EMPTY_CURRICULUM);
     }

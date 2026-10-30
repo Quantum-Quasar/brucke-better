@@ -473,6 +473,8 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
             {lesson.id <= 30
               ? activeLanguageId === "de"
                 ? "Core Shift"
+                : activeLanguageId === "nl"
+                ? "Core Bridge"
                 : "Core"
               : lesson.id >= 5000
               ? "Support Track"
@@ -1020,6 +1022,8 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                         <Compass className="w-3.5 h-3.5" />{" "}
                         {activeLanguageId === "fr"
                           ? "conversion bridge atlas"
+                          : activeLanguageId === "nl"
+                          ? "correspondence atlas"
                           : activeLanguageId === "es"
                           ? "sound shift atlas"
                           : "sound shift atlas bridge"}
@@ -1029,12 +1033,16 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                           ? `explore all ${primaryShift.word_ids.length} cognates governed by ${primaryShift.symbol} ${
                               activeLanguageId === "fr"
                                 ? "across the norman conversion bridges."
+                                : activeLanguageId === "nl"
+                                ? "across the english–dutch correspondences."
                                 : activeLanguageId === "es"
                                 ? "across castilian sound history."
                                 : "across high german history."
                             }`
                           : activeLanguageId === "fr"
                           ? `explore all ${familyCount} conversion bridge families connecting english and french.`
+                          : activeLanguageId === "nl"
+                          ? `explore all ${familyCount} correspondence families connecting english and dutch.`
                           : activeLanguageId === "es"
                           ? `explore all ${familyCount} historical shift families connecting english and spanish.`
                           : `explore all ${familyCount} historical shift families connecting english and german.`}
@@ -1137,6 +1145,8 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                 <p>
                   {activeLanguageId === "fr"
                     ? "in 1066 norman french crossed the channel — thousands of cognates entered english and never left."
+                    : activeLanguageId === "nl"
+                    ? "dutch is the west germanic twin english kept closest: it skipped the high german consonant shift, so water stays water and ship becomes schip."
                     : activeLanguageId === "es"
                     ? "spanish and english share thousands of latin roots — castilian melted initial f- to silent h-, -ct- to -ch-, and -tion to -ción."
                     : "high german shifted consonants 1,300 years ago, leaving english as a living time capsule of ancestral germanic roots."}

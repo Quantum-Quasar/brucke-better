@@ -10,7 +10,7 @@ import type { CompendiumData, LessonIndexEntry } from "@/lib/types";
 
 type CompendiumPayload = Omit<CompendiumData, "wordList">;
 
-const AVAILABLE_LANGUAGES = new Set(["de", "fr", "es"]);
+const AVAILABLE_LANGUAGES = new Set(["de", "fr", "es", "nl"]);
 
 // Content hash baked in at build time (next.config.mjs). Versioned URLs let
 // the server mark /data/* immutable without risking stale content after a deploy.

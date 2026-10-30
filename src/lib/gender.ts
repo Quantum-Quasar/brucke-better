@@ -81,6 +81,28 @@ export function getGenderInfo(gender: Gender | string | null | undefined): Gende
     };
   }
 
+  if (g === "de") {
+    return {
+      gender: "de",
+      label: "Common",
+      article: "de",
+      colorName: "Azure Blue",
+      badgeClass: "text-blue-700 dark:text-blue-300 bg-blue-500/10 dark:bg-blue-500/15 border-blue-500/30",
+      dotColor: "#60A5FA",
+    };
+  }
+
+  if (g === "het") {
+    return {
+      gender: "het",
+      label: "Neuter",
+      article: "het",
+      colorName: "Emerald Green",
+      badgeClass: "text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 dark:bg-emerald-500/15 border-emerald-500/30",
+      dotColor: "#34D399",
+    };
+  }
+
   return null;
 }
 

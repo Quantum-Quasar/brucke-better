@@ -7,7 +7,7 @@ import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "@/lib/storage-keys";
 
 const SITE_TITLE = "Brücke — Learn through the words you already know";
 const SITE_DESCRIPTION =
-  "Learn German, French and Spanish by decoding the words you already know — 30 topics, sound-law lessons and spaced review.";
+  "Learn German, Dutch, French and Spanish by decoding the words you already know — 30 topics, sound-law lessons and spaced review.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
         url: "/og-brucke.png",
         width: 1200,
         height: 630,
-        alt: "Brücke — learn German through the words you already know.",
+        alt: "Brücke — learn a language through the words you already know.",
       },
     ],
   },

@@ -151,7 +151,7 @@ export interface EvaluationOptions {
 }
 
 interface LanguageGradingSpec {
-  id: "de" | "es" | "fr" | "en";
+  id: "de" | "es" | "fr" | "nl" | "en";
   name: string;
   nounsCapitalized: boolean;
   diacriticWarningLabel: string;
@@ -198,6 +198,16 @@ const normalizeFrenchDiacritics = (s: string) =>
     .replace(/ç/g, "c")
     .replace(/œ/g, "oe")
     .replace(/æ/g, "ae");
+
+const normalizeDutchDiacritics = (s: string) =>
+  s
+    .replace(/[éèêë]/g, "e")
+    .replace(/[áàâä]/g, "a")
+    .replace(/[íìîï]/g, "i")
+    .replace(/[óòôö]/g, "o")
+    .replace(/[úùûü]/g, "u")
+    .replace(/ç/g, "c")
+    .replace(/ñ/g, "n");
 
 const normalizeEnglishDiacritics = (s: string) =>
   s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
@@ -251,6 +261,18 @@ const LANGUAGE_GRADING_SPECS: Record<string, LanguageGradingSpec> = {
       s
         .replace(/^(de\s+l['’]|de\s+la\s+|du\s+|des\s+|le\s+|la\s+|les\s+|un\s+|une\s+|l['’])/i, "")
         .trim(),
+  },
+  nl: {
+    id: "nl",
+    name: "Dutch",
+    nounsCapitalized: false,
+    diacriticWarningLabel: "accents",
+    stripLeadingPunctuation: (s) => s,
+    normalizeDiacritics: normalizeDutchDiacritics,
+    matchesDiacritics: (userLower, targetLower) =>
+      normalizeDutchDiacritics(userLower) === normalizeDutchDiacritics(targetLower),
+    infinitiveEndings: ["en"],
+    stripArticle: (s) => s.replace(/^(de|het|een)\s+/i, "").trim(),
   },
   en: {
     id: "en",

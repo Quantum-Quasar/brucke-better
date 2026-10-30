@@ -66,7 +66,9 @@ export const VoiceStatusBanner: React.FC<VoiceStatusBannerProps> = ({
           type="button"
           onClick={() =>
             playTargetAudio(
-              activeLanguageId === "fr"
+              activeLanguageId === "nl"
+                ? "Hallo, de Nederlandse stem werkt."
+                : activeLanguageId === "fr"
                 ? "Bonjour, la voix française fonctionne."
                 : activeLanguageId === "es"
                 ? "Hola, la voz en español funciona."

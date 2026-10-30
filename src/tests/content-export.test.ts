@@ -4,9 +4,11 @@ import path from "node:path";
 import { compendium as de } from "@/data/compendium";
 import { frenchCompendium as fr } from "@/data/french/compendium-fr";
 import { spanishCompendium as es } from "@/data/spanish/compendium-es";
+import { dutchCompendium as nl } from "@/data/dutch/compendium-nl";
 import { LESSONS } from "@/data/lessons";
 import { FR_LESSONS } from "@/data/french/lessons-fr";
 import { ES_LESSONS } from "@/data/spanish/lessons-es";
+import { NL_LESSONS } from "@/data/dutch/lessons-nl";
 import SHIFT_NAMES from "@/data/shift-names.json";
 import type { CompendiumData, Lesson, LessonIndexEntry } from "@/lib/types";
 
@@ -40,6 +42,7 @@ const LANGUAGES = [
   { id: "de", compendium: de, lessons: LESSONS },
   { id: "fr", compendium: fr, lessons: FR_LESSONS },
   { id: "es", compendium: es, lessons: ES_LESSONS },
+  { id: "nl", compendium: nl, lessons: NL_LESSONS },
 ];
 
 describe("generated client content", () => {

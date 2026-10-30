@@ -65,6 +65,7 @@ function resolveDefaultLocale(): string {
 
 function resolveLanguageName(locale: string): string {
   const prefix = locale.slice(0, 2).toLowerCase();
+  if (prefix === "nl") return "Dutch";
   if (prefix === "fr") return "French";
   if (prefix === "es") return "Spanish";
   return "German";

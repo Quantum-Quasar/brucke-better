@@ -252,12 +252,19 @@ function ReviewHub({
 
   // Language-aware chrome: French uses conversion bridges, Spanish sound
   // shifts, German consonant shifts. The review mechanics are identical.
-  const familyNoun = activeLanguageId === "fr" ? "conversion family" : "shift family";
+  const familyNoun =
+    activeLanguageId === "fr"
+      ? "conversion family"
+      : activeLanguageId === "nl"
+      ? "correspondence family"
+      : "shift family";
   const recallSource =
     activeLanguageId === "fr"
       ? "French conversion bridges"
       : activeLanguageId === "es"
       ? "Spanish cognate patterns"
+      : activeLanguageId === "nl"
+      ? "English–Dutch correspondences"
       : "historical sound shifts";
   const compoundExamples =
     data.compounds.slice(0, 2).map((c) => c.compound.toLowerCase()).join(", ") || "compound words";

@@ -15,7 +15,7 @@ const LINES: Record<number, string> = {
   0: "Your mind will want to answer that from memory. Don't. Find it again — memory fades, a law doesn't.",
   1: "If a word slips, it isn't gone. You know the shape it hides in — work backwards from the English.",
   2: "You are allowed not to know yet. Everything here comes back in Review; nothing is lost by moving on.",
-  3: "German will offer you a shorter way round. Take the long one once — that is where the rule lives.",
+  3: "The course will offer you a shorter way round. Take the long one once — that is where the rule lives.",
   4: "You don't have to hold on to any of this. Knowing how to rebuild a word beats remembering it.",
   5: "Slow is smooth. Think it through, then answer — the thinking is the exercise, not the answer.",
   6: "Nothing here is a test. A wrong answer is a rep, and the queue at the end is the second half of it.",

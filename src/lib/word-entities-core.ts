@@ -33,6 +33,7 @@ const ARTICLE_OPTIONS_BY_LANG: Record<string, string[]> = {
   de: ["der", "die", "das", "den"],
   fr: ["le", "la", "l'", "les"],
   es: ["el", "la", "los", "las"],
+  nl: ["de", "het"],
 };
 
 const GERMAN_IPA = { compound: COMPOUND_IPA, falseFriend: FALSE_FRIEND_IPA };

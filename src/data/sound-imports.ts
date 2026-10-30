@@ -230,10 +230,78 @@ const SPANISH_SOUND_IMPORTS: SoundImport[] = [
   },
 ];
 
+const DUTCH_SOUND_IMPORTS: SoundImport[] = [
+  {
+    grapheme: "sch",
+    sound: "/sx/",
+    englishSource: "sh",
+    sourceWord: "schip → the sh in 'ship', with a throaty ch after the s",
+    whatsNew: "The English sound is close; Dutch spells it with three letters and finishes with the Scottish 'ch' in loch.",
+    taughtIn: 2,
+  },
+  {
+    grapheme: "ij",
+    sound: "/ɛi/",
+    englishSource: "eye",
+    sourceWord: "ijs → the vowel of 'eye', but starting from 'bed'",
+    whatsNew: "One gliding vowel, not two syllables. Start from the e of 'bed' and glide toward 'ee'.",
+    taughtIn: 6,
+  },
+  {
+    grapheme: "ui",
+    sound: "/œy/",
+    englishSource: "ow",
+    sourceWord: "huis → the 'ow' in 'house' said with rounded, forward lips",
+    whatsNew: "No exact English twin. Start from 'house' and pull the tongue forward while keeping the lips rounded.",
+    taughtIn: 6,
+  },
+  {
+    grapheme: "oe",
+    sound: "/u/",
+    englishSource: "oo",
+    sourceWord: "boek → the oo in 'boot'",
+    whatsNew: "Dutch oe is the long /u/ of 'boot', not the /ʊ/ of 'book'. The spelling is the only surprise.",
+    taughtIn: 6,
+  },
+  {
+    grapheme: "eu",
+    sound: "/øː/",
+    englishSource: "uh",
+    sourceWord: "deur → the 'uh' in 'duh' with rounded lips",
+    whatsNew: "Your own 'uh' with the lips rounded as if to whistle. One small lip change.",
+    taughtIn: 6,
+  },
+  {
+    grapheme: "uu",
+    sound: "/y/",
+    englishSource: "ee",
+    sourceWord: "vuur → the ee in 'see' with rounded lips",
+    whatsNew: "Keep the tongue on 'ee' and round the lips; that single contrast produces Dutch uu.",
+    taughtIn: 6,
+  },
+  {
+    grapheme: "g",
+    sound: "/x~ɣ/",
+    englishSource: "ch",
+    sourceWord: "goed → the Scottish ch in 'loch', with the voice on",
+    whatsNew: "Dutch g is a throat fricative, never the English stop in 'good'. Ch is its voiceless partner.",
+    taughtIn: 5,
+  },
+  {
+    grapheme: "v",
+    sound: "/v~f/",
+    englishSource: "f",
+    sourceWord: "vader → the f in 'father'",
+    whatsNew: "Many Dutch speakers devoice v to f; the spelling keeps v and points to the English f twin.",
+    taughtIn: 4,
+  },
+];
+
 const SOUND_IMPORTS_BY_LANG: Record<string, SoundImport[]> = {
   de: SOUND_IMPORTS,
   fr: FRENCH_SOUND_IMPORTS,
   es: SPANISH_SOUND_IMPORTS,
+  nl: DUTCH_SOUND_IMPORTS,
 };
 
 export function getSoundImportsForLanguage(languageId: string): SoundImport[] {

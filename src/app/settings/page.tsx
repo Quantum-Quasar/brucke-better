@@ -53,7 +53,7 @@ const SECTIONS = [
  *  matching setting is hidden entirely while filtering instead of leaving a
  *  bare heading and unrelated banners behind. */
 const SECTION_TERMS: Record<string, string[]> = {
-  language: ["language", "german", "spanish", "french", "switch language", "learning language"],
+  language: ["language", "german", "spanish", "french", "dutch", "switch language", "learning language"],
   behavior: [
     "quick restart", "esc", "restart", "behavior", "lazy mode", "umlaut", "accent", "tolerance",
     "ae", "oe", "ue", "ss", "capitalization", "noun", "lowercase", "posture", "cues",
@@ -326,7 +326,7 @@ export default function SettingsPage() {
             icon={Languages}
             title={`language you are learning (${activeLanguage.flag} ${activeLanguage.name})`}
             description="Switch the language you are learning. Each language keeps its own progress, SRS schedule, and introduction — switching never mixes them. Switching here stays on this page; use Guide to replay the intro."
-            matchesSearch={matches(["language", "german", "spanish", "french", "switch language", "learning language"])}
+            matchesSearch={matches(["language", "german", "spanish", "french", "dutch", "switch language", "learning language"])}
           >
             <div className="flex items-center gap-2 flex-wrap">
               {LANGUAGES.filter((l) => l.status === "available").map((lang) => (

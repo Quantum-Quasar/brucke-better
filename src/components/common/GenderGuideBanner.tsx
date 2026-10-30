@@ -60,6 +60,16 @@ const EXAMPLES: Record<string, Array<Array<{ word: string; gloss: string }>>> = 
       { word: "la nuit", gloss: "the night" },
     ],
   ],
+  nl: [
+    [
+      { word: "de arm", gloss: "the arm" },
+      { word: "de broer", gloss: "the brother" },
+    ],
+    [
+      { word: "het huis", gloss: "the house" },
+      { word: "het boek", gloss: "the book" },
+    ],
+  ],
 };
 
 export const GenderGuideBanner: React.FC<GenderGuideBannerProps> = ({ compact = false }) => {

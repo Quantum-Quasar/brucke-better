@@ -136,8 +136,72 @@ const FRENCH_DIAGNOSIS: Record<string, DiagnosisRow> = {
   },
 };
 
+const DUTCH_DIAGNOSIS: Record<string, DiagnosisRow> = {
+  sch_sh: {
+    slip: "the sch block lost its throat",
+    cue: "English sh is Dutch sch, pronounced /sx/ — schip, schoen, schaap. Read sch as one sound and finish with ch.",
+  },
+  th_d: {
+    slip: "the English th survived",
+    cue: "Dutch hardens th to d — broeder, drie, denken, danken.",
+  },
+  f_v: {
+    slip: "the English f stayed f",
+    cue: "Dutch writes v for the old f — vader, voet, vis. The spelling is the clue even when the accent devoices it.",
+  },
+  s_z: {
+    slip: "the English s stayed s",
+    cue: "Dutch voices the old s to z — zon, zee, zout, zeven.",
+  },
+  gh_ch: {
+    slip: "the silent gh stayed silent",
+    cue: "English gh is Dutch ch — nacht, licht, recht, acht.",
+  },
+  vowel_ij: {
+    slip: "the ij was read as English 'eye'",
+    cue: "IJ is /ɛi/, starting from 'bed' and gliding — ijs, wijn, vijf.",
+  },
+  vowel_ui: {
+    slip: "the ui was split into two English vowels",
+    cue: "UI is one rounded glide /œy/ — huis, muis, uit. Do not say 'oo-ee'.",
+  },
+  vowel_oe: {
+    slip: "the oe took the English 'book' vowel",
+    cue: "Dutch oe is /u/, the vowel of 'boot' — boek, voet, goed.",
+  },
+  g_y: {
+    slip: "the Dutch g became an English stop",
+    cue: "Dutch g is a fricative, never the g of 'good' — goed, groen, geel.",
+  },
+  gender: {
+    slip: "the article defaulted to de",
+    cue: "De/het is lexical: check the noun and its compound head, and remember every diminutive is het.",
+  },
+  negation: {
+    slip: "the negator was the wrong one",
+    cue: "Geen negates an indefinite noun; niet negates a verb, adjective or definite phrase.",
+  },
+  v2_order: {
+    slip: "the verb left second place",
+    cue: "Front a word and invert: Vandaag werk ik, not Vandaag ik werk.",
+  },
+  word_order: {
+    slip: "the elements are in English order",
+    cue: "Find the finite verb's seat first — second in a main clause, last in a subordinate — then pour the rest around it.",
+  },
+  wrong_word: {
+    slip: "wrong word, right idea",
+    cue: "The thought was right — a bank word the sentence doesn't need slipped in. Keep only the words the thought calls for.",
+  },
+  strong_verbs_ablaut: {
+    slip: "the vowel melody was flattened",
+    cue: "Strong verbs change the root vowel in the past — komen/kwam, zien/zag, geven/gaf.",
+  },
+};
+
 export const DIAGNOSIS_BY_LANGUAGE: Record<string, Record<string, DiagnosisRow>> = {
   de: GERMAN_DIAGNOSIS,
   es: SPANISH_DIAGNOSIS,
   fr: FRENCH_DIAGNOSIS,
+  nl: DUTCH_DIAGNOSIS,
 };
