@@ -62,6 +62,9 @@ pitch/
 documented docs/
 old documentation/
 
+# ===== local-only content (never push) =====
+stories/
+
 # diagrams stay local — thinking-method.md links them relatively
 docs/thinking-method-images/
 # local-only notes / generated
