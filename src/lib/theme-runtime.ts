@@ -30,7 +30,15 @@ function cachedThemeId(): string | null {
  */
 export function applyTheme(themeId: string): void {
   if (typeof document === "undefined") return;
-  if (typeof window !== "undefined" && cachedThemeId() === themeId && document.documentElement?.hasAttribute?.("data-theme")) {
+  const cachedId = typeof window !== "undefined" ? cachedThemeId() : null;
+  // globals.css already paints Alduin, so a first visit (no cached palette)
+  // needs no table until the learner picks a different theme.
+  if (cachedId === null && themeId === DEFAULT_THEME) return;
+  if (
+    typeof window !== "undefined" &&
+    cachedId === themeId &&
+    document.documentElement?.hasAttribute?.("data-theme")
+  ) {
     return;
   }
   void import("@/data/themes").then((m) => m.applyTheme(themeId));

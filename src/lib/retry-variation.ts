@@ -12,31 +12,7 @@
 // the caller (the attempt count), never in the store, so a reload re-renders the
 // same way it was first shown.
 
-/** Deterministic 32-bit hash — stable across renders, no Math.random churn. */
-function hash(input: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < input.length; i++) {
-    h ^= input.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return h >>> 0;
-}
-
-/** Fisher-Yates with a seeded PRNG; returns a new array. */
-function seededShuffle<T>(arr: T[], seed: number): T[] {
-  const out = [...arr];
-  let s = seed || 1;
-  for (let i = out.length - 1; i > 0; i--) {
-    // mulberry32 step
-    s = (s + 0x6d2b79f5) | 0;
-    let t = Math.imul(s ^ (s >>> 15), 1 | s);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    const r = ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    const j = Math.floor(r * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
-}
+import { hashSeed, seededShuffle } from "@/lib/prng";
 
 /**
  * The same exercise with a fresh surface: word banks, tile options, multiple-choice
@@ -45,7 +21,7 @@ function seededShuffle<T>(arr: T[], seed: number): T[] {
  */
 export function retryVariant<T extends { id: string }>(exercise: T, attempt: number): T {
   if (attempt <= 0) return exercise;
-  const seed = hash(`${exercise.id}#${attempt}`);
+  const seed = hashSeed(`${exercise.id}#${attempt}`);
   const next: Record<string, unknown> = { ...exercise };
 
   if (Array.isArray((exercise as Record<string, unknown>).word_bank)) {

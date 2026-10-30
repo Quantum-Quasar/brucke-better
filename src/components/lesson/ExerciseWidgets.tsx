@@ -14,7 +14,8 @@ import { diagnoseAttempt, affirmationFor } from "@/lib/shift-diagnosis";
 import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
 import { soundEngine } from "@/lib/sound";
-import { arrangeTilesDeterministically, hashSeed, seededShuffle } from "./exercise-tiles";
+import { arrangeTilesDeterministically } from "./exercise-tiles";
+import { hashSeed, seededShuffle } from "@/lib/prng";
 import type { ExerciseDiagnosis, ExerciseItem } from "@/lib/types";
 
 // Each exercise type is its own chunk: a lesson only downloads the widgets it

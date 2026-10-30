@@ -109,6 +109,13 @@ describe("interaction-gated click preload", () => {
     // the other triggers were removed with the fired one
     expect(listeners.pointerdown).toEqual([]);
     expect(listeners.touchstart).toEqual([]);
+
+    // a later pack choice re-arms the gate instead of being stranded
+    preloadClickSoundOnFirstInteraction("18");
+    expect(listeners.pointerdown.length).toBe(1);
+    listeners.pointerdown[0]();
+    await Promise.resolve();
+    expect(fetches).toEqual(["/sounds/click4/1.wav", "/sounds/click18/1.wav"]);
   });
 
   it("is a no-op without a window (server render, node tests)", async () => {

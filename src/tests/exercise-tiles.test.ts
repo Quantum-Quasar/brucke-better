@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-  arrangeTilesDeterministically,
-  hashSeed,
-  seededShuffle,
-} from "@/components/lesson/exercise-tiles";
+import { arrangeTilesDeterministically } from "@/components/lesson/exercise-tiles";
+import { hashSeed, seededShuffle } from "@/lib/prng";
 
 // These helpers moved out of ExerciseWidgets so the lesson route does not load
 // the exercise engine before practice. They are deterministic and SSR-safe, so

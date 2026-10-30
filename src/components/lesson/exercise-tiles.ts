@@ -3,30 +3,7 @@
 // reader and the twist card import these, and importing them from the widget
 // module pulled the whole exercise engine into the lesson route's initial chunk.
 
-/** Deterministic 32-bit FNV-1a hash — SSR-safe and stable across renders. */
-export function hashSeed(input: string): number {
-  let h = 2166136261;
-  for (let i = 0; i < input.length; i++) {
-    h ^= input.charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return h >>> 0;
-}
-
-/** Seeded Fisher-Yates shuffle returning a new array. */
-export function seededShuffle<T>(arr: T[], seed: number): T[] {
-  const out = [...arr];
-  let s = seed || 1;
-  for (let i = out.length - 1; i > 0; i--) {
-    s = (s + 0x6d2b79f5) | 0;
-    let t = Math.imul(s ^ (s >>> 15), 1 | s);
-    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
-    const r = ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-    const j = Math.floor(r * (i + 1));
-    [out[i], out[j]] = [out[j], out[i]];
-  }
-  return out;
-}
+import { hashSeed, seededShuffle } from "@/lib/prng";
 
 /**
  * Deterministically shuffle a tile or word bank so that pressing 1, 2, 3... in

@@ -243,8 +243,19 @@ export function loadSavedState(): Partial<AppState> {
   let parsed: Record<string, unknown> | null = null;
   if (isPlausibleStateObject(local) && isPlausibleStateObject(cookie)) {
     // Field-level merge: localStorage wins for every field it actually has;
-    // the cookie fills whatever the localStorage payload is missing.
-    parsed = { ...cookie, ...local };
+    // the cookie fills whatever the localStorage payload is missing. Exception:
+    // a lean cookie (the one carrying progress) written after localStorage
+    // rejected a write is newer than the stale local snapshot, so letting
+    // localStorage win would resurrect the old progress on every reload. The
+    // tiny prefs-only cookie is always written alongside a successful local
+    // write, so it never overrides a local payload that has progress.
+    const localSavedAt = typeof local.savedAt === "number" ? local.savedAt : 0;
+    const cookieSavedAt = typeof cookie.savedAt === "number" ? cookie.savedAt : 0;
+    const cookieHasProgress = cookie.progressByLanguage !== undefined;
+    parsed =
+      cookieHasProgress && cookieSavedAt > localSavedAt
+        ? { ...local, ...cookie }
+        : { ...cookie, ...local };
   } else if (isPlausibleStateObject(local)) {
     parsed = local;
   } else if (isPlausibleStateObject(cookie)) {
@@ -624,6 +635,9 @@ function normalizeParsedState(parsed: Record<string, any>): Partial<AppState> {
 }
 
 let lastSerialized = "";
+// Strictly increasing per tab, so a cookie written after localStorage rejected
+// a write is unambiguously newer than the stale copy it could not replace.
+let lastSavedAt = 0;
 
 type IdleWindow = Window & {
   requestIdleCallback?: (callback: () => void, options?: { timeout?: number }) => number;
@@ -729,10 +743,13 @@ function writeState(state: AppState) {
   if (serialized === lastSerialized) return;
   lastSerialized = serialized;
 
+  const savedAt = Math.max(Date.now(), lastSavedAt + 1);
+  lastSavedAt = savedAt;
+
   // 1. Save to localStorage
   let localOk = true;
   try {
-    localStorage.setItem(STORAGE_KEY, serialized);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...toPersist, savedAt }));
     reportStorageWrite(true);
   } catch {
     localOk = false;
@@ -745,6 +762,7 @@ function writeState(state: AppState) {
   // prefs/theme/onboarding payload is written.
   try {
     const minimal = JSON.stringify({
+      savedAt,
       theme: state.theme,
       font: state.font,
       activeLanguageId: state.activeLanguageId,
@@ -758,6 +776,7 @@ function writeState(state: AppState) {
       setCookie(STORAGE_COOKIE_KEY, minimal, 365);
     } else {
       const leanJson = JSON.stringify({
+        savedAt,
         activeLanguageId: state.activeLanguageId,
         progressByLanguage,
         seenIntroLanguages: state.seenIntroLanguages,

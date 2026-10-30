@@ -163,6 +163,26 @@ describe("Persistence validation & dual-store fallback merging", () => {
       (globalThis as any).document.cookie = `${STORAGE_COOKIE_KEY}=${encodeURIComponent("{also bad")}`;
       expect(loadSavedState()).toEqual({});
     });
+
+    it("prefers the lean cookie when localStorage rejected the newer write", () => {
+      useAppStore.getState().completeLesson(1);
+      const staleLocal = localStorage.getItem(STORAGE_KEY);
+      expect(staleLocal).toBeTruthy();
+
+      // quota exceeded: the localStorage copy stays at lesson 1, while the
+      // fallback cookie is written from the lesson-2 snapshot
+      const setItem = vi.spyOn(globalThis.localStorage, "setItem").mockImplementation(() => {
+        throw new Error("quota exceeded");
+      });
+      try {
+        useAppStore.getState().completeLesson(2);
+      } finally {
+        setItem.mockRestore();
+      }
+
+      expect(localStorage.getItem(STORAGE_KEY)).toBe(staleLocal);
+      expect(loadSavedState().completedLessons).toEqual([1, 2]);
+    });
   });
 
   describe("partial migrations", () => {
@@ -517,6 +537,47 @@ describe("Persistence validation & dual-store fallback merging", () => {
 
       saveState({ ...useAppStore.getState(), theme: "recovered-theme" });
       expect(getStorageHealth()).toBe("ok");
+    });
+
+    it("drops a pending deferred snapshot when a cross-tab write is adopted", () => {
+      const idleCallbacks: Array<() => void> = [];
+      (globalThis as any).requestIdleCallback = (callback: () => void) => {
+        idleCallbacks.push(callback);
+        return 1;
+      };
+      (globalThis as any).cancelIdleCallback = () => {};
+
+      useAppStore.getState().completeLesson(1);
+      expect(localStorage.getItem(STORAGE_KEY)).toBeNull();
+
+      // Another tab persisted a union that includes lesson 2 as well.
+      const week = [true, false, false, false, false, false, false];
+      localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify({
+          activeLanguageId: "de",
+          progressByLanguage: {
+            de: {
+              completedLessons: [1, 2],
+              currentLessonId: 3,
+              lessonProgress: {},
+              lessonStars: {},
+              wordMastery: {},
+              srsCards: {},
+              weeklyActivity: week,
+            },
+          },
+          hasCompletedOnboarding: true,
+        })
+      );
+      (globalThis as any).document.cookie = "";
+
+      useAppStore.getState().hydrateFromStorage({ reread: true });
+
+      // the stale pending snapshot must not flush over the adopted union
+      idleCallbacks.forEach((callback) => callback());
+      const persisted = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
+      expect(persisted.progressByLanguage.de.completedLessons).toEqual([1, 2]);
     });
   });
 });

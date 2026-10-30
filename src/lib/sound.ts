@@ -262,6 +262,8 @@ export function preloadClickSoundOnFirstInteraction(clickId: string): void {
     window.removeEventListener("touchstart", trigger);
     const id = pendingClickPreloadId;
     pendingClickPreloadId = null;
+    // allow a later pack choice (e.g. a cross-tab settings change) to re-arm
+    clickPreloadListenerAttached = false;
     if (id) void soundEngine.preloadClickSound(id);
   };
 

@@ -1,6 +1,11 @@
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from "vitest";
 import { THEMES, THEME_LIST, DEFAULT_THEME, POPULAR_THEMES, applyTheme, isColorDark, filterThemes } from "@/data/themes";
-import { THEME_COUNT, themeDisplayName } from "@/lib/theme-runtime";
+import {
+  THEME_COUNT,
+  themeDisplayName,
+  applyTheme as applyRuntimeTheme,
+  THEME_VARS_CACHE_KEY,
+} from "@/lib/theme-runtime";
 import { TOPICS, TRAIL_BRANCHES, getNextPlayableLessonId } from "@/data/curriculum";
 import { getGenderInfo } from "@/lib/gender";
 import { LESSONS } from "@/data/lessons";
@@ -13,6 +18,7 @@ describe("Theme Architecture & Contrast Verification", () => {
     attributes: Record<string, string>;
     setAttribute: (name: string, value: string) => void;
     removeAttribute: (name: string) => void;
+    hasAttribute: (name: string) => boolean;
     classList: {
       classes: Set<string>;
       add: (c: string) => void;
@@ -34,6 +40,9 @@ describe("Theme Architecture & Contrast Verification", () => {
       },
       removeAttribute(name: string) {
         delete this.attributes[name];
+      },
+      hasAttribute(name: string) {
+        return name in this.attributes;
       },
       classList: {
         classes: new Set<string>(),
@@ -202,6 +211,58 @@ describe("Theme Architecture & Contrast Verification", () => {
     expect(filterThemes("", "dark").every((t) => t.isDark)).toBe(true);
     expect(filterThemes("", "light").every((t) => !t.isDark)).toBe(true);
     expect(filterThemes("", "all").length).toBe(THEME_LIST.length);
+  });
+
+  describe("lazy palette loading", () => {
+    let cache: Record<string, string>;
+    const tick = () => new Promise((resolve) => setTimeout(resolve, 0));
+
+    beforeEach(() => {
+      cache = {};
+      (globalThis as any).window = {
+        localStorage: {
+          getItem: (key: string) => cache[key] ?? null,
+          setItem: (key: string, value: string) => {
+            cache[key] = value;
+          },
+        },
+      };
+      mockElement.attributes = {};
+      mockElement.style = {
+        setProperty(k: string, v: string) {
+          (this as any)[k] = v;
+        },
+      };
+      mockElement.classList.classes.clear();
+    });
+
+    afterEach(() => {
+      delete (globalThis as any).window;
+    });
+
+    it("does not load the palette table on a first visit", async () => {
+      applyRuntimeTheme(DEFAULT_THEME);
+      await tick();
+      // globals.css already paints Alduin; the 187-theme chunk stays unloaded
+      expect(mockElement.attributes["data-theme"]).toBeUndefined();
+      expect(mockElement.style["--bg-color"]).toBeUndefined();
+    });
+
+    it("loads the palette for a non-default theme without a cache", async () => {
+      applyRuntimeTheme("serika_dark");
+      await tick();
+      expect(mockElement.attributes["data-theme"]).toBe("serika_dark");
+      expect(mockElement.style["--bg-color"]).toBe("#323437");
+    });
+
+    it("skips the table when the head script already restored the same palette", async () => {
+      cache[THEME_VARS_CACHE_KEY] = JSON.stringify({ id: "serika_dark", vars: {} });
+      mockElement.attributes = { "data-theme": "serika_dark" };
+
+      applyRuntimeTheme("serika_dark");
+      await tick();
+      expect(mockElement.style["--bg-color"]).toBeUndefined();
+    });
   });
 });
 
