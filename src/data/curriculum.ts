@@ -1,4 +1,5 @@
 import type { LessonShell, TopicCluster, TrailBranch, TrailGate } from "@/lib/types";
+import type { CurriculumData } from "./curriculum-core";
 
 // ---------------------------------------------------------------------------
 // The Brücke Trail — 30 topics arranged as a linear spine of clusters.
@@ -757,6 +758,14 @@ for (const branch of TRAIL_BRANCHES) {
 }
 
 export const AUTHORED_LESSON_COUNT = AUTHORED_SHELLS.size;
+
+export const GERMAN_CURRICULUM: CurriculumData = {
+  topics: TOPICS,
+  trailBranches: TRAIL_BRANCHES,
+  trailGates: TRAIL_GATES,
+  totalTopics: TOTAL_TOPICS,
+  lessonCount: AUTHORED_LESSON_COUNT,
+};
 
 export const getAuthoredLesson = (lessonId: number) => AUTHORED_SHELLS.get(lessonId);
 

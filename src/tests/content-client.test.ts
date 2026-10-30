@@ -103,8 +103,7 @@ describe("client content loading", () => {
     expect(requests).toHaveLength(2);
   });
 
-  it("warms review and atlas payloads without throwing on failure", async () => {
-    const { prefetchAtlasContent, prefetchReviewContent } = await import("../lib/content-client");
+  it("warms review and atlas payloads without throwing on failure", async () => {    const { prefetchAtlasContent, prefetchReviewContent } = await import("../lib/content-client");
 
     prefetchReviewContent("de");
     await new Promise((resolve) => setTimeout(resolve, 0));
@@ -120,5 +119,27 @@ describe("client content loading", () => {
     fetchMock.mockRejectedValue(new Error("offline"));
     expect(() => prefetchReviewContent("es")).not.toThrow();
     await new Promise((resolve) => setTimeout(resolve, 0));
+  });
+
+  it("reloads at most once for a missing dataset, then retries in place", async () => {
+    const session = new Map<string, string>();
+    const reload = vi.fn();
+    (globalThis as any).window = {
+      sessionStorage: {
+        getItem: (key: string) => session.get(key) ?? null,
+        setItem: (key: string, value: string) => {
+          session.set(key, String(value));
+        },
+      },
+      location: { reload },
+    };
+    try {
+      const { attemptMissingContentReload } = await import("../lib/content-client");
+      expect(attemptMissingContentReload("compendium:de")).toBe(true);
+      expect(attemptMissingContentReload("compendium:de")).toBe(false);
+      expect(reload).toHaveBeenCalledTimes(1);
+    } finally {
+      delete (globalThis as any).window;
+    }
   });
 });

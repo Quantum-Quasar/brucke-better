@@ -11,7 +11,6 @@ import { useCurriculum } from "@/data/curriculum-client";
 import { useInsights } from "@/data/insights-client";
 import { lessonHref } from "@/lib/routes";
 import { isChunkLoadError } from "@/lib/chunk-errors";
-import type { DailyInsight } from "@/lib/types";
 
 export default function HomePage() {
   const [insightIndex, setInsightIndex] = useState(0);
@@ -25,7 +24,11 @@ export default function HomePage() {
   const language = getLanguageDefinition(activeLanguageId);
   const { curriculum, ready: curriculumReady, error: curriculumError, retry: retryCurriculum } =
     useCurriculum(activeLanguageId);
-  const dailyInsights: DailyInsight[] = useInsights(activeLanguageId);
+  const {
+    insights: dailyInsights,
+    error: insightsError,
+    retry: retryInsights,
+  } = useInsights(activeLanguageId);
 
   useEffect(() => {
     setInsightIndex(new Date().getDate() % (dailyInsights.length || 1));
@@ -149,9 +152,19 @@ export default function HomePage() {
           )}
 
           <TrailMap />
-          {todayInsight && (
+          {todayInsight ? (
             <DailyInsightCard insight={todayInsight} languageName={language.name} />
-          )}
+          ) : insightsError ? (
+            <button
+              type="button"
+              onClick={() =>
+                isChunkLoadError(insightsError) ? window.location.reload() : retryInsights()
+              }
+              className="mt-3 mx-auto block font-mono text-[11px] text-[var(--sub-color)] underline decoration-dotted cursor-pointer"
+            >
+              daily insight unavailable — retry
+            </button>
+          ) : null}
         </>
         )
       ) : (

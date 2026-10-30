@@ -1,7 +1,7 @@
 // All 187 themes extracted directly from Monkeytype (open-source typing speed platform)
 // Supports dynamic CSS variable injection across the entire application.
 
-import { DEFAULT_THEME, THEME_VARS_CACHE_KEY } from "@/lib/theme-runtime";
+import { DEFAULT_THEME, THEME_VARS_CACHE_KEY, themeDisplayName } from "@/lib/theme-runtime";
 
 export interface MonkeytypeTheme {
   bg: string;
@@ -2289,7 +2289,7 @@ export function isColorDark(color: string): boolean {
 // ponytail: derive list dynamically instead of duplicating 2,850 lines of theme objects
 export const THEME_LIST: ThemeMeta[] = Object.entries(THEMES).map(([id, t]) => ({
   id,
-  name: id.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase()),
+  name: themeDisplayName(id),
   isDark: isColorDark(t.bg),
   ...t,
 }));
@@ -2318,8 +2318,6 @@ export const POPULAR_THEMES: string[] = [
   "laser",
   "alduin",
 ];
-
-export { DEFAULT_THEME, THEME_VARS_CACHE_KEY };
 
 export type ThemeFilterTab = "popular" | "all" | "dark" | "light";
 

@@ -6,6 +6,7 @@ import { Palette, ChevronDown } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { DEFAULT_THEME, themeDisplayName } from "@/lib/theme-runtime";
 import { LazyLoadBoundary } from "@/components/common/LazyLoadBoundary";
+import { MENU_PANEL_FRAME } from "@/components/common/menu-panel";
 
 // The menu body pulls in the whole theme table; keep it out of the shared chunk.
 const loadPanel = () => import("./ThemeDropdownPanel");
@@ -14,7 +15,7 @@ const ThemeDropdownPanel = dynamic(loadPanel, {
   loading: () => (
     <div
       role="status"
-      className="absolute right-0 top-full mt-1.5 w-72 sm:w-80 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl z-50 p-4 font-mono text-xs text-[var(--sub-color)]"
+      className={`${MENU_PANEL_FRAME} p-4 font-mono text-xs text-[var(--sub-color)]`}
     >
       loading themes…
     </div>

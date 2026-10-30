@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, beforeAll, afterAll } from "vitest";
 import { useAppStore, loadSavedState, STORAGE_KEY, STORAGE_COOKIE_KEY, getCookie, setCookie } from "../lib/store";
-import { DEFAULT_THEME } from "../data/themes";
+import { DEFAULT_THEME } from "@/lib/theme-runtime";
 import { DEFAULT_SETTINGS } from "../data/settings";
 
 class LocalStorageMock {

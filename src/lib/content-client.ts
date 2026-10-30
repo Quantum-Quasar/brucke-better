@@ -23,6 +23,27 @@ function dataUrl(languageId: string, file: string): string {
 
 const cache = new Map<string, Promise<unknown>>();
 
+const RELOAD_GUARD_KEY = "brucke_content_reload";
+
+/**
+ * A 404 on a versioned /data URL usually means the tab outlived a deploy, but
+ * a genuinely missing export produces the same response. Reload at most once
+ * per content version so the latter degrades to the retry button instead of
+ * reloading on every attempt.
+ */
+export function attemptMissingContentReload(key: string): boolean {
+  if (typeof window === "undefined") return false;
+  const marker = `${CONTENT_VERSION ?? "dev"}:${key}`;
+  try {
+    if (window.sessionStorage.getItem(RELOAD_GUARD_KEY) === marker) return false;
+    window.sessionStorage.setItem(RELOAD_GUARD_KEY, marker);
+  } catch {
+    return false;
+  }
+  window.location.reload();
+  return true;
+}
+
 function loadJson<T>(url: string): Promise<T> {
   const cached = cache.get(url) as Promise<T> | undefined;
   if (cached) return cached;
@@ -107,10 +128,10 @@ function useResource<T>(key: string, load: (key: string) => Promise<T>): AsyncCo
     retry: () => {
       clearContentCache(key);
       // A 404 on a versioned /data URL means this tab outlived a deploy; the
-      // file it is asking for no longer exists, so only a reload can recover.
+      // file it is asking for may no longer exist. Reload once, then surface
+      // the error again and retry in place.
       const status = (state.error as (Error & { status?: number }) | null)?.status;
-      if (typeof window !== "undefined" && status === 404) {
-        window.location.reload();
+      if (typeof window !== "undefined" && status === 404 && attemptMissingContentReload(key)) {
         return;
       }
       setAttempt((value) => value + 1);

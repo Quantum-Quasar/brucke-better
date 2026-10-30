@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { Search, Check, Sparkles, Moon, Sun, Shuffle, Maximize2, Type, X } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { THEME_LIST, POPULAR_THEMES, filterThemes, type ThemeFilterTab } from "@/data/themes";
+import { MENU_PANEL_FRAME } from "@/components/common/menu-panel";
 
 /** The open dropdown body. Split from the trigger so the 187-theme table is
  * only downloaded when someone opens the theme menu. */
@@ -31,7 +32,7 @@ export default function ThemeDropdownPanel({ onClose }: { onClose: () => void })
   };
 
   return (
-    <div className="absolute right-0 top-full mt-1.5 w-72 sm:w-80 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl z-50 overflow-hidden font-sans text-[var(--text-color)] animate-in fade-in slide-in-from-top-1 duration-100">
+    <div className={`${MENU_PANEL_FRAME} overflow-hidden font-sans text-[var(--text-color)] animate-in fade-in slide-in-from-top-1 duration-100`}>
       {/* Search Header */}
       <div className="p-2.5 border-b border-[var(--sub-color)]/20 bg-[var(--sub-alt-color)]/60 space-y-2">
         <div className="relative">

@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
 import { loadSavedState, saveState, useAppStore, STORAGE_KEY, STORAGE_COOKIE_KEY, getCookie } from "../lib/store";
+import { DEFAULT_THEME } from "@/lib/theme-runtime";
+import { DEFAULT_FONT } from "@/data/fonts";
 
 class LocalStorageMock {
   private store: Record<string, string> = {};
@@ -87,6 +89,33 @@ describe("Store Persistence Security & Header Quota Bounds", () => {
     expect(encodedLength).toBeLessThanOrEqual(2048);
     // An oversized progress payload degrades to the minimal prefs cookie
     expect(JSON.parse(rawCookieVal!)).not.toHaveProperty("progressByLanguage");
+  });
+
+  it("repairs an oversized appearance id read from storage", () => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ theme: "x".repeat(5000), font: "é".repeat(5000) })
+    );
+
+    const saved = loadSavedState();
+    expect(saved.theme).toBe(DEFAULT_THEME);
+    expect(saved.font).toBe(DEFAULT_FONT);
+  });  it("clamps a hostile backup's appearance id before it can bloat the cookie", () => {
+    expect(
+      useAppStore.getState().importBackupState({
+        theme: "x".repeat(5000),
+        font: "y".repeat(5000),
+      })
+    ).toBe(true);
+    const state = useAppStore.getState();
+    expect(state.theme).toBe(DEFAULT_THEME);
+    expect(state.font).toBe(DEFAULT_FONT);
+
+    // force a write even if the imported snapshot matches the last save
+    saveState({ ...state, preferredReviewMode: "mcq" });
+    const raw = getCookie(STORAGE_COOKIE_KEY);
+    expect(raw).toBeTruthy();
+    expect(encodeURIComponent(raw!).length).toBeLessThanOrEqual(2048);
   });
 
   it("rejects non-backup objects instead of reporting success", () => {

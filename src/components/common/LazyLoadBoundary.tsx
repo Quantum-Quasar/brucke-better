@@ -2,6 +2,7 @@
 
 import { catchError, type ErrorInfo } from "next/error";
 import { isChunkLoadError } from "@/lib/chunk-errors";
+import { MENU_PANEL_FRAME } from "@/components/common/menu-panel";
 
 interface LazyLoadFallbackProps {
   /** What failed, used in the message for non-chunk errors. */
@@ -17,7 +18,7 @@ function LazyLoadFallback({ label = "this content", inline = false }: LazyLoadFa
       role="alert"
       className={
         inline
-          ? "absolute right-0 top-full mt-1.5 w-72 sm:w-80 rounded-lg border border-[var(--sub-color)]/30 bg-[var(--bg-color)] p-4 shadow-2xl z-50 font-mono text-[11px] text-[var(--sub-color)] space-y-2"
+          ? `${MENU_PANEL_FRAME} p-4 font-mono text-[11px] text-[var(--sub-color)] space-y-2`
           : "py-10 text-center font-mono text-xs text-[var(--sub-color)] space-y-3"
       }
     >

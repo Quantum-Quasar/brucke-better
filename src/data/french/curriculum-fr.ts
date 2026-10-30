@@ -1,4 +1,5 @@
 import type { LessonShell, TopicCluster, TrailBranch, TrailGate } from "@/lib/types";
+import type { CurriculumData } from "../curriculum-core";
 
 // ---------------------------------------------------------------------------
 // Le Pont — the French trail. 30 topics on one spine, plus cluster sprigs
@@ -531,5 +532,13 @@ for (const branch of FR_TRAIL_BRANCHES) {
 }
 
 export const FR_AUTHORED_LESSON_COUNT = FR_AUTHORED_SHELLS.size;
+
+export const FRENCH_CURRICULUM: CurriculumData = {
+  topics: FR_TOPICS,
+  trailBranches: FR_TRAIL_BRANCHES,
+  trailGates: FR_TRAIL_GATES,
+  totalTopics: FR_TOTAL_TOPICS,
+  lessonCount: FR_AUTHORED_LESSON_COUNT,
+};
 
 export const getFrenchAuthoredLesson = (lessonId: number) => FR_AUTHORED_SHELLS.get(lessonId);

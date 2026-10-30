@@ -26,24 +26,48 @@ function loadInsights(languageId: string): Promise<DailyInsight[]> {
   });
 }
 
-export function useInsights(languageId: string): DailyInsight[] {
-  const [state, setState] = useState<{ languageId: string; data: DailyInsight[] | null }>(() => ({
-    languageId,
-    data: loaded.get(languageId) ?? null,
-  }));
+export interface InsightsResource {
+  insights: DailyInsight[];
+  error: Error | null;
+  retry: () => void;
+}
+
+export function useInsights(languageId: string): InsightsResource {
+  const [attempt, setAttempt] = useState(0);
+  const [state, setState] = useState<{
+    languageId: string;
+    data: DailyInsight[] | null;
+    error: Error | null;
+  }>(() => ({ languageId, data: loaded.get(languageId) ?? null, error: null }));
 
   useEffect(() => {
     let cancelled = false;
     loadInsights(languageId)
       .then((data) => {
-        if (!cancelled) setState({ languageId, data });
+        if (!cancelled) setState({ languageId, data, error: null });
       })
-      .catch(() => {});
+      .catch((error: unknown) => {
+        if (!cancelled) {
+          setState({
+            languageId,
+            data: loaded.get(languageId) ?? null,
+            error: error instanceof Error ? error : new Error(String(error)),
+          });
+        }
+      });
     return () => {
       cancelled = true;
     };
-  }, [languageId]);
+  }, [languageId, attempt]);
 
-  const data = state.languageId === languageId ? state.data : (loaded.get(languageId) ?? null);
-  return data ?? NONE;
+  const current =
+    state.languageId === languageId
+      ? state
+      : { languageId, data: loaded.get(languageId) ?? null, error: null };
+
+  return {
+    insights: current.data ?? NONE,
+    error: current.error,
+    retry: () => setAttempt((value) => value + 1),
+  };
 }

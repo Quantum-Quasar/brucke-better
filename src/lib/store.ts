@@ -289,6 +289,22 @@ function oneOf<T extends string>(value: unknown, allowed: readonly T[], fallback
   return typeof value === "string" && (allowed as readonly string[]).includes(value) ? (value as T) : fallback;
 }
 
+// Appearance ids reach the cookie and the head script's CSS attributes, which
+// only accept this shape. Repair anything else at the storage/import boundary
+// so a hostile or corrupt backup cannot bloat the cookie past its budget.
+// Font ids may carry spaces (older backups stored display names); quotes,
+// slashes and semicolons are what must never reach the CSS/cookie payload.
+const SAFE_THEME_ID = /^[a-zA-Z0-9_-]{1,64}$/;
+const SAFE_FONT_ID = /^[a-zA-Z0-9 _-]{1,64}$/;
+
+function normalizeThemeId(value: unknown, fallback: string): string {
+  return typeof value === "string" && SAFE_THEME_ID.test(value) ? value : fallback;
+}
+
+function normalizeFontId(value: unknown, fallback: string): string {
+  return typeof value === "string" && SAFE_FONT_ID.test(value) ? value : fallback;
+}
+
 function coerceBoolean(value: unknown, fallback: boolean): boolean {
   return typeof value === "boolean" ? value : fallback;
 }
@@ -583,6 +599,9 @@ function normalizeParsedState(parsed: Record<string, any>): Partial<AppState> {
     delete parsed.settings;
   }
 
+  if (parsed.theme !== undefined) parsed.theme = normalizeThemeId(parsed.theme, DEFAULT_THEME);
+  if (parsed.font !== undefined) parsed.font = normalizeFontId(parsed.font, DEFAULT_FONT);
+
   if (parsed.tolerance !== undefined) {
     parsed.tolerance = normalizeTolerance(parsed.tolerance, parsed.settings, {
       umlautTolerance: Boolean(parsed.settings?.lazyMode),
@@ -722,11 +741,10 @@ function writeState(state: AppState) {
       lastActivityWeek: state.lastActivityWeek,
     },
   };
-  // Schema v2: the active language's progress lives only in its
-  // progressByLanguage slice. The top-level mirrors are rebuilt on load
-  // (normalizeParsedState), and older saves that still carry them keep loading.
+  // The active language's progress lives only in its progressByLanguage
+  // slice; the top-level mirrors are rebuilt on load (normalizeParsedState),
+  // and older saves that still carry them keep loading.
   const toPersist = {
-    schemaVersion: 2,
     activeLanguageId: state.activeLanguageId,
     progressByLanguage,
     seenIntroLanguages: state.seenIntroLanguages,
@@ -945,6 +963,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   setTheme: (theme: string) => {
+    if (!SAFE_THEME_ID.test(theme)) return;
     applyTheme(theme);
     set((s) => {
       const next = { ...s, theme };
@@ -962,6 +981,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   setFont: (font: string) => {
+    if (!SAFE_FONT_ID.test(font)) return;
     applyFont(font);
     set((s) => {
       const next = { ...s, font };
@@ -1368,8 +1388,8 @@ export const useAppStore = create<AppState>((set, get) => ({
       const nextSettings = isPlausibleStateObject(payload.settings)
         ? normalizeSettings(payload.settings, s.settings)
         : s.settings;
-      const currentTheme = (typeof payload.theme === "string" && payload.theme) || s.theme;
-      const currentFont = (typeof payload.font === "string" && payload.font) || s.font;
+      const currentTheme = normalizeThemeId(payload.theme, s.theme || DEFAULT_THEME);
+      const currentFont = normalizeFontId(payload.font, s.font || DEFAULT_FONT);
 
       applyTheme(currentTheme);
       applyFont(currentFont);
@@ -1523,8 +1543,8 @@ export const useAppStore = create<AppState>((set, get) => ({
     if (saved && Object.keys(saved).length > 0) {
       set((s) => {
         const nextSettings = normalizeSettings(saved.settings, s.settings);
-        const currentTheme = typeof saved.theme === "string" && saved.theme ? saved.theme : s.theme || DEFAULT_THEME;
-        const currentFont = typeof saved.font === "string" && saved.font ? saved.font : s.font || DEFAULT_FONT;
+        const currentTheme = normalizeThemeId(saved.theme, s.theme || DEFAULT_THEME);
+        const currentFont = normalizeFontId(saved.font, s.font || DEFAULT_FONT);
         applyTheme(currentTheme);
         applyFont(currentFont);
 

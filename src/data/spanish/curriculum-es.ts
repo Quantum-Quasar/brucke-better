@@ -1,4 +1,5 @@
 import type { LessonShell, TopicCluster, TrailBranch, TrailGate } from "@/lib/types";
+import type { CurriculumData } from "../curriculum-core";
 
 // ---------------------------------------------------------------------------
 // El Puente — the Spanish trail. 30 topics on one spine, plus cluster sprigs
@@ -531,5 +532,13 @@ for (const branch of ES_TRAIL_BRANCHES) {
 }
 
 export const ES_AUTHORED_LESSON_COUNT = ES_AUTHORED_SHELLS.size;
+
+export const SPANISH_CURRICULUM: CurriculumData = {
+  topics: ES_TOPICS,
+  trailBranches: ES_TRAIL_BRANCHES,
+  trailGates: ES_TRAIL_GATES,
+  totalTopics: ES_TOTAL_TOPICS,
+  lessonCount: ES_AUTHORED_LESSON_COUNT,
+};
 
 export const getSpanishAuthoredLesson = (lessonId: number) => ES_AUTHORED_SHELLS.get(lessonId);

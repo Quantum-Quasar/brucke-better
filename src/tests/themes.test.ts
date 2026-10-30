@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from "vitest";
-import { THEMES, THEME_LIST, DEFAULT_THEME, POPULAR_THEMES, applyTheme, isColorDark, filterThemes } from "@/data/themes";
+import { THEMES, THEME_LIST, POPULAR_THEMES, applyTheme, isColorDark, filterThemes } from "@/data/themes";
 import {
+  DEFAULT_THEME,
   THEME_COUNT,
   themeDisplayName,
   applyTheme as applyRuntimeTheme,

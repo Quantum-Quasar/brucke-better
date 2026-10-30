@@ -6,24 +6,10 @@
 // keep using the synchronous curriculum-registry.
 
 import { useEffect, useState } from "react";
-import {
-  TOPICS,
-  TRAIL_BRANCHES,
-  TRAIL_GATES,
-  TOTAL_TOPICS,
-  AUTHORED_LESSON_COUNT,
-} from "./curriculum";
+import { GERMAN_CURRICULUM } from "./curriculum";
 import { EMPTY_CURRICULUM, type CurriculumData } from "./curriculum-core";
 
-const GERMAN: CurriculumData = {
-  topics: TOPICS,
-  trailBranches: TRAIL_BRANCHES,
-  trailGates: TRAIL_GATES,
-  totalTopics: TOTAL_TOPICS,
-  lessonCount: AUTHORED_LESSON_COUNT,
-};
-
-const loaded = new Map<string, CurriculumData>([["de", GERMAN]]);
+const loaded = new Map<string, CurriculumData>([["de", GERMAN_CURRICULUM]]);
 const pending = new Map<string, Promise<CurriculumData>>();
 
 /** The curriculum if it is already in memory, else null. */
@@ -37,21 +23,9 @@ export function loadCurriculum(languageId: string): Promise<CurriculumData> {
   let promise = pending.get(languageId);
   if (!promise) {
     if (languageId === "fr") {
-      promise = import("./french/curriculum-fr").then((m) => ({
-        topics: m.FR_TOPICS,
-        trailBranches: m.FR_TRAIL_BRANCHES,
-        trailGates: m.FR_TRAIL_GATES,
-        totalTopics: m.FR_TOTAL_TOPICS,
-        lessonCount: m.FR_AUTHORED_LESSON_COUNT,
-      }));
+      promise = import("./french/curriculum-fr").then((m) => m.FRENCH_CURRICULUM);
     } else if (languageId === "es") {
-      promise = import("./spanish/curriculum-es").then((m) => ({
-        topics: m.ES_TOPICS,
-        trailBranches: m.ES_TRAIL_BRANCHES,
-        trailGates: m.ES_TRAIL_GATES,
-        totalTopics: m.ES_TOTAL_TOPICS,
-        lessonCount: m.ES_AUTHORED_LESSON_COUNT,
-      }));
+      promise = import("./spanish/curriculum-es").then((m) => m.SPANISH_CURRICULUM);
     } else {
       promise = Promise.resolve(EMPTY_CURRICULUM);
     }

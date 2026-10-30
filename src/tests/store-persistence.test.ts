@@ -353,10 +353,9 @@ describe("Persistence validation & dual-store fallback merging", () => {
       store.markWordEncountered("haus");
       saveState(useAppStore.getState());
 
-      // schema v2 writes the slice once; simulate a payload that lost
-      // everything but the theme and the slices
+      // slice-only writes keep the progress on the language slice; simulate a
+      // payload that lost everything but the theme and the slices
       const full = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
-      expect(full.schemaVersion).toBe(2);
       expect(full.completedLessons).toBeUndefined();
       localStorage.setItem(
         STORAGE_KEY,
@@ -464,7 +463,7 @@ describe("Persistence validation & dual-store fallback merging", () => {
     });
   });
 
-  describe("schema v2 (slice-only) persistence", () => {
+  describe("slice-only persistence", () => {
     it("loads a legacy save that still carries the top-level mirrors", () => {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(leanCookie()));
       const saved = loadSavedState();
@@ -472,9 +471,9 @@ describe("Persistence validation & dual-store fallback merging", () => {
       expect(saved.currentLessonId).toBe(4);
     });
 
-    it("loads a v2 save with only the slice", () => {
-      const { completedLessons: _c, currentLessonId: _i, wordMastery: _w, ...v2 } = leanCookie();
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...v2, schemaVersion: 2 }));
+    it("loads a save with only the slice", () => {
+      const { completedLessons: _c, currentLessonId: _i, wordMastery: _w, ...sliceOnly } = leanCookie();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(sliceOnly));
       const saved = loadSavedState();
       expect(saved.completedLessons).toEqual([1, 2, 3]);
       expect(saved.wordMastery?.haus).toBe("mastered");
