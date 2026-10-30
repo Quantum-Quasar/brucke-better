@@ -4,7 +4,7 @@
 // public/data and is fetched once per language, then shared from an in-memory
 // promise cache. Curriculum and insights stay bundled because they are small.
 
-import { useEffect, useState } from "react";
+import { useAsyncResource, type AsyncResource } from "@/lib/async-resource";
 import { EMPTY_COMPENDIUM } from "@/data/empty-compendium";
 import type { CompendiumData, LessonIndexEntry } from "@/lib/types";
 
@@ -79,64 +79,19 @@ export function loadLessonIndex(languageId: string): Promise<LessonIndexEntry[]>
   return loadJson<LessonIndexEntry[]>(dataUrl(languageId, "lesson-index.json"));
 }
 
-export interface AsyncContent<T> {
-  data: T | null;
-  error: Error | null;
-  loading: boolean;
-  retry: () => void;
-}
-
-function useResource<T>(key: string, load: (key: string) => Promise<T>): AsyncContent<T> {
-  const [state, setState] = useState<{
-    key: string;
-    data: T | null;
-    error: Error | null;
-    loading: boolean;
-  }>({ key, data: null, error: null, loading: true });
-  const [attempt, setAttempt] = useState(0);
-
-  useEffect(() => {
-    let cancelled = false;
-    setState({ key, data: null, error: null, loading: true });
-    load(key)
-      .then((data) => {
-        if (!cancelled) setState({ key, data, error: null, loading: false });
-      })
-      .catch((error: unknown) => {
-        if (!cancelled) {
-          setState({
-            key,
-            data: null,
-            error: error instanceof Error ? error : new Error(String(error)),
-            loading: false,
-          });
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [key, attempt, load]);
-
-  // Ignore a previous language's payload for the one render between a key
-  // change and the effect above resetting state.
-  const current = state.key === key;
-
-  return {
-    data: current ? state.data : null,
-    error: current ? state.error : null,
-    loading: current ? state.loading : true,
-    retry: () => {
-      clearContentCache(key);
+function useContentResource<T>(key: string, load: (key: string) => Promise<T>): AsyncResource<T> {
+  return useAsyncResource(key, load, {
+    onRetry: (retryKey, error) => {
+      clearContentCache(retryKey);
       // A 404 on a versioned /data URL means this tab outlived a deploy; the
       // file it is asking for may no longer exist. Reload once, then surface
       // the error again and retry in place.
-      const status = (state.error as (Error & { status?: number }) | null)?.status;
-      if (typeof window !== "undefined" && status === 404 && attemptMissingContentReload(key)) {
-        return;
+      const status = (error as (Error & { status?: number }) | null)?.status;
+      if (typeof window !== "undefined" && status === 404) {
+        attemptMissingContentReload(retryKey);
       }
-      setAttempt((value) => value + 1);
     },
-  };
+  });
 }
 
 function clearContentCache(key: string) {
@@ -155,12 +110,12 @@ function loadLessonIndexKey(key: string): Promise<LessonIndexEntry[]> {
   return loadLessonIndex(key.slice("lesson-index:".length));
 }
 
-export function useCompendium(languageId: string): AsyncContent<CompendiumData> {
-  return useResource(`compendium:${languageId}`, loadCompendiumKey);
+export function useCompendium(languageId: string): AsyncResource<CompendiumData> {
+  return useContentResource(`compendium:${languageId}`, loadCompendiumKey);
 }
 
-export function useLessonIndex(languageId: string): AsyncContent<LessonIndexEntry[]> {
-  return useResource(`lesson-index:${languageId}`, loadLessonIndexKey);
+export function useLessonIndex(languageId: string): AsyncResource<LessonIndexEntry[]> {
+  return useContentResource(`lesson-index:${languageId}`, loadLessonIndexKey);
 }
 
 /**

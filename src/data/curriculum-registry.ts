@@ -18,10 +18,6 @@ export function getCurriculum(languageId: string): CurriculumData {
   return CURRICULUM_MAP[languageId] ?? EMPTY_CURRICULUM;
 }
 
-export function getAuthoredLessonCount(languageId: string): number {
-  return getCurriculum(languageId).lessonCount;
-}
-
 /**
  * The spine topic that owns a trail node — core, sprig or branch lesson.
  * Sprig ids follow `topicId * 100 + index`; branch lessons belong to the

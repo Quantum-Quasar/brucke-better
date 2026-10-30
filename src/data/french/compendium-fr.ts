@@ -525,5 +525,3 @@ export const frenchCompendium: CompendiumData = {
   falseFriends: FALSE_FRIENDS,
   dailyInsights: [],
 };
-
-export const FRENCH_WORD_COUNT = WORDS.length;

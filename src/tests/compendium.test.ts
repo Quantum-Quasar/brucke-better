@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import { compendium as data } from "../data/compendium";
-import { getWordEntity } from "../lib/word-entities";
+import { getWordEntity } from "./word-entity-fixtures";
 import { TOTAL_COMPENDIUM_WORDS } from "../lib/types";
 
 describe("Brücke Compendium Data Integrity", () => {

@@ -6,9 +6,9 @@ import type { CurriculumData } from "../curriculum-core";
 // and 15 support branches. Every core, sprig, and branch lesson is authored.
 // ---------------------------------------------------------------------------
 
-export const ES_TOTAL_TOPICS = 30;
+const ES_TOTAL_TOPICS = 30;
 
-export const esSprigId = (topicId: number, index: number) => topicId * 100 + index;
+const esSprigId = (topicId: number, index: number) => topicId * 100 + index;
 
 const shell = (id: number, title: string, plan: string): LessonShell => ({ id, title, plan, authored: true });
 
@@ -531,7 +531,7 @@ for (const branch of ES_TRAIL_BRANCHES) {
   }
 }
 
-export const ES_AUTHORED_LESSON_COUNT = ES_AUTHORED_SHELLS.size;
+const ES_AUTHORED_LESSON_COUNT = ES_AUTHORED_SHELLS.size;
 
 export const SPANISH_CURRICULUM: CurriculumData = {
   topics: ES_TOPICS,
@@ -541,4 +541,3 @@ export const SPANISH_CURRICULUM: CurriculumData = {
   lessonCount: ES_AUTHORED_LESSON_COUNT,
 };
 
-export const getSpanishAuthoredLesson = (lessonId: number) => ES_AUTHORED_SHELLS.get(lessonId);

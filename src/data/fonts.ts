@@ -1,7 +1,6 @@
 // All 43 fonts extracted from Monkeytype
 // Supports on-demand @font-face injection so only the active/previewed font is downloaded.
 
-export type FontCategory = "all" | "sans" | "mono" | "display";
 
 export interface FontMeta {
   id: string;
@@ -120,7 +119,6 @@ export const FONT_LIST: FontMeta[] = RAW_FONTS.map(([id, name, category, customF
 export const FONTS_BY_ID: Record<string, FontMeta> = Object.fromEntries(
   FONT_LIST.map((f) => [f.id, f])
 );
-export const FONTS = FONTS_BY_ID;
 
 export type FontFilterTab = "all" | "mono" | "sans" | "display";
 

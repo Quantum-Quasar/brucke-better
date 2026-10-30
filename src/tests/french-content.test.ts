@@ -4,7 +4,7 @@ import { frenchCompendium } from "../data/french/compendium-fr";
 import { FR_LESSONS } from "../data/french/lessons-fr";
 import { FR_TOPICS, FR_TRAIL_BRANCHES, FR_TRAIL_GATES } from "../data/french/curriculum-fr";
 import { FRENCH_INSIGHTS } from "../data/french/insights-fr";
-import { getWordEntityMap } from "../lib/word-entities";
+import { getWordEntityMap } from "./word-entity-fixtures";
 import { displayArticle } from "../lib/gender";
 import { evaluateAnswerAccuracy } from "../lib/letter-diff";
 import type { Lesson } from "../lib/types";

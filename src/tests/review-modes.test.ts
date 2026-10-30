@@ -1,4 +1,4 @@
-import { getSentenceEntities, getArticleEntities } from "@/lib/word-entities";
+import { getSentenceEntities, getArticleEntities } from "./word-entity-fixtures";
 import { DECK_CAPABILITIES, getAtlasFamilyWordIds, resolveCardReviewMode } from "@/lib/review-decks";
 import { describe, it, expect } from "vitest";
 import { generateMCQOptions, generateWordTiles, shuffleArray } from "@/lib/review-modes";

@@ -41,7 +41,7 @@ export type ReviewDeckType =
   | "domain"
   | "everything";
 
-export interface DeckCapabilitySpec {
+interface DeckCapabilitySpec {
   id: ReviewDeckType;
   label: string;
   /** Which review modes this deck supports. Single-mode decks skip the style picker modal. */
@@ -49,7 +49,7 @@ export interface DeckCapabilitySpec {
   defaultMode: ReviewMode;
 }
 
-export const ALL_REVIEW_MODES: ReviewMode[] = ["flashcard", "mcq", "tiles", "typing"];
+const ALL_REVIEW_MODES: ReviewMode[] = ["flashcard", "mcq", "tiles", "typing"];
 
 export const DECK_CAPABILITIES: Record<ReviewDeckType, DeckCapabilitySpec> = {
   due: {

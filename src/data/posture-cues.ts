@@ -5,6 +5,7 @@
 // energy (§1.8, §2.3).
 
 import type { ExerciseType } from "@/lib/types";
+import { hashSeed } from "@/lib/prng";
 
 export type PostureCueSlot =
   | "derive"
@@ -26,17 +27,11 @@ export const POSTURE_CUES: Record<PostureCueSlot, string[]> = {
   default: ["Slow is smooth. Think it through, then answer."],
 };
 
-export const WHISPER_SLOT_POSITIONS = [0, 3];
+const WHISPER_SLOT_POSITIONS = [0, 3];
 
-/** FNV-1a — stable across renders and sessions, no randomness. */
+/** Stable across renders and sessions, no randomness. */
 function hashLessonId(lessonId: number): number {
-  let hash = 0x811c9dc5;
-  const key = `lesson-${lessonId}`;
-  for (let i = 0; i < key.length; i++) {
-    hash ^= key.charCodeAt(i);
-    hash = Math.imul(hash, 0x01000193) >>> 0;
-  }
-  return hash >>> 0;
+  return hashSeed(`lesson-${lessonId}`);
 }
 
 function poolFor(slot: PostureCueSlot): string[] {

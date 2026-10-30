@@ -1,16 +1,16 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useEffect, useRef } from "react";
 import { Search, Check, Sparkles, Moon, Sun, Shuffle, Maximize2, Type, X } from "lucide-react";
 import { useAppStore } from "@/lib/store";
-import { THEME_LIST, POPULAR_THEMES, filterThemes, type ThemeFilterTab } from "@/data/themes";
+import { THEME_LIST, POPULAR_THEMES } from "@/data/themes";
 import { MENU_PANEL_FRAME } from "@/components/common/menu-panel";
+import { ThemeSwatch, useThemeFilter } from "@/components/common/theme-picker";
 
 /** The open dropdown body. Split from the trigger so the 187-theme table is
  * only downloaded when someone opens the theme menu. */
 export default function ThemeDropdownPanel({ onClose }: { onClose: () => void }) {
-  const [query, setQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<ThemeFilterTab>("popular");
+  const { query, setQuery, activeTab, setActiveTab, filteredThemes } = useThemeFilter();
 
   const currentTheme = useAppStore((s) => s.theme);
   const setTheme = useAppStore((s) => s.setTheme);
@@ -23,7 +23,6 @@ export default function ThemeDropdownPanel({ onClose }: { onClose: () => void })
     return () => clearTimeout(id);
   }, []);
 
-  const filteredThemes = useMemo(() => filterThemes(query, activeTab), [activeTab, query]);
 
   const handleRandomTheme = () => {
     const pool = filteredThemes.length > 0 ? filteredThemes : THEME_LIST;
@@ -146,25 +145,7 @@ export default function ThemeDropdownPanel({ onClose }: { onClose: () => void })
               </div>
 
               <div className="flex items-center gap-2 shrink-0">
-                {/* Palette Swatch Preview */}
-                <div
-                  className="flex items-center gap-0.5 p-1 rounded border border-black/10 shrink-0"
-                  style={{ backgroundColor: theme.bg }}
-                  title={`${theme.name} preview`}
-                >
-                  <span
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: theme.sub }}
-                  />
-                  <span
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: theme.main }}
-                  />
-                  <span
-                    className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: theme.text }}
-                  />
-                </div>
+                <ThemeSwatch theme={theme} compact />
 
                 {isSelected && (
                   <Check className="w-3.5 h-3.5 text-[var(--main-color)] shrink-0" />

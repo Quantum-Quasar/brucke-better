@@ -22,7 +22,7 @@ import { LANGUAGES, DEFAULT_LANGUAGE_ID, getLanguageDefinition, isValidLanguageI
 import { getLanguageContent, getTotalWordCount, EMPTY_COMPENDIUM, getNextPlayableLessonIdFor } from "@/data/language-content";
 import { getCourseCounts, getWordCount, COURSE_COUNTS, WORD_COUNTS } from "@/data/word-counts";
 import { getAtlasFamilies } from "@/lib/atlas-families";
-import { getWordEntity, getWordEntityMap, getWordLessonMap } from "@/lib/word-entities";
+import { getWordEntity, getWordEntityMap, getWordLessonMap } from "./word-entity-fixtures";
 import { loadSavedState, useAppStore, STORAGE_KEY, type LanguageProgress } from "@/lib/store";
 import { TOTAL_TOPICS } from "@/data/curriculum";
 

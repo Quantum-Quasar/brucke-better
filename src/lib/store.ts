@@ -5,11 +5,10 @@
 import { create } from "zustand";
 import type { LessonProgress, LessonSegment, LessonStar, MasteryState, ReviewMode, SRSCard } from "./types";
 import { createInitialCard, gradeCard, isMastered, type ReviewGrade } from "./srs";
-import { applyTheme, DEFAULT_THEME } from "@/lib/theme-runtime";
+import { applyAppearanceSettings, applyTheme, DEFAULT_THEME } from "@/lib/theme-runtime";
 import { applyFont, DEFAULT_FONT } from "@/data/fonts";
 import { type CustomizationSettings, DEFAULT_SETTINGS } from "@/data/settings";
 import { DEFAULT_LANGUAGE_ID, getLanguageDefinition, isValidLanguageId } from "@/data/languages";
-import { applyAppearanceSettings } from "./appearance";
 import { soundEngine, preloadClickSoundOnFirstInteraction } from "./sound";
 import { reportStorageWrite } from "./storage-health";
 import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "./storage-keys";

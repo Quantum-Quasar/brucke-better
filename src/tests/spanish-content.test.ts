@@ -4,7 +4,7 @@ import { spanishCompendium } from "../data/spanish/compendium-es";
 import { ES_LESSONS } from "../data/spanish/lessons-es";
 import { ES_TOPICS, ES_TRAIL_BRANCHES, ES_TRAIL_GATES } from "../data/spanish/curriculum-es";
 import { SPANISH_INSIGHTS } from "../data/spanish/insights-es";
-import { getWordEntityMap } from "../lib/word-entities";
+import { getWordEntityMap } from "./word-entity-fixtures";
 import type { Lesson } from "../lib/types";
 
 // The Spanish course is authored as typed TS modules under src/data/spanish/

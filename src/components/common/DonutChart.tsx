@@ -1,6 +1,6 @@
 "use client";
 
-// ponytail: native svg 4-tier donut chart without external chart library
+// Native CSS donut: conic-gradient segments with a radial mask for the ring.
 
 import React from "react";
 
@@ -33,53 +33,35 @@ export const DonutChart: React.FC<DonutChartProps> = ({
     );
   }
 
-  const radius = (size - strokeWidth) / 2;
-  const circumference = 2 * Math.PI * radius;
-
   const segments = [
-    { count: mastered, color: "var(--main-color)" }, // Mastered (primary accent)
-    { count: encountered, color: "var(--text-color)" }, // Encountered (primary text)
-    { count: explored, color: "var(--sub-color)" }, // Explored (muted sub)
-    { count: unexplored, color: "color-mix(in srgb, var(--sub-color) 35%, transparent)" }, // Unexplored (subtle)
+    { count: mastered, color: "var(--main-color)" },
+    { count: encountered, color: "var(--text-color)" },
+    { count: explored, color: "var(--sub-color)" },
+    { count: unexplored, color: "color-mix(in srgb, var(--sub-color) 35%, transparent)" },
   ];
 
-  let accumulatedOffset = 0;
+  let accumulated = 0;
+  const stops = segments
+    .filter((seg) => seg.count > 0)
+    .map((seg) => {
+      const start = (accumulated / total) * 100;
+      accumulated += seg.count;
+      const end = (accumulated / total) * 100;
+      return `${seg.color} ${start}% ${end}%`;
+    });
+
+  const ringMask = `radial-gradient(farthest-side, transparent calc(100% - ${strokeWidth}px), #000 calc(100% - ${strokeWidth}px))`;
 
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="rotate-[-90deg]">
-        {/* Background track */}
-        <circle
-          cx={size / 2}
-          cy={size / 2}
-          r={radius}
-          fill="none"
-          stroke="var(--sub-alt-color)"
-          strokeWidth={strokeWidth}
-        />
-        {segments.map((seg, i) => {
-          if (seg.count === 0) return null;
-          const strokeDasharray = `${(seg.count / total) * circumference} ${circumference}`;
-          const strokeDashoffset = -accumulatedOffset;
-          accumulatedOffset += (seg.count / total) * circumference;
-
-          return (
-            <circle
-              key={i}
-              cx={size / 2}
-              cy={size / 2}
-              r={radius}
-              fill="none"
-              stroke={seg.color}
-              strokeWidth={strokeWidth}
-              strokeDasharray={strokeDasharray}
-              strokeDashoffset={strokeDashoffset}
-              strokeLinecap="round"
-              className="transition-all duration-300"
-            />
-          );
-        })}
-      </svg>
+      <div
+        className="h-full w-full rounded-full"
+        style={{
+          background: `conic-gradient(${stops.join(", ")})`,
+          mask: ringMask,
+          WebkitMask: ringMask,
+        }}
+      />
       <span className="absolute text-[10px] font-mono font-bold text-[var(--text-color)]">
         {mastered + encountered}
       </span>

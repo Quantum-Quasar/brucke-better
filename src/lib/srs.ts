@@ -81,7 +81,6 @@ export function gradeCard(card: SRSCard, grade: ReviewGrade, now = new Date()): 
     last_reviewed: now.toISOString(),
   };
 }
-export const calculateSM2 = gradeCard;
 
 export function isMastered(card: SRSCard): boolean {
   // Mastery criteria: at least 3 successful consecutive reviews without current lapse

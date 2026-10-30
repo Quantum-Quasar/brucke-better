@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useState, useMemo, useRef } from "react";
+import React, { useRef } from "react";
 import { Search, X, Check, Sparkles, Moon, Sun, Palette } from "lucide-react";
 import { useAppStore } from "@/lib/store";
-import { THEME_LIST, POPULAR_THEMES, filterThemes } from "@/data/themes";
+import { THEME_LIST, POPULAR_THEMES } from "@/data/themes";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
-
-type FilterTab = "all" | "popular" | "dark" | "light";
+import { ThemeSwatch, useThemeFilter } from "@/components/common/theme-picker";
 
 export const ThemeSelectorModal: React.FC = () => {
   const isOpen = useAppStore((s) => s.isThemeSelectorOpen);
@@ -14,8 +13,7 @@ export const ThemeSelectorModal: React.FC = () => {
   const currentTheme = useAppStore((s) => s.theme);
   const setTheme = useAppStore((s) => s.setTheme);
 
-  const [query, setQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<FilterTab>("popular");
+  const { query, setQuery, activeTab, setActiveTab, filteredThemes } = useThemeFilter();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -25,8 +23,6 @@ export const ThemeSelectorModal: React.FC = () => {
     initialFocusRef: searchInputRef,
     onEscape: closeThemeSelector,
   });
-
-  const filteredThemes = useMemo(() => filterThemes(query, activeTab), [activeTab, query]);
 
   if (!isOpen) return null;
 
@@ -168,24 +164,7 @@ export const ThemeSelectorModal: React.FC = () => {
                 </div>
 
                 {/* 4-Color Preview Swatch (bg, sub, main, text) */}
-                <div
-                  className="flex items-center gap-1 p-1 rounded border border-black/10 shrink-0"
-                  style={{ backgroundColor: theme.bg }}
-                  title={`${theme.name} palette`}
-                >
-                  <span
-                    className="w-2.5 h-2.5 rounded-full"
-                    style={{ backgroundColor: theme.sub }}
-                  />
-                  <span
-                    className="w-2.5 h-2.5 rounded-full"
-                    style={{ backgroundColor: theme.main }}
-                  />
-                  <span
-                    className="w-2.5 h-2.5 rounded-full"
-                    style={{ backgroundColor: theme.text }}
-                  />
-                </div>
+                <ThemeSwatch theme={theme} />
               </button>
             );
           })}

@@ -497,5 +497,3 @@ export const spanishCompendium: CompendiumData = {
   falseFriends: FALSE_FRIENDS,
   dailyInsights: [],
 };
-
-export const SPANISH_WORD_COUNT = WORDS.length;

@@ -136,7 +136,7 @@ export const SOUND_IMPORTS: SoundImport[] = [
   },
 ];
 
-export const FRENCH_SOUND_IMPORTS: SoundImport[] = [
+const FRENCH_SOUND_IMPORTS: SoundImport[] = [
   {
     grapheme: "ch",
     sound: "/ʃ/",
@@ -187,7 +187,7 @@ export const FRENCH_SOUND_IMPORTS: SoundImport[] = [
   },
 ];
 
-export const SPANISH_SOUND_IMPORTS: SoundImport[] = [
+const SPANISH_SOUND_IMPORTS: SoundImport[] = [
   {
     grapheme: "ñ",
     sound: "/ɲ/",

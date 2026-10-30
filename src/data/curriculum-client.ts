@@ -5,7 +5,7 @@
 // their own chunks the first time that course is opened. The server and tests
 // keep using the synchronous curriculum-registry.
 
-import { useEffect, useState } from "react";
+import { useAsyncResource } from "@/lib/async-resource";
 import { GERMAN_CURRICULUM } from "./curriculum";
 import { EMPTY_CURRICULUM, type CurriculumData } from "./curriculum-core";
 
@@ -51,57 +51,13 @@ export function useCurriculum(languageId: string): {
   error: Error | null;
   retry: () => void;
 } {
-  const [attempt, setAttempt] = useState(0);
-  const [state, setState] = useState<{
-    languageId: string;
-    data: CurriculumData | null;
-    error: Error | null;
-  }>(() => ({ languageId, data: peekCurriculum(languageId), error: null }));
-
-  useEffect(() => {
-    let cancelled = false;
-    const cached = peekCurriculum(languageId);
-    if (cached) {
-      setState((prev) =>
-        prev.languageId === languageId && prev.data === cached && prev.error === null
-          ? prev
-          : { languageId, data: cached, error: null }
-      );
-      return;
-    }
-    setState((prev) =>
-      prev.languageId === languageId && prev.data === null && prev.error === null
-        ? prev
-        : { languageId, data: null, error: null }
-    );
-    loadCurriculum(languageId)
-      .then((data) => {
-        if (!cancelled) setState({ languageId, data, error: null });
-      })
-      .catch((error: unknown) => {
-        if (!cancelled) {
-          setState({
-            languageId,
-            data: null,
-            error: error instanceof Error ? error : new Error(String(error)),
-          });
-        }
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [languageId, attempt]);
-
-  const current =
-    state.languageId === languageId
-      ? state
-      : { languageId, data: peekCurriculum(languageId), error: null };
-  const data = current.data;
-
+  const { data, error, retry } = useAsyncResource(languageId, loadCurriculum, {
+    peek: peekCurriculum,
+  });
   return {
     curriculum: data ?? EMPTY_CURRICULUM,
     ready: data !== null,
-    error: current.error,
-    retry: () => setAttempt((value) => value + 1),
+    error,
+    retry,
   };
 }

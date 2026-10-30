@@ -11,7 +11,7 @@ import { TOPICS, TRAIL_BRANCHES, getNextPlayableLessonId } from "@/data/curricul
 import { getGenderInfo } from "@/lib/gender";
 import { LESSONS } from "@/data/lessons";
 import { DEFAULT_SETTINGS } from "@/data/settings";
-import { applyAppearanceSettings } from "@/lib/appearance";
+import { applyAppearanceSettings } from "@/lib/theme-runtime";
 
 describe("Theme Architecture & Contrast Verification", () => {
   let mockElement: {

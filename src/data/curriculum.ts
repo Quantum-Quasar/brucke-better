@@ -18,7 +18,7 @@ import type { CurriculumData } from "./curriculum-core";
 
 export const TOTAL_TOPICS = 30;
 
-export const sprigId = (topicId: number, index: number) => topicId * 100 + index;
+const sprigId = (topicId: number, index: number) => topicId * 100 + index;
 
 const shell = (id: number, title: string, plan: string): LessonShell => ({ id, title, plan });
 
@@ -757,7 +757,7 @@ for (const branch of TRAIL_BRANCHES) {
   }
 }
 
-export const AUTHORED_LESSON_COUNT = AUTHORED_SHELLS.size;
+const AUTHORED_LESSON_COUNT = AUTHORED_SHELLS.size;
 
 export const GERMAN_CURRICULUM: CurriculumData = {
   topics: TOPICS,
@@ -767,9 +767,8 @@ export const GERMAN_CURRICULUM: CurriculumData = {
   lessonCount: AUTHORED_LESSON_COUNT,
 };
 
-export const getAuthoredLesson = (lessonId: number) => AUTHORED_SHELLS.get(lessonId);
 
-export const isAuthoredNode = (nodeId: number) => AUTHORED_SHELLS.has(nodeId);
+const isAuthoredNode = (nodeId: number) => AUTHORED_SHELLS.has(nodeId);
 
 /** Next authored core lesson in spine order after the given one (null = caught up). */
 export const getNextPlayableLessonId = (currentId: number): number | null => {

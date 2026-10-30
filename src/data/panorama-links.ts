@@ -250,7 +250,7 @@ export const PANORAMA_LINK_SPECS: Record<PanoramaLanguageId, PanoramaLinkSpec[]>
 const resolvedCache = new Map<PanoramaLanguageId, PanoramaLink[]>();
 
 /** The resolved footer links for a language (unresolvable specs are dropped). */
-export function panoramaLinksFor(languageId: PanoramaLanguageId): PanoramaLink[] {
+function panoramaLinksFor(languageId: PanoramaLanguageId): PanoramaLink[] {
   const cached = resolvedCache.get(languageId);
   if (cached) return cached;
 

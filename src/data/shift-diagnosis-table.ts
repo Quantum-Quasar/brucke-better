@@ -62,7 +62,7 @@ export const GERMAN_DIAGNOSIS: Record<string, DiagnosisRow> = {
   },
 };
 
-export const SPANISH_DIAGNOSIS: Record<string, DiagnosisRow> = {
+const SPANISH_DIAGNOSIS: Record<string, DiagnosisRow> = {
   tion_to_cion: {
     slip: "the English -tion survived",
     cue: "Latin -tio became -ción in Spanish — nación, situación, información.",
@@ -101,7 +101,7 @@ export const SPANISH_DIAGNOSIS: Record<string, DiagnosisRow> = {
   },
 };
 
-export const FRENCH_DIAGNOSIS: Record<string, DiagnosisRow> = {
+const FRENCH_DIAGNOSIS: Record<string, DiagnosisRow> = {
   ty_to_ite: {
     slip: "the English -ty kept its English ending",
     cue: "English -ty is Old French -té, modern French -ité — université, liberté, qualité.",

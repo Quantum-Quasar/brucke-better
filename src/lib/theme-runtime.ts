@@ -6,6 +6,17 @@
 export const DEFAULT_THEME = "alduin";
 export const THEME_VARS_CACHE_KEY = "brucke_theme_vars";
 
+/** The only non-theme root attribute the settings screen owns. */
+export function applyAppearanceSettings(settings: import("@/data/settings").CustomizationSettings): void {
+  if (typeof document === "undefined" || !document?.documentElement) return;
+  const root = document.documentElement;
+  if (settings.increasedContrast) {
+    root.setAttribute("data-contrast", "increased");
+  } else {
+    root.removeAttribute("data-contrast");
+  }
+}
+
 /** Number of themes in data/themes.ts, for copy that does not need the table. */
 export const THEME_COUNT = 187;
 
