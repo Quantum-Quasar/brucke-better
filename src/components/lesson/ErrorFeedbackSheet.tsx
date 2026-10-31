@@ -3,6 +3,7 @@
 // ponytail: focused bottom modal sheet presenting letter-by-letter diff and mechanical shift explanation
 
 import React, { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { AlertCircle, ArrowRight, Stethoscope, Volume2 } from "lucide-react";
 import { computeLetterDiff } from "@/lib/letter-diff";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
@@ -71,7 +72,11 @@ export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onContinue]);
 
-  return (
+  if (typeof document === "undefined") return null;
+
+  // Portal out of the lesson's transformed/scrolled ancestors so the sheet is
+  // positioned against the viewport (see SuccessFeedbackSheet).
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 animate-in fade-in duration-200">
       <div
         ref={dialogRef}
@@ -176,6 +181,7 @@ export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

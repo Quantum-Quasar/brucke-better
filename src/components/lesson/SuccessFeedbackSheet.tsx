@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { CheckCircle2, ArrowRight, Sparkles, BookOpen, AlertCircle, Repeat, Volume2 } from "lucide-react";
 import type { VocabHint } from "@/lib/types";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
@@ -98,7 +99,12 @@ export const SuccessFeedbackSheet: React.FC<SuccessFeedbackSheetProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [onContinue]);
 
-  return (
+  if (typeof document === "undefined") return null;
+
+  // Portal out of the lesson's transformed/scrolled ancestors: a `fixed`
+  // sheet inside them is positioned against the scroll container, not the
+  // viewport, which puts the continue button off-screen.
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 animate-in fade-in duration-150">
       <div
         ref={dialogRef}
@@ -277,6 +283,7 @@ export const SuccessFeedbackSheet: React.FC<SuccessFeedbackSheetProps> = ({
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };

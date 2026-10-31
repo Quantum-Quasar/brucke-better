@@ -200,7 +200,14 @@ async function settle(page: Page, submit = false) {
     await page.waitForTimeout(600);
   }
   for (let i = 0; i < 25; i++) {
-    const cont = page.getByRole("button", { name: /^continue/i }).first();
+    // Scope to the graded feedback sheet: the locked-preview banner also has a
+    // "Continue: …" button and the sheet can be portaled after it in the DOM.
+    const cont = page
+      .locator(
+        '[role="dialog"][aria-labelledby="success-feedback-title"], [role="dialog"][aria-labelledby="error-feedback-title"]'
+      )
+      .getByRole("button", { name: /^continue/i })
+      .first();
     if (await cont.count()) {
       await cont.click().catch(() => {});
       await page.waitForTimeout(800);

@@ -47,11 +47,11 @@ export const BottomNav: React.FC = () => {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-40 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-1"
+      className="pointer-events-none fixed bottom-0 left-0 right-0 z-40 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-1"
       aria-label="Main navigation"
     >
       <div className="mx-auto max-w-md md:max-w-lg">
-        <div className="flex items-center justify-around rounded-2xl border border-[var(--sub-color)]/25 bg-[var(--bg-color)]/95 backdrop-blur px-2 py-1.5 shadow-lg shadow-black/10 font-mono">
+        <div className="pointer-events-auto flex items-center justify-around rounded-2xl border border-[var(--sub-color)]/25 bg-[var(--bg-color)]/95 backdrop-blur px-2 py-1.5 shadow-lg shadow-black/10 font-mono">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             return (
