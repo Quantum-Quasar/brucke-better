@@ -308,6 +308,9 @@ test("the listening drill plays audio and one skip silences it for 15 minutes", 
   expect(remaining).toBeLessThanOrEqual(15 * 60 * 1000);
 
   await page.reload();
+  // the open view is not restored after a reload; re-open the lesson and
+  // confirm the persisted listening skip still silences the drill
+  await page.goto("/trail/1003");
   await expect(page.getByText(/listening off for/i).first()).toBeVisible();
 });
 

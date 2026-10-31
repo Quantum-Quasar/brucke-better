@@ -23,7 +23,7 @@ Rather than relying on rote memorization or gamified streaks without substance, 
 - **Styling**: Tailwind CSS v4 (native CSS tokens, dark mode default)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) 5 (dual `localStorage` + size-guarded cookie persistence)
 - **Icons**: Lucide React
-- **Testing**: Vitest / `bun run test` (41 test files, 408 automated tests) <!-- corrected 2026-10-08 against the actual vitest run; counts pinned by src/tests/docs-sync.test.ts -->
+- **Testing**: Vitest / `bun run test` (42 test files, 425 automated tests) <!-- corrected 2026-10-08 against the actual vitest run; counts pinned by src/tests/docs-sync.test.ts -->
 - **Audio Engine**: Zero-dependency browser-native Web Speech API (`window.speechSynthesis`) + a Web Audio sample engine that plays bundled `.wav` packs
 
 ---
@@ -46,7 +46,7 @@ bun run parse-data
 
 ### Run Automated Tests
 
-Executes the full Vitest suite — 41 test files, 408 automated tests:
+Executes the full Vitest suite — 42 test files, 425 automated tests:
 
 ```bash
 bun run test
@@ -54,7 +54,7 @@ bun run test
 
 ### Production Build
 
-Pre-renders every route to static HTML (`● SSG`): 8 static routes, 37 `/atlas/[family]` pages (one per family id across the four atlases), one page per authored lesson (178 `/trail/[id]` pages — 169 German ids plus 9 French/Spanish-only ids), and language-scoped aliases at `/trail/[lang]/[id]` so shared lesson links carry their course; unknown ids 404 via `dynamicParams = false`:
+Pre-renders every route to static HTML (`● SSG`): 6 static routes — the six top-level tabs `/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`. Lessons and atlas details are in-page client views, so opening them adds no URL and no browser-history entry: 186 unique lesson ids ship as 498 per-lesson payloads, and the four atlases expose 37 atlas families. Legacy `/trail/...`, `/trail/<id>`, `/atlas/<family>` and `/atlas/master` links are redirected into the matching in-page state:
 
 ```bash
 bun run build
@@ -81,9 +81,9 @@ Visit `http://localhost:3000` in your browser.
    - Baba Is You-style node map: 30 topic clusters on one linear spine, with skip-able extra-practice nodes ("sprigs") and support-material branches hanging off each cluster.
    - All adjacent nodes unlock at once when a node is completed; the spine itself stays strictly ordered.
    - Read the map top-to-bottom from topic 1; the pulsing theme-colored selector marks your recommended node.
-   - The entire curriculum is authored: 30 cores + 79 sprigs + 60 branch lessons = **169 lessons** (`src/data/curriculum.ts`, `src/data/lessons.ts`).
+   - The entire curriculum is authored: 30 cores + 79 sprigs + 68 branch lessons = **177 lessons** (`src/data/curriculum.ts`, `src/data/lessons.ts`).
    - Custom DOM+SVG renderer (no game libraries) with `content-visibility` windowing per topic cluster, sized for hundreds of future lessons.
-   - 5-part card-by-card lesson wizard (Hook, Pattern, Transformation Table, Bite-Sized Practice, Summary & Retries) at `/trail/[id]`.
+   - 5-part card-by-card lesson wizard (Hook, Pattern, Transformation Table, Bite-Sized Practice, Summary & Retries) in the in-page lesson reader.
    - Scaffolded exercises (morpheme tiles, matching pairs, shift select, syntax builder, derivation typing).
    - **Production drills** (`transcribe`): a thought and a lexicon in, German out - with a scaled cue ladder that reveals on demand or on failure, and an optional "break the thought up" step before the builder.
    - **Direct translations** (`literal_gloss`): pick the English that is built the German way.
@@ -105,7 +105,7 @@ Visit `http://localhost:3000` in your browser.
    - Opt-in reference layer - no levels, no progress, no gating, nothing unlocks.
    - The articles as pronouns (`der` = D- + *er*), the verb bracket, the adjective's definite feeling, the tense map, the consonant bridges.
 
-3. **Sound Shift Atlas (`/atlas` & `/atlas/[family]`)**:
+3. **Sound Shift Atlas (`/atlas`)** (family detail and the master web open in-page):
    - Radial spatial spoke visualization for 9 consonant shift families ($TH \rightarrow D$, $P \rightarrow FF/PF$, $T \rightarrow SS/S/Z$, etc.).
    - Philological background, literature sources, and 5-question branch practice drills.
 
@@ -134,11 +134,10 @@ Visit `http://localhost:3000` in your browser.
 ```
 src/
 ├── app/                  # Next.js App Router (100% SSG static pre-rendered routes)
-│   ├── page.tsx          # Homepage = the Baba-style trail map
-│   ├── atlas/            # Sound Shift Atlas pages
+│   ├── page.tsx          # Homepage = the trail map + in-page lesson reader
+│   ├── atlas/            # Sound Shift Atlas (families + master open in-page)
 │   ├── panorama/         # Grammar Panorama — the structure reference layer
 │   ├── review/           # Multi-modal SRS Review Hub
-│   ├── trail/            # /trail redirects to /; /trail/[id] lesson wizard
 │   ├── settings/ about/  # Settings & About (linked from the bottom dock)
 │   ├── layout.tsx        # App layout and global shell
 ├── components/
@@ -150,7 +149,7 @@ src/
 ├── data/
 │   ├── compendium.json   # 1226 core words, 9 shifts, 32 compounds, 16 traps, 28 insights
 │   ├── curriculum.ts     # 30 topic clusters: cores, sprigs, branches + star gates
-│   ├── lessons.ts        # All 169 authored lessons (cores 1–30, sprigs, branches 50xx–53xx)
+│   ├── lessons.ts        # All 177 authored lessons (cores 1–30, sprigs, branches 50xx–53xx)
 │   └── ...               # themes, fonts, settings, phonetics, insights, languages
 ├── lib/
 │   ├── audio.ts          # Native speech pronunciation engine
@@ -165,7 +164,7 @@ src/
 │   ├── store.ts          # Zustand store with dual persistence (+ lessonStars)
 │   ├── trail-map.ts      # Map graph, responsive layout engine, unlock/recommend logic
 │   └── types.ts          # Core domain TypeScript interfaces
-└── tests/                # 41 test files (Vitest)
+└── tests/                # 42 test files (Vitest)
 ```
 
 ---

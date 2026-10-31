@@ -3,6 +3,7 @@
 import React from "react";
 import { Minus, Plus, RotateCcw, X } from "lucide-react";
 import { useAppStore } from "@/lib/store";
+import { useViewStore } from "@/lib/view-store";
 import { useCompendium } from "@/lib/content-client";
 import { EMPTY_COMPENDIUM } from "@/data/empty-compendium";
 import { buildMasterGraph, type MasterNode } from "@/lib/master-graph";
@@ -37,6 +38,7 @@ export const MasterConstellation: React.FC = () => {
   const data = compendium.data ?? EMPTY_COMPENDIUM;
   const wordMastery = useAppStore((s) => s.wordMastery);
   const openWordDrawer = useAppStore((s) => s.openWordDrawer);
+  const setMasterPosition = useViewStore((s) => s.setMasterPosition);
 
   // The force layout uses hundreds of Math.hypot iterations. Bun's JSC and the
   // browser's V8 can diverge in the last bits, which produced a hydration
@@ -60,19 +62,31 @@ export const MasterConstellation: React.FC = () => {
 
   // Center the viewport on the graph (which is bunched in the middle). On a
   // phone, start fitted to the poster width instead of showing 15% of it.
+  // A remembered user zoom wins over the auto-fit; the fit value itself is
+  // never persisted, so a desktop zoom is not restored onto a phone.
   React.useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
     const fit = fitZoom();
-    prevZoomRef.current = fit;
-    setZoom(fit);
-    setSelectedNode(null);
+    const remembered = useViewStore.getState().masterByLanguage[activeLanguageId]?.zoom ?? null;
+    const initial = remembered === null ? fit : Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, remembered));
+    prevZoomRef.current = initial;
+    setZoom(initial);
     requestAnimationFrame(() => {
       const current = scrollRef.current;
       if (!current) return;
       current.scrollLeft = (current.scrollWidth - current.clientWidth) / 2;
       current.scrollTop = (current.scrollHeight - current.clientHeight) / 2;
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [graph]);
+
+  // Restore the remembered labelled node once the graph exists.
+  React.useEffect(() => {
+    if (!graph) return;
+    const nodeId = useViewStore.getState().masterByLanguage[activeLanguageId]?.nodeId ?? null;
+    setSelectedNode(nodeId ? graph.nodes.find((node) => node.id === nodeId) ?? null : null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [graph]);
 
   // Keep the same graph point under the viewport centre while zooming.
@@ -88,21 +102,33 @@ export const MasterConstellation: React.FC = () => {
     prevZoomRef.current = zoom;
   }, [zoom]);
 
+  const selectNode = (node: MasterNode | null) => {
+    setSelectedNode(node);
+    setMasterPosition(activeLanguageId, { nodeId: node?.id ?? null });
+  };
+
   // Escape closes the details panel; the close button is not the only way out.
   React.useEffect(() => {
     if (!selectedNode) return;
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setSelectedNode(null);
+      if (event.key === "Escape") selectNode(null);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedNode]);
 
-  const changeZoom = (delta: number) => {
-    setZoom((value) => Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Number((value + delta).toFixed(1)))));
+  const applyZoom = (next: number) => {
+    const clamped = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Number(next.toFixed(2))));
+    setZoom(clamped);
+    setMasterPosition(activeLanguageId, { zoom: clamped });
   };
 
-  const resetZoom = () => setZoom(fitZoom());
+  const changeZoom = (delta: number) => {
+    applyZoom(zoom + delta);
+  };
+
+  const resetZoom = () => applyZoom(fitZoom());
 
   if (compendium.error) {
     return (
@@ -222,7 +248,7 @@ export const MasterConstellation: React.FC = () => {
                     key={node.id}
                     aria-label={`${node.kind}: ${node.label}${node.sub ? ` — ${node.sub}` : ""}`}
                     className="cursor-pointer"
-                    onClick={() => setSelectedNode(node)}
+                    onClick={() => selectNode(node)}
                   >
                     <rect
                       x={Math.round(node.x) - 6}
@@ -322,7 +348,7 @@ export const MasterConstellation: React.FC = () => {
             </div>
             <button
               type="button"
-              onClick={() => setSelectedNode(null)}
+              onClick={() => selectNode(null)}
               className="p-0.5 rounded text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
               aria-label="Close node details"
             >

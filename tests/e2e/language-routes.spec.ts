@@ -109,7 +109,7 @@ test.describe("French, Spanish and Dutch courses", () => {
     expect(dataRequests).toContain("/data/nl/compendium.json");
 
     await page.getByRole("heading", { name: "The SCH Bridge" }).click();
-    await expect(page).toHaveURL(/\/atlas\/sch_sh$/);
+    await expect(page).toHaveURL(/\/atlas\/?$/);
     await expect(page.getByRole("heading", { name: "The SCH Bridge" })).toBeVisible();
     await expect(page.getByText(/Participating Vocabulary/)).toBeVisible();
     await expect(page.getByText(/belongs to the .* atlas/i)).toBeHidden();
@@ -174,10 +174,9 @@ test.describe("French, Spanish and Dutch courses", () => {
     await expect(page.getByRole("heading", { name: "The -ION Bridge" })).toBeVisible();
     expect(dataRequests).toContain("/data/fr/compendium.json");
 
-    // the family route is shared across atlases; a French learner must land on
-    // the French family, not the "belongs to another atlas" fallback
+    // the family detail is an in-page view: the URL stays on the atlas tab
     await page.getByRole("heading", { name: "The -ION Bridge" }).click();
-    await expect(page).toHaveURL(/\/atlas\/ion$/);
+    await expect(page).toHaveURL(/\/atlas\/?$/);
     await expect(page.getByRole("heading", { name: "The -ION Bridge" })).toBeVisible();
     await expect(page.getByText(/Participating Vocabulary/)).toBeVisible();
     await expect(page.getByText(/belongs to the .* atlas/i)).toBeHidden();
@@ -193,6 +192,7 @@ test.describe("French, Spanish and Dutch courses", () => {
     await expect(page.getByRole("heading", { name: "The -CIÓN Passport" })).toBeVisible();
 
     await page.goto("/atlas/cion");
+    await expect(page).toHaveURL(/\/atlas\/?$/);
     await expect(page.getByRole("heading", { name: "The -CIÓN Passport" })).toBeVisible();
     await expect(page.getByText(/Participating Vocabulary/)).toBeVisible();
     expect(errors, `uncaught page errors: ${errors.join(" | ")}`).toEqual([]);
@@ -206,8 +206,9 @@ test.describe("French, Spanish and Dutch courses", () => {
     await page.goto("/trail/es/1");
     await expect(page.locator("header")).toContainText(/spanish through english/i, { timeout: 15_000 });
 
-    // the lesson body is server-rendered for the named course
+    // the legacy URL restores the in-page lesson and cleans itself to "/"
     await expect(page.getByRole("button", { name: /next: pattern/i })).toBeVisible();
+    await expect(page).toHaveURL(/\/$/);
     await page.evaluate(() => window.dispatchEvent(new Event("pagehide")));
     const state = await page.evaluate((key) => {
       const raw = window.localStorage.getItem(key);

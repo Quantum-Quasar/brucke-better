@@ -5,15 +5,22 @@ import Link from "next/link";
 import { Compass, Search, ChevronRight } from "lucide-react";
 import { DonutChart } from "@/components/common/DonutChart";
 import { useAppStore } from "@/lib/store";
+import { useViewStore } from "@/lib/view-store";
+import { useAppNavigation } from "@/lib/app-navigation";
 import { getLanguageDefinition } from "@/data/languages";
 import { useCompendium } from "@/lib/content-client";
 import { getAtlasFamilies } from "@/lib/atlas-families";
 
 export default function AtlasPage() {
   const [mounted, setMounted] = useState(false);
-  const [filterQuery, setFilterQuery] = useState("");
   const wordMastery = useAppStore((s) => s.wordMastery);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
+  const filterQuery = useViewStore(
+    (s) => s.atlasFilterByLanguage[activeLanguageId] ?? ""
+  );
+  const storeSetFilter = useViewStore((s) => s.setAtlasFilter);
+  const setFilterQuery = (value: string) => storeSetFilter(activeLanguageId, value);
+  const { openAtlasFamily, openAtlasMaster } = useAppNavigation();
   const language = getLanguageDefinition(activeLanguageId);
   const compendium = useCompendium(activeLanguageId);
 
@@ -173,6 +180,10 @@ export default function AtlasPage() {
 
       <Link
         href="/atlas/master"
+        onClick={(event) => {
+          event.preventDefault();
+          openAtlasMaster();
+        }}
         className="block p-4 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--main-color)]/40 hover:border-[var(--main-color)] transition group flex items-center justify-between gap-3"
       >
         <div>
@@ -217,6 +228,10 @@ export default function AtlasPage() {
             <Link
               key={family.id}
               href={`/atlas/${family.id}`}
+              onClick={(event) => {
+                event.preventDefault();
+                openAtlasFamily(family.id);
+              }}
               className="p-4 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 hover:border-[var(--main-color)] transition group flex flex-col justify-between space-y-3"
             >
               <div className="space-y-2.5">

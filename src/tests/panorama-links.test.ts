@@ -158,8 +158,10 @@ describe("panorama page wiring", () => {
     // picking a tab changes only the viewed panorama
     expect(VIEW_SOURCE).toMatch(/onClick=\{\(\) => view\(lid\)\}/);
     expect(VIEW_SOURCE).not.toMatch(/setActiveLanguage\(languageId\)/);
-    // opening a lesson is the explicit course switch
-    expect(VIEW_SOURCE).toMatch(/onClick=\{\(\) => setActiveLanguage\(current\.id\)\}/);
+    // opening a lesson is the explicit course switch (openLesson switches the
+    // course for the lesson's own language before showing it in-page)
+    expect(VIEW_SOURCE).toContain("parseLessonHref");
+    expect(VIEW_SOURCE).toMatch(/openLesson\(target\.languageId, target\.lessonId\)/);
   });
 
   test("link resolution stays on the server so lessons stay out of this chunk", () => {

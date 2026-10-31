@@ -5,7 +5,7 @@
 // first lesson instead of gating the first German word behind six screens.
 
 import React, { useState, useEffect, useRef } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
   ArrowRight,
   ArrowLeft,
@@ -14,6 +14,7 @@ import {
   Check,
 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
+import { useAppNavigation } from "@/lib/app-navigation";
 import { LANGUAGES, getLanguageDefinition, isValidLanguageId } from "@/data/languages";
 import { getCourseCounts } from "@/data/word-counts";
 import { THEME_COUNT } from "@/lib/theme-runtime";
@@ -29,8 +30,8 @@ export const OnboardingModal: React.FC = () => {
   const setActiveLanguage = useAppStore((s) => s.setActiveLanguage);
   const onboardingIntroLanguage = useAppStore((s) => s.onboardingIntroLanguage);
   const storeLanguageId = useAppStore((s) => s.activeLanguageId);
-  const router = useRouter();
   const pathname = usePathname();
+  const { openLesson } = useAppNavigation();
 
   const TOTAL_STEPS = 3;
   const [step, setStep] = useState(0);
@@ -98,7 +99,7 @@ export const OnboardingModal: React.FC = () => {
     // Starting the course is only the right move when the visitor is already
     // on the homepage. A shared /trail/5 link keeps them on the shared lesson.
     if (wasFirstRun && pathname === "/" && language.status === "available") {
-      router.push(`/trail/${effectiveLanguageId}/1`);
+      openLesson(effectiveLanguageId, 1);
     }
   };
 

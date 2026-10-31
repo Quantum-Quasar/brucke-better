@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
@@ -22,6 +21,7 @@ import { ShiftPair } from "@/components/common/ShiftPair";
 import { GenderBadge } from "@/components/common/GenderBadge";
 import { TwistCard } from "./TwistCard";
 import { useAppStore } from "@/lib/store";
+import { useAppNavigation } from "@/lib/app-navigation";
 import { whisperCuesForLesson } from "@/data/posture-cues";
 import { RETRY_INTENT_LINE, retryVariant } from "@/lib/retry-variation";
 import { isListeningSkipped, listeningSkipLabel } from "@/lib/listening";
@@ -30,7 +30,6 @@ import { consciousnessLineFor } from "@/data/consciousness";
 import { getSoundImportsForLanguage, importLineFor, type SoundImport } from "@/data/sound-imports";
 
 import { getLanguageDefinition } from "@/data/languages";
-import { lessonHref } from "@/lib/routes";
 import type { CompendiumData, Lesson, ExerciseItem } from "@/lib/types";
 
 /**
@@ -71,13 +70,18 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
   totalTopics: totalTopicsProp,
   preview = false,
 }) => {
-  const router = useRouter();
+  const { openLesson, closeLesson, openAtlasFamily, openAtlasIndex } = useAppNavigation();
   const storeLanguageId = useAppStore((s) => s.activeLanguageId);
   const activeLanguageId = languageId ?? storeLanguageId;
   const data = compendium;
   const totalTopics = totalTopicsProp || 30;
   const genderSystem = getLanguageDefinition(activeLanguageId).genderSystem;
   const nextLessonId = nextLessonIdProp ?? null;
+  const isReading = lesson.slug.startsWith("story-");
+  const goToNextLesson = React.useCallback(() => {
+    if (nextLessonId) openLesson(activeLanguageId, nextLessonId);
+    else closeLesson();
+  }, [activeLanguageId, closeLesson, nextLessonId, openLesson]);
   const savedProgress = useAppStore((s) => s.lessonProgress[lesson.id]);
   const [currentSegment, setCurrentSegment] = useState<LessonSegment>(savedProgress?.segment || "hook");
   const [practiceIndex, setPracticeIndex] = useState(savedProgress?.practiceIndex || 0);
@@ -269,7 +273,7 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
           if (e.key === "Enter" || e.key === " " || e.code === "Space") {
             e.preventDefault();
             handleCompleteAll();
-            router.push(nextLessonId ? lessonHref(activeLanguageId, nextLessonId) : "/trail");
+            goToNextLesson();
           }
         }
       }
@@ -277,7 +281,7 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentSegment, retryQueue.length, isLessonFinished, lesson.id, nextLessonId, router, preview]);
+  }, [currentSegment, retryQueue.length, isLessonFinished, lesson.id, nextLessonId, goToNextLesson, preview]);
 
   // Opening a lesson must not seed the review queue. Cards are created when the
   // lesson is actually finished (handleCompleteAll), so Review stays honest.
@@ -413,20 +417,20 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
   const stickyAction = (() => {
     if (preview || twistPhase || inRetryPhase) return null;
     if (currentSegment === "hook") {
-      return { label: "next: pattern", run: () => markSegmentDone("hook", "pattern") };
+      return { label: isReading ? "next: read the story" : "next: pattern", run: () => markSegmentDone("hook", "pattern") };
     }
     if (currentSegment === "pattern") {
-      return { label: "next: transformation table", run: () => markSegmentDone("pattern", "table") };
+      return { label: isReading ? "next: word bank" : "next: transformation table", run: () => markSegmentDone("pattern", "table") };
     }
     if (currentSegment === "table") {
-      return { label: `start exercises (${lesson.exercises.length})`, run: startPractice };
+      return { label: isReading ? `start questions (${lesson.exercises.length})` : `start exercises (${lesson.exercises.length})`, run: startPractice };
     }
     if (currentSegment === "summary") {
       return {
         label: nextLesson ? `next: ${nextLesson.title}` : "back to the trail",
         run: () => {
           handleCompleteAll();
-          router.push(nextLessonId ? lessonHref(activeLanguageId, nextLessonId) : "/trail");
+          goToNextLesson();
         },
       };
     }
@@ -444,12 +448,13 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
       {/* Top Header & Navigation */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <Link
-            href="/trail"
-            className="inline-flex items-center gap-2 text-xs font-mono text-[var(--sub-color)] hover:text-[var(--main-color)] transition px-2.5 py-1.5 rounded border border-[var(--sub-color)]/20 hover:border-[var(--main-color)]/40"
+          <button
+            type="button"
+            onClick={closeLesson}
+            className="inline-flex items-center gap-2 text-xs font-mono text-[var(--sub-color)] hover:text-[var(--main-color)] transition px-2.5 py-1.5 rounded border border-[var(--sub-color)]/20 hover:border-[var(--main-color)]/40 cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Trail
-          </Link>
+          </button>
           <span className="text-xs font-mono text-[var(--main-color)] font-medium px-2 py-0.5 rounded bg-[var(--main-color)]/10 border border-[var(--main-color)]/20">
             {lesson.id <= 30
               ? `Topic ${lesson.id} of ${totalTopics} · Core`
@@ -512,7 +517,7 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                 <h2 className="text-xl font-bold font-mono text-[var(--text-color)]">{lesson.hook.title}</h2>
               </div>
 
-              <p className="text-[var(--sub-color)] text-sm leading-relaxed">{lesson.hook.content}</p>
+              <p className="text-[var(--sub-color)] text-sm leading-relaxed whitespace-pre-line">{lesson.hook.content}</p>
 
               {/* TM-6: preventative correction — name the shortcut before the mind takes it (§1.9/§1.10) */}
               {lesson.hook.trap_note && (
@@ -563,7 +568,7 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                   onClick={() => markSegmentDone("hook", "pattern")}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] font-mono font-bold text-xs transition cursor-pointer"
                 >
-                  <span>next: pattern</span>
+                  <span>{isReading ? "next: read the story" : "next: pattern"}</span>
                   <span className="keycap text-[10px]">enter</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
@@ -576,12 +581,12 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
             <div className="p-6 sm:p-8 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-6 shadow-md animate-in fade-in duration-200">
               <div className="flex items-center gap-2 pb-2 border-b border-[var(--sub-color)]/15">
                 <span className="text-[var(--main-color)] font-mono text-xs font-bold px-2 py-0.5 rounded bg-[var(--main-color)]/10 border border-[var(--main-color)]/25">
-                  02 / pattern
+                  02 / {isReading ? "story" : "pattern"}
                 </span>
                 <h2 className="text-xl font-bold font-mono text-[var(--text-color)]">{lesson.pattern.title}</h2>
               </div>
 
-              <p className="text-[var(--sub-color)] text-sm leading-relaxed">{lesson.pattern.content}</p>
+              <p className="text-[var(--sub-color)] text-sm leading-relaxed whitespace-pre-line">{lesson.pattern.content}</p>
 
               {/* TM-6: the same preventative-correction slot on the pattern card */}
               {lesson.pattern.trap_note && (
@@ -616,7 +621,7 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                   onClick={() => markSegmentDone("pattern", "table")}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] font-mono font-bold text-xs transition cursor-pointer"
                 >
-                  <span>next: transformation table</span>
+                  <span>{isReading ? "next: word bank" : "next: transformation table"}</span>
                   <span className="keycap text-[10px]">enter</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </button>
@@ -630,15 +635,17 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
               <div className="flex items-center justify-between pb-2 border-b border-[var(--sub-color)]/15">
                 <div className="flex items-center gap-2">
                   <span className="text-[var(--main-color)] font-mono text-xs font-bold px-2 py-0.5 rounded bg-[var(--main-color)]/10 border border-[var(--main-color)]/25">
-                    03 / table
+                    03 / {isReading ? "word bank" : "table"}
                   </span>
-                  <h2 className="text-xl font-bold font-mono text-[var(--text-color)]">transformation table</h2>
+                  <h2 className="text-xl font-bold font-mono text-[var(--text-color)]">{isReading ? "word bank" : "transformation table"}</h2>
                 </div>
                 <span className="text-xs font-mono text-[var(--sub-color)]">tap word to inspect</span>
               </div>
 
               <p className="text-sm font-mono text-[var(--sub-color)]">
-                shifted consonants highlight historical transformations against english cognates:
+                {isReading
+                  ? "key words from the story — tap one to inspect it:"
+                  : "shifted consonants highlight historical transformations against english cognates:"}
               </p>
 
               {genderSystem && (
@@ -706,6 +713,10 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                   </div>
                   <Link
                     href={`/atlas/${primaryShift.id}`}
+                    onClick={(event) => {
+                      event.preventDefault();
+                      openAtlasFamily(primaryShift.id);
+                    }}
                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[var(--sub-alt-color)] hover:border-[var(--main-color)] border border-[var(--sub-color)]/20 text-xs text-[var(--text-color)] hover:text-[var(--main-color)] transition whitespace-nowrap"
                   >
                     <span>open atlas</span>
@@ -727,7 +738,7 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                   onClick={startPractice}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] font-mono font-medium text-sm transition cursor-pointer active:scale-95"
                 >
-                  <span>Start Exercises ({lesson.exercises.length} problems)</span>
+                  <span>{isReading ? `Start Questions (${lesson.exercises.length})` : `Start Exercises (${lesson.exercises.length} problems)`}</span>
                   <span className="keycap bg-[var(--bg-color)]/20 text-inherit border-none text-[10px]">Enter</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
@@ -806,7 +817,7 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                     </>
                   ) : (
                     <span className="text-xs font-mono uppercase tracking-wider text-[var(--main-color)] font-medium">
-                      problem {practiceIndex + 1} of {lesson.exercises.length}
+                      {isReading ? "question" : "problem"} {practiceIndex + 1} of {lesson.exercises.length}
                     </span>
                   )}
                 </div>
@@ -1050,6 +1061,11 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                     </div>
                     <Link
                       href={primaryShift ? `/atlas/${primaryShift.id}` : "/atlas"}
+                      onClick={(event) => {
+                        event.preventDefault();
+                        if (primaryShift) openAtlasFamily(primaryShift.id);
+                        else openAtlasIndex();
+                      }}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded bg-[var(--sub-alt-color)] hover:border-[var(--main-color)] border border-[var(--sub-color)]/20 text-xs text-[var(--text-color)] hover:text-[var(--main-color)] transition whitespace-nowrap"
                     >
                       <span>open atlas</span>
@@ -1086,11 +1102,11 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                         )}
 
                         <Link
-                          href={nextLessonId ? lessonHref(activeLanguageId, nextLessonId) : "/trail"}
+                          href={nextLessonId ? `/trail/${activeLanguageId}/${nextLessonId}` : "/trail"}
                           onClick={(event) => {
                             event.preventDefault();
                             handleCompleteAll();
-                            router.push(nextLessonId ? lessonHref(activeLanguageId, nextLessonId) : "/trail");
+                            goToNextLesson();
                           }}
                           className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] font-bold text-xs transition cursor-pointer"
                         >

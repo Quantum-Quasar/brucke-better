@@ -85,7 +85,7 @@ describe("Filesystem Assets & Dynamic Routes Integrity", () => {
     });
   });
 
-  describe("Curriculum Trail Dynamic Routes (/trail/[id])", () => {
+  describe("Curriculum trail lessons (in-page reader payloads)", () => {
     it("verifies that every authored lesson resolves with intact word associations", () => {
       expect(LESSONS.length).toBeGreaterThanOrEqual(100);
 
@@ -115,7 +115,7 @@ describe("Filesystem Assets & Dynamic Routes Integrity", () => {
     });
   });
 
-  describe("Atlas Sound Shift Dynamic Routes (/atlas/[family])", () => {
+  describe("Atlas sound-shift families (in-page detail view)", () => {
     it("verifies all 9 sound shift families generate valid static params and contain populated word lists", () => {
       const shiftKeys = Object.keys(compendium.shifts);
       expect(shiftKeys).toHaveLength(9);

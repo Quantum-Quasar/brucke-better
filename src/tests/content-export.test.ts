@@ -10,7 +10,8 @@ import { FR_LESSONS } from "@/data/french/lessons-fr";
 import { ES_LESSONS } from "@/data/spanish/lessons-es";
 import { NL_LESSONS } from "@/data/dutch/lessons-nl";
 import SHIFT_NAMES from "@/data/shift-names.json";
-import type { CompendiumData, Lesson, LessonIndexEntry } from "@/lib/types";
+import { trimCompendium } from "@/lib/lesson-payload";
+import type { CompendiumData, Lesson, LessonIndexEntry, LessonPayload } from "@/lib/types";
 
 const ROOT = path.resolve(__dirname, "../..");
 
@@ -64,6 +65,17 @@ describe("generated client content", () => {
       expect(payload).toEqual(language.lessons.map(lessonIndexEntry));
     });
 
+    it(`keeps ${language.id} per-lesson payloads in sync`, () => {
+      for (const lesson of language.lessons) {
+        const payload = readJson<LessonPayload>(
+          `public/data/${language.id}/lessons/${lesson.id}.json`
+        );
+        expect(payload.lesson).toEqual(lesson);
+        expect(payload.compendium).toEqual(trimCompendium(language.compendium, lesson));
+        expect(payload.compendium).not.toHaveProperty("wordList");
+      }
+    });
+
     it(`keeps ${language.id} shift names in sync`, () => {
       const expected = Object.values(language.compendium.shifts).map((family) => ({
         id: family.id,
@@ -76,7 +88,7 @@ describe("generated client content", () => {
     });
   }
 
-  it("does not ship lesson prose in the client payload", () => {
+  it("does not ship lesson prose in the compact lesson index", () => {
     for (const language of LANGUAGES) {
       const payload = readJson<LessonIndexEntry[]>(`public/data/${language.id}/lesson-index.json`);
       for (const lesson of payload) {

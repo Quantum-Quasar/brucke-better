@@ -1,13 +1,13 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
 import { ArrowRight, BookOpen, Check, Clock, GitBranch, Lock, Star } from "lucide-react";
 import { useAppStore } from "@/lib/store";
+import { useViewStore, EMPTY_TRAIL_POSITION } from "@/lib/view-store";
+import { useAppNavigation } from "@/lib/app-navigation";
 import { buildTrailEdgePairs, buildTrailLayout, getTrailState, GERMAN_TRAIL_DATA, type TrailData, type TrailNode, type NodeStatus, type GateView } from "@/lib/trail-map";
 import { getLanguageDefinition } from "@/data/languages";
 import { useCurriculum } from "@/data/curriculum-client";
-import { lessonHref } from "@/lib/routes";
 import { LessonNodeDrawer, GateDrawer } from "./LessonNodeDrawer";
 
 const GOLD_STAR = "#eab308";
@@ -52,7 +52,7 @@ const groupNodesByTopic = (
 };
 
 export const TrailMap: React.FC = () => {
-  const router = useRouter();
+  const { openLesson } = useAppNavigation();
   const completedLessons = useAppStore((s) => s.completedLessons);
   const lessonStars = useAppStore((s) => s.lessonStars);
   const lessonProgress = useAppStore((s) => s.lessonProgress);
@@ -75,8 +75,12 @@ export const TrailMap: React.FC = () => {
 
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [width, setWidth] = useState(640);
-  const [selectedNodeId, setSelectedNodeId] = useState<number | null>(null);
-  const [selectedGateId, setSelectedGateId] = useState<number | null>(null);
+  const trailPosition = useViewStore(
+    (s) => s.trailByLanguage[activeLanguageId] ?? EMPTY_TRAIL_POSITION
+  );
+  const setTrailPosition = useViewStore((s) => s.setTrailPosition);
+  const selectedNodeId = trailPosition.nodeId;
+  const selectedGateId = trailPosition.gateId;
 
   useEffect(() => {
     const el = wrapRef.current;
@@ -292,7 +296,9 @@ export const TrailMap: React.FC = () => {
                 view={state.nodes.get(node.id)!}
                 isRecommended={state.recommendedId === node.id}
                 hasProgress={Boolean(lessonProgress[node.id])}
-                onClick={() => setSelectedNodeId(node.id)}
+                onClick={() =>
+                  setTrailPosition(activeLanguageId, { nodeId: node.id, gateId: null })
+                }
               />
             ))}
           </section>
@@ -308,7 +314,9 @@ export const TrailMap: React.FC = () => {
             <button
               key={gate.id}
               type="button"
-              onClick={() => setSelectedGateId(gate.id)}
+              onClick={() =>
+                setTrailPosition(activeLanguageId, { gateId: gate.id, nodeId: null })
+              }
               aria-label={`${gate.title} star gate: ${stars} of ${gate.requiredStars} stars in topics ${gv?.fromTopic}–${gv?.toTopic} — ${open ? "open" : "closed"}`}
               title={`${gate.title} — ${stars}/${gate.requiredStars}★`}
               className={`absolute z-10 flex items-center justify-center gap-1.5 rounded-full font-mono text-[10px] transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--main-color)] ${
@@ -347,7 +355,7 @@ export const TrailMap: React.FC = () => {
         <div className="fixed bottom-[5.25rem] left-3 z-30 xl:bottom-6 xl:left-4">
           <button
             type="button"
-            onClick={() => router.push(lessonHref(activeLanguageId, recommended.id))}
+            onClick={() => openLesson(activeLanguageId, recommended.id)}
             className="inline-flex items-center gap-2 rounded-full border border-[var(--sub-color)]/30 bg-[var(--bg-color)]/95 px-3.5 py-2 font-mono text-xs shadow-lg shadow-black/10 backdrop-blur transition hover:border-[var(--main-color)] cursor-pointer"
             aria-label={`${
               recommendedProgress ? "Resume" : hasAnyProgress ? "Continue" : "Start"
@@ -369,10 +377,10 @@ export const TrailMap: React.FC = () => {
           view={state.nodes.get(selected.id)!}
           hasProgress={Boolean(lessonProgress[selected.id])}
           unlockHint={lockHint}
-          onClose={() => setSelectedNodeId(null)}
+          onClose={() => setTrailPosition(activeLanguageId, { nodeId: null })}
           onStart={(id) => {
-            setSelectedNodeId(null);
-            router.push(lessonHref(activeLanguageId, id));
+            setTrailPosition(activeLanguageId, { nodeId: null });
+            openLesson(activeLanguageId, id);
           }}
         />
       )}
@@ -381,7 +389,7 @@ export const TrailMap: React.FC = () => {
         <GateDrawer
           gate={selectedGate}
           view={state.gates.get(selectedGate.id)!}
-          onClose={() => setSelectedGateId(null)}
+          onClose={() => setTrailPosition(activeLanguageId, { gateId: null })}
         />
       )}
     </div>

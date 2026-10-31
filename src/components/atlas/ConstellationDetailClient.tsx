@@ -1,12 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { ArrowLeft, BookOpen, Info, Search } from "lucide-react";
 import { ConstellationWeb } from "@/components/atlas/ConstellationWeb";
 import { BranchDrillModal } from "@/components/atlas/BranchDrillModal";
 import { ShiftPair } from "@/components/common/ShiftPair";
 import { useAppStore } from "@/lib/store";
+import { useViewStore, EMPTY_ROSTER_POSITION } from "@/lib/view-store";
 import { getLanguageDefinition } from "@/data/languages";
 import { useCompendium } from "@/lib/content-client";
 import { getAtlasFamily, UNSHIFTED_FAMILY_ID } from "@/lib/atlas-families";
@@ -14,30 +14,34 @@ import type { ShiftFamily } from "@/lib/types";
 
 interface ConstellationDetailClientProps {
   familyId: string;
-  /**
-   * Language ids whose compendium defines this family id, computed on the
-   * server. The route is prerendered with the default language active, so a
-   * family belonging to another atlas must still render a real page.
-   */
+  /** Language ids whose atlas defines this family id (legacy deep links). */
   ownerLanguageIds: string[];
-  /**
-   * The owning family's identity, resolved on the server. The compendium JSON
-   * is fetched on the client, so without this the prerendered HTML for a
-   * family page was a loading skeleton with no heading or description.
-   */
-  serverFamily?: { symbol: string; name: string; phonetic_rule: string };
+  onBack: () => void;
+}
+
+function BackButton({ onBack }: { onBack: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onBack}
+      className="inline-flex items-center gap-1.5 text-xs font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
+    >
+      <ArrowLeft className="w-3.5 h-3.5" /> back to atlas
+    </button>
+  );
 }
 
 export function ConstellationDetailClient({
   familyId,
   ownerLanguageIds,
-  serverFamily,
+  onBack,
 }: ConstellationDetailClientProps) {
   const [isDrillOpen, setIsDrillOpen] = useState(false);
-  const [rosterQuery, setRosterQuery] = useState("");
-  const [visibleCount, setVisibleCount] = useState(60);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const setActiveLanguage = useAppStore((s) => s.setActiveLanguage);
+  const roster = useViewStore((s) => s.rosterByFamily[familyId] ?? EMPTY_ROSTER_POSITION);
+  const setRosterPosition = useViewStore((s) => s.setRosterPosition);
+
   // A shared family URL may belong to another course. When the active course
   // owns it we reuse the same compendium (the loader dedupes); otherwise fetch
   // the owning course so the fallback preview is real.
@@ -47,17 +51,14 @@ export function ConstellationDetailClient({
   const activeCompendium = useCompendium(activeLanguageId);
   const ownerCompendium = useCompendium(ownerLanguageId);
 
-  if (activeCompendium.error || ownerCompendium.error) {
+  if (activeCompendium.error) {
     return (
       <div className="max-w-xl mx-auto px-4 py-20 text-center space-y-4 font-mono" role="alert">
         <p className="text-sm text-[var(--sub-color)]">atlas data could not be loaded.</p>
         <button
           type="button"
-          onClick={() => {
-            activeCompendium.retry();
-            ownerCompendium.retry();
-          }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold text-xs"
+          onClick={activeCompendium.retry}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold text-xs cursor-pointer"
         >
           <Info className="w-3.5 h-3.5" /> retry
         </button>
@@ -65,32 +66,10 @@ export function ConstellationDetailClient({
     );
   }
 
-  if (!activeCompendium.data || !ownerCompendium.data) {
+  if (!activeCompendium.data) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-6 font-sans">
-        <div className="space-y-2">
-          <Link
-            href="/atlas"
-            className="inline-flex items-center gap-1.5 text-xs font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] transition"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" /> back to atlas
-          </Link>
-          {serverFamily && (
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="text-xs font-mono text-[var(--main-color)] font-bold px-2 py-0.5 rounded bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25">
-                  {serverFamily.symbol}
-                </span>
-                <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-color)] tracking-tight">
-                  {serverFamily.name}
-                </h1>
-              </div>
-              <p className="text-xs sm:text-sm text-[var(--sub-color)] mt-0.5 font-mono">
-                {serverFamily.phonetic_rule}
-              </p>
-            </div>
-          )}
-        </div>
+        <BackButton onBack={onBack} />
         <div className="max-w-xl mx-auto py-10 text-center font-mono" role="status">
           <p className="text-sm text-[var(--sub-color)]">loading constellation…</p>
         </div>
@@ -99,13 +78,40 @@ export function ConstellationDetailClient({
   }
 
   const data = activeCompendium.data;
-  const family: ShiftFamily | undefined = getAtlasFamily(data, familyId || "");
+  const family: ShiftFamily | undefined = getAtlasFamily(data, familyId);
 
   if (!family) {
-    // The active atlas does not own this route. Show the owning language's
-    // family metadata and offer to switch, so a shared URL (or a prerendered
-    // page for another atlas) is never a dead end.
+    // A legacy URL may name a family from another course. Show the owning
+    // language's metadata and offer an explicit switch instead of auto-moving
+    // the learner's whole course.
     const ownerLanguage = getLanguageDefinition(ownerLanguageId);
+
+    if (ownerCompendium.error) {
+      return (
+        <div className="max-w-xl mx-auto px-4 py-20 text-center space-y-4 font-mono" role="alert">
+          <p className="text-sm text-[var(--sub-color)]">atlas data could not be loaded.</p>
+          <button
+            type="button"
+            onClick={ownerCompendium.retry}
+            className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold text-xs cursor-pointer"
+          >
+            <Info className="w-3.5 h-3.5" /> retry
+          </button>
+        </div>
+      );
+    }
+
+    if (!ownerCompendium.data) {
+      return (
+        <div className="max-w-2xl mx-auto px-4 py-16 space-y-6 font-sans">
+          <BackButton onBack={onBack} />
+          <div className="max-w-xl mx-auto py-10 text-center font-mono" role="status">
+            <p className="text-sm text-[var(--sub-color)]">loading constellation…</p>
+          </div>
+        </div>
+      );
+    }
+
     const ownerData = ownerCompendium.data;
     const ownerFamily = getAtlasFamily(ownerData, familyId);
     const ownerWords = ownerFamily
@@ -116,15 +122,10 @@ export function ConstellationDetailClient({
       : [];
 
     return (
-      <div className="max-w-2xl mx-auto px-4 py-16 space-y-6 font-sans">
-        <Link
-          href="/atlas"
-          className="inline-flex items-center gap-1.5 text-xs font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] transition"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" /> back to atlas
-        </Link>
+      <div className="max-w-2xl mx-auto px-4 py-12 space-y-6 font-sans">
+        <BackButton onBack={onBack} />
 
-        {ownerFamily && ownerLanguage ? (
+        {ownerFamily ? (
           <>
             <div className="space-y-2">
               <span className="inline-block text-xs font-mono text-[var(--main-color)] font-bold px-2 py-0.5 rounded bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25">
@@ -133,13 +134,15 @@ export function ConstellationDetailClient({
               <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-color)] tracking-tight">
                 {ownerFamily.name}
               </h1>
-              <p className="text-xs sm:text-sm text-[var(--sub-color)] font-mono">{ownerFamily.phonetic_rule}</p>
+              <p className="text-xs sm:text-sm text-[var(--sub-color)] font-mono">
+                {ownerFamily.phonetic_rule}
+              </p>
             </div>
 
             <p className="text-xs text-[var(--text-color)]/80 leading-relaxed">
               This sound shift belongs to the {ownerLanguage.name} atlas.{" "}
-              {ownerLanguage.nativeName} is a different branch of the same cognate engine, so its families live
-              in their own atlas rather than in the one currently open.
+              {ownerLanguage.nativeName} is a different branch of the same cognate engine, so its
+              families live in their own atlas rather than in the one currently open.
             </p>
 
             {ownerWords.length > 0 && (
@@ -148,14 +151,16 @@ export function ConstellationDetailClient({
                   <BookOpen className="w-3.5 h-3.5" /> sample from the {ownerLanguage.name} atlas
                 </div>
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs font-mono">
-                  {ownerWords.map((w) => (
-                    <li key={w.id} className="flex items-center justify-between gap-2">
-                      <span className="text-[var(--sub-color)] truncate">{w.english_cognate}</span>
+                  {ownerWords.map((word) => (
+                    <li key={word.id} className="flex items-center justify-between gap-2">
+                      <span className="text-[var(--sub-color)] truncate">
+                        {word.english_cognate}
+                      </span>
                       <span aria-hidden="true" className="text-[var(--sub-color)]/60">
                         →
                       </span>
                       <span className="text-[var(--text-color)] font-semibold truncate">
-                        {w.gender ? `${w.gender} ${w.target_word}` : w.target_word}
+                        {word.gender ? `${word.gender} ${word.target_word}` : word.target_word}
                       </span>
                     </li>
                   ))}
@@ -168,7 +173,12 @@ export function ConstellationDetailClient({
 
             <button
               type="button"
-              onClick={() => setActiveLanguage(ownerLanguageId)}
+              onClick={() => {
+                setActiveLanguage(ownerLanguageId);
+                // The language switch closes subviews; reopen this family in
+                // the atlas we just switched to.
+                useViewStore.getState().openAtlasFamily(familyId, ownerLanguageIds);
+              }}
               className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold text-xs font-mono cursor-pointer hover:opacity-90 transition"
             >
               switch to the {ownerLanguage.name} atlas
@@ -178,14 +188,15 @@ export function ConstellationDetailClient({
           <div className="space-y-3">
             <h1 className="text-xl font-bold text-[var(--text-color)]">Atlas family unavailable</h1>
             <p className="text-xs font-mono text-[var(--sub-color)]">
-              No authored course defines this shift family on this route.
+              No authored course defines this shift family.
             </p>
-            <Link
-              href="/atlas"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold text-xs font-mono"
+            <button
+              type="button"
+              onClick={onBack}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold text-xs font-mono cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" /> Back to Atlas
-            </Link>
+            </button>
           </div>
         )}
       </div>
@@ -195,7 +206,7 @@ export function ConstellationDetailClient({
   const words = family.word_ids.map((id) => data.words[id]).filter(Boolean);
   // Keep the default roster small, but let the learner search the family and
   // load it in batches instead of mounting hundreds of cards at once.
-  const rosterQueryText = rosterQuery.trim().toLowerCase();
+  const rosterQueryText = roster.query.trim().toLowerCase();
   const filteredWords = rosterQueryText
     ? words.filter(
         (word) =>
@@ -203,19 +214,14 @@ export function ConstellationDetailClient({
           word.target_word.toLowerCase().includes(rosterQueryText)
       )
     : words;
-  const rosterWords = filteredWords.slice(0, visibleCount);
+  const rosterWords = filteredWords.slice(0, roster.visible);
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8 space-y-6 font-sans">
       {/* Header & Back Link */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <Link
-            href="/atlas"
-            className="inline-flex items-center gap-1.5 text-xs font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] transition"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" /> back to atlas
-          </Link>
+          <BackButton onBack={onBack} />
           <span className="text-xs font-mono text-[var(--main-color)] font-bold px-2 py-0.5 rounded bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25">
             {family.symbol}
           </span>
@@ -225,12 +231,18 @@ export function ConstellationDetailClient({
           <h1 className="text-2xl sm:text-3xl font-bold text-[var(--text-color)] tracking-tight">
             {family.name}
           </h1>
-          <p className="text-xs sm:text-sm text-[var(--sub-color)] mt-0.5 font-mono">{family.phonetic_rule}</p>
+          <p className="text-xs sm:text-sm text-[var(--sub-color)] mt-0.5 font-mono">
+            {family.phonetic_rule}
+          </p>
         </div>
       </div>
 
       {/* Web Constellation (Desktop) & List (Mobile) */}
-      <ConstellationWeb family={family} data={data} onPracticeBranch={() => setIsDrillOpen(true)} />
+      <ConstellationWeb
+        family={family}
+        data={data}
+        onPracticeBranch={() => setIsDrillOpen(true)}
+      />
 
       {/* Philological & Historical Linguistics Deep-Dive */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -238,15 +250,21 @@ export function ConstellationDetailClient({
           <div className="flex items-center gap-1.5 text-xs font-mono text-[var(--main-color)] font-semibold">
             <Info className="w-3.5 h-3.5" /> historical linguistics
           </div>
-          <p className="text-xs text-[var(--text-color)]/80 leading-relaxed">{family.historical_linguistics}</p>
-          <p className="text-xs text-[var(--sub-color)] leading-relaxed pt-1">{family.philological_note}</p>
+          <p className="text-xs text-[var(--text-color)]/80 leading-relaxed">
+            {family.historical_linguistics}
+          </p>
+          <p className="text-xs text-[var(--sub-color)] leading-relaxed pt-1">
+            {family.philological_note}
+          </p>
         </div>
 
         <div className="p-4 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-2">
           <div className="flex items-center gap-1.5 text-xs font-mono text-[var(--main-color)] font-semibold">
             <BookOpen className="w-3.5 h-3.5" /> literature reference
           </div>
-          <p className="text-xs text-[var(--text-color)]/80 leading-relaxed">{family.literature_source}</p>
+          <p className="text-xs text-[var(--text-color)]/80 leading-relaxed">
+            {family.literature_source}
+          </p>
           <div className="pt-2 border-t border-[var(--sub-color)]/15">
             <span className="text-[11px] font-mono text-[var(--sub-color)]">
               {family.id === UNSHIFTED_FAMILY_ID
@@ -269,10 +287,9 @@ export function ConstellationDetailClient({
             <Search className="w-3.5 h-3.5 text-[var(--sub-color)] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
-              value={rosterQuery}
+              value={roster.query}
               onChange={(event) => {
-                setRosterQuery(event.target.value);
-                setVisibleCount(60);
+                setRosterPosition(familyId, { query: event.target.value, visible: 60 });
               }}
               placeholder={`Filter ${words.length} words...`}
               className="w-full pl-9 pr-3 py-1.5 rounded bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 text-xs text-[var(--text-color)] placeholder-[var(--sub-color)] outline-none focus:border-[var(--main-color)] transition font-mono"
@@ -281,19 +298,19 @@ export function ConstellationDetailClient({
           <span className="text-[11px] font-mono text-[var(--sub-color)]">
             {filteredWords.length} {filteredWords.length === 1 ? "word" : "words"}
           </span>
-          {filteredWords.length > visibleCount && (
+          {filteredWords.length > roster.visible && (
             <button
               type="button"
-              onClick={() => setVisibleCount((count) => count + 60)}
+              onClick={() => setRosterPosition(familyId, { visible: roster.visible + 60 })}
               className="px-3 py-1.5 rounded bg-[var(--sub-alt-color)] hover:border-[var(--main-color)] border border-[var(--sub-color)]/20 text-[var(--text-color)] hover:text-[var(--main-color)] transition cursor-pointer text-[11px] font-mono"
             >
               show 60 more
             </button>
           )}
-          {visibleCount > 60 && (
+          {roster.visible > 60 && (
             <button
               type="button"
-              onClick={() => setVisibleCount(60)}
+              onClick={() => setRosterPosition(familyId, { visible: 60 })}
               className="px-3 py-1.5 rounded bg-[var(--sub-alt-color)] hover:border-[var(--main-color)] border border-[var(--sub-color)]/20 text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer text-[11px] font-mono"
             >
               show first 60
@@ -303,22 +320,22 @@ export function ConstellationDetailClient({
 
         {filteredWords.length === 0 && (
           <p className="text-xs font-mono text-[var(--sub-color)] py-4 text-center">
-            No words match “{rosterQuery}”.
+            No words match “{roster.query}”.
           </p>
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
-          {rosterWords.map((w) => (
+          {rosterWords.map((word) => (
             <div
-              key={w.id}
+              key={word.id}
               className="p-2.5 rounded bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20"
             >
               <ShiftPair
-                english={w.english_cognate}
-                german={w.target_word}
-                gender={w.gender}
-                rule={w.shift_rule}
-                wordId={w.id}
+                english={word.english_cognate}
+                german={word.target_word}
+                gender={word.gender}
+                rule={word.shift_rule}
+                wordId={word.id}
                 className="w-full justify-between"
               />
             </div>

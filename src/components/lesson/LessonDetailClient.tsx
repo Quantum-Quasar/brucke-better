@@ -1,12 +1,11 @@
 "use client";
 
-import React, { useEffect, useMemo } from "react";
-import Link from "next/link";
+import React, { useMemo } from "react";
 import { ArrowLeft, MapPin, Eye } from "lucide-react";
 import { LessonReader } from "@/components/lesson/LessonReader";
 import { useAppStore } from "@/lib/store";
 import { getTrailState } from "@/lib/trail-map";
-import { lessonHref } from "@/lib/routes";
+import { useAppNavigation } from "@/lib/app-navigation";
 import type {
   CompendiumData,
   Lesson,
@@ -46,22 +45,9 @@ export function LessonDetailClient({
   nextLesson,
   nextLessonId,
 }: LessonDetailClientProps) {
-  const storeHydrated = useAppStore((s) => s.storeHydrated);
-  const setActiveLanguage = useAppStore((s) => s.setActiveLanguage);
-  const completeOnboarding = useAppStore((s) => s.completeOnboarding);
   const completedLessons = useAppStore((s) => s.completedLessons);
   const lessonStars = useAppStore((s) => s.lessonStars);
-
-  // A language-scoped URL is authoritative: switch the course silently so
-  // progress and SRS writes land in the same language the URL names. Wait for
-  // the root hydration effect; a child effect can otherwise be overwritten by
-  // the saved active language on first load.
-  useEffect(() => {
-    if (!storeHydrated) return;
-    if (useAppStore.getState().activeLanguageId === languageId) return;
-    setActiveLanguage(languageId);
-    completeOnboarding();
-  }, [storeHydrated, languageId, setActiveLanguage, completeOnboarding]);
+  const { openLesson, closeLesson } = useAppNavigation();
 
   const trailState = useMemo(
     () =>
@@ -82,12 +68,13 @@ export function LessonDetailClient({
           This lesson isn't part of the authored curriculum yet — the trail map currently has {lessonCount}{" "}
           interactive lessons.
         </p>
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] font-medium text-sm transition"
+        <button
+          type="button"
+          onClick={closeLesson}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] font-medium text-sm transition cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" /> Back to Trail Index
-        </Link>
+        </button>
       </div>
     );
   }
@@ -118,13 +105,14 @@ export function LessonDetailClient({
                 </p>
               </div>
             </div>
-            <Link
-              href={lessonHref(languageId, recommendedId ?? 1)}
-              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold text-xs font-mono hover:opacity-90 transition shrink-0"
+            <button
+              type="button"
+              onClick={() => openLesson(languageId, recommendedId ?? 1)}
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold text-xs font-mono hover:opacity-90 transition shrink-0 cursor-pointer"
             >
               <MapPin className="w-3.5 h-3.5" />
               {recommendedTitle ? `Continue: ${recommendedTitle}` : "Continue the trail"}
-            </Link>
+            </button>
           </div>
         </div>
       )}

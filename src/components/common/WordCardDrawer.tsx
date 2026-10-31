@@ -7,6 +7,7 @@ import React, { useMemo, useRef } from "react";
 import Link from "next/link";
 import { X, ExternalLink, Compass, BookOpen, CheckCircle2, Circle, Disc, Minus, Volume2 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
+import { useAppNavigation } from "@/lib/app-navigation";
 import { GenderBadge } from "@/components/common/GenderBadge";
 import { playTargetAudio } from "@/lib/audio";
 import { getLanguageDefinition } from "@/data/languages";
@@ -24,6 +25,7 @@ export const WordCardDrawer: React.FC = () => {
 
 const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordId }) => {
   const closeDrawer = useAppStore((s) => s.closeWordDrawer);
+  const { openLesson, openAtlasFamily } = useAppNavigation();
   const mastery = useAppStore((s) =>
     activeWordId ? s.wordMastery[activeWordId] || "unexplored" : "unexplored"
   );
@@ -246,7 +248,11 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
               {lessonId && (
                 <Link
                   href={lessonHref(activeLanguageId, lessonId)}
-                  onClick={closeDrawer}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    closeDrawer();
+                    openLesson(activeLanguageId, lessonId);
+                  }}
                   className="flex items-center justify-between p-3 rounded-lg bg-[var(--sub-alt-color)] hover:border-[var(--main-color)] border border-[var(--sub-color)]/20 text-xs font-mono text-[var(--text-color)] transition group"
                 >
                   <div className="flex items-center gap-2.5 min-w-0">
@@ -260,7 +266,11 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
               {shiftFamily && (
                 <Link
                   href={`/atlas/${shiftFamily.id}`}
-                  onClick={closeDrawer}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    closeDrawer();
+                    openAtlasFamily(shiftFamily.id);
+                  }}
                   className="flex items-center justify-between p-3 rounded-lg bg-[var(--sub-alt-color)] hover:border-[var(--main-color)] border border-[var(--sub-color)]/20 text-xs font-mono text-[var(--text-color)] transition group"
                 >
                   <div className="flex items-center gap-2.5">

@@ -7,6 +7,7 @@ import { HelpCircle, Star } from "lucide-react";
 import { ThemeDropdown } from "@/components/common/ThemeDropdown";
 import { HelpPanel } from "@/components/common/HelpPanel";
 import { useAppStore } from "@/lib/store";
+import { useViewStore } from "@/lib/view-store";
 import { getLanguageDefinition } from "@/data/languages";
 import { getWordCount } from "@/data/word-counts";
 
@@ -33,7 +34,9 @@ export const TopNav: React.FC = () => {
   const showMasteryCounter = useAppStore((s) => s.settings.showMasteryCounter);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
-  const showTrailStars = pathname === "/" && language.status === "available";
+  const lessonOpen = useViewStore((s) => s.subView?.kind === "lesson");
+  const closeSubview = useViewStore((s) => s.closeSubview);
+  const showTrailStars = pathname === "/" && !lessonOpen && language.status === "available";
 
   React.useEffect(() => {
     setMounted(true);
@@ -47,7 +50,7 @@ export const TopNav: React.FC = () => {
     <header className="sticky top-0 z-40 w-full bg-[var(--bg-color)] border-b border-[var(--sub-color)]/20 transition-colors">
       <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
         {/* Logo & Identity */}
-        <Link href="/" className="flex items-center gap-2 group">
+        <Link href="/" onClick={closeSubview} className="flex items-center gap-2 group">
           <span className="font-bold text-lg text-[var(--main-color)] font-mono tracking-tighter">bü</span>
           <div className="flex items-baseline gap-1.5">
             <span className="font-bold text-[var(--text-color)] text-base tracking-tight group-hover:text-[var(--main-color)] transition">

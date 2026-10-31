@@ -19,7 +19,7 @@ export interface CourseCounts {
 /** Course-shaped counts for chrome that must not import lesson data. Pinned
  *  to the real content by `src/tests/languages.test.ts`. */
 export const COURSE_COUNTS: Readonly<Record<string, CourseCounts>> = {
-  de: { topics: 30, lessons: 169, families: 10, words: 1226 },
+  de: { topics: 30, lessons: 177, families: 10, words: 1226 },
   fr: { topics: 30, lessons: 123, families: 10, words: 306 },
   es: { topics: 30, lessons: 123, families: 10, words: 293 },
   nl: { topics: 30, lessons: 75, families: 10, words: 390 },

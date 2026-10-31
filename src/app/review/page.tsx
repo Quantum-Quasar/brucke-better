@@ -27,6 +27,7 @@ import { ShiftPair } from "@/components/common/ShiftPair";
 import { GermanCharBar } from "@/components/common/GermanCharBar";
 import { GenderGuideBanner } from "@/components/common/GenderGuideBanner";
 import { useAppStore } from "@/lib/store";
+import { useAppNavigation } from "@/lib/app-navigation";
 import { lessonHref } from "@/lib/routes";
 import { getDueCards, localDateKey, type ReviewGrade } from "@/lib/srs";
 import {
@@ -153,6 +154,7 @@ function ReviewHub({
   lessons: LessonIndexEntry[];
 }) {
   const language = getLanguageDefinition(activeLanguageId);
+  const { openLesson } = useAppNavigation();
   const [mounted, setMounted] = useState(false);
   const [activeDeck, setActiveDeck] = useState<DeckType | null>(null);
   // Seeded from the active compendium's first atlas family: German, French and
@@ -1110,6 +1112,10 @@ function ReviewHub({
           <div className="flex flex-wrap items-center gap-3">
             <Link
               href={lessonHref(activeLanguageId, lessons[0]?.id ?? 1)}
+              onClick={(event) => {
+                event.preventDefault();
+                openLesson(activeLanguageId, lessons[0]?.id ?? 1);
+              }}
               className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold text-xs font-mono hover:opacity-90 transition"
             >
               Start lesson 1 <ArrowRight className="w-3.5 h-3.5" />

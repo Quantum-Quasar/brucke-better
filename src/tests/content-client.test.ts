@@ -18,6 +18,17 @@ const COMPENDIUM = {
 
 const LESSON_INDEX = [{ id: 1, title: "One", word_ids: ["arm"] }];
 
+const LESSON_PAYLOAD = {
+  lesson: { id: 1, title: "One" },
+  compendium: {
+    words: { arm: { id: "arm" } },
+    shifts: {},
+    compounds: [],
+    falseFriends: [],
+    dailyInsights: [],
+  },
+};
+
 function response(payload: unknown, ok = true, status = 200): Response {
   return { ok, status, json: async () => payload } as Response;
 }
@@ -32,7 +43,13 @@ beforeEach(() => {
   fetchMock = vi.fn(async (input: RequestInfo | URL) => {
     const url = String(input);
     requests.push(url);
-    return response(url.includes("lesson-index") ? LESSON_INDEX : COMPENDIUM);
+    return response(
+      url.includes("lesson-index")
+        ? LESSON_INDEX
+        : url.includes("/lessons/")
+        ? LESSON_PAYLOAD
+        : COMPENDIUM
+    );
   });
   (globalThis as { fetch: typeof fetch }).fetch = fetchMock as unknown as typeof fetch;
   delete process.env.NEXT_PUBLIC_CONTENT_VERSION;
@@ -86,6 +103,35 @@ describe("client content loading", () => {
 
     await expect(loadLessonIndex("fr")).resolves.toEqual(LESSON_INDEX);
     expect(requests).toEqual(["/data/fr/lesson-index.json"]);
+  });
+
+  it("loads one lesson payload and caches it per id", async () => {
+    const { loadLesson } = await import("../lib/content-client");
+
+    const [first, second] = await Promise.all([loadLesson("de", 7), loadLesson("de", 7)]);
+
+    expect(requests).toEqual(["/data/de/lessons/7.json"]);
+    expect(first?.lesson.id).toBe(1);
+    expect(second).toEqual(first);
+  });
+
+  it("returns null for an unsupported language or invalid lesson id", async () => {
+    const { loadLesson } = await import("../lib/content-client");
+
+    await expect(loadLesson("it", 1)).resolves.toBeNull();
+    await expect(loadLesson("de", 0)).resolves.toBeNull();
+    await expect(loadLesson("de", Number.NaN)).resolves.toBeNull();
+    expect(requests).toEqual([]);
+  });
+
+  it("versions lesson payload URLs", async () => {
+    process.env.NEXT_PUBLIC_CONTENT_VERSION = "abc123";
+    vi.resetModules();
+    const { loadLesson } = await import("../lib/content-client");
+
+    await loadLesson("nl", 3);
+
+    expect(requests).toEqual(["/data/nl/lessons/3.json?v=abc123"]);
   });
 
   it("propagates the HTTP status and evicts the failed cache entry", async () => {

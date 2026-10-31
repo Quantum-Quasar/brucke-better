@@ -6,7 +6,7 @@
 
 import { useAsyncResource, type AsyncResource } from "@/lib/async-resource";
 import { EMPTY_COMPENDIUM } from "@/data/empty-compendium";
-import type { CompendiumData, LessonIndexEntry } from "@/lib/types";
+import type { CompendiumData, LessonIndexEntry, LessonPayload } from "@/lib/types";
 
 type CompendiumPayload = Omit<CompendiumData, "wordList">;
 
@@ -79,6 +79,16 @@ export function loadLessonIndex(languageId: string): Promise<LessonIndexEntry[]>
   return loadJson<LessonIndexEntry[]>(dataUrl(languageId, "lesson-index.json"));
 }
 
+/**
+ * One lesson plus only the words it renders. Resolves null for a language the
+ * app does not ship, so callers can render their "unavailable" state.
+ */
+export function loadLesson(languageId: string, lessonId: number): Promise<LessonPayload | null> {
+  if (!AVAILABLE_LANGUAGES.has(languageId)) return Promise.resolve(null);
+  if (!Number.isInteger(lessonId) || lessonId <= 0) return Promise.resolve(null);
+  return loadJson<LessonPayload>(dataUrl(languageId, `lessons/${lessonId}.json`));
+}
+
 function useContentResource<T>(key: string, load: (key: string) => Promise<T>): AsyncResource<T> {
   return useAsyncResource(key, load, {
     onRetry: (retryKey, error) => {
@@ -94,12 +104,21 @@ function useContentResource<T>(key: string, load: (key: string) => Promise<T>): 
   });
 }
 
+function contentKeyPath(key: string): { languageId: string; file: string } | null {
+  const [kind, languageId, lessonId] = key.split(":");
+  if (!languageId) return null;
+  if (kind === "compendium") return { languageId, file: "compendium.json" };
+  if (kind === "lesson-index") return { languageId, file: "lesson-index.json" };
+  if (kind === "lesson" && /^\d+$/.test(lessonId ?? "")) {
+    return { languageId, file: `lessons/${lessonId}.json` };
+  }
+  return null;
+}
+
 function clearContentCache(key: string) {
-  const separator = key.indexOf(":");
-  const kind = key.slice(0, separator);
-  const languageId = key.slice(separator + 1);
-  const file = kind === "compendium" ? "compendium.json" : "lesson-index.json";
-  cache.delete(dataUrl(languageId, file));
+  const target = contentKeyPath(key);
+  if (!target) return;
+  cache.delete(dataUrl(target.languageId, target.file));
 }
 
 function loadCompendiumKey(key: string): Promise<CompendiumData> {
@@ -110,12 +129,21 @@ function loadLessonIndexKey(key: string): Promise<LessonIndexEntry[]> {
   return loadLessonIndex(key.slice("lesson-index:".length));
 }
 
+function loadLessonKey(key: string): Promise<LessonPayload | null> {
+  const [, languageId, rawId] = key.split(":");
+  return loadLesson(languageId, Number.parseInt(rawId, 10));
+}
+
 export function useCompendium(languageId: string): AsyncResource<CompendiumData> {
   return useContentResource(`compendium:${languageId}`, loadCompendiumKey);
 }
 
 export function useLessonIndex(languageId: string): AsyncResource<LessonIndexEntry[]> {
   return useContentResource(`lesson-index:${languageId}`, loadLessonIndexKey);
+}
+
+export function useLesson(languageId: string, lessonId: number): AsyncResource<LessonPayload | null> {
+  return useContentResource(`lesson:${languageId}:${lessonId}`, loadLessonKey);
 }
 
 /**
@@ -130,4 +158,9 @@ export function prefetchReviewContent(languageId: string): void {
 
 export function prefetchAtlasContent(languageId: string): void {
   void loadCompendium(languageId).catch(() => {});
+}
+
+/** Warm one lesson payload before the learner commits to opening it. */
+export function prefetchLesson(languageId: string, lessonId: number): void {
+  void loadLesson(languageId, lessonId).catch(() => {});
 }

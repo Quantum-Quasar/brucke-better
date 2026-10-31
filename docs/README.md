@@ -33,7 +33,7 @@ Rather than relying on rote memorization or gamified streaks without substance, 
 - **Styling**: Tailwind CSS v4 (native CSS tokens, dark mode default)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) 5 (dual `localStorage` + size-guarded cookie persistence)
 - **Icons**: Lucide React
-- **Testing**: Vitest 5 (`bun run test` → `vitest run`) — 41 test files, 408 automated tests. There is no `bun test` script. <!-- corrected 2026-09-30: was "Vitest / `bun test` (21 test suites, 119 automated tests)" — package.json:12 defines only "test": "vitest run"; counts updated 2026-10-03 with the whole-curriculum integrity, timezone-boundary, persistence-merging, and docs-drift suites -->
+- **Testing**: Vitest 5 (`bun run test` → `vitest run`) — 42 test files, 425 automated tests. There is no `bun test` script. <!-- corrected 2026-09-30: was "Vitest / `bun test` (21 test suites, 119 automated tests)" — package.json:12 defines only "test": "vitest run"; counts updated 2026-10-03 with the whole-curriculum integrity, timezone-boundary, persistence-merging, and docs-drift suites -->
 - **Audio Engine**: Two independent zero-dependency browser-native paths: `window.speechSynthesis` for German pronunciation (`de-DE`, 0.92x) and a Web Audio **sample** engine (`src/lib/sound.ts`) that decodes bundled Monkeytype mechanical-keyboard `.wav` packs with a 24-entry buffer cache and negative URL caching. <!-- corrected 2026-09-30: was "Web Audio click synthesizer" — there is no synthesis; src/lib/sound.ts:48-53 -->
 
 ---
@@ -56,7 +56,7 @@ bun run parse-data
 
 ### Run Automated Tests
 
-Executes the full Vitest suite — 41 test files, 408 automated tests: <!-- corrected 2026-09-30: was "119 unit and integration tests across 21 suites"; counts updated 2026-10-03 -->
+Executes the full Vitest suite — 42 test files, 425 automated tests: <!-- corrected 2026-09-30: was "119 unit and integration tests across 21 suites"; counts updated 2026-10-03 -->
 
 ```bash
 bun run test
@@ -73,7 +73,7 @@ bun run test:e2e
 
 ### Production Build
 
-Pre-renders every route to static HTML (`● SSG`): the 8 static routes, 37 `/atlas/[family]` pages (union of the four atlases), one `/trail/[id]` page per authored lesson (178 unique ids: 169 German plus 9 French/Spanish-only ids (Dutch reuses the shared lesson-id space)), and language-scoped aliases at `/trail/[lang]/[id]` for every authored lesson in each available course. `bun run build` re-runs `parse-data` first. <!-- corrected 2026-10-22: was 9 family pages and 168 trail pages; /trail/[id]/page.tsx now unions de/fr/es ids. Unknown /trail/[id] or /atlas/[family] params 404 via dynamicParams = false. -->
+Pre-renders the six top-level tab routes to static HTML (`● SSG`) — 6 static routes: `/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`. Lessons and atlas details are in-page client views, so they never add a URL or browser-history entry: 186 unique ids (177 German plus 9 French/Spanish-only ids; Dutch reuses the shared lesson-id space) load from 498 per-lesson payloads, and the four atlases expose 37 atlas families. `bun run build` re-runs `parse-data` first. <!-- corrected 2026-10-31: lessons, atlas families and the master web moved from subpath routes to in-page overlays; legacy URLs 307-redirect into the matching state. -->
 
 ```bash
 bun run build
@@ -95,15 +95,15 @@ Visit `http://localhost:3000` in your browser.
    - Baba Is You-style node map: 30 topic clusters on one linear spine, with skip-able extra-practice nodes ("sprigs") and support-material branches hanging off each cluster.
    - All adjacent nodes unlock at once when a node is completed; the spine itself stays strictly ordered, but a **closed star gate** blocks the spine at its topic boundary until the stretch's star quota is met.
    - Read the map top-to-bottom from topic 1; the pulsing theme-colored selector marks your recommended node.
-   - 1 core lesson per topic plus 2–3 sprigs; the entire curriculum is authored — 30 cores + 79 sprigs + 60 branch lessons = 169 lessons, each with a title, plan and full `Lesson` object (`src/data/curriculum.ts`, `src/data/lessons.ts`). <!-- corrected 2026-09-30: was "topics 1–10 fully authored, 11–30 shipped as titled shells with authoring plans" — no shells remain; composition updated 2026-10-03 from "30 + 72 + 7 = 109" -->
+   - 1 core lesson per topic plus 2–3 sprigs; the entire curriculum is authored — 30 cores + 79 sprigs + 68 branch lessons = 177 lessons, each with a title, plan and full `Lesson` object (`src/data/curriculum.ts`, `src/data/lessons.ts`). <!-- corrected 2026-09-30: was "topics 1–10 fully authored, 11–30 shipped as titled shells with authoring plans" — no shells remain; composition updated 2026-10-03 from "30 + 72 + 7 = 109" -->
    - Custom DOM+SVG renderer (no game libraries) with `content-visibility` windowing per topic cluster, sized for hundreds of future lessons.
-   - 5-part card-by-card lesson wizard (Hook, Pattern, Transformation Table, Bite-Sized Practice, Summary & Retries) at `/trail/[id]`.
+   - 5-part card-by-card lesson wizard (Hook, Pattern, Transformation Table, Bite-Sized Practice, Summary & Retries) in the in-page lesson reader.
    - Scaffolded exercises across 11 types (`src/lib/types.ts`): morpheme tiles, matching pairs, shift select, syntax builder, derivation typing, reverse-cognate typing, **transcribe** production drills (thought + lexicon + cue ladder), **literal gloss** direct translations, **dictation** listening drills (played audio, capped replays, a 15-minute listening skip), **family grid** prefix × base matrices, and **variant English** "every honest rendering" drills (TM-1/TM-2/TM-6, `docs/THINKING_METHOD_UPGRADE.md`). <!-- updated 2026-10-02: added the Thinking Method exercise types (was "6 types") -->
-   - Every authored lesson (cores, sprigs, and branches) ends with an ungraded, skippable **Twist** card (deliberate friction, outside the 5-exercise contract) and may whisper up to two **posture cues** per lesson; the 3-step intro closes with a short posture summary instead of a separate six-step gate (TM-4/TM-5, same document). <!-- corrected 2026-10-23: onboarding cut to 3 steps; all 169 German lessons have a twist -->
+   - Every authored lesson (cores, sprigs, and branches) ends with an ungraded, skippable **Twist** card (deliberate friction, outside the 5-exercise contract) and may whisper up to two **posture cues** per lesson; the 3-step intro closes with a short posture summary instead of a separate six-step gate (TM-4/TM-5, same document). <!-- corrected 2026-10-23: onboarding cut to 3 steps; all 177 German lessons have a twist -->
    - Pre-exercise vocabulary hints (`vocab_hints`) for auxiliary words (e.g., `mit`).
    - End-of-lesson Retry Queue ensuring mastery before progression; a flawless first-try run earns a **purple star** (gold otherwise).
 
-2. **Sound Shift Atlas (`/atlas` & `/atlas/[family]`)**:
+2. **Sound Shift Atlas (`/atlas`)** (family detail and the master web open in-page):
    - Radial spatial spoke visualization for 9 consonant shift families ($TH \rightarrow D$, $P \rightarrow FF/PF$, $T \rightarrow SS/S/Z$, etc.).
    - Philological background, literature sources, and 5-question branch practice drills.
 
@@ -122,7 +122,7 @@ Visit `http://localhost:3000` in your browser.
 
 5. **Six Star Gates on the spine** (`src/data/curriculum.ts:695`):
    - Gates sit at the natural family boundaries of the curriculum and close the stretch of topics the next stretch is built on, so the spine cannot be rushed past weak ground.
-   - *The Shift Gate* (after topic 7, 14★ of 22), *The Grammar Gate* (after 10, 6★ of 9), *The Verb-Complex Gate* (after 16, 11★ of 22), *The Past Gate* (after 20, 9★ of 18), *The Atlas Gate* (after 26, 11★ of 22), and *The Capstone Gate* (after 29, 9★ of 11).
+   - *The Shift Gate* (after topic 7, 14★ of 22), *The Grammar Gate* (after 10, 6★ of 11), *The Verb-Complex Gate* (after 16, 11★ of 22), *The Past Gate* (after 20, 9★ of 20), *The Atlas Gate* (after 26, 11★ of 22), and *The Capstone Gate* (after 29, 9★ of 13).
    - Each gate is drawn on the map as a checkpoint pill reading `★ earned/required`; clicking it opens a panel explaining what the stretch covers and why the next one depends on it (`src/components/trail/TrailMap.tsx:203`).
    - A closed gate hard-locks the spine edge but leaves every already-reachable node playable — you can always go back and farm the stars you are missing. <!-- added 2026-09-30: the star-gate system was undocumented -->
 
@@ -153,10 +153,9 @@ The whole surface is themeable and typable, and the app never leaves the browser
 ```
 src/
 ├── app/                  # Next.js App Router (100% SSG static pre-rendered routes)
-│   ├── page.tsx          # Homepage = the Baba-style trail map + DailyInsightCard
-│   ├── atlas/            # Sound Shift Atlas pages (/atlas, /atlas/[family])
+│   ├── page.tsx          # Homepage = trail map + DailyInsightCard + in-page lesson reader
+│   ├── atlas/            # Sound Shift Atlas (family detail + master web open in-page)
 │   ├── review/           # Multi-modal SRS Review Hub
-│   ├── trail/            # /trail redirects to /; /trail/[id] lesson wizard
 │   ├── settings/ about/  # Settings & About (linked from the bottom dock)
 │   ├── error.tsx         # Global error boundary (client)
 │   ├── fonts.css         # 43 @font-face declarations over public/webfonts
@@ -177,7 +176,7 @@ src/
 │   ├── compendium.json   # 1226 core words, 9 shifts, 32 compounds, 16 traps, 28 insights
 │   ├── compendium.ts     # Typed view over the raw JSON (derives wordList at runtime)
 │   ├── curriculum.ts     # 30 topic clusters: cores, sprigs, 11 branches, 6 star gates
-│   ├── lessons.ts        # All 169 authored lessons (cores 1–30, sprigs, branches 50xx–53xx)
+│   ├── lessons.ts        # All 177 authored lessons (cores 1–30, sprigs, branches 50xx–53xx)
 │   ├── insights.json     # 28 daily insights (generated by parse-data)
 │   ├── consciousness.ts  # TM-6 learning-consciousness lines, re-whispered ~1 lesson in 7
 │   ├── posture-cues.ts   # TM-4b whisper-cue pools + deterministic per-lesson picker
@@ -202,7 +201,7 @@ src/
 │   ├── types.ts          # Core domain TypeScript interfaces
 │   ├── use-dialog-focus.ts # Shared Esc-to-close + focus-trap hook
 │   └── word-entities.ts  # Merges compounds + false friends onto the WordEntity map
-└── tests/                # 41 test files (Vitest) <!-- updated 2026-10-03: whole-curriculum integrity + timezone + persistence suites (was "24", already stale before) -->
+└── tests/                # 42 test files (Vitest) <!-- updated 2026-10-03: whole-curriculum integrity + timezone + persistence suites (was "24", already stale before) -->
 ```
 <!-- corrected 2026-09-30: tree previously omitted app/error.tsx, app/fonts.css, app/globals.css, components/settings/, data/compendium.ts, data/insights.json, lib/sound.ts, lib/appearance.ts, lib/word-entities.ts and lib/use-dialog-focus.ts; it also claimed 218 compendium words, lessons "ids 1–10", a "Footer" component that does not exist, "MapNode" (folded into TrailMap.tsx) and "(Vitest / Bun)". Updated 2026-10-03: 619 words, 128 lessons, lib/word-refs-audit.ts added. -->
 

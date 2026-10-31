@@ -17,7 +17,7 @@ describe("lazy curriculum client", () => {
     expect(german).not.toBeNull();
     expect(german!.topics.length).toBe(30);
     expect(german!.totalTopics).toBe(30);
-    expect(german!.lessonCount).toBe(169);
+    expect(german!.lessonCount).toBe(177);
   });
 
   it("loads French on demand and caches the result", async () => {

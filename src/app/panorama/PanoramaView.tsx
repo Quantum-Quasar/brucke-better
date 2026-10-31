@@ -8,6 +8,8 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Compass, Languages } from "lucide-react";
 import { useAppStore } from "@/lib/store";
+import { useAppNavigation } from "@/lib/app-navigation";
+import { parseLessonHref } from "@/lib/routes";
 import {
   PANORAMA_BY_LANG,
   PANORAMA_LANGUAGE_IDS,
@@ -22,7 +24,7 @@ interface PanoramaViewProps {
 
 export function PanoramaView({ linksByLanguage }: PanoramaViewProps) {
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
-  const setActiveLanguage = useAppStore((s) => s.setActiveLanguage);
+  const { openLesson } = useAppNavigation();
 
   // The store is the source of truth for the app's language, but it is hydrated
   // from localStorage on the client. Render the server's language first, then
@@ -166,7 +168,13 @@ export function PanoramaView({ linksByLanguage }: PanoramaViewProps) {
             <li key={item.href + item.label}>
               <Link
                 href={item.href}
-                onClick={() => setActiveLanguage(current.id)}
+                onClick={(event) => {
+                  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                  const target = parseLessonHref(item.href);
+                  if (!target) return;
+                  event.preventDefault();
+                  openLesson(target.languageId, target.lessonId);
+                }}
                 title={`Open this lesson in ${current.name} (switches your active course)`}
                 className="text-[var(--main-color)] hover:underline"
               >

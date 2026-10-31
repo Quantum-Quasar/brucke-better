@@ -4,6 +4,7 @@ import React, { useRef } from "react";
 import { usePathname } from "next/navigation";
 import { BookOpen, Keyboard, X } from "lucide-react";
 import { useAppStore } from "@/lib/store";
+import { useViewStore } from "@/lib/view-store";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
 
 interface HelpPanelProps {
@@ -66,6 +67,7 @@ const PAGE_HELP: Record<string, { title: string; tips: string[] }> = {
 
 export const HelpPanel: React.FC<HelpPanelProps> = ({ open, onClose }) => {
   const pathname = usePathname();
+  const lessonOpen = useViewStore((s) => s.subView?.kind === "lesson");
   const openOnboarding = useAppStore((s) => s.openOnboarding);
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -73,7 +75,7 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({ open, onClose }) => {
 
   if (!open) return null;
 
-  const key = pathname.startsWith("/trail/")
+  const key = lessonOpen
     ? "lesson"
     : pathname === "/"
     ? "home"

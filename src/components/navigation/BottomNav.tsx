@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Compass, Info, Map, RotateCcw, Sliders, Table2 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
+import { useViewStore } from "@/lib/view-store";
 import { getDueCards } from "@/lib/srs";
 import { prefetchAtlasContent, prefetchReviewContent } from "@/lib/content-client";
 
@@ -12,6 +13,8 @@ export const BottomNav: React.FC = () => {
   const pathname = usePathname();
   const srsCards = useAppStore((s) => s.srsCards);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
+  const lessonOpen = useViewStore((s) => s.subView?.kind === "lesson");
+  const closeSubview = useViewStore((s) => s.closeSubview);
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => setMounted(true), []);
@@ -23,17 +26,16 @@ export const BottomNav: React.FC = () => {
     else if (href === "/review") prefetchReviewContent(activeLanguageId);
   };
 
-  // Lesson pages own the whole mobile viewport: the dock was covering the
-  // forward action, so taps landed on Review instead of advancing the lesson.
-  if (pathname.startsWith("/trail/")) return null;
+  // Lessons own the whole viewport: the dock was covering the forward action,
+  // so taps landed on Review instead of advancing the lesson.
+  if (lessonOpen) return null;
 
   const tabs = [
     {
       href: "/",
       label: "trail",
       icon: Map,
-      // the map lives on "/", lesson pages are part of the trail too
-      isActive: pathname === "/" || pathname.startsWith("/trail"),
+      isActive: pathname === "/",
       badge: 0,
     },
     { href: "/atlas", label: "atlas", icon: Compass, isActive: pathname.startsWith("/atlas"), badge: 0 },
@@ -57,6 +59,10 @@ export const BottomNav: React.FC = () => {
                 key={tab.href}
                 href={tab.href}
                 aria-current={tab.isActive ? "page" : undefined}
+                onClick={() => {
+                  // A tab click always lands on that tab's root view.
+                  if (tab.href === "/atlas") closeSubview();
+                }}
                 onPointerEnter={() => prefetch(tab.href)}
                 onTouchStart={() => prefetch(tab.href)}
                 onFocus={() => prefetch(tab.href)}

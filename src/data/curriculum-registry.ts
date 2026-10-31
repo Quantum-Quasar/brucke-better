@@ -1,7 +1,11 @@
 // Lightweight curriculum access. Unlike language-content.ts this module never
 // imports a lesson body, so the trail map and landing page stay small.
 
-import { EMPTY_CURRICULUM, type CurriculumData } from "./curriculum-core";
+import {
+  EMPTY_CURRICULUM,
+  getNextPlayableLessonIdFrom,
+  type CurriculumData,
+} from "./curriculum-core";
 import { GERMAN_CURRICULUM } from "./curriculum";
 import { FRENCH_CURRICULUM } from "./french/curriculum-fr";
 import { SPANISH_CURRICULUM } from "./spanish/curriculum-es";
@@ -20,48 +24,9 @@ export function getCurriculum(languageId: string): CurriculumData {
   return CURRICULUM_MAP[languageId] ?? EMPTY_CURRICULUM;
 }
 
-/**
- * The spine topic that owns a trail node — core, sprig or branch lesson.
- * Sprig ids follow `topicId * 100 + index`; branch lessons belong to the
- * topic their branch attaches to. Returns null for ids outside the trail.
- */
-function owningTopicId(content: CurriculumData, nodeId: number): number | null {
-  for (const topic of content.topics) {
-    if (topic.core.id === nodeId) return topic.id;
-    if (topic.sprigs.some((sprig) => sprig.id === nodeId)) return topic.id;
-  }
-  for (const branch of content.trailBranches) {
-    if (branch.lessons.some((lesson) => lesson.id === nodeId)) {
-      const attachTopic = content.topics.find((topic) => topic.core.id === branch.attach);
-      return attachTopic ? attachTopic.id : null;
-    }
-  }
-  // Unlisted sprig ids still decode arithmetically (index 0 is not a node).
-  const series = Math.floor(nodeId / 100);
-  if (series >= 1 && series <= content.totalTopics && nodeId % 100 !== 0) return series;
-  return null;
-}
-
-/**
- * Next authored spine core after the node, in the active language's own
- * curriculum (null = caught up). A sprig or branch lesson answers with the
- * core of the *following* topic; a core answers with the next core; only the
- * last topic returns null.
- */
-function getNextPlayableLessonIdIn(content: CurriculumData, currentId: number): number | null {
-  const owner = owningTopicId(content, currentId);
-  if (owner === null) return null;
-  for (const topic of content.topics) {
-    if (topic.id > owner && topic.id <= content.totalTopics && topic.core.authored) {
-      return topic.core.id;
-    }
-  }
-  return null;
-}
-
 export function getNextPlayableLessonIdFor(
   languageId: string,
   currentId: number
 ): number | null {
-  return getNextPlayableLessonIdIn(getCurriculum(languageId), currentId);
+  return getNextPlayableLessonIdFrom(getCurriculum(languageId), currentId);
 }

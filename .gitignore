@@ -47,6 +47,7 @@ report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
 Thumbs.db
 .idea
 .vscode
+.zed
 
 # ===== local agent / tooling scratch (never push) =====
 .freebuff

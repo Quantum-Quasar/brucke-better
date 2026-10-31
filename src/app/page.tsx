@@ -6,6 +6,7 @@ import { ArrowRight, PlayCircle, Clock } from "lucide-react";
 import { DailyInsightCard } from "@/components/common/DailyInsightCard";
 import { TrailMap } from "@/components/trail/TrailMap";
 import { useAppStore } from "@/lib/store";
+import { useAppNavigation } from "@/lib/app-navigation";
 import { getLanguageDefinition } from "@/data/languages";
 import { useCurriculum } from "@/data/curriculum-client";
 import { useInsights } from "@/data/insights-client";
@@ -20,6 +21,7 @@ export default function HomePage() {
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const openOnboarding = useAppStore((s) => s.openOnboarding);
   const storeHydrated = useAppStore((s) => s.storeHydrated);
+  const { openLesson } = useAppNavigation();
 
   const language = getLanguageDefinition(activeLanguageId);
   const { curriculum, ready: curriculumReady, error: curriculumError, retry: retryCurriculum } =
@@ -127,6 +129,10 @@ export default function HomePage() {
               <div className="flex flex-wrap items-center gap-2.5">
                 <Link
                   href={lessonHref(activeLanguageId, firstLessonId)}
+                  onClick={(event) => {
+                    event.preventDefault();
+                    openLesson(activeLanguageId, firstLessonId);
+                  }}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] font-bold text-sm font-mono transition"
                 >
                   Start topic 1 <ArrowRight className="w-4 h-4" />

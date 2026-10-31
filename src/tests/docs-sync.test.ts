@@ -6,6 +6,9 @@ import { FR_LESSONS } from "../data/french/lessons-fr";
 import { ES_LESSONS } from "../data/spanish/lessons-es";
 import { NL_LESSONS } from "../data/dutch/lessons-nl";
 import { compendium } from "../data/compendium";
+import { frenchCompendium } from "../data/french/compendium-fr";
+import { spanishCompendium } from "../data/spanish/compendium-es";
+import { dutchCompendium } from "../data/dutch/compendium-nl";
 import { THEMES } from "../data/themes";
 import { FONT_LIST } from "../data/fonts";
 import { getAtlasFamilies } from "../lib/atlas-families";
@@ -45,10 +48,10 @@ function countStaticRoutes(dir: string): number {
   }, 0);
 }
 const STATIC_ROUTE_COUNT = countStaticRoutes(path.join(ROOT, "src", "app"));
-const TEST_COUNT = 408; // update when adding tests
+const TEST_COUNT = 425; // update when adding tests
 const THEME_COUNT = Object.keys(THEMES).length;
 const FONT_COUNT = FONT_LIST.length;
-const TAUGHT_WORDS = 656; // update after running scripts/audit-vocab-balance.ts
+const TAUGHT_WORDS = 671; // update after running scripts/audit-vocab-balance.ts
 
 // pitch/ is private and gitignored, so it is absent from a fresh clone. The
 // pitch assertions skip themselves instead of failing the suite with ENOENT.
@@ -85,30 +88,43 @@ describe("Documentation stays in sync with the data", () => {
     expect(FR_LESSONS.length).toBe(123);
     expect(ES_LESSONS.length).toBe(123);
     expect(NL_LESSONS.length).toBe(75);
-    expect(trailIds.size).toBe(178);
+    expect(trailIds.size).toBe(186);
     expect(families.length).toBe(10);
-    expect(STATIC_ROUTE_COUNT).toBe(8);
+    expect(STATIC_ROUTE_COUNT).toBe(6);
+
+    // Every authored lesson gets one per-lesson payload, and family ids are
+    // shared across the four atlases.
+    const payloadCount =
+      LESSONS.length + FR_LESSONS.length + ES_LESSONS.length + NL_LESSONS.length;
+    const familyIdCount = new Set(
+      [compendium, frenchCompendium, spanishCompendium, dutchCompendium].flatMap((data) =>
+        getAtlasFamilies(data).map((family) => family.id)
+      )
+    ).size;
 
     const readme = readRootDoc("README.md");
     expect(readme).toContain(`${STATIC_ROUTE_COUNT} static routes`);
     expect(readme).toContain(`${FR_LESSONS.length} authored lessons`);
     expect(readme).toContain(`${NL_LESSONS.length} authored Dutch lessons`);
-    expect(readme).toContain(`${trailIds.size} \`/trail/[id]\` pages`);
-    expect(readme).toContain("37 `/atlas/[family]` pages");
+    expect(readme).toContain(`${trailIds.size} unique lesson ids`);
+    expect(readme).toContain(`${payloadCount} per-lesson payloads`);
+    expect(readme).toContain(`${familyIdCount} atlas families`);
 
     const docsReadme = readRootDoc(path.join("docs", "README.md"));
     expect(docsReadme).toContain(`${STATIC_ROUTE_COUNT} static routes`);
     expect(docsReadme).toContain(`${FR_LESSONS.length} lessons authored`);
     expect(docsReadme).toContain(`${NL_LESSONS.length} Dutch lessons`);
     expect(docsReadme).toContain(`${trailIds.size} unique ids`);
-    expect(docsReadme).toContain("37 `/atlas/[family]` pages");
+    expect(docsReadme).toContain(`${payloadCount} per-lesson payloads`);
+    expect(docsReadme).toContain(`${familyIdCount} atlas families`);
     expect(docsReadme).toContain("Every authored lesson");
     expect(docsReadme).toContain("Twist");
 
     const manifest = readRootDoc("AUDIT_MANIFEST.md");
     expect(manifest).toContain(`${STATIC_ROUTE_COUNT} static routes`);
-    expect(manifest).toContain(`${trailIds.size} unique pages`);
-    expect(manifest).toContain("37 pages across the four atlases");
+    expect(manifest).toContain(`${trailIds.size} unique lessons`);
+    expect(manifest).toContain(`${payloadCount} per-lesson payloads`);
+    expect(manifest).toContain(`${familyIdCount} atlas families`);
     expect(manifest).toContain("Y / GH");
     expect(manifest).toContain("-ate / -ize");
 
@@ -124,8 +140,8 @@ describe("Documentation stays in sync with the data", () => {
       expect(text, `${doc} still claims the stale 218-word count`).not.toMatch(/\b218 (core )?words/);
       expect(text, `${doc} still claims 109 lessons`).not.toMatch(/\b109 lessons/);
       expect(text, `${doc} still claims 119 tests`).not.toMatch(/\b119 tests/);
-      // 28 is now the correct atlas-page count, so the old stale markers are
-      // the pre-fix "9 atlas pages" and "128 trail pages" claims.
+      // The atlases no longer use per-family pages, so the old route-count
+      // markers are the pre-fix "9 atlas pages" and "128 trail pages" claims.
       expect(text, `${doc} still claims 9 atlas pages`).not.toMatch(/\b9 (atlas|family) pages?/);
       expect(text, `${doc} still claims 128 lesson pages`).not.toMatch(/\b128 (lesson|trail) pages?/);
       expect(text, `${doc} still claims only the first 10 lessons are interactive`).not.toMatch(

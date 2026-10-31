@@ -1,10 +1,10 @@
 // Exports the heavy per-language content to static JSON under public/data/.
-// The app fetches only the active language's files, so review/atlas no longer
-// ship every lesson body and every language in the JS bundle.
+// The app fetches only what a view needs, so review/atlas/lessons never ship
+// every lesson body and every language in the JS bundle.
 //
-// Lesson prose and exercises stay server-rendered: each /trail/<lang>/<id>
-// page passes exactly one lesson to the client. These files are what the
-// client needs for review decks, sentences, the word drawer and the atlas.
+// Each lesson gets its own payload (the lesson plus the words it can render),
+// which is what the in-page lesson reader fetches. The compendium and compact
+// lesson index serve review decks, sentences, the word drawer and the atlas.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -17,6 +17,7 @@ import { LESSONS } from "../src/data/lessons";
 import { FR_LESSONS } from "../src/data/french/lessons-fr";
 import { ES_LESSONS } from "../src/data/spanish/lessons-es";
 import { NL_LESSONS } from "../src/data/dutch/lessons-nl";
+import { trimCompendium } from "../src/lib/lesson-payload";
 import type { CompendiumData, Lesson, LessonIndexEntry, ShiftFamily } from "../src/lib/types";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -73,6 +74,7 @@ function shiftNameEntries(compendium: CompendiumData) {
 
 const shiftNames: Record<string, Array<{ id: string; symbol: string; name: string }>> = {};
 let totalBytes = 0;
+let lessonPayloads = 0;
 
 for (const language of LANGUAGES) {
   // wordList is derived in the client; dailyInsights stays because the master
@@ -83,6 +85,15 @@ for (const language of LANGUAGES) {
     path.join(OUT_DIR, language.id, "lesson-index.json"),
     language.lessons.map(lessonIndexEntry)
   );
+  // One small file per lesson: the in-page lesson view fetches exactly the
+  // lesson it opens plus the words it can render.
+  for (const lesson of language.lessons) {
+    totalBytes += writeJson(
+      path.join(OUT_DIR, language.id, "lessons", `${lesson.id}.json`),
+      { lesson, compendium: trimCompendium(language.compendium, lesson) }
+    );
+    lessonPayloads += 1;
+  }
   shiftNames[language.id] = shiftNameEntries(language.compendium);
 }
 
@@ -91,5 +102,5 @@ for (const language of LANGUAGES) {
 writeJson(SHIFT_NAMES_PATH, shiftNames);
 
 console.log(
-  `exported ${LANGUAGES.length} languages to public/data (${(totalBytes / 1024).toFixed(0)} KB)`
+  `exported ${LANGUAGES.length} languages and ${lessonPayloads} lesson payloads to public/data (${(totalBytes / 1024).toFixed(0)} KB)`
 );

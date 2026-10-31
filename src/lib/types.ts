@@ -444,6 +444,16 @@ export interface LessonIndexEntry {
   };
 }
 
+/**
+ * One lesson plus only the words it can render and the language's shift
+ * families. Exported per lesson so opening a lesson fetches one small JSON
+ * file instead of the whole course.
+ */
+export interface LessonPayload {
+  lesson: Lesson;
+  compendium: Omit<CompendiumData, "wordList">;
+}
+
 // ---------------------------------------------------------------------------
 // Baba-style Trail Map — curriculum shells & node graph
 // ---------------------------------------------------------------------------

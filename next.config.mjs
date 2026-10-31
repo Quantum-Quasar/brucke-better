@@ -28,6 +28,37 @@ const nextConfig = {
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },
+  async redirects() {
+    // Lessons and atlas details are in-page views now. Old deep links land on
+    // the parent tab with a query the client restores, then cleans the URL.
+    return [
+      {
+        source: "/trail/:lang/:id",
+        destination: "/?lang=:lang&lesson=:id",
+        permanent: false,
+      },
+      {
+        source: "/trail/:id",
+        destination: "/?lesson=:id",
+        permanent: false,
+      },
+      {
+        source: "/trail",
+        destination: "/",
+        permanent: false,
+      },
+      {
+        source: "/atlas/master",
+        destination: "/atlas?master=1",
+        permanent: false,
+      },
+      {
+        source: "/atlas/:family",
+        destination: "/atlas?family=:family",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {

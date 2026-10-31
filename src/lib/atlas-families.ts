@@ -1,3 +1,5 @@
+import SHIFT_NAMES from "@/data/shift-names.json";
+import { LANGUAGES } from "@/data/languages";
 import type { CompendiumData, ShiftFamily } from "@/lib/types";
 
 /** Route id of the virtual family containing dictionary words outside the atlas. */
@@ -54,6 +56,26 @@ function assertNoReservedShiftIds(data: CompendiumData) {
 }
 
 export function getAtlasFamily(data: CompendiumData, id: string): ShiftFamily | undefined {
+  if (!id) return undefined;
   if (id === UNSHIFTED_FAMILY_ID) return getUnshiftedFamily(data);
-  return data.shifts[id];
+  // A legacy URL is untrusted input: never resolve Object.prototype members
+  // such as __proto__ or constructor as if they were shift families.
+  return Object.prototype.hasOwnProperty.call(data.shifts, id) ? data.shifts[id] : undefined;
+}
+
+const AVAILABLE_LANGUAGE_IDS = LANGUAGES.filter(
+  (language) => language.status === "available"
+).map((language) => language.id);
+
+/**
+ * Which course atlases define a family id. Derived from the small bundled
+ * shift-names table instead of loading every compendium on a legacy URL.
+ */
+export function getFamilyOwnerLanguageIds(familyId: string): string[] {
+  if (!familyId) return [];
+  if (familyId === UNSHIFTED_FAMILY_ID) return [...AVAILABLE_LANGUAGE_IDS];
+  const table = SHIFT_NAMES as Record<string, Array<{ id: string }>>;
+  return AVAILABLE_LANGUAGE_IDS.filter((languageId) =>
+    (table[languageId] ?? []).some((family) => family.id === familyId)
+  );
 }

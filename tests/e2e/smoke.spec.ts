@@ -174,8 +174,10 @@ test.describe("browser smoke", () => {
       const state = await readAppState(page);
       expect(state?.lessonProgress?.["1"]?.segment).toBe("pattern");
 
-      // progress survives a reload
+      // progress survives a reload; the open view itself is intentionally not
+      // restored, so re-open the lesson and confirm it resumes at the segment
       await page.reload();
+      await page.goto("/trail/1");
       await expect(nextTable).toBeVisible();
     });
 
@@ -279,29 +281,61 @@ test.describe("browser smoke", () => {
       await expect(page.locator("#review-style-title")).toBeHidden();
     });
 
-    test("static routes render and unknown dynamic params 404", async ({ page }) => {
+    test("legacy deep links restore in-page views and unknown ids fail gracefully", async ({ page }) => {
       await seedAppState(page);
-      // a valid atlas family route (dynamicParams = false must not break it)
       await page.goto("/atlas/th_to_d");
       await expect(page.getByText(/Dental Shift/i).first()).toBeVisible();
+      await expect(page).toHaveURL(/\/atlas\/?$/);
 
-      // unknown lesson and family ids must 404, not render or server-render dynamically
-      const lessonResponse = await page.goto("/trail/999999");
-      expect(lessonResponse?.status()).toBe(404);
-      const familyResponse = await page.goto("/atlas/not_a_family");
-      expect(familyResponse?.status()).toBe(404);
+      await page.goto("/trail/999999");
+      await expect(page.getByText(/Lesson 999999 Coming Soon/i)).toBeVisible();
+      await expect(page).toHaveURL(/\/$/);
+
+      await page.goto("/atlas/not_a_family");
+      await expect(page.getByText(/No authored course defines this shift family/i)).toBeVisible();
+      await expect(page).toHaveURL(/\/atlas\/?$/);
     });
   });
 });
 
-test("language-scoped lesson URL opens the named course", async ({ page }) => {
+test("language-scoped lesson URL opens the named course in-page", async ({ page }) => {
   await page.goto("/trail/fr/1");
-  await expect(
-    page.getByRole("heading", { name: /The French Inside Your English/i })
-  ).toBeVisible();
+  await expect(page.getByRole("button", { name: /next: pattern/i })).toBeVisible();
   await expect(page.locator("header")).toContainText(/french through english/i, {
     timeout: 15_000,
   });
+  await expect(page).toHaveURL(/\/$/);
+});
+
+test("opening and closing a lesson adds no browser-history entries", async ({ page }) => {
+  await seedAppState(page);
+  await page.goto("/");
+  const before = await page.evaluate(() => history.length);
+
+  const start = page.getByRole("button", { name: /^(start|continue|resume) topic 1/i });
+  await expect(async () => {
+    await start.click();
+    await expect(page.getByRole("button", { name: /back to trail/i })).toBeVisible();
+  }).toPass({ timeout: 30_000 });
+
+  expect(await page.evaluate(() => history.length)).toBe(before);
+  await page.getByRole("button", { name: /back to trail/i }).click();
+  await expect(start).toBeVisible();
+  expect(await page.evaluate(() => history.length)).toBe(before);
+});
+
+test("tab switches add one history entry and Back returns", async ({ page }) => {
+  await page.goto("/");
+  const before = await page.evaluate(() => history.length);
+  await page
+    .getByRole("navigation", { name: /main navigation/i })
+    .getByRole("link", { name: /^atlas$/i })
+    .click();
+  await expect(page).toHaveURL(/\/atlas\/?$/);
+  expect(await page.evaluate(() => history.length)).toBe(before + 1);
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/$/);
 });
 
 test("theme picker mounts on demand and applies the chosen theme", async ({ page }) => {

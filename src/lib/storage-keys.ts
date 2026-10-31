@@ -8,3 +8,5 @@
 // backwards compatibility.
 export const STORAGE_KEY = "brucke_app_state_v1";
 export const STORAGE_COOKIE_KEY = "brucke_progress";
+/** Per-view UI position (never progress); kept separate from STORAGE_KEY. */
+export const VIEW_STORAGE_KEY = "brucke_view_state_v1";
