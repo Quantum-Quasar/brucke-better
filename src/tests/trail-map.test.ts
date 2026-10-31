@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { TOPICS, TRAIL_BRANCHES, TOTAL_TOPICS, flattenTrailNodes, getNextPlayableLessonId } from "../data/curriculum";
+import { spineNodeIds } from "../data/curriculum-core";
 import { LESSONS } from "../data/lessons";
 import {
   buildTrailEdgePairs,
@@ -58,9 +59,15 @@ describe("Curriculum structure", () => {
   it("derives the next playable lesson along the authored spine", () => {
     expect(getNextPlayableLessonId(1)).toBe(2);
     expect(getNextPlayableLessonId(9)).toBe(10);
+    expect(getNextPlayableLessonId(10)).toBe(9001);
+    expect(getNextPlayableLessonId(9001)).toBe(11);
     expect(getNextPlayableLessonId(11)).toBe(12);
     expect(getNextPlayableLessonId(15)).toBe(16);
-    expect(getNextPlayableLessonId(AUTHORED_SPINE_LIMIT)).toBeNull();
+    expect(getNextPlayableLessonId(20)).toBe(9002);
+    expect(getNextPlayableLessonId(24)).toBe(9003);
+    expect(getNextPlayableLessonId(27)).toBe(9004);
+    expect(getNextPlayableLessonId(30)).toBe(9005);
+    expect(getNextPlayableLessonId(9005)).toBeNull();
   });
 });
 
@@ -68,8 +75,15 @@ describe("Trail graph", () => {
   const edges = buildTrailEdgePairs();
   const has = (a: number, b: number) => edges.some((e) => (e.a === a && e.b === b) || (e.a === b && e.b === a));
 
-  it("chains every core to the next along the spine", () => {
-    for (let t = 1; t < TOTAL_TOPICS; t++) expect(has(t, t + 1), `spine edge ${t}→${t + 1}`).toBe(true);
+  it("chains the spine through every core and required story", () => {
+    const spine = spineNodeIds(TOPICS);
+    for (let i = 0; i < spine.length - 1; i++) {
+      expect(has(spine[i], spine[i + 1]), `spine edge ${spine[i]}→${spine[i + 1]}`).toBe(true);
+    }
+    // a story replaces the direct core→core edge it sits between
+    expect(has(10, 11)).toBe(false);
+    expect(has(10, 9001)).toBe(true);
+    expect(has(9001, 11)).toBe(true);
   });
 
   it("hangs every sprig directly off its own topic core", () => {
@@ -124,12 +138,13 @@ describe("Unlock & recommendation logic", () => {
 
   it("falls back to the hollow frontier once the authored spine is done", () => {
     const allAuthored = Array.from({ length: 10 }, (_, i) => i + 1);
-    const rec = getTrailState(allAuthored, {}).recommendedId;
-    // the Shift Gate (14★ of topics 1–7) is still closed at 7 stars, so the selector
-    // points at mop-up side lessons inside the gated stretch instead of past the gate
-    expect(rec).toBe(702);
-    // with both gates open, the frontier recommendation is the first hollow core
-    const gatesOpen = [...allAuthored, 101, 102, 103, 201, 202, 301, 302, 801, 802, 901];
+    // the Shift Gate is still closed in this artificial out-of-order state
+    expect(getTrailState(allAuthored, {}).recommendedId).toBe(702);
+    // with the Shift Gate open, the required story after core 10 is next
+    const shiftOpen = [...allAuthored, 101, 102, 103, 201, 202, 301, 302];
+    expect(getTrailState(shiftOpen, {}).recommendedId).toBe(9001);
+    // with both gates open and the story done, the frontier recommendation is core 11
+    const gatesOpen = [...shiftOpen, 9001, 801, 802];
     expect(getTrailState(gatesOpen, {}).recommendedId).toBe(11);
   });
 
@@ -178,16 +193,24 @@ describe("Star gates", () => {
     expect(state.gates.get(1)!.open).toBe(false);
     // nodes 8–10 are already completed, so the closed gate cannot lock them retroactively
     expect(state.nodes.get(8)!.status).toBe("completed");
+    // a required story counts in the stretch it follows
+    const withStory = getTrailState([...coreRange(8, 10), 9001], {});
+    expect(withStory.gates.get(2)!.stars).toBe(4);
   });
 
-  it("places every gate between two real cores", () => {
+  it("places every gate between the stretch's last spine node and the next core", () => {
     const layout = buildTrailLayout(640);
     expect(layout.gates).toHaveLength(6);
     for (const gate of layout.gates) {
-      const a = layout.nodes.find((n) => n.id === gate.afterTopic)!;
+      const topic = TOPICS.find((t) => t.id === gate.afterTopic)!;
+      const stories = topic.stories ?? [];
+      const lowerId = stories.length > 0 ? stories[stories.length - 1].id : gate.afterTopic;
+      const a = layout.nodes.find((n) => n.id === lowerId)!;
       const b = layout.nodes.find((n) => n.id === gate.afterTopic + 1)!;
       expect(a && b).toBeTruthy();
-      // the pill sits between the two cores vertically
+      if (gate.afterTopic === 10) expect(a.id).toBe(9001);
+      if (gate.afterTopic === 20) expect(a.id).toBe(9002);
+      // the pill sits between the two spine nodes vertically
       expect(gate.y).toBeGreaterThanOrEqual(Math.min(a.y, b.y) - 60);
       expect(gate.y).toBeLessThanOrEqual(Math.max(a.y, b.y) + 60);
     }
@@ -251,7 +274,7 @@ describe("Trail layout", () => {
   it("starts at the bottom and climbs upward", () => {
     const layout = buildTrailLayout(640);
     const first = layout.nodes.find((n) => n.id === 1)!;
-    const last = layout.nodes.find((n) => n.id === 30)!;
+    const last = layout.nodes.find((n) => n.id === 9005)!;
     expect(first.y).toBeGreaterThan(last.y);
   });
 

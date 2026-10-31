@@ -27,7 +27,8 @@ import { ShiftPair } from "@/components/common/ShiftPair";
 import { GermanCharBar } from "@/components/common/GermanCharBar";
 import { GenderGuideBanner } from "@/components/common/GenderGuideBanner";
 import { useAppStore } from "@/lib/store";
-import { useAppNavigation } from "@/lib/app-navigation";
+import { isModifiedClick, useAppNavigation } from "@/lib/app-navigation";
+import { clearReviewSession, readReviewSession, writeReviewSession } from "@/lib/review-session";
 import { lessonHref } from "@/lib/routes";
 import { getDueCards, localDateKey, type ReviewGrade } from "@/lib/srs";
 import {
@@ -155,31 +156,43 @@ function ReviewHub({
 }) {
   const language = getLanguageDefinition(activeLanguageId);
   const { openLesson } = useAppNavigation();
+  // A session survives tab switches; the component remounts per language.
+  const [restoredReview] = useState(() => readReviewSession(activeLanguageId));
+  const restoredFamilies = getAtlasFamilies(data);
   const [mounted, setMounted] = useState(false);
-  const [activeDeck, setActiveDeck] = useState<DeckType | null>(null);
+  const [activeDeck, setActiveDeck] = useState<DeckType | null>(restoredReview?.activeDeck ?? null);
   // Seeded from the active compendium's first atlas family: German, French and
   // Spanish each have their own family ids, so a hard-coded German id left the
   // select blank (and the deck disabled) for every non-German learner.
-  const [selectedShiftId, setSelectedShiftId] = useState<string>(
-    () => getAtlasFamilies(data)[0]?.id ?? ALL_ID
+  const [selectedShiftId, setSelectedShiftId] = useState<string>(() => {
+    const restored = restoredReview?.selectedShiftId;
+    return restored && restoredFamilies.some((family) => family.id === restored)
+      ? restored
+      : restoredFamilies[0]?.id ?? ALL_ID;
+  });
+  const [selectedDomainId, setSelectedDomainId] = useState<string>(
+    restoredReview?.selectedDomainId ?? ""
   );
-  const [selectedDomainId, setSelectedDomainId] = useState<string>("");
   // Scope + size for the open-ended decks (shift family, domain, everything)
-  const [learnedFilter, setLearnedFilter] = useState<LearnedFilter>("all");
-  const [sessionSize, setSessionSize] = useState<SessionSize>(20);
-  const [shuffleSession, setShuffleSession] = useState(true);
-  const [sessionCards, setSessionCards] = useState<SRSCard[]>([]);
+  const [learnedFilter, setLearnedFilter] = useState<LearnedFilter>(
+    restoredReview?.learnedFilter ?? "all"
+  );
+  const [sessionSize, setSessionSize] = useState<SessionSize>(restoredReview?.sessionSize ?? 20);
+  const [shuffleSession, setShuffleSession] = useState(restoredReview?.shuffleSession ?? true);
+  const [sessionCards, setSessionCards] = useState<SRSCard[]>(restoredReview?.sessionCards ?? []);
   /**
    * Bumped on every deck start / exit. The per-card reset effect keys on the
    * card id, index and tile data — none of which change when a new session opens
    * on the same card the previous one ended on — so without this the tile rack
    * kept the old session's picked/unpicked tiles.
    */
-  const [sessionEpoch, setSessionEpoch] = useState(0);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isRevealed, setIsRevealed] = useState(false);
+  const [sessionEpoch, setSessionEpoch] = useState(restoredReview?.sessionEpoch ?? 0);
+  const [currentIndex, setCurrentIndex] = useState(restoredReview?.currentIndex ?? 0);
+  const [isRevealed, setIsRevealed] = useState(restoredReview?.isRevealed ?? false);
   const [isCapsLock, setIsCapsLock] = useState(false);
-  const [sessionStats, setSessionStats] = useState<ReviewSessionStats>(EMPTY_SESSION_STATS);
+  const [sessionStats, setSessionStats] = useState<ReviewSessionStats>(
+    restoredReview?.sessionStats ?? EMPTY_SESSION_STATS
+  );
   const [sessionComplete, setSessionComplete] = useState(false);
   const [completedDeck, setCompletedDeck] = useState<DeckType | null>(null);
 
@@ -190,20 +203,26 @@ function ReviewHub({
    * pre-session card so the next grade is a fresh SM-2 step, not a second one
    * stacked on top.
    */
-  const [sessionGrades, setSessionGrades] = useState<SessionGrades>([]);
+  const [sessionGrades, setSessionGrades] = useState<SessionGrades>(
+    restoredReview?.sessionGrades ?? []
+  );
   /**
    * Each graded card's state before this session touched it, keyed by wordId.
    * Written on the card's first grade only, so stepping back and re-grading the
    * same word restores the same pre-session state every time.
    */
-  const preGradeSnapshots = useRef<Record<string, ReviewSnapshot>>({});
+  const preGradeSnapshots = useRef<Record<string, ReviewSnapshot>>(
+    restoredReview?.preGradeSnapshots ?? {}
+  );
 
   // Review Style Mode State
   const preferredReviewMode = useAppStore((s) => s.preferredReviewMode);
   const setPreferredReviewMode = useAppStore((s) => s.setPreferredReviewMode);
   const settings = useAppStore((s) => s.settings);
   const hasSeenGenderIntro = useAppStore((s) => s.hasSeenGenderIntro);
-  const [reviewMode, setReviewMode] = useState<ReviewMode>(preferredReviewMode || "flashcard");
+  const [reviewMode, setReviewMode] = useState<ReviewMode>(
+    restoredReview?.reviewMode ?? useAppStore.getState().preferredReviewMode ?? "flashcard"
+  );
   const [isModeSelectorOpen, setIsModeSelectorOpen] = useState(false);
   const [rememberPreference, setRememberPreference] = useState(true);
   const modeDialogRef = useRef<HTMLDivElement>(null);
@@ -293,12 +312,51 @@ function ReviewHub({
   // so "all families" genuinely spans the whole dictionary.
   const atlasFamilies = useMemo(() => getAtlasFamilies(data), [data]);
 
-  // Sync preferred review mode from store when hydrated
+  // Sync the preferred review mode from the store when the hub is idle; an
+  // active (or restored) session owns the mode it was started with.
   useEffect(() => {
-    if (preferredReviewMode) {
-      setReviewMode(preferredReviewMode);
+    if (!preferredReviewMode || activeDeck) return;
+    setReviewMode(preferredReviewMode);
+  }, [preferredReviewMode, activeDeck]);
+
+  // Persist the in-progress session so a tab switch does not throw it away.
+  useEffect(() => {
+    if (!activeDeck) {
+      clearReviewSession(activeLanguageId);
+      return;
     }
-  }, [preferredReviewMode]);
+    writeReviewSession(activeLanguageId, {
+      activeDeck,
+      selectedShiftId,
+      selectedDomainId,
+      learnedFilter,
+      sessionSize,
+      shuffleSession,
+      sessionCards,
+      sessionEpoch,
+      currentIndex,
+      isRevealed,
+      sessionStats,
+      sessionGrades,
+      preGradeSnapshots: preGradeSnapshots.current,
+      reviewMode,
+    });
+  }, [
+    activeLanguageId,
+    activeDeck,
+    selectedShiftId,
+    selectedDomainId,
+    learnedFilter,
+    sessionSize,
+    shuffleSession,
+    sessionCards,
+    sessionEpoch,
+    currentIndex,
+    isRevealed,
+    sessionStats,
+    sessionGrades,
+    reviewMode,
+  ]);
 
   // Shared map keeps core words, compound calques, and false friends on the same detail path.
   const wordEntityMaps = useMemo(
@@ -1113,6 +1171,7 @@ function ReviewHub({
             <Link
               href={lessonHref(activeLanguageId, lessons[0]?.id ?? 1)}
               onClick={(event) => {
+                if (isModifiedClick(event)) return;
                 event.preventDefault();
                 openLesson(activeLanguageId, lessons[0]?.id ?? 1);
               }}

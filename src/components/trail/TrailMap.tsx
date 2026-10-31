@@ -8,6 +8,7 @@ import { useAppNavigation } from "@/lib/app-navigation";
 import { buildTrailEdgePairs, buildTrailLayout, getTrailState, GERMAN_TRAIL_DATA, type TrailData, type TrailNode, type NodeStatus, type GateView } from "@/lib/trail-map";
 import { getLanguageDefinition } from "@/data/languages";
 import { useCurriculum } from "@/data/curriculum-client";
+import { prefetchLesson } from "@/lib/content-client";
 import { LessonNodeDrawer, GateDrawer } from "./LessonNodeDrawer";
 
 const GOLD_STAR = "#eab308";
@@ -109,6 +110,9 @@ export const TrailMap: React.FC = () => {
   const autoScrollRef = useRef<{ id: number | null; width: number }>({ id: null, width: 0 });
   useEffect(() => {
     if (!storeHydrated || state.recommendedId === null) return;
+    // A lesson/atlas overlay is open: keep the trail exactly where the learner
+    // left it instead of scrolling the hidden page to the next recommendation.
+    if (useViewStore.getState().subView) return;
     const target = wrapRef.current?.querySelector<HTMLElement>(
       `[data-trail-node-id="${state.recommendedId}"]`
     );
@@ -146,7 +150,13 @@ export const TrailMap: React.FC = () => {
     const parts = availableNeighborIds
       .map((id) => nodeById.get(id))
       .filter((n): n is TrailNode => Boolean(n))
-      .map((n) => (n.kind === "core" ? `topic ${n.topicId}` : `“${n.title}”`));
+      .map((n) =>
+        n.kind === "core"
+          ? `topic ${n.topicId}`
+          : n.kind === "story"
+          ? `story ${n.label ?? ""}`
+          : `“${n.title}”`
+      );
     return `Unlocks when you complete: ${parts.join(", ")}.`;
   }, [selected, nodeById, edgePairs, state]);
 
@@ -161,6 +171,8 @@ export const TrailMap: React.FC = () => {
   const upNextLabel = recommended
     ? recommended.kind === "core"
       ? `Topic ${recommended.topicId}`
+      : recommended.kind === "story"
+      ? `Story ${recommended.label ?? ""}`
       : recommended.kind === "sprig"
       ? `Extra lesson · Topic ${recommended.topicId}`
       : `Support branch · Topic ${recommended.topicId}`
@@ -175,6 +187,9 @@ export const TrailMap: React.FC = () => {
       <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] font-mono text-[var(--sub-color)]">
         <span className="inline-flex items-center gap-1.5">
           <span className="w-3 h-3 rounded-sm bg-[var(--main-color)]" aria-hidden /> main topic
+        </span>
+        <span className="inline-flex items-center gap-1.5">
+          <BookOpen className="w-3 h-3" aria-hidden /> required story
         </span>
         <span className="inline-flex items-center gap-1.5">
           <BookOpen className="w-3 h-3" aria-hidden /> extra practice
@@ -215,7 +230,9 @@ export const TrailMap: React.FC = () => {
             const lit = state.litEdges.has(`${Math.min(a, b)}-${Math.max(a, b)}`);
             const na = nodeById.get(a);
             const nb = nodeById.get(b);
-            const isSide = na?.kind !== "core" || nb?.kind !== "core";
+            const isSpine = (kind: TrailNode["kind"] | undefined) =>
+              kind === "core" || kind === "story";
+            const isSide = !isSpine(na?.kind) || !isSpine(nb?.kind);
 
             if (isSide) {
               // Side sprig/branch: a curved connector bowed off to the side so it
@@ -296,9 +313,10 @@ export const TrailMap: React.FC = () => {
                 view={state.nodes.get(node.id)!}
                 isRecommended={state.recommendedId === node.id}
                 hasProgress={Boolean(lessonProgress[node.id])}
-                onClick={() =>
-                  setTrailPosition(activeLanguageId, { nodeId: node.id, gateId: null })
-                }
+                onClick={() => {
+                  prefetchLesson(activeLanguageId, node.id);
+                  setTrailPosition(activeLanguageId, { nodeId: node.id, gateId: null });
+                }}
               />
             ))}
           </section>
@@ -356,6 +374,8 @@ export const TrailMap: React.FC = () => {
           <button
             type="button"
             onClick={() => openLesson(activeLanguageId, recommended.id)}
+            onPointerEnter={() => prefetchLesson(activeLanguageId, recommended.id)}
+            onFocus={() => prefetchLesson(activeLanguageId, recommended.id)}
             className="inline-flex items-center gap-2 rounded-full border border-[var(--sub-color)]/30 bg-[var(--bg-color)]/95 px-3.5 py-2 font-mono text-xs shadow-lg shadow-black/10 backdrop-blur transition hover:border-[var(--main-color)] cursor-pointer"
             aria-label={`${
               recommendedProgress ? "Resume" : hasAnyProgress ? "Continue" : "Start"
@@ -414,7 +434,13 @@ const MapNode: React.FC<MapNodeProps> = ({ node, sectionTop, view, hasProgress, 
   const unwritten = locked && !node.authored;
 
   const label =
-    `${node.kind === "core" ? `Topic ${node.topicId}` : node.kind === "sprig" ? "Extra lesson" : "Support branch"}: ${node.title} — ` +
+    `${node.kind === "core"
+      ? `Topic ${node.topicId}`
+      : node.kind === "story"
+      ? `Story ${node.label ?? ""}`
+      : node.kind === "sprig"
+      ? "Extra lesson"
+      : "Support branch"}: ${node.title} — ` +
     (completed
       ? `completed${star === "purple" ? " with a purple star" : ""}`
       : locked
@@ -446,7 +472,7 @@ const MapNode: React.FC<MapNodeProps> = ({ node, sectionTop, view, hasProgress, 
         top: node.y - sectionTop,
         width: node.w,
         height: node.h,
-        borderRadius: node.kind === "core" ? 14 : 12,
+        borderRadius: node.kind === "core" || node.kind === "story" ? 14 : 12,
         borderWidth: completed ? 2 : 1,
         animation: status === "available" && !hasProgress ? "trail-node-pop 400ms ease both" : undefined,
       }}
@@ -463,6 +489,24 @@ const MapNode: React.FC<MapNodeProps> = ({ node, sectionTop, view, hasProgress, 
             {completed ? "✓" : node.topicId}
           </span>
           <span className="text-[12px] font-semibold leading-tight line-clamp-2">{node.title}</span>
+        </span>
+      )}
+
+      {node.kind === "story" && (
+        <span className="flex items-center gap-2 px-2.5 w-full">
+          <span
+            className={`w-6 h-6 rounded-md flex items-center justify-center font-mono text-[11px] font-bold shrink-0 ${
+              completed
+                ? "bg-[var(--bg-color)]/25 text-[var(--bg-color)]"
+                : "bg-[var(--bg-color)] text-[var(--main-color)] border border-[var(--main-color)]/35"
+            }`}
+          >
+            {completed ? "✓" : node.label ?? "s"}
+          </span>
+          <span className="flex items-center gap-1 min-w-0">
+            <BookOpen className="w-3 h-3 shrink-0 opacity-70" />
+            <span className="text-[11px] font-semibold leading-tight line-clamp-2">{node.title}</span>
+          </span>
         </span>
       )}
 

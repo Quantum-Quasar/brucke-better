@@ -21,7 +21,7 @@ import { ShiftPair } from "@/components/common/ShiftPair";
 import { GenderBadge } from "@/components/common/GenderBadge";
 import { TwistCard } from "./TwistCard";
 import { useAppStore } from "@/lib/store";
-import { useAppNavigation } from "@/lib/app-navigation";
+import { isModifiedClick, useAppNavigation } from "@/lib/app-navigation";
 import { whisperCuesForLesson } from "@/data/posture-cues";
 import { RETRY_INTENT_LINE, retryVariant } from "@/lib/retry-variation";
 import { isListeningSkipped, listeningSkipLabel } from "@/lib/listening";
@@ -445,8 +445,8 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
 
   return (
     <article className="max-w-4xl mx-auto px-4 py-8 space-y-8">
-      {/* Top Header & Navigation */}
-      <div className="space-y-4">
+      {/* Top Header & Navigation — sticky so the close control never scrolls away */}
+      <div className="sticky top-0 z-20 -mx-4 -mt-8 px-4 pt-3 pb-3 bg-[var(--bg-color)]/95 backdrop-blur border-b border-[var(--sub-color)]/15">
         <div className="flex items-center justify-between">
           <button
             type="button"
@@ -456,7 +456,9 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Trail
           </button>
           <span className="text-xs font-mono text-[var(--main-color)] font-medium px-2 py-0.5 rounded bg-[var(--main-color)]/10 border border-[var(--main-color)]/20">
-            {lesson.id <= 30
+            {lesson.spineStory
+              ? `Story ${lesson.label ?? ""} · Main Path`
+              : lesson.id <= 30
               ? `Topic ${lesson.id} of ${totalTopics} · Core`
               : lesson.id >= 5000
               ? `Branch Track · ${lesson.id}`
@@ -475,7 +477,9 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
         <div className="pt-2">
           <span className="text-xs font-mono text-[var(--main-color)] uppercase tracking-wider font-semibold">
             Phase {lesson.phase} ·{" "}
-            {lesson.id <= 30
+            {lesson.spineStory
+              ? "Reading Story"
+              : lesson.id <= 30
               ? activeLanguageId === "de"
                 ? "Core Shift"
                 : activeLanguageId === "nl"
@@ -714,6 +718,7 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                   <Link
                     href={`/atlas/${primaryShift.id}`}
                     onClick={(event) => {
+                      if (isModifiedClick(event)) return;
                       event.preventDefault();
                       openAtlasFamily(primaryShift.id);
                     }}
@@ -1062,6 +1067,7 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                     <Link
                       href={primaryShift ? `/atlas/${primaryShift.id}` : "/atlas"}
                       onClick={(event) => {
+                        if (isModifiedClick(event)) return;
                         event.preventDefault();
                         if (primaryShift) openAtlasFamily(primaryShift.id);
                         else openAtlasIndex();
@@ -1104,6 +1110,7 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                         <Link
                           href={nextLessonId ? `/trail/${activeLanguageId}/${nextLessonId}` : "/trail"}
                           onClick={(event) => {
+                            if (isModifiedClick(event)) return;
                             event.preventDefault();
                             handleCompleteAll();
                             goToNextLesson();

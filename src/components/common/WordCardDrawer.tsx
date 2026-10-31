@@ -7,7 +7,7 @@ import React, { useMemo, useRef } from "react";
 import Link from "next/link";
 import { X, ExternalLink, Compass, BookOpen, CheckCircle2, Circle, Disc, Minus, Volume2 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
-import { useAppNavigation } from "@/lib/app-navigation";
+import { isModifiedClick, useAppNavigation } from "@/lib/app-navigation";
 import { GenderBadge } from "@/components/common/GenderBadge";
 import { playTargetAudio } from "@/lib/audio";
 import { getLanguageDefinition } from "@/data/languages";
@@ -132,7 +132,9 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
     ? lessonIndex.data.find((lesson) => lesson.id === lessonId)
     : undefined;
   const lessonLabel = sourceLesson
-    ? sourceLesson.id <= 30
+    ? sourceLesson.spineStory
+      ? `Story ${sourceLesson.label ?? ""} — ${sourceLesson.title}`
+      : sourceLesson.id <= 30
       ? `Topic ${sourceLesson.id} — ${sourceLesson.title}`
       : sourceLesson.id >= 5000
       ? `Branch — ${sourceLesson.title}`
@@ -249,6 +251,7 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
                 <Link
                   href={lessonHref(activeLanguageId, lessonId)}
                   onClick={(event) => {
+                    if (isModifiedClick(event)) return;
                     event.preventDefault();
                     closeDrawer();
                     openLesson(activeLanguageId, lessonId);
@@ -267,6 +270,7 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
                 <Link
                   href={`/atlas/${shiftFamily.id}`}
                   onClick={(event) => {
+                    if (isModifiedClick(event)) return;
                     event.preventDefault();
                     closeDrawer();
                     openAtlasFamily(shiftFamily.id);

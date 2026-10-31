@@ -112,6 +112,18 @@ function LessonContent({ languageId, lessonId, entries, curriculum }: LessonCont
     if (nextLessonId) prefetchLesson(languageId, nextLessonId);
   }, [languageId, nextLessonId]);
 
+  const lessonTitle = payload.data?.lesson.title;
+  useEffect(() => {
+    if (!lessonTitle) return;
+    const previous = document.title;
+    const next = `${lessonTitle} — Brücke`;
+    document.title = next;
+    return () => {
+      // A tab switch owns the title now; don't overwrite its metadata.
+      if (document.title === next) document.title = previous;
+    };
+  }, [lessonTitle]);
+
   const lessonTitles = useMemo(() => {
     const titles: Record<number, string> = {};
     for (const item of entries) titles[item.id] = item.title;

@@ -51,7 +51,11 @@ export const EMPTY_ROSTER_POSITION: RosterPosition = { query: "", visible: MIN_V
 interface ViewStoreState extends PersistedViewState {
   subView: SubView | null;
   viewHydrated: boolean;
+  /** Ephemeral one-line feedback (e.g. an invalid legacy lesson link). */
+  notice: string | null;
   hydrateViewState: () => void;
+  showNotice: (message: string) => void;
+  dismissNotice: () => void;
   openLesson: (languageId: string, lessonId: number) => void;
   openAtlasFamily: (familyId: string, ownerLanguageIds: string[]) => void;
   openAtlasMaster: () => void;
@@ -191,10 +195,14 @@ function persistViewState(state: ViewStoreState) {
 export const useViewStore = create<ViewStoreState>((set, get) => ({
   subView: null,
   viewHydrated: false,
+  notice: null,
   trailByLanguage: {},
   atlasFilterByLanguage: {},
   rosterByFamily: {},
   masterByLanguage: {},
+
+  showNotice: (message) => set({ notice: message.slice(0, 200) }),
+  dismissNotice: () => set({ notice: null }),
 
   hydrateViewState: () => {
     if (hasHydrated) return;
@@ -301,3 +309,20 @@ export const useViewStore = create<ViewStoreState>((set, get) => ({
 }));
 
 useViewStore.subscribe((state) => persistViewState(state));
+
+/** Write the latest positions immediately (pagehide / tab-hidden path). */
+export function flushViewState(): void {
+  if (!hasHydrated || typeof window === "undefined") return;
+  if (writeTimer) {
+    clearTimeout(writeTimer);
+    writeTimer = null;
+  }
+  const serialized = JSON.stringify(persistedSnapshot(useViewStore.getState()));
+  if (serialized === lastSerialized) return;
+  lastSerialized = serialized;
+  try {
+    localStorage.setItem(VIEW_STORAGE_KEY, serialized);
+  } catch {
+    // ignore blocked/full storage
+  }
+}

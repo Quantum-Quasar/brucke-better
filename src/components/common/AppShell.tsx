@@ -10,7 +10,8 @@ import { LazyLoadBoundary } from "@/components/common/LazyLoadBoundary";
 import { SubviewOverlay } from "@/components/common/SubviewOverlay";
 import { DeepLinkRestorer } from "@/components/common/DeepLinkRestorer";
 import { useAppStore, STORAGE_KEY, flushSave } from "@/lib/store";
-import { useViewStore } from "@/lib/view-store";
+import { useViewStore, flushViewState } from "@/lib/view-store";
+import { useScrollMemory } from "@/lib/scroll-memory";
 
 // ponytail: code-split idle modals, drawer and in-page views so root chunk doesn't bundle content readers
 const WordCardDrawer = dynamic(
@@ -29,20 +30,56 @@ const FontSelectorModal = dynamic(
   () => import("@/components/common/FontSelectorModal").then((m) => m.FontSelectorModal),
   { ssr: false }
 );
+function ViewNotice() {
+  const notice = useViewStore((s) => s.notice);
+  const dismiss = useViewStore((s) => s.dismissNotice);
+
+  useEffect(() => {
+    if (!notice) return;
+    const timer = window.setTimeout(dismiss, 5000);
+    return () => window.clearTimeout(timer);
+  }, [notice, dismiss]);
+
+  if (!notice) return null;
+  return (
+    <div
+      role="status"
+      className="fixed left-1/2 bottom-24 z-50 -translate-x-1/2 rounded-lg border border-[var(--sub-color)]/30 bg-[var(--sub-alt-color)] px-4 py-2 font-mono text-xs text-[var(--text-color)] shadow-lg"
+    >
+      {notice}
+      <button
+        type="button"
+        onClick={dismiss}
+        className="ml-3 text-[var(--main-color)] underline underline-offset-2 cursor-pointer"
+      >
+        dismiss
+      </button>
+    </div>
+  );
+}
+
+function OverlayLoading({ label }: { label: string }) {
+  return (
+    <div className="max-w-2xl mx-auto px-4 py-20 text-center font-mono" role="status">
+      <p className="text-sm text-[var(--sub-color)]">loading {label}…</p>
+    </div>
+  );
+}
+
 const LessonView = dynamic(
   () => import("@/components/lesson/LessonView").then((m) => m.LessonView),
-  { ssr: false }
+  { ssr: false, loading: () => <OverlayLoading label="the lesson" /> }
 );
 const ConstellationDetailClient = dynamic(
   () =>
     import("@/components/atlas/ConstellationDetailClient").then(
       (m) => m.ConstellationDetailClient
     ),
-  { ssr: false }
+  { ssr: false, loading: () => <OverlayLoading label="the atlas family" /> }
 );
 const MasterView = dynamic(
   () => import("@/components/atlas/MasterView").then((m) => m.MasterView),
-  { ssr: false }
+  { ssr: false, loading: () => <OverlayLoading label="the master web" /> }
 );
 
 /**
@@ -55,6 +92,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const subView = useViewStore((s) => s.subView);
   const closeSubview = useViewStore((s) => s.closeSubview);
+  useScrollMemory(pathname);
 
   // Mount lazy overlays only when they are actually open. Otherwise their
   // chunks (the theme table in particular) download during hydration even
@@ -105,6 +143,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     flushSave();
   }, [pathname]);
 
+  // View positions are debounced too; flush them before the tab goes away.
+  useEffect(() => {
+    const flush = () => flushViewState();
+    const onVisibility = () => {
+      if (document.visibilityState === "hidden") flush();
+    };
+    window.addEventListener("pagehide", flush);
+    document.addEventListener("visibilitychange", onVisibility);
+    return () => {
+      window.removeEventListener("pagehide", flush);
+      document.removeEventListener("visibilitychange", onVisibility);
+    };
+  }, []);
+
   return (
     <>
       <StorageWarningBanner />
@@ -131,12 +183,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <LazyLoadBoundary label="this view">
         {subView?.kind === "lesson" && (
-          <SubviewOverlay label={`Lesson ${subView.lessonId}`}>
+          <SubviewOverlay
+            key={`lesson:${subView.languageId}:${subView.lessonId}`}
+            label={`Lesson ${subView.lessonId}`}
+            onClose={closeSubview}
+          >
             <LessonView languageId={subView.languageId} lessonId={subView.lessonId} />
           </SubviewOverlay>
         )}
         {subView?.kind === "atlasFamily" && (
-          <SubviewOverlay label="Atlas family" dockClearance>
+          <SubviewOverlay
+            key={`family:${subView.familyId}`}
+            label="Atlas family"
+            onClose={closeSubview}
+            dockClearance
+          >
             <ConstellationDetailClient
               familyId={subView.familyId}
               ownerLanguageIds={subView.ownerLanguageIds}
@@ -145,13 +206,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </SubviewOverlay>
         )}
         {subView?.kind === "atlasMaster" && (
-          <SubviewOverlay label="Master web" dockClearance>
+          <SubviewOverlay key="atlas-master" label="Master web" onClose={closeSubview} dockClearance>
             <MasterView onBack={closeSubview} />
           </SubviewOverlay>
         )}
       </LazyLoadBoundary>
 
       <DeepLinkRestorer />
+      <ViewNotice />
     </>
   );
 }

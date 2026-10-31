@@ -23,7 +23,7 @@ Rather than relying on rote memorization or gamified streaks without substance, 
 - **Styling**: Tailwind CSS v4 (native CSS tokens, dark mode default)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) 5 (dual `localStorage` + size-guarded cookie persistence)
 - **Icons**: Lucide React
-- **Testing**: Vitest / `bun run test` (42 test files, 425 automated tests) <!-- corrected 2026-10-08 against the actual vitest run; counts pinned by src/tests/docs-sync.test.ts -->
+- **Testing**: Vitest / `bun run test` (43 test files, 429 automated tests) <!-- corrected 2026-10-08 against the actual vitest run; counts pinned by src/tests/docs-sync.test.ts -->
 - **Audio Engine**: Zero-dependency browser-native Web Speech API (`window.speechSynthesis`) + a Web Audio sample engine that plays bundled `.wav` packs
 
 ---
@@ -46,7 +46,7 @@ bun run parse-data
 
 ### Run Automated Tests
 
-Executes the full Vitest suite — 42 test files, 425 automated tests:
+Executes the full Vitest suite — 43 test files, 429 automated tests:
 
 ```bash
 bun run test
@@ -54,7 +54,7 @@ bun run test
 
 ### Production Build
 
-Pre-renders every route to static HTML (`● SSG`): 6 static routes — the six top-level tabs `/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`. Lessons and atlas details are in-page client views, so opening them adds no URL and no browser-history entry: 186 unique lesson ids ship as 498 per-lesson payloads, and the four atlases expose 37 atlas families. Legacy `/trail/...`, `/trail/<id>`, `/atlas/<family>` and `/atlas/master` links are redirected into the matching in-page state:
+Pre-renders every route to static HTML (`● SSG`): 6 static routes — the six top-level tabs `/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`. Lessons and atlas details are in-page client views, so opening them adds no URL and no browser-history entry: 188 unique lesson ids ship as 500 per-lesson payloads, and the four atlases expose 37 atlas families. Legacy `/trail/...`, `/trail/<id>`, `/atlas/<family>` and `/atlas/master` links are redirected into the matching in-page state:
 
 ```bash
 bun run build
@@ -81,7 +81,7 @@ Visit `http://localhost:3000` in your browser.
    - Baba Is You-style node map: 30 topic clusters on one linear spine, with skip-able extra-practice nodes ("sprigs") and support-material branches hanging off each cluster.
    - All adjacent nodes unlock at once when a node is completed; the spine itself stays strictly ordered.
    - Read the map top-to-bottom from topic 1; the pulsing theme-colored selector marks your recommended node.
-   - The entire curriculum is authored: 30 cores + 79 sprigs + 68 branch lessons = **177 lessons** (`src/data/curriculum.ts`, `src/data/lessons.ts`).
+   - The entire curriculum is authored: 30 cores + 79 sprigs + 65 branch lessons + 5 required reading stories = **179 lessons** (`src/data/curriculum.ts`, `src/data/lessons.ts`). The required spine is 35 lessons.
    - Custom DOM+SVG renderer (no game libraries) with `content-visibility` windowing per topic cluster, sized for hundreds of future lessons.
    - 5-part card-by-card lesson wizard (Hook, Pattern, Transformation Table, Bite-Sized Practice, Summary & Retries) in the in-page lesson reader.
    - Scaffolded exercises (morpheme tiles, matching pairs, shift select, syntax builder, derivation typing).
@@ -149,7 +149,7 @@ src/
 ├── data/
 │   ├── compendium.json   # 1226 core words, 9 shifts, 32 compounds, 16 traps, 28 insights
 │   ├── curriculum.ts     # 30 topic clusters: cores, sprigs, branches + star gates
-│   ├── lessons.ts        # All 177 authored lessons (cores 1–30, sprigs, branches 50xx–53xx)
+│   ├── lessons.ts        # All 179 authored lessons (cores 1–30, stories 9001–9005, sprigs, branches 50xx–53xx)
 │   └── ...               # themes, fonts, settings, phonetics, insights, languages
 ├── lib/
 │   ├── audio.ts          # Native speech pronunciation engine
@@ -164,7 +164,7 @@ src/
 │   ├── store.ts          # Zustand store with dual persistence (+ lessonStars)
 │   ├── trail-map.ts      # Map graph, responsive layout engine, unlock/recommend logic
 │   └── types.ts          # Core domain TypeScript interfaces
-└── tests/                # 42 test files (Vitest)
+└── tests/                # 43 test files (Vitest)
 ```
 
 ---

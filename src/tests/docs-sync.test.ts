@@ -48,7 +48,7 @@ function countStaticRoutes(dir: string): number {
   }, 0);
 }
 const STATIC_ROUTE_COUNT = countStaticRoutes(path.join(ROOT, "src", "app"));
-const TEST_COUNT = 425; // update when adding tests
+const TEST_COUNT = 429; // update when adding tests
 const THEME_COUNT = Object.keys(THEMES).length;
 const FONT_COUNT = FONT_LIST.length;
 const TAUGHT_WORDS = 671; // update after running scripts/audit-vocab-balance.ts
@@ -88,7 +88,7 @@ describe("Documentation stays in sync with the data", () => {
     expect(FR_LESSONS.length).toBe(123);
     expect(ES_LESSONS.length).toBe(123);
     expect(NL_LESSONS.length).toBe(75);
-    expect(trailIds.size).toBe(186);
+    expect(trailIds.size).toBe(188);
     expect(families.length).toBe(10);
     expect(STATIC_ROUTE_COUNT).toBe(6);
 

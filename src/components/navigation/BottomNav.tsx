@@ -6,6 +6,8 @@ import { usePathname } from "next/navigation";
 import { Compass, Info, Map, RotateCcw, Sliders, Table2 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { useViewStore } from "@/lib/view-store";
+import { isModifiedClick } from "@/lib/app-navigation";
+import { captureScroll } from "@/lib/scroll-memory";
 import { getDueCards } from "@/lib/srs";
 import { prefetchAtlasContent, prefetchReviewContent } from "@/lib/content-client";
 
@@ -59,7 +61,9 @@ export const BottomNav: React.FC = () => {
                 key={tab.href}
                 href={tab.href}
                 aria-current={tab.isActive ? "page" : undefined}
-                onClick={() => {
+                onClick={(event) => {
+                  if (isModifiedClick(event)) return;
+                  captureScroll(pathname);
                   // A tab click always lands on that tab's root view.
                   if (tab.href === "/atlas") closeSubview();
                 }}

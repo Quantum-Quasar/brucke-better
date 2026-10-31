@@ -48,7 +48,8 @@ export interface CurriculumEntry {
   id: number;
   title: string;
   topic: number;
-  kind: "core" | "sprig" | "branch";
+  kind: "core" | "story" | "sprig" | "branch";
+  label?: string;
 }
 
 /**
@@ -73,6 +74,15 @@ function curriculumEntries(languageId: PanoramaLanguageId): CurriculumEntry[] {
   const entries: CurriculumEntry[] = [];
   for (const topic of content.topics) {
     entries.push({ id: topic.core.id, title: topic.core.title, topic: topic.id, kind: "core" });
+    for (const story of topic.stories ?? []) {
+      entries.push({
+        id: story.id,
+        title: story.title,
+        topic: topic.id,
+        kind: "story",
+        label: story.label,
+      });
+    }
     for (const sprig of topic.sprigs) {
       entries.push({ id: sprig.id, title: sprig.title, topic: topic.id, kind: "sprig" });
     }
@@ -106,9 +116,13 @@ function resolveLink(languageId: PanoramaLanguageId, spec: PanoramaLinkSpec): Pa
   if (!entry) return null;
 
   const topic = topicNumberOfLessonId(entry.id) ?? entry.topic;
+  const label =
+    entry.kind === "story"
+      ? `Story ${entry.label ?? ""} · ${entry.title}`
+      : `Topic ${topic} · ${entry.title}`;
   return {
     href: lessonHref(languageId, entry.id),
-    label: `Topic ${topic} · ${entry.title}`,
+    label,
     desc: spec.desc,
     lessonId: entry.id,
     topic,

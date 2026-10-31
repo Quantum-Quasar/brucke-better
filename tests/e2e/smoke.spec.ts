@@ -294,6 +294,10 @@ test.describe("browser smoke", () => {
       await page.goto("/atlas/not_a_family");
       await expect(page.getByText(/No authored course defines this shift family/i)).toBeVisible();
       await expect(page).toHaveURL(/\/atlas\/?$/);
+
+      await page.goto("/trail/not-a-number");
+      await expect(page.getByText(/That lesson link isn't valid/i)).toBeVisible();
+      await expect(page).toHaveURL(/\/$/);
     });
   });
 });
@@ -336,6 +340,94 @@ test("tab switches add one history entry and Back returns", async ({ page }) => 
 
   await page.goBack();
   await expect(page).toHaveURL(/\/$/);
+});
+
+test("the lesson overlay keeps its close control, traps focus and closes on Escape", async ({
+  page,
+}) => {
+  await seedAppState(page);
+  await page.goto("/trail/1");
+
+  const overlay = page.getByRole("dialog", { name: /^Lesson 1$/ });
+  await expect(overlay).toBeVisible();
+  const back = page.getByRole("button", { name: /back to trail/i });
+  await expect
+    .poll(() =>
+      page.evaluate(() => {
+        const dialog = document.querySelector('[role="dialog"][aria-label^="Lesson"]');
+        const active = document.activeElement;
+        return Boolean(dialog && active && (dialog === active || dialog.contains(active)));
+      })
+    )
+    .toBe(true);
+  await expect.poll(() => page.title()).toContain("The Germanic Core");
+
+  // The sticky header keeps the close control on screen after scrolling.
+  await overlay.evaluate((element) => {
+    element.scrollTop = 600;
+  });
+  await expect(back).toBeInViewport();
+
+  await page.keyboard.press("Escape");
+  await expect(overlay).toBeHidden();
+  await expect(page).toHaveURL(/\/$/);
+});
+
+test("ctrl-click keeps native new-tab behavior instead of opening in-page", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/");
+  const start = page.getByRole("link", { name: /start topic 1/i }).first();
+  await expect(start).toBeVisible();
+
+  const [popup] = await Promise.all([
+    context.waitForEvent("page"),
+    start.click({ modifiers: ["Control"] }),
+  ]);
+  await popup.waitForLoadState("domcontentloaded");
+
+  // The original tab stayed on the trail and did not open the lesson overlay.
+  await expect(page.getByRole("dialog", { name: /^Lesson/ })).toHaveCount(0);
+  await expect(page).toHaveURL(/\/$/);
+  await popup.close();
+});
+
+test("tab scroll position survives switching tabs", async ({ page }) => {
+  await seedAppState(page);
+  await page.goto("/atlas");
+  await expect(page.getByRole("heading", { name: /Sound Shift Families|Correspondence Families/i }).first()).toBeVisible();
+  await page.evaluate(() => window.scrollTo(0, 700));
+  await page.waitForTimeout(300);
+
+  const nav = page.getByRole("navigation", { name: /main navigation/i });
+  await nav.getByRole("link", { name: /review/i }).click();
+  await expect(page).toHaveURL(/\/review/);
+  await nav.getByRole("link", { name: /atlas/i }).click();
+  await expect(page).toHaveURL(/\/atlas/);
+
+  await expect
+    .poll(() => page.evaluate(() => window.scrollY), { timeout: 5_000 })
+    .toBeGreaterThan(300);
+});
+
+test("an in-progress review session survives a tab switch", async ({ page }) => {
+  await seedAppState(page, THREE_FINISHED_LESSONS);
+  await openRecentReviewSession(page);
+  await expectCard(page, 1);
+
+  await page.keyboard.press("Space");
+  await page.keyboard.press("3");
+  await expectCard(page, 2);
+  await page.waitForTimeout(200);
+
+  const nav = page.getByRole("navigation", { name: /main navigation/i });
+  await nav.getByRole("link", { name: /atlas/i }).click();
+  await expect(page).toHaveURL(/\/atlas/);
+  await nav.getByRole("link", { name: /review/i }).click();
+  await expect(page).toHaveURL(/\/review/);
+
+  await expectCard(page, 2);
 });
 
 test("theme picker mounts on demand and applies the chosen theme", async ({ page }) => {

@@ -9,6 +9,17 @@ import { useAppStore } from "@/lib/store";
 import { useViewStore } from "@/lib/view-store";
 import { getFamilyOwnerLanguageIds } from "@/lib/atlas-families";
 import { prefetchLesson } from "@/lib/content-client";
+import { captureScroll } from "@/lib/scroll-memory";
+
+/** Modifier-clicks must keep native new-tab/window behavior. */
+export function isModifiedClick(event: {
+  metaKey: boolean;
+  ctrlKey: boolean;
+  shiftKey: boolean;
+  altKey: boolean;
+}): boolean {
+  return event.metaKey || event.ctrlKey || event.shiftKey || event.altKey;
+}
 
 export interface AppNavigation {
   openLesson: (languageId: string, lessonId: number) => void;
@@ -35,7 +46,10 @@ export function useAppNavigation(): AppNavigation {
       }
       prefetchLesson(languageId, lessonId);
       useViewStore.getState().openLesson(languageId, lessonId);
-      if (pathname !== "/") router.push("/");
+      if (pathname !== "/") {
+        captureScroll(pathname);
+        router.push("/");
+      }
     },
     [pathname, router]
   );
@@ -43,19 +57,28 @@ export function useAppNavigation(): AppNavigation {
   const openAtlasFamily = useCallback(
     (familyId: string) => {
       useViewStore.getState().openAtlasFamily(familyId, getFamilyOwnerLanguageIds(familyId));
-      if (pathname !== "/atlas") router.push("/atlas");
+      if (pathname !== "/atlas") {
+        captureScroll(pathname);
+        router.push("/atlas");
+      }
     },
     [pathname, router]
   );
 
   const openAtlasMaster = useCallback(() => {
     useViewStore.getState().openAtlasMaster();
-    if (pathname !== "/atlas") router.push("/atlas");
+    if (pathname !== "/atlas") {
+      captureScroll(pathname);
+      router.push("/atlas");
+    }
   }, [pathname, router]);
 
   const openAtlasIndex = useCallback(() => {
     useViewStore.getState().closeSubview();
-    if (pathname !== "/atlas") router.push("/atlas");
+    if (pathname !== "/atlas") {
+      captureScroll(pathname);
+      router.push("/atlas");
+    }
   }, [pathname, router]);
 
   const closeSubview = useCallback(() => {

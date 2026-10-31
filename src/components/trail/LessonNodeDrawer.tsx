@@ -18,6 +18,8 @@ interface LessonNodeDrawerProps {
 const kindLabel = (node: TrailNode) =>
   node.kind === "core"
     ? `topic ${node.topicId} · main path`
+    : node.kind === "story"
+    ? `story ${node.label ?? ""} · main path`
     : node.kind === "sprig"
     ? `topic ${node.topicId} · extra practice`
     : `topic ${node.topicId} · support branch`;

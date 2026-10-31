@@ -51,6 +51,8 @@ function lessonIndexEntry(lesson: Lesson): LessonIndexEntry {
     title: lesson.title,
     subtitle: lesson.subtitle,
     phase: lesson.phase,
+    spineStory: lesson.spineStory,
+    label: lesson.label,
     shift_categories: lesson.shift_categories,
     word_ids: lesson.word_ids,
     table_word_ids: lesson.table_word_ids,
@@ -93,6 +95,17 @@ for (const language of LANGUAGES) {
       { lesson, compendium: trimCompendium(language.compendium, lesson) }
     );
     lessonPayloads += 1;
+  }
+  // Lesson ids can move (reading stories live on the spine now); drop payloads
+  // for ids that no longer exist so a stale file is never shipped.
+  const lessonDir = path.join(OUT_DIR, language.id, "lessons");
+  const wanted = new Set(language.lessons.map((lesson) => `${lesson.id}.json`));
+  if (fs.existsSync(lessonDir)) {
+    for (const name of fs.readdirSync(lessonDir)) {
+      if (name.endsWith(".json") && !wanted.has(name)) {
+        fs.unlinkSync(path.join(lessonDir, name));
+      }
+    }
   }
   shiftNames[language.id] = shiftNameEntries(language.compendium);
 }

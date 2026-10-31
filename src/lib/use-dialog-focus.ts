@@ -40,6 +40,12 @@ export interface DialogFocusOptions {
   initialFocusRef?: RefObject<HTMLElement | null>;
   onEscape?: () => void;
   restoreFocus?: boolean;
+  /**
+   * Let a dialog opt out of Escape for specific events. The lesson overlay
+   * uses this so Escape inside an input still reaches the lesson's own handler
+   * instead of closing the whole view.
+   */
+  shouldHandleEscape?: (event: KeyboardEvent) => boolean;
 }
 
 /**
@@ -52,9 +58,12 @@ export function useDialogFocus({
   initialFocusRef,
   onEscape,
   restoreFocus = true,
+  shouldHandleEscape,
 }: DialogFocusOptions) {
   const onEscapeRef = useRef(onEscape);
   onEscapeRef.current = onEscape;
+  const shouldHandleEscapeRef = useRef(shouldHandleEscape);
+  shouldHandleEscapeRef.current = shouldHandleEscape;
 
   useEffect(() => {
     if (!open) return;
@@ -78,6 +87,7 @@ export function useDialogFocus({
       if (!isTopDialog(container)) return;
 
       if (event.key === "Escape") {
+        if (shouldHandleEscapeRef.current && !shouldHandleEscapeRef.current(event)) return;
         event.preventDefault();
         event.stopPropagation();
         onEscapeRef.current?.();

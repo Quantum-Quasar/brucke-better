@@ -21,13 +21,27 @@ export const EMPTY_CURRICULUM: CurriculumData = {
 };
 
 /**
- * The spine topic that owns a trail node — core, sprig or branch lesson.
+ * The authored spine in reading order: each core followed by its required
+ * stories, then the next core. Sprigs and branches are deliberately excluded.
+ */
+export function spineNodeIds(topics: TopicCluster[]): number[] {
+  const ids: number[] = [];
+  for (const topic of topics) {
+    ids.push(topic.core.id);
+    for (const story of topic.stories ?? []) ids.push(story.id);
+  }
+  return ids;
+}
+
+/**
+ * The spine topic that owns a trail node — core, story, sprig or branch lesson.
  * Sprig ids follow `topicId * 100 + index`; branch lessons belong to the
  * topic their branch attaches to. Returns null for ids outside the trail.
  */
 function owningTopicId(content: CurriculumData, nodeId: number): number | null {
   for (const topic of content.topics) {
     if (topic.core.id === nodeId) return topic.id;
+    if ((topic.stories ?? []).some((story) => story.id === nodeId)) return topic.id;
     if (topic.sprigs.some((sprig) => sprig.id === nodeId)) return topic.id;
   }
   for (const branch of content.trailBranches) {
@@ -43,10 +57,10 @@ function owningTopicId(content: CurriculumData, nodeId: number): number | null {
 }
 
 /**
- * Next authored spine core after the node, in the active language's own
- * curriculum (null = caught up). A sprig or branch lesson answers with the
- * core of the *following* topic; a core answers with the next core; only the
- * last topic returns null.
+ * Next authored spine node after the current one (null = caught up). A core or
+ * story answers with the next spine node; a sprig or branch answers with the
+ * first spine node after its owning core, so a story inserted after that core
+ * is recommended before the next core.
  */
 export function getNextPlayableLessonIdFrom(
   content: CurriculumData,
@@ -54,10 +68,24 @@ export function getNextPlayableLessonIdFrom(
 ): number | null {
   const owner = owningTopicId(content, currentId);
   if (owner === null) return null;
+
+  const spine = spineNodeIds(content.topics);
+  const shells = new Map<number, { authored?: boolean }>();
   for (const topic of content.topics) {
-    if (topic.id > owner && topic.id <= content.totalTopics && topic.core.authored) {
-      return topic.core.id;
-    }
+    shells.set(topic.core.id, topic.core);
+    for (const story of topic.stories ?? []) shells.set(story.id, story);
   }
-  return null;
+  const nextAuthored = (from: number): number | null => {
+    for (let i = from; i < spine.length; i++) {
+      if (shells.get(spine[i])?.authored) return spine[i];
+    }
+    return null;
+  };
+
+  const currentIndex = spine.indexOf(currentId);
+  if (currentIndex >= 0) return nextAuthored(currentIndex + 1);
+
+  const ownerIndex = spine.indexOf(owner);
+  if (ownerIndex < 0) return null;
+  return nextAuthored(ownerIndex + 1);
 }

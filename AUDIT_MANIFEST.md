@@ -31,7 +31,7 @@ English and German are sibling West Germanic languages sharing over 60% of core 
 ## 3. Four Core Functional Pillars
 
 ### Pillar 1: The Trail (`/` and the in-page lesson reader)
-- **Curriculum Scope**: 30 topic clusters with the entire curriculum authored — 30 cores + 79 sprigs + 68 branch lessons = **177 lessons**, all fully interactive. Unknown lesson ids open the reader's "Coming Soon" state instead of creating a route.
+- **Curriculum Scope**: 30 topic clusters with the entire curriculum authored — 30 cores + 79 sprigs + 65 branch lessons + 5 required reading stories = **179 lessons**, all fully interactive. Unknown lesson ids open the reader's "Coming Soon" state instead of creating a route.
 - **5-Segment Card-by-Card Wizard (`LessonReader.tsx`)**:
   1. **Part 01: The Hook**: Historical intuition and living English cognate framing.
   2. **Part 02: The Pattern**: Mechanical shift rules, suffix patterns (`-en`), with margin philological notes.
@@ -165,8 +165,8 @@ English and German are sibling West Germanic languages sharing over 60% of core 
 │   │   └── audio.ts           # Web Speech API German speech synthesis wrapper
 │   ├── data/
 │   │   ├── compendium.json    # 1226 words, 9 shifts, 32 compounds, 16 false friends, 28 insights
-│   │   └── lessons.ts         # All 177 authored lesson definitions, exercises, and clues
-│   └── tests/                 # 42 test files (Vitest) — whole-curriculum integrity, timezone boundaries, persistence merging, security
+│   │   └── lessons.ts         # All 179 authored lesson definitions, exercises, and clues
+│   └── tests/                 # 43 test files (Vitest) — whole-curriculum integrity, timezone boundaries, persistence merging, security
 │       ├── store.test.ts
 │       ├── exercises.test.ts
 │       ├── letter-diff.test.ts
@@ -196,7 +196,7 @@ English and German are sibling West Germanic languages sharing over 60% of core 
 ## 7. Performance & Resource Optimization Highlights
 
 1. **100% Pre-rendered Static Site Generation (SSG)**:
-   - The app ships 6 static routes (`/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`). Lessons (186 unique lessons across 498 per-lesson payloads) and atlas families (37 atlas families across the four atlases) are client-side overlays, so opening them adds no route, no server render and no browser-history entry. Legacy `/trail/...` and `/atlas/...` links 307-redirect into the matching in-page state.
+   - The app ships 6 static routes (`/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`). Lessons (188 unique lessons across 500 per-lesson payloads) and atlas families (37 atlas families across the four atlases) are client-side overlays, so opening them adds no route, no server render and no browser-history entry. Legacy `/trail/...` and `/atlas/...` links 307-redirect into the matching in-page state.
    - All app routes build to static HTML. Navigation between lessons and atlas families is instantaneous with zero runtime server latency.
 2. **Shift Alignment Memoization**:
    - `alignShiftPair` in `src/lib/shift-annotator.ts` uses an in-memory `Map` cache. Redundant letter parsing is eliminated; test suite executes in < 200ms.
@@ -217,7 +217,7 @@ All commands should be executed from `/home/shaurya/gemini-tmp/german-app-thinki
 # 1. Run Data Compilation Pipeline
 bun run parse-data
 
-# 2. Run All Automated Test Suites (42 test files / 425 tests)
+# 2. Run All Automated Test Suites (43 test files / 429 tests)
 bun run test
 
 # 3. Compile Production Build (Turbopack + SSG verification)
@@ -253,5 +253,5 @@ When auditing the codebase, verify:
   - State changes in Zustand persist to `localStorage`.
   - Cookie backup stays within safe browser limits (lean payload ≤ 2048 URL-encoded bytes).
 - [ ] **Build & Tests**:
-  - `bun run test` (Vitest) passes with 0 failures across all 42 test files (425 tests).
-  - `bun run build` generates all static pages (6 static routes + 498 lesson payloads) without TypeScript or Turbopack errors.
+  - `bun run test` (Vitest) passes with 0 failures across all 43 test files (429 tests).
+  - `bun run build` generates all static pages (6 static routes + 500 lesson payloads) without TypeScript or Turbopack errors.

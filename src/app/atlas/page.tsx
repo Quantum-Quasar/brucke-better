@@ -6,7 +6,7 @@ import { Compass, Search, ChevronRight } from "lucide-react";
 import { DonutChart } from "@/components/common/DonutChart";
 import { useAppStore } from "@/lib/store";
 import { useViewStore } from "@/lib/view-store";
-import { useAppNavigation } from "@/lib/app-navigation";
+import { isModifiedClick, useAppNavigation } from "@/lib/app-navigation";
 import { getLanguageDefinition } from "@/data/languages";
 import { useCompendium } from "@/lib/content-client";
 import { getAtlasFamilies } from "@/lib/atlas-families";
@@ -181,6 +181,7 @@ export default function AtlasPage() {
       <Link
         href="/atlas/master"
         onClick={(event) => {
+          if (isModifiedClick(event)) return;
           event.preventDefault();
           openAtlasMaster();
         }}
@@ -229,6 +230,7 @@ export default function AtlasPage() {
               key={family.id}
               href={`/atlas/${family.id}`}
               onClick={(event) => {
+                if (isModifiedClick(event)) return;
                 event.preventDefault();
                 openAtlasFamily(family.id);
               }}

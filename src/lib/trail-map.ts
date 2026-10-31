@@ -1,4 +1,5 @@
 import { TOPICS, TRAIL_BRANCHES, TRAIL_GATES, TOTAL_TOPICS } from "@/data/curriculum";
+import { spineNodeIds } from "@/data/curriculum-core";
 import type { LessonStar, TopicCluster, TrailBranch, TrailGate } from "./types";
 
 // ---------------------------------------------------------------------------
@@ -39,7 +40,7 @@ export const GERMAN_TRAIL_DATA: TrailData = {
   totalTopics: TOTAL_TOPICS,
 };
 
-export type NodeKind = "core" | "sprig" | "branch";
+export type NodeKind = "core" | "story" | "sprig" | "branch";
 export type NodeStatus = "completed" | "available" | "locked";
 
 export interface TrailNode {
@@ -50,6 +51,9 @@ export interface TrailNode {
   blurb?: string;
   plan: string;
   authored: boolean;
+  /** display label for required spine stories, e.g. "s1" */
+  label?: string;
+  spineStory?: boolean;
   /** top-left corner in final (flipped) map space */
   x: number;
   y: number;
@@ -98,6 +102,8 @@ export const FIRST_NODE_ID = 1;
 
 const CORE_W = 152;
 const CORE_H = 58;
+const STORY_W = 152;
+const STORY_H = 48;
 const SPRIG_W = 56;
 const SPRIG_H = 46;
 const BRANCH_W = 150;
@@ -113,14 +119,23 @@ const BOTTOM_PAD = 64;
 const ANCHOR_H = 20;
 
 export const nodeSize = (kind: NodeKind) =>
-  kind === "core" ? { w: CORE_W, h: CORE_H } : kind === "sprig" ? { w: SPRIG_W, h: SPRIG_H } : { w: BRANCH_W, h: BRANCH_H };
+  kind === "core"
+    ? { w: CORE_W, h: CORE_H }
+    : kind === "story"
+    ? { w: STORY_W, h: STORY_H }
+    : kind === "sprig"
+    ? { w: SPRIG_W, h: SPRIG_H }
+    : { w: BRANCH_W, h: BRANCH_H };
 
 const clampX = (x: number, w: number, width: number) => Math.min(Math.max(x, EDGE_PAD), width - EDGE_PAD - w);
 
 /** Unique undirected edge pairs of the trail graph (id-space only, layout-free). */
 export function buildTrailEdgePairs(data: TrailData = GERMAN_TRAIL_DATA): TrailEdge[] {
   const edges: TrailEdge[] = [];
-  for (let t = 1; t < data.totalTopics; t++) edges.push({ a: t, b: t + 1 });
+  const spine = spineNodeIds(data.topics);
+  for (let i = 0; i < spine.length - 1; i++) {
+    edges.push({ a: spine[i], b: spine[i + 1] });
+  }
   for (const topic of data.topics) {
     for (const sprig of topic.sprigs) edges.push({ a: topic.core.id, b: sprig.id });
   }
@@ -229,6 +244,27 @@ export function buildTrailLayout(width: number, data: TrailData = GERMAN_TRAIL_D
 
     let clusterBottom = Math.max(...cluster.map((n) => n.y + n.h));
 
+    // Required stories sit on the spine directly below the core cluster and
+    // before any optional branches, so the main path visibly passes through them.
+    for (const story of topic.stories ?? []) {
+      const sy = clusterBottom + 12;
+      nodes.push({
+        id: story.id,
+        kind: "story",
+        topicId: topic.id,
+        title: story.title,
+        plan: story.plan,
+        authored: Boolean(story.authored),
+        label: story.label,
+        spineStory: true,
+        x: clampX(shiftedCore.x, STORY_W, w),
+        y: sy,
+        w: STORY_W,
+        h: STORY_H,
+      });
+      clusterBottom = Math.max(clusterBottom, sy + STORY_H);
+    }
+
     for (const branch of data.branches) {
       if (branch.attach !== topic.core.id) continue;
       // branches tuck into a side pocket below the cluster (sprigs own the flanks)
@@ -284,11 +320,15 @@ export function buildTrailLayout(width: number, data: TrailData = GERMAN_TRAIL_D
     y: Math.max(0, Math.round(height - decoration.y - decoration.size)),
   }));
 
-  // gate checkpoint pills sit on the spine line between the gated pair of cores
+  // gate checkpoint pills sit between the stretch's last spine node (a story
+  // when one is inserted there) and the next core.
   const nodeById = new Map(nodes.map((n) => [n.id, n]));
   const gates: GateMarker[] = [];
   for (const gate of data.gates) {
-    const a = nodeById.get(gate.afterTopic);
+    const topic = data.topics.find((t) => t.id === gate.afterTopic);
+    const stories = topic?.stories ?? [];
+    const lowerId = stories.length > 0 ? stories[stories.length - 1].id : gate.afterTopic;
+    const a = nodeById.get(lowerId);
     const b = nodeById.get(gate.afterTopic + 1);
     if (!a || !b) continue;
     const midX = (a.x + a.w / 2 + b.x + b.w / 2) / 2 - GATE_W / 2;
@@ -380,6 +420,7 @@ export function getTrailState(
   const fallback: Array<Pick<TrailNode, "id" | "kind" | "topicId">> = [
     ...data.topics.flatMap((t) => [
       { id: t.core.id, kind: "core" as const, topicId: t.id },
+      ...(t.stories ?? []).map((s) => ({ id: s.id, kind: "story" as const, topicId: t.id })),
       ...t.sprigs.map((s) => ({ id: s.id, kind: "sprig" as const, topicId: t.id })),
     ]),
     ...data.branches.flatMap((b) => b.lessons.map((l) => ({ id: l.id, kind: "branch" as const, topicId: b.attach }))),
@@ -440,26 +481,38 @@ export function getTrailState(
   }
 
   const litEdges = new Set<string>();
+  const gateBoundaryLower = (topicId: number) => {
+    const topic = data.topics.find((t) => t.id === topicId);
+    const stories = topic?.stories ?? [];
+    return stories.length > 0 ? stories[stories.length - 1].id : topicId;
+  };
   for (const { a, b } of edgePairs) {
     const sa = view.get(a)?.status ?? "locked";
     const sb = view.get(b)?.status ?? "locked";
-    const crossesClosedGate = gates.some(
-      (g) => !gateViews.get(g.id)!.open && ((a === g.afterTopic && b === g.afterTopic + 1) || (b === g.afterTopic && a === g.afterTopic + 1))
-    );
+    const crossesClosedGate = gates.some((g) => {
+      if (gateViews.get(g.id)!.open) return false;
+      const lower = gateBoundaryLower(g.afterTopic);
+      const upper = g.afterTopic + 1;
+      return (a === lower && b === upper) || (b === lower && a === upper);
+    });
     if (crossesClosedGate) continue;
     if (sa === "completed" || sb === "completed" || (sa === "available" && sb === "available")) {
       litEdges.add(edgeKey(a, b));
     }
   }
 
-  // recommendation: the next authored spine core keeps the learner on the main line;
-  // once the authored spine is done, point at the hollow frontier (nearest the top),
-  // then mop up leftover sprigs/branches nearest the progress front
+  // recommendation: keep the learner on the required spine (cores + stories),
+  // then fall back to the hollow frontier, sprigs, and branches.
   const isAvailable = (id: number) => view.get(id)?.status === "available";
-  let recommendedId: number | null = null;
+  const shells = new Map<number, { authored?: boolean }>();
   for (const topic of data.topics) {
-    if (topic.core.authored && isAvailable(topic.core.id)) {
-      recommendedId = topic.core.id;
+    shells.set(topic.core.id, topic.core);
+    for (const story of topic.stories ?? []) shells.set(story.id, story);
+  }
+  let recommendedId: number | null = null;
+  for (const id of spineNodeIds(data.topics)) {
+    if (shells.get(id)?.authored && isAvailable(id)) {
+      recommendedId = id;
       break;
     }
   }
@@ -498,8 +551,12 @@ const gateRegion = (gates: TrailGate[], index: number): { fromTopic: number; toT
   toTopic: gates[index].afterTopic,
 });
 
-/** Order used for the recommendation fallback and list views: topic cores, sprigs, then branches. */
+/** Order used for the recommendation fallback and list views: core, stories, sprigs, then branches. */
 export const trailNodeOrder = (data: TrailData = GERMAN_TRAIL_DATA): number[] => [
-  ...data.topics.flatMap((t) => [t.core.id, ...t.sprigs.map((s) => s.id)]),
+  ...data.topics.flatMap((t) => [
+    t.core.id,
+    ...(t.stories ?? []).map((s) => s.id),
+    ...t.sprigs.map((s) => s.id),
+  ]),
   ...data.branches.flatMap((b) => b.lessons.map((l) => l.id)),
 ];

@@ -28,7 +28,7 @@ const line = (s = "") => out.push(s);
 
 const lessonById = new Map(LESSONS.map((l) => [l.id, l]));
 
-function lessonSection(id: number, kind: "core" | "sprig" | "branch"): void {
+function lessonSection(id: number, kind: "core" | "story" | "sprig" | "branch"): void {
   const lesson = lessonById.get(id);
   if (!lesson) {
     line(`### ${id} · *(hollow shell)*`);
@@ -39,7 +39,7 @@ function lessonSection(id: number, kind: "core" | "sprig" | "branch"): void {
     .map((c) => SHIFT_BADGES[c])
     .filter(Boolean)
     .join(" · ");
-  const icon = kind === "core" ? "🟢" : kind === "branch" ? "🌿" : "🔸";
+  const icon = kind === "core" ? "🟢" : kind === "story" ? "📖" : kind === "branch" ? "🌿" : "🔸";
   line(`### ${icon} ${lesson.id} · ${lesson.title}`);
   line();
   line(`*${lesson.subtitle}*`);
@@ -85,6 +85,7 @@ for (const topic of TOPICS) {
   line();
 
   lessonSection(topic.core.id, "core");
+  for (const story of topic.stories ?? []) lessonSection(story.id, "story");
   for (const sprig of topic.sprigs) lessonSection(sprig.id, "sprig");
 
   for (const branch of TRAIL_BRANCHES.filter((b) => b.attach === topic.id)) {

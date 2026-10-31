@@ -25,6 +25,7 @@ import { getAtlasFamilies } from "@/lib/atlas-families";
 import { getWordEntity, getWordEntityMap, getWordLessonMap } from "./word-entity-fixtures";
 import { loadSavedState, useAppStore, STORAGE_KEY, type LanguageProgress } from "@/lib/store";
 import { TOTAL_TOPICS } from "@/data/curriculum";
+import { spineNodeIds } from "@/data/curriculum-core";
 
 describe("language registry", () => {
   test("the root-chunk word counts stay pinned to the real compendia", () => {
@@ -112,30 +113,33 @@ describe("language content registry", () => {
 describe("next playable lesson across the trail", () => {
   const LANGS = ["de", "es", "fr", "nl"] as const;
 
-  test("core lessons advance to the next authored core, null only after the last", () => {
+  test("core and story lessons advance along the authored spine, null only after the last", () => {
     for (const lang of LANGS) {
       const content = getLanguageContent(lang);
-      const cores = content.topics
-        .filter((t) => t.id <= content.totalTopics && t.core.authored)
-        .map((t) => t.core.id)
-        .sort((a, b) => a - b);
-      expect(cores.length).toBeGreaterThan(1);
-      for (let i = 0; i < cores.length - 1; i++) {
-        expect(getNextPlayableLessonIdFor(lang, cores[i]), `${lang} core ${cores[i]}`).toBe(cores[i + 1]);
+      const spine = spineNodeIds(content.topics).filter((id) => {
+        const topic = content.topics.find(
+          (t) => t.core.id === id || (t.stories ?? []).some((s) => s.id === id)
+        );
+        const shell =
+          topic?.core.id === id
+            ? topic.core
+            : (topic?.stories ?? []).find((s) => s.id === id);
+        return Boolean(shell?.authored);
+      });
+      expect(spine.length).toBeGreaterThan(1);
+      for (let i = 0; i < spine.length - 1; i++) {
+        expect(getNextPlayableLessonIdFor(lang, spine[i]), `${lang} spine ${spine[i]}`).toBe(spine[i + 1]);
       }
-      expect(getNextPlayableLessonIdFor(lang, cores[cores.length - 1]), `${lang} last core`).toBeNull();
+      expect(getNextPlayableLessonIdFor(lang, spine[spine.length - 1]), `${lang} last spine node`).toBeNull();
     }
   });
 
-  test("sprig lessons resolve through their owning topic to the next core", () => {
+  test("sprig lessons resolve to the first spine node after their owning core", () => {
     for (const lang of LANGS) {
       const content = getLanguageContent(lang);
       for (const topic of content.topics) {
         if (topic.id > content.totalTopics) continue;
-        const expected =
-          content.topics.find(
-            (t) => t.id > topic.id && t.id <= content.totalTopics && t.core.authored
-          )?.core.id ?? null;
+        const expected = getNextPlayableLessonIdFor(lang, topic.core.id);
         for (const sprig of topic.sprigs) {
           expect(getNextPlayableLessonIdFor(lang, sprig.id), `${lang} sprig ${sprig.id}`).toBe(expected);
         }
@@ -143,14 +147,11 @@ describe("next playable lesson across the trail", () => {
     }
   });
 
-  test("branch lessons chain off their attach topic instead of returning null", () => {
+  test("branch lessons resolve to the first spine node after their attach topic", () => {
     for (const lang of LANGS) {
       const content = getLanguageContent(lang);
       for (const branch of content.trailBranches) {
-        const expected =
-          content.topics.find(
-            (t) => t.id > branch.attach && t.id <= content.totalTopics && t.core.authored
-          )?.core.id ?? null;
+        const expected = getNextPlayableLessonIdFor(lang, branch.attach);
         for (const lesson of branch.lessons) {
           expect(getNextPlayableLessonIdFor(lang, lesson.id), `${lang} branch ${lesson.id}`).toBe(expected);
         }
@@ -161,10 +162,10 @@ describe("next playable lesson across the trail", () => {
   test("the reported German regressions no longer dead-end before the last topic", () => {
     expect(getNextPlayableLessonIdFor("de", 101)).toBe(2);
     expect(getNextPlayableLessonIdFor("de", 1102)).toBe(12);
-    expect(getNextPlayableLessonIdFor("de", 2701)).toBe(28);
-    expect(getNextPlayableLessonIdFor("de", 3003)).toBeNull(); // sprig on the final topic
+    expect(getNextPlayableLessonIdFor("de", 2701)).toBe(9004);
+    expect(getNextPlayableLessonIdFor("de", 3003)).toBe(9005);
     expect(getNextPlayableLessonIdFor("de", 5011)).toBe(3); // branch attached to topic 2
-    expect(getNextPlayableLessonIdFor("de", 5102)).toBeNull(); // branch attached to topic 30
+    expect(getNextPlayableLessonIdFor("de", 5102)).toBe(9005); // branch attached to topic 30
   });
 });
 

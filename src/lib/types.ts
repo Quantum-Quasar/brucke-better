@@ -401,6 +401,10 @@ export interface Lesson {
   title: string;
   subtitle: string;
   phase: number;
+  /** true when this lesson is a required reading story inserted into the spine */
+  spineStory?: boolean;
+  /** short display label for a spine story, e.g. "s1" */
+  label?: string;
   shift_categories: string[];
   word_ids: string[];
   hook: LessonSection;
@@ -435,6 +439,8 @@ export interface LessonIndexEntry {
   title: string;
   subtitle: string;
   phase: number;
+  spineStory?: boolean;
+  label?: string;
   shift_categories: string[];
   word_ids: string[];
   table_word_ids: string[];
@@ -467,6 +473,10 @@ export interface LessonShell {
   plan: string;
   /** true when a fully authored Lesson exists for this shell in data/lessons.ts */
   authored?: boolean;
+  /** true for a required story that sits on the spine between cores */
+  spineStory?: boolean;
+  /** short display label for a spine story, e.g. "s1" */
+  label?: string;
 }
 
 /** A topic = one cluster ("bunch") on the trail. The spine passes through every core. */
@@ -478,6 +488,8 @@ export interface TopicCluster {
   blurb: string;
   /** The main-line lesson of the topic (id === topic id). */
   core: LessonShell;
+  /** Required reading stories that immediately follow this core on the spine. */
+  stories?: LessonShell[];
   /** Optional side lessons of the same topic; all attach to the core (individually skippable). */
   sprigs: LessonShell[];
 }

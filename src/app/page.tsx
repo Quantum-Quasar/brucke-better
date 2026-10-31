@@ -6,11 +6,12 @@ import { ArrowRight, PlayCircle, Clock } from "lucide-react";
 import { DailyInsightCard } from "@/components/common/DailyInsightCard";
 import { TrailMap } from "@/components/trail/TrailMap";
 import { useAppStore } from "@/lib/store";
-import { useAppNavigation } from "@/lib/app-navigation";
+import { isModifiedClick, useAppNavigation } from "@/lib/app-navigation";
 import { getLanguageDefinition } from "@/data/languages";
 import { useCurriculum } from "@/data/curriculum-client";
 import { useInsights } from "@/data/insights-client";
 import { lessonHref } from "@/lib/routes";
+import { prefetchLesson } from "@/lib/content-client";
 import { isChunkLoadError } from "@/lib/chunk-errors";
 
 export default function HomePage() {
@@ -129,7 +130,10 @@ export default function HomePage() {
               <div className="flex flex-wrap items-center gap-2.5">
                 <Link
                   href={lessonHref(activeLanguageId, firstLessonId)}
+                  onPointerEnter={() => prefetchLesson(activeLanguageId, firstLessonId)}
+                  onFocus={() => prefetchLesson(activeLanguageId, firstLessonId)}
                   onClick={(event) => {
+                    if (isModifiedClick(event)) return;
                     event.preventDefault();
                     openLesson(activeLanguageId, firstLessonId);
                   }}

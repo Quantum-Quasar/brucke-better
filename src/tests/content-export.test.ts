@@ -26,6 +26,8 @@ function lessonIndexEntry(lesson: Lesson): LessonIndexEntry {
     title: lesson.title,
     subtitle: lesson.subtitle,
     phase: lesson.phase,
+    spineStory: lesson.spineStory,
+    label: lesson.label,
     shift_categories: lesson.shift_categories,
     word_ids: lesson.word_ids,
     table_word_ids: lesson.table_word_ids,

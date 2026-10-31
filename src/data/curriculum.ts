@@ -1,19 +1,21 @@
 import type { LessonShell, TopicCluster, TrailBranch, TrailGate } from "@/lib/types";
-import type { CurriculumData } from "./curriculum-core";
+import { spineNodeIds, type CurriculumData } from "./curriculum-core";
 
 // ---------------------------------------------------------------------------
 // The Brücke Trail — 30 topics arranged as a linear spine of clusters.
 //
 // The map is a single undirected graph (see lib/trail-map.ts):
-//   · core(n) —core(n+1)           the main line, one node per topic, always in order
+//   · core(n) —story —core(n+1)    the main line; required reading stories sit
+//                                  between some cores and are never skippable
 //   · core(n) —sprig(n, i)         every sprig of a topic hangs off its core → all
 //                                  adjacent nodes unlock at once when the core is
 //                                  done, and every sprig can be skipped
 //   · branch lessons chain off an attach node (support material, skippable)
 //
-// ID scheme:  core   = topic id (1–30, topics 1–10 are the authored lessons)
-//             sprig  = topicId * 100 + index            (101, 102, … 3003)
-//             branch = 5000 + n * 10, lessons +1, +2    (5011, 5012, …)
+// ID scheme:  core   = topic id (1–30, all authored)
+//             story  = 9000 + n                          (9001, 9002, … 9005)
+//             sprig  = topicId * 100 + index             (101, 102, … 3003)
+//             branch = 5000 + n * 10, lessons +1, +2     (5011, 5012, …)
 // ---------------------------------------------------------------------------
 
 export const TOTAL_TOPICS = 30;
@@ -21,6 +23,15 @@ export const TOTAL_TOPICS = 30;
 const sprigId = (topicId: number, index: number) => topicId * 100 + index;
 
 const shell = (id: number, title: string, plan: string): LessonShell => ({ id, title, plan });
+
+const storyShell = (id: number, label: string, title: string, plan: string): LessonShell => ({
+  id,
+  title,
+  plan,
+  authored: true,
+  spineStory: true,
+  label,
+});
 
 const authoredCore = (id: number, title: string): LessonShell => ({
   id,
@@ -126,6 +137,14 @@ export const TOPICS: TopicCluster[] = [
     title: "Pronouns as Case Anchors (The Him-Case)",
     blurb: "Why only masculine changes for direct objects: der→den, ein→einen, er→ihn — him and whom prove it.",
     core: authoredCore(10, "Pronouns as Case Anchors (The Him-Case)"),
+    stories: [
+      storyShell(
+        9001,
+        "s1",
+        "Max läuft weg",
+        "Read a short present-tense story about Paul, his dog Max, an open door, and a happy ending."
+      ),
+    ],
     sprigs: [
       { ...shell(sprigId(10, 1), "den / einen / ihn Case Gym", "18 accusative-object drills with table words: Ich trinke den Kaffee, Ich suche ihn."), authored: true },
       { ...shell(sprigId(10, 2), "Him & Whom Proof Texts", "Spot the ancient nasal in English him/them/whom, then mirror it in German mich/dich/ihn/wen."), authored: true },
@@ -239,6 +258,14 @@ export const TOPICS: TopicCluster[] = [
     title: "The Dative Case",
     blurb: "The giving case: 'methinks' = mich dünkt. mir↔me, dir↔thee, ihm↔him.",
     core: authoredCore(20, "The Dative Case"),
+    stories: [
+      storyShell(
+        9002,
+        "s2",
+        "Eine Reise mit Pannen",
+        "Read a Perfekt travel story about a delayed train, rain in Paris, a wrong bus, and a market that saves the day."
+      ),
+    ],
     sprigs: [
       { ...shell(sprigId(20, 1), "methinks & Dative Survivors", "English dative fossils (methinks, 'give it me') mirrored in German; dem/den/dem grid row."), authored: true },
       { ...shell(sprigId(20, 2), "mir / dir / ihm Pronoun Gym", "20 give/tell/thank drills with dative pronouns."), authored: true },
@@ -284,6 +311,14 @@ export const TOPICS: TopicCluster[] = [
     title: "Comparatives & Suppletion",
     blurb: "gut→besser is good→better — the twin suppletion; kalt→kälter fires the umlaut again.",
     core: authoredCore(24, "Comparatives & Suppletion"),
+    stories: [
+      storyShell(
+        9003,
+        "s3",
+        "Fahrrad statt Auto",
+        "Read a story about comparisons and everyday transport: a baker's car, a borrowed bicycle, and a change of mind."
+      ),
+    ],
     sprigs: [
       { ...shell(sprigId(24, 1), "Twin Suppletions", "gut/besser/hoch/höher vs good/better/high/higher — the shared irregular story."), authored: true },
       { ...shell(sprigId(24, 2), "-er/-ste Sentence Gym", "20 comparison sentences with als/wie using taught adjectives."), authored: true },
@@ -317,6 +352,14 @@ export const TOPICS: TopicCluster[] = [
     title: "Prepositions as Physical Metaphors",
     blurb: "über↔over, unter↔under, durch↔through — and the case each one drags along.",
     core: authoredCore(27, "Prepositions as Physical Metaphors"),
+    stories: [
+      storyShell(
+        9004,
+        "s4",
+        "Die Verspätung",
+        "Read a preposition-rich Perfekt story about being late to a birthday — and a mood twist."
+      ),
+    ],
     sprigs: [
       { ...shell(sprigId(27, 1), "über, unter, durch: Metaphor Set", "Spatial drills with the cognate prepositions; picture-based placement."), authored: true },
       { ...shell(sprigId(27, 2), "Case Trigger Gym", "Choose accusative or dative after two-way prepositions across 20 prompts."), authored: true },
@@ -349,6 +392,14 @@ export const TOPICS: TopicCluster[] = [
     title: "Capstone: The Bridge Reading",
     blurb: "One connected story built from everything — with the false friends lying in wait.",
     core: authoredCore(30, "Capstone: The Bridge Reading"),
+    stories: [
+      storyShell(
+        9005,
+        "s5",
+        "Max und der kranke Montag",
+        "Read a humorous capstone story about a pretend illness, a thermometer, and a plan that fails."
+      ),
+    ],
     sprigs: [
       { ...shell(sprigId(30, 1), "A Day in Berlin: Reading", "The capstone passage with tap-to-inspect words and shift annotations."), authored: true },
       { ...shell(sprigId(30, 2), "Trap Watch: False Friends in the Wild", "The 16 curated false friends embedded in context sentences."), authored: true },
@@ -677,17 +728,16 @@ export const TRAIL_BRANCHES: TrailBranch[] = [
     ],
   },
   // -------------------------------------------------------------------------
-  // Reading-comprehension branches. Purely optional: each one hangs off a
-  // natural grammar checkpoint, and none of them is required for the spine or
-  // for a star gate. The lesson bodies live in data/reading-lessons-de.ts.
+  // Optional reading-comprehension branches. The five required stories live
+  // directly on the spine (topic.stories); these side lessons are extra
+  // practice and never gate the next core. Bodies live in reading-lessons-de.ts.
   // -------------------------------------------------------------------------
   {
     id: 5320,
     attach: 10,
     title: "Erste Geschichten",
-    blurb: "Two short present-tense stories for the first reading win: a dog, an open door, and a lost puppy.",
+    blurb: "One extra present-tense story for the first reading win: a lost puppy and a kind girl.",
     lessons: [
-      { ...shell(5321, "Max läuft weg", "Present-tense narrative: Paul, his dog Max, an open door, a search, and a happy ending. Who/what/where comprehension plus one sentence rebuild."), authored: true },
       { ...shell(5322, "Der kleine Hund", "Present-tense narrative: Anna finds a lost puppy, follows him, and returns him to an old man. Cause, place and feeling questions plus a close-reading gloss."), authored: true },
     ],
   },
@@ -695,30 +745,36 @@ export const TRAIL_BRANCHES: TrailBranch[] = [
     id: 5330,
     attach: 20,
     title: "Alltagsgeschichten",
-    blurb: "Two Perfekt stories about ordinary days that go sideways — a rainy trip and a park Saturday.",
+    blurb: "One extra Perfekt diary about an ordinary Saturday that goes gently sideways.",
     lessons: [
-      { ...shell(5331, "Eine Reise mit Pannen", "Perfekt travel narrative: a delayed train, rain in Paris, a wrong bus, and a market that saves the day. Sequence and cause questions."), authored: true },
       { ...shell(5332, "Ein Tag im Park", "Perfekt diary with clock phrases: Anna and Lisa meet, walk the dog, eat, take photos, and go home. Sequence and duration questions."), authored: true },
-    ],
-  },
-  {
-    id: 5340,
-    attach: 27,
-    title: "Unterwegs",
-    blurb: "Two A2/B1 stories built on comparisons, prepositions, and small misunderstandings.",
-    lessons: [
-      { ...shell(5341, "Fahrrad statt Auto", "Comparison-driven story: a baker's car breaks down, a borrowed bicycle is almost as fast, and Tom changes his mind. Cause, opinion, decision questions."), authored: true },
-      { ...shell(5342, "Die Verspätung", "Perfekt story with a mood twist: Lukas is late to a birthday because the bus breaks down, and Sarah's anger turns out to be a joke. Inference questions."), authored: true },
     ],
   },
   {
     id: 5350,
     attach: 30,
     title: "Leseclub",
-    blurb: "Two capstone readings: a library mystery with an open ending, and a school-morning comedy with a dass-clause.",
+    blurb: "One extra capstone reading: a library mystery with an open ending.",
     lessons: [
       { ...shell(5351, "Das Geheimnis der Bibliothek", "Mystery passage: a book falls in a library-bar, a letter promises a treasure, and the search stays open. Turning-point and inference questions."), authored: true },
-      { ...shell(5352, "Max und der kranke Montag", "Humorous capstone: Max invents an illness, his mother's thermometer disproves it, and a dass-clause delivers the verdict. Claim-evidence-verdict questions."), authored: true },
+    ],
+  },
+  {
+    id: 5360,
+    attach: 14,
+    title: "Kleine Geschichten",
+    blurb: "One extra A1 present-tense story about a lost scarf at the market.",
+    lessons: [
+      { ...shell(5361, "Der rote Schal", "Present-tense A1 narrative at the market: a red scarf goes missing, a boy finds it, and a stranger gets thanked. Place, person and cause questions."), authored: true },
+    ],
+  },
+  {
+    id: 5370,
+    attach: 24,
+    title: "Ausflug & Wetter",
+    blurb: "One extra A2 story about a family trip to a lake and a change in the weather.",
+    lessons: [
+      { ...shell(5362, "Der Ausflug zum See", "Perfekt family-trip narrative with comparatives and weather vocabulary: a sunny lake morning, a rainy afternoon, and a warm ending."), authored: true },
     ],
   },
 ];
@@ -729,12 +785,12 @@ export const TRAIL_BRANCHES: TrailBranch[] = [
  * the stretch's cores (minimum) and all its lessons (maximum):
  *
  *   1–2   sentence basics            ┐
- *   3–7   the five great shifts      ┘→ Shift Gate      14★ of 22 (7 cores min, 22 max)
- *   8–10  -ieren, conjugation, accusative  → Grammar Gate     6★ of 11 (3 min, 11 max)
- *   11–16 determiners, negation, questions, word order, prefixes → Verb-Complex Gate  11★ of 22 (6 min, 22 max)
- *   17–20 numbers, Perfekt, ablaut, dative → Past Gate        9★ of 20 (4 min, 20 max)
- *   21–26 compounds, gender, plurals, hidden shifts → Atlas Gate       11★ of 22 (6 min, 22 max)
- *   27–29 prepositions, verb families, sein & idioms → Capstone Gate    9★ of 13 (3 min, 13 max)
+ *   3–7   the five great shifts      ┘→ Shift Gate      14★ of 31 (7 cores min, 31 max)
+ *   8–10  -ieren, conjugation, accusative  → Grammar Gate     6★ of 16 (3 min, 16 max)
+ *   11–16 determiners, negation, questions, word order, prefixes → Verb-Complex Gate  11★ of 31 (6 min, 31 max)
+ *   17–20 numbers, Perfekt, ablaut, dative → Past Gate        9★ of 35 (4 min, 35 max)
+ *   21–26 compounds, gender, plurals, hidden shifts → Atlas Gate       11★ of 32 (6 min, 32 max)
+ *   27–29 prepositions, verb families, sein & idioms → Capstone Gate    9★ of 22 (3 min, 22 max)
  *   30    capstone
  */
 export const TRAIL_GATES: TrailGate[] = [
@@ -743,42 +799,42 @@ export const TRAIL_GATES: TrailGate[] = [
     afterTopic: 7,
     requiredStars: 14,
     title: "The Shift Gate",
-    why: "Topics 1–7 build your decode engine: sentence basics plus all five great consonant shifts (P→F, TH→D, T→S, K→CH, D→T). Every grammar topic ahead assumes you can decode shift vocabulary on sight — bank 14 of the 22 lessons in this stretch before moving on.",
+    why: "Topics 1–7 build your decode engine: sentence basics plus all five great consonant shifts (P→F, TH→D, T→S, K→CH, D→T). Every grammar topic ahead assumes you can decode shift vocabulary on sight — bank 14 of the 31 lessons in this stretch before moving on.",
   },
   {
     id: 2,
     afterTopic: 10,
     requiredStars: 6,
     title: "The Grammar Gate",
-    why: "Topics 8–10 land your first grammar: -ieren verbs, the living conjugation endings and the accusative Him-Case. Articles, negation and questions ahead assume solid verbs and direct objects — earn 6 of the 11 lessons in this stretch.",
+    why: "Topics 8–10 land your first grammar: -ieren verbs, the living conjugation endings and the accusative Him-Case. Articles, negation and questions ahead assume solid verbs and direct objects — earn 6 of the 16 lessons in this stretch.",
   },
   {
     id: 3,
     afterTopic: 16,
     requiredStars: 11,
     title: "The Verb-Complex Gate",
-    why: "Topics 11–16 assemble the sentence machine: determiners, negation, questions, word order and both prefix families. The past-tense stretch ahead assumes you can build complex sentences — bank 11 of the 22 lessons here.",
+    why: "Topics 11–16 assemble the sentence machine: determiners, negation, questions, word order and both prefix families. The past-tense stretch ahead assumes you can build complex sentences — bank 11 of the 31 lessons here.",
   },
   {
     id: 4,
     afterTopic: 20,
     requiredStars: 9,
     title: "The Past Gate",
-    why: "Topics 17–20 hand you time, the conversational past, ancient ablaut and the dative case. The word-formation stretch ahead reuses past-tense and case-heavy sentences in every example — earn 9 of the 20 lessons in this stretch.",
+    why: "Topics 17–20 hand you time, the conversational past, ancient ablaut and the dative case. The word-formation stretch ahead reuses past-tense and case-heavy sentences in every example — earn 9 of the 35 lessons in this stretch.",
   },
   {
     id: 5,
     afterTopic: 26,
     requiredStars: 11,
     title: "The Atlas Gate",
-    why: "Topics 21–26 are word formation plus the hidden shifts (V→B, GH→CH, Y→G) that complete all nine Atlas families. The final stretch is pure synthesis across everything — carry 11 of the 22 stars in this stretch with you.",
+    why: "Topics 21–26 are word formation plus the hidden shifts (V→B, GH→CH, Y→G) that complete all nine Atlas families. The final stretch is pure synthesis across everything — carry 11 of the 32 stars in this stretch with you.",
   },
   {
     id: 6,
     afterTopic: 29,
     requiredStars: 9,
     title: "The Capstone Gate",
-    why: "Topics 27–29 close the system: prepositions and their cases, verb families, and sein with the idiomatic mindset. The capstone reading assumes near-complete coverage of the language — earn 9 of the 13 lessons in this stretch.",
+    why: "Topics 27–29 close the system: prepositions and their cases, verb families, and sein with the idiomatic mindset. The capstone reading assumes near-complete coverage of the language — earn 9 of the 22 lessons in this stretch.",
   },
 ];
 
@@ -792,6 +848,9 @@ export const TRAIL_GATES: TrailGate[] = [
 const AUTHORED_SHELLS = new Map<number, LessonShell>();
 for (const topic of TOPICS) {
   if (topic.core.authored) AUTHORED_SHELLS.set(topic.core.id, topic.core);
+  for (const story of topic.stories ?? []) {
+    if (story.authored) AUTHORED_SHELLS.set(story.id, story);
+  }
   for (const sprig of topic.sprigs) {
     if (sprig.authored) AUTHORED_SHELLS.set(sprig.id, sprig);
   }
@@ -815,19 +874,23 @@ export const GERMAN_CURRICULUM: CurriculumData = {
 
 const isAuthoredNode = (nodeId: number) => AUTHORED_SHELLS.has(nodeId);
 
-/** Next authored core lesson in spine order after the given one (null = caught up). */
+/** Next authored spine lesson (core or story) after the given one (null = caught up). */
 export const getNextPlayableLessonId = (currentId: number): number | null => {
-  for (let id = currentId + 1; id <= TOTAL_TOPICS; id++) {
-    if (isAuthoredNode(id)) return id;
+  const spine = spineNodeIds(TOPICS);
+  const start = spine.indexOf(currentId);
+  if (start < 0) return null;
+  for (let i = start + 1; i < spine.length; i++) {
+    if (isAuthoredNode(spine[i])) return spine[i];
   }
   return null;
 };
 
 /** Flatten topics + branches into the full node list (order: topic by topic). */
 export const flattenTrailNodes = () => {
-  const nodes: Array<LessonShell & { kind: "core" | "sprig" | "branch"; topicId: number }> = [];
+  const nodes: Array<LessonShell & { kind: "core" | "story" | "sprig" | "branch"; topicId: number }> = [];
   for (const topic of TOPICS) {
     nodes.push({ ...topic.core, kind: "core", topicId: topic.id });
+    for (const story of topic.stories ?? []) nodes.push({ ...story, kind: "story", topicId: topic.id });
     for (const sprig of topic.sprigs) nodes.push({ ...sprig, kind: "sprig", topicId: topic.id });
   }
   for (const branch of TRAIL_BRANCHES) {

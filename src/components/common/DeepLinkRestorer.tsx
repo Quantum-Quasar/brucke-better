@@ -42,6 +42,8 @@ export function DeepLinkRestorer() {
           app.completeOnboarding();
         }
         view.openLesson(languageId, lessonId);
+      } else {
+        view.showNotice("That lesson link isn't valid.");
       }
       router.replace("/", { scroll: false });
       return;

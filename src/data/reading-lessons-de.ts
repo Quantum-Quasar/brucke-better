@@ -7,11 +7,13 @@ import type { Lesson } from "../lib/types";
 // story and the table as the word bank.
 export const READING_LESSONS: Lesson[] = [
   {
-    id: 5321,
-    slug: "story-max-laeuft-weg",
+    id: 9001,
+    slug: "story-s1-max-laeuft-weg",
     title: "Max läuft weg",
     subtitle: "A present-tense story: a dog, an open door, and a happy ending",
     phase: 2,
+    spineStory: true,
+    label: "s1",
     shift_categories: [],
     word_ids: ["hund", "stadt", "laufen", "schnell", "klein", "braun", "müde", "abend"],
     table_word_ids: [
@@ -73,6 +75,10 @@ export const READING_LESSONS: Lesson[] = [
         id: "l5321_e1",
         type: "matching_pairs",
         prompt: "Reading check — match each story sentence with its English meaning:",
+        vocab_hints: [
+          { word: "offen", translation: "open" },
+          { word: "überall", translation: "everywhere" },
+        ],
         matching_pairs: [
           { id: "m1", english: "Paul has a dog.", german: "Paul hat einen Hund." },
           { id: "m2", english: "Max is small, brown, and very fast.", german: "Max ist klein, braun und sehr schnell." },
@@ -305,11 +311,13 @@ export const READING_LESSONS: Lesson[] = [
     },
   },
   {
-    id: 5331,
-    slug: "story-eine-reise-mit-pannen",
+    id: 9002,
+    slug: "story-s2-eine-reise-mit-pannen",
     title: "Eine Reise mit Pannen",
     subtitle: "A trip to Paris goes wrong in small ways — and becomes a memory",
     phase: 3,
+    spineStory: true,
+    label: "s2",
     shift_categories: [],
     word_ids: ["postkarte", "rucksack", "land", "nass", "regen", "wetter", "markt", "familie"],
     table_word_ids: [
@@ -367,6 +375,15 @@ export const READING_LESSONS: Lesson[] = [
         id: "l5331_e1",
         type: "matching_pairs",
         prompt: "Reading check — match each story sentence with its English meaning:",
+        vocab_hints: [
+          { word: "Zug", translation: "train" },
+          { word: "Stunde", translation: "hour" },
+          { word: "geregnet", translation: "rained (participle of regnen)" },
+          { word: "falschen", translation: "wrong (accusative)" },
+          { word: "Bus", translation: "bus" },
+          { word: "schönen", translation: "beautiful (accusative)" },
+          { word: "gelacht", translation: "laughed (participle of lachen)" },
+        ],
         matching_pairs: [
           { id: "m1", english: "Last week they went to Paris by train.", german: "Letzte Woche sind sie mit dem Zug nach Paris gefahren." },
           { id: "m2", english: "The train was an hour late.", german: "Der Zug hatte eine Stunde Verspätung." },
@@ -626,11 +643,13 @@ export const READING_LESSONS: Lesson[] = [
     },
   },
   {
-    id: 5341,
-    slug: "story-fahrrad-statt-auto",
+    id: 9003,
+    slug: "story-s3-fahrrad-statt-auto",
     title: "Fahrrad statt Auto",
     subtitle: "Tom's car breaks down, and a borrowed bicycle changes his mind",
     phase: 3,
+    spineStory: true,
+    label: "s3",
     shift_categories: [],
     word_ids: ["rad", "fahrrad", "auto", "teuer", "schnell", "langsam", "gleich"],
     table_word_ids: [
@@ -688,6 +707,7 @@ export const READING_LESSONS: Lesson[] = [
         id: "l5341_e1",
         type: "matching_pairs",
         prompt: "Reading check — match each story sentence with its English meaning:",
+        vocab_hints: [{ word: "fast", translation: "almost" }],
         matching_pairs: [
           { id: "m1", english: "Normally Tom drives to work by car every day.", german: "Eigentlich fährt er jeden Tag mit dem Auto zur Arbeit." },
           { id: "m2", english: "But the gas is very expensive.", german: "Aber das Benzin ist sehr teuer." },
@@ -782,11 +802,13 @@ export const READING_LESSONS: Lesson[] = [
     },
   },
   {
-    id: 5342,
-    slug: "story-die-verspaetung",
+    id: 9004,
+    slug: "story-s4-die-verspaetung",
     title: "Die Verspätung",
     subtitle: "Lukas is late to a birthday — and the reason is not what Sarah thinks",
     phase: 3,
+    spineStory: true,
+    label: "s4",
     shift_categories: [],
     word_ids: ["entschuldigung", "stunde", "spät", "regen", "nass", "bus", "zug", "nachbar"],
     table_word_ids: [
@@ -1104,11 +1126,13 @@ export const READING_LESSONS: Lesson[] = [
     },
   },
   {
-    id: 5352,
-    slug: "story-max-und-der-kranke-montag",
+    id: 9005,
+    slug: "story-s5-max-und-der-kranke-montag",
     title: "Max und der kranke Montag",
     subtitle: "Max pretends to be sick — his mother's thermometer has other ideas",
     phase: 3,
+    spineStory: true,
+    label: "s5",
     shift_categories: [],
     word_ids: ["fieber", "bauch", "krank", "mutter", "kind", "montag", "morgen", "bett"],
     table_word_ids: [
@@ -1179,6 +1203,7 @@ export const READING_LESSONS: Lesson[] = [
         id: "l5352_e1",
         type: "matching_pairs",
         prompt: "Reading check — match each story sentence with its English meaning:",
+        vocab_hints: [{ word: "Schule", translation: "school" }],
         matching_pairs: [
           { id: "m1", english: "Max does not want to go to school.", german: "Max will nicht zur Schule gehen." },
           { id: "m2", english: "He says that he is sick.", german: "Er sagt, dass er krank ist." },
@@ -1271,7 +1296,283 @@ export const READING_LESSONS: Lesson[] = [
       },
       takeaway:
         "A story can be a small argument: claim, evidence, verdict. The dass-clause puts the verdict's verb at the end, where the evidence lands.",
-      curiosity_teaser: "You have finished the reading branches. Re-read any story for the pleasure of recognising the machinery.",
+      curiosity_teaser: "You have finished the required reading spine. Re-read any story for the pleasure of recognising the machinery.",
+    },
+  },
+  {
+    id: 5361,
+    slug: "story-der-rote-schal",
+    title: "Der rote Schal",
+    subtitle: "A red scarf disappears at the market — and a stranger brings it back",
+    phase: 2,
+    shift_categories: [],
+    word_ids: ["schal", "rot", "markt", "junge", "finden", "suchen", "tasche"],
+    table_word_ids: [
+      "schal",
+      "rot",
+      "markt",
+      "junge",
+      "finden",
+      "suchen",
+      "danke",
+      "tasche",
+      "frau",
+      "mann",
+      "apfel",
+      "tisch",
+      "unter",
+      "neben",
+      "froh",
+      "hund",
+    ],
+    hook: {
+      title: "Before You Read",
+      content:
+        "A small everyday mystery: Mia is at the market, and her red scarf disappears. Follow three things — what she buys, where the scarf goes, and who finds it. The story stays in the present tense.",
+      footnotes: [
+        {
+          marker: "1",
+          title: "tragen",
+          content:
+            "tragen = to wear or carry. Sie trägt einen roten Schal = she is wearing a red scarf. The accusative object is einen roten Schal.",
+        },
+        {
+          marker: "2",
+          title: "weg",
+          content:
+            "weg = gone / away. Plötzlich ist der Schal weg = suddenly the scarf is gone. It is a picture-word, not a verb.",
+        },
+      ],
+    },
+    pattern: {
+      title: "Die Geschichte",
+      content:
+        "Mia ist auf dem Markt. Sie trägt einen roten Schal. Der Schal ist warm und weich.\n\nMia sieht einen Apfel und kauft ihn. Sie legt den Apfel in ihre Tasche. Dann sucht sie ihren Schal. Der Schal ist weg!\n\nMia sucht unter dem Tisch und neben der Tasche. Sie fragt eine Frau: „Haben Sie meinen Schal gesehen?“ Die Frau schüttelt den Kopf.\n\nDa kommt ein Junge. Er hat einen roten Schal in der Hand. „Ist das dein Schal?“, fragt er. „Ja! Danke!“, sagt Mia. Sie ist froh und lächelt.",
+      footnotes: [],
+    },
+    exercises: [
+      {
+        id: "l5361_e1",
+        type: "matching_pairs",
+        prompt: "Reading check — match each story sentence with its English meaning:",
+        matching_pairs: [
+          { id: "m1", english: "Mia is at the market.", german: "Mia ist auf dem Markt." },
+          { id: "m2", english: "She is wearing a red scarf.", german: "Sie trägt einen roten Schal." },
+          { id: "m3", english: "Suddenly the scarf is gone.", german: "Plötzlich ist der Schal weg." },
+          { id: "m4", english: "A boy has a red scarf in his hand.", german: "Ein Junge hat einen roten Schal in der Hand." },
+          { id: "m5", english: "Is that your scarf?", german: "Ist das dein Schal?" },
+          { id: "m6", english: "Mia is glad and smiles.", german: "Mia ist froh und lächelt." },
+        ],
+        target_answer:
+          "Mia ist auf dem Markt., Sie trägt einen roten Schal., Plötzlich ist der Schal weg., Ein Junge hat einen roten Schal in der Hand., Ist das dein Schal?, Mia ist froh und lächelt.",
+        meaning: "the story beats: the market, the red scarf, the search, the boy, the thank-you",
+        explanation:
+          "Six sentences carry the whole scene. The scarf is the object everyone is looking for.",
+      },
+      {
+        id: "l5361_e2",
+        type: "shift_select",
+        prompt: "Where is Mia?",
+        options: ["At the market", "At the station", "In the park", "At school"],
+        target_answer: "At the market",
+        meaning: "Mia is at the market.",
+        explanation: "The first sentence says Mia ist auf dem Markt.",
+      },
+      {
+        id: "l5361_e3",
+        type: "shift_select",
+        prompt: "What does Mia lose?",
+        options: ["Her red scarf", "Her bag", "Her apple", "Her money"],
+        target_answer: "Her red scarf",
+        meaning: "Mia loses her red scarf.",
+        explanation:
+          "She buys an apple and puts it in her bag, but then Der Schal ist weg — the scarf is gone.",
+      },
+      {
+        id: "l5361_e4",
+        type: "shift_select",
+        prompt: "Who finds the scarf?",
+        options: ["A boy", "A dog", "An old man", "A woman"],
+        target_answer: "A boy",
+        meaning: "A boy finds the scarf and returns it.",
+        explanation:
+          "Da kommt ein Junge. Er hat einen roten Schal in der Hand. The woman she asks only shakes her head.",
+      },
+      {
+        id: "l5361_e5",
+        type: "literal_gloss",
+        prompt: "Which English follows the German words most closely?",
+        german: "Der Junge findet den Schal unter einem Tisch.",
+        natural: "The boy finds the scarf under a table.",
+        options: [
+          "The boy finds the scarf under a table",
+          "The scarf finds the boy under a table",
+          "The boy loses the scarf under a table",
+          "The boy finds the table under a scarf",
+        ],
+        target_answer: "The boy finds the scarf under a table",
+        meaning: "The boy finds the scarf under a table.",
+        explanation:
+          "finden takes an accusative object (den Schal), and unter einem Tisch is the dative place where it was hiding.",
+      },
+    ],
+    twist: {
+      prompt: "Without looking back — say in German: 'The woman is at the market.'",
+      target_answer: "Die Frau ist auf dem Markt",
+      word_bank: ["Die", "Frau", "ist", "auf", "dem", "Markt", "Mann"],
+      explanation:
+        "auf dem Markt is the dative location. The man is a distractor; the story follows Mia and a boy.",
+    },
+    summary: {
+      outcome: "Read a short present-tense mystery and answer where, what, and who questions.",
+      use_example: {
+        german: "Mia sucht ihren Schal. Ein Junge findet ihn unter einem Tisch.",
+        english: "Mia looks for her scarf. A boy finds it under a table.",
+      },
+      takeaway:
+        "A lost-object story is built from place words: auf dem Markt, in der Tasche, unter dem Tisch. Follow the places and the object reappears.",
+      curiosity_teaser: "Next optional reading: a family trip to a lake and a change in the weather.",
+    },
+  },
+  {
+    id: 5362,
+    slug: "story-der-ausflug-zum-see",
+    title: "Der Ausflug zum See",
+    subtitle: "A family trip to a lake: sun, swimming, rain, and a tree",
+    phase: 3,
+    shift_categories: [],
+    word_ids: ["ausflug", "wetter", "sonne", "regen", "baum", "familie", "kind"],
+    table_word_ids: [
+      "ausflug",
+      "see",
+      "wetter",
+      "sonne",
+      "regen",
+      "baum",
+      "familie",
+      "kind",
+      "wasser",
+      "fluss",
+      "berg",
+      "auto",
+      "schwimmen",
+      "wochenende",
+      "schön",
+      "müde",
+    ],
+    hook: {
+      title: "Before You Read",
+      content:
+        "A Perfekt family story with a simple shape: a good morning, a rainy afternoon, a warm ending. Watch the comparisons — größer als, schöner — and the weather words. The story is about a trip to a lake, not the sea.",
+      footnotes: [
+        {
+          marker: "1",
+          title: "der See / die See",
+          content:
+            "der See = lake; die See = sea. The article changes the meaning, so the story uses der See and the neuter pronoun pattern around it.",
+        },
+        {
+          marker: "2",
+          title: "schwimmen",
+          content:
+            "schwimmen = to swim. Die Kinder sind im Wasser geschwommen = the children swam in the water. The participle is geschwommen.",
+        },
+      ],
+    },
+    pattern: {
+      title: "Die Geschichte",
+      content:
+        "Am Wochenende hat Familie Braun einen Ausflug zum See gemacht. Sie sind mit dem Auto gefahren. Der See ist größer als der Fluss in der Stadt.\n\nDas Wetter war schön, und die Sonne schien. Die Kinder sind im Wasser geschwommen. Sie haben viel gelacht.\n\nAm Nachmittag hat es geregnet. Die Familie hat unter einem Baum gewartet. Der Regen war stärker als am Morgen.\n\nDann sind sie nach Hause gefahren. Der Ausflug war nicht perfekt, aber schön. Die Kinder waren müde und glücklich.",
+      footnotes: [],
+    },
+    exercises: [
+      {
+        id: "l5362_e1",
+        type: "matching_pairs",
+        prompt: "Reading check — match each story sentence with its English meaning:",
+        matching_pairs: [
+          { id: "m1", english: "The Braun family took a trip to the lake.", german: "Familie Braun hat einen Ausflug zum See gemacht." },
+          { id: "m2", english: "They drove by car.", german: "Sie sind mit dem Auto gefahren." },
+          { id: "m3", english: "The lake is bigger than the river.", german: "Der See ist größer als der Fluss." },
+          { id: "m4", english: "The children swam in the water.", german: "Die Kinder sind im Wasser geschwommen." },
+          { id: "m5", english: "In the afternoon it rained.", german: "Am Nachmittag hat es geregnet." },
+          { id: "m6", english: "The family waited under a tree.", german: "Die Familie hat unter einem Baum gewartet." },
+        ],
+        target_answer:
+          "Familie Braun hat einen Ausflug zum See gemacht., Sie sind mit dem Auto gefahren., Der See ist größer als der Fluss., Die Kinder sind im Wasser geschwommen., Am Nachmittag hat es geregnet., Die Familie hat unter einem Baum gewartet.",
+        meaning: "the trip's sequence: lake, car, swimming, rain, tree, home",
+        explanation:
+          "The six beats are a weather arc: a sunny morning, a swim, a rainy afternoon, shelter, and a warm ending.",
+      },
+      {
+        id: "l5362_e2",
+        type: "shift_select",
+        prompt: "Where did the family go?",
+        options: ["To a lake", "To a mountain", "To the city", "To a museum"],
+        target_answer: "To a lake",
+        meaning: "The family went to a lake.",
+        explanation:
+          "Der Ausflug zum See — zum See means to the lake (der See). The mountain (der Berg) is in the word bank only as a contrast.",
+      },
+      {
+        id: "l5362_e3",
+        type: "shift_select",
+        prompt: "What did the children do in the water?",
+        options: [
+          "They swam",
+          "They climbed a tree",
+          "They read books",
+          "They cooked dinner",
+        ],
+        target_answer: "They swam",
+        meaning: "The children swam in the water.",
+        explanation:
+          "Die Kinder sind im Wasser geschwommen. schwimmen is the verb; geschwommen is its participle.",
+      },
+      {
+        id: "l5362_e4",
+        type: "shift_select",
+        prompt: "Why did the family wait under a tree?",
+        options: ["It rained", "It was too hot", "They were hungry", "They lost the car"],
+        target_answer: "It rained",
+        meaning: "They waited under the tree because it started to rain.",
+        explanation:
+          "Am Nachmittag hat es geregnet. Die Familie hat unter einem Baum gewartet. The rain causes the waiting.",
+      },
+      {
+        id: "l5362_e5",
+        type: "literal_gloss",
+        prompt: "Which English follows the German words most closely?",
+        german: "Der See ist größer als der Fluss.",
+        natural: "The lake is bigger than the river.",
+        options: [
+          "The lake is bigger than the river",
+          "The river is bigger than the lake",
+          "The lake is as big as the river",
+          "The lake is smaller than the river",
+        ],
+        target_answer: "The lake is bigger than the river",
+        meaning: "The lake is bigger than the river.",
+        explanation:
+          "größer is the comparative of groß; als marks the second item. The river is the smaller one here.",
+      },
+    ],
+    twist: {
+      prompt: "Without looking back — say in German: 'The lake is bigger than the river.'",
+      target_answer: "Der See ist größer als der Fluss",
+      word_bank: ["Der", "See", "ist", "größer", "als", "der", "Fluss", "Berg"],
+      explanation:
+        "Comparative + als: Der See ist größer als der Fluss. The mountain (Berg) is a distractor; the comparison is lake versus river.",
+    },
+    summary: {
+      outcome: "Read a Perfekt family-trip story with comparatives and weather words, then answer why and what questions.",
+      use_example: {
+        german: "Der See ist größer als der Fluss, und am Nachmittag hat es geregnet.",
+        english: "The lake is bigger than the river, and in the afternoon it rained.",
+      },
+      takeaway:
+        "Weather and comparisons give a trip story its shape: a sunny morning, a rainy afternoon, and a warm conclusion.",
+      curiosity_teaser: "You have finished the optional reading library. Re-read any passage for the pleasure of recognising the machinery.",
     },
   },
 ];

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ArrowLeft, BookOpen, Info, Search } from "lucide-react";
 import { ConstellationWeb } from "@/components/atlas/ConstellationWeb";
 import { BranchDrillModal } from "@/components/atlas/BranchDrillModal";
@@ -10,7 +10,6 @@ import { useViewStore, EMPTY_ROSTER_POSITION } from "@/lib/view-store";
 import { getLanguageDefinition } from "@/data/languages";
 import { useCompendium } from "@/lib/content-client";
 import { getAtlasFamily, UNSHIFTED_FAMILY_ID } from "@/lib/atlas-families";
-import type { ShiftFamily } from "@/lib/types";
 
 interface ConstellationDetailClientProps {
   familyId: string;
@@ -50,6 +49,19 @@ export function ConstellationDetailClient({
     : ownerLanguageIds[0] ?? activeLanguageId;
   const activeCompendium = useCompendium(activeLanguageId);
   const ownerCompendium = useCompendium(ownerLanguageId);
+  const activeData = activeCompendium.data;
+  const family = activeData ? getAtlasFamily(activeData, familyId) : undefined;
+  const familyName = family?.name;
+
+  useEffect(() => {
+    if (!familyName) return;
+    const previous = document.title;
+    const next = `${familyName} — Atlas — Brücke`;
+    document.title = next;
+    return () => {
+      if (document.title === next) document.title = previous;
+    };
+  }, [familyName]);
 
   if (activeCompendium.error) {
     return (
@@ -66,7 +78,7 @@ export function ConstellationDetailClient({
     );
   }
 
-  if (!activeCompendium.data) {
+  if (!activeData) {
     return (
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-6 font-sans">
         <BackButton onBack={onBack} />
@@ -77,8 +89,7 @@ export function ConstellationDetailClient({
     );
   }
 
-  const data = activeCompendium.data;
-  const family: ShiftFamily | undefined = getAtlasFamily(data, familyId);
+  const data = activeData;
 
   if (!family) {
     // A legacy URL may name a family from another course. Show the owning

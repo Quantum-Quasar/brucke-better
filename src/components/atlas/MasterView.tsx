@@ -1,9 +1,19 @@
 "use client";
 
+import { useEffect } from "react";
 import { ArrowLeft, Share2 } from "lucide-react";
 import { MasterConstellation } from "@/components/atlas/MasterConstellation";
 
 export function MasterView({ onBack }: { onBack: () => void }) {
+  useEffect(() => {
+    const previous = document.title;
+    const next = "Master Web — Brücke";
+    document.title = next;
+    return () => {
+      if (document.title === next) document.title = previous;
+    };
+  }, []);
+
   return (
     <div className="relative h-[calc(100dvh-110px)] font-sans overflow-hidden">
       <MasterConstellation />

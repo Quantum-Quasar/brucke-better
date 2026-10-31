@@ -8,6 +8,7 @@ import {
   THEME_VARS_CACHE_KEY,
 } from "@/lib/theme-runtime";
 import { TOPICS, TRAIL_BRANCHES, getNextPlayableLessonId } from "@/data/curriculum";
+import { spineNodeIds } from "@/data/curriculum-core";
 import { getGenderInfo } from "@/lib/gender";
 import { LESSONS } from "@/data/lessons";
 import { DEFAULT_SETTINGS } from "@/data/settings";
@@ -180,16 +181,18 @@ describe("Theme Architecture & Contrast Verification", () => {
   });
 
   it("verifies authored lesson count and spine advancement", () => {
-    const AUTHORED_SPINE_LIMIT = 30; // sprig lessons (101+) hang off the spine, they don't extend it
     // every authored shell on the map must have a full Lesson behind it
-    const authoredShells = [...TOPICS.flatMap((t) => [t.core, ...t.sprigs]), ...TRAIL_BRANCHES.flatMap((b) => b.lessons)]
-      .filter((s) => s.authored).length;
+    const authoredShells = [
+      ...TOPICS.flatMap((t) => [t.core, ...(t.stories ?? []), ...t.sprigs]),
+      ...TRAIL_BRANCHES.flatMap((b) => b.lessons),
+    ].filter((s) => s.authored).length;
     expect(LESSONS.length).toBe(authoredShells);
-    for (let id = 1; id < AUTHORED_SPINE_LIMIT; id++) {
-      expect(getNextPlayableLessonId(id)).toBe(id + 1);
+    const spine = spineNodeIds(TOPICS);
+    for (let i = 0; i < spine.length - 1; i++) {
+      expect(getNextPlayableLessonId(spine[i])).toBe(spine[i + 1]);
     }
-    // past the last authored core there is no next stop
-    expect(getNextPlayableLessonId(AUTHORED_SPINE_LIMIT)).toBeNull();
+    // past the final story there is no next stop
+    expect(getNextPlayableLessonId(spine[spine.length - 1])).toBeNull();
   });
 
   it("sets alduin as the default theme", () => {
