@@ -8,6 +8,7 @@ import { useEffect } from "react";
 
 const SCROLL_KEY = "brucke_scroll_state_v1";
 const visited = new Set<string>();
+let pendingCapture: { pathname: string; y: number; at: number } | null = null;
 
 function readAll(): Record<string, number> {
   if (typeof window === "undefined") return {};
@@ -42,7 +43,9 @@ function save(pathname: string, y: number): void {
 /** Save the current window position before a route change starts. */
 export function captureScroll(pathname: string): void {
   if (typeof window === "undefined") return;
-  save(pathname, window.scrollY);
+  const y = Math.max(0, Math.round(window.scrollY));
+  pendingCapture = { pathname, y, at: Date.now() };
+  save(pathname, y);
 }
 
 export function useScrollMemory(pathname: string): void {
@@ -84,9 +87,21 @@ export function useScrollMemory(pathname: string): void {
       if (restoreFrame2) cancelAnimationFrame(restoreFrame2);
       if (restoreTimer) window.clearTimeout(restoreTimer);
       window.removeEventListener("scroll", onScroll);
-      // Never overwrite a real position with a router scroll-to-top that may
-      // already have happened while committing the next route.
-      if (lastY > 0) save(pathname, lastY);
+      // The router may have already scrolled to top while committing the next
+      // route. Prefer the position captured by the navigation click; otherwise
+      // never overwrite a real position with a reset event.
+      const captured =
+        pendingCapture &&
+        pendingCapture.pathname === pathname &&
+        Date.now() - pendingCapture.at < 2000
+          ? pendingCapture.y
+          : null;
+      if (captured !== null) {
+        save(pathname, captured);
+        pendingCapture = null;
+      } else if (lastY > 0) {
+        save(pathname, lastY);
+      }
     };
   }, [pathname]);
 }

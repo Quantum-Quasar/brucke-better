@@ -63,7 +63,8 @@ export const BottomNav: React.FC = () => {
                 aria-current={tab.isActive ? "page" : undefined}
                 onClick={(event) => {
                   if (isModifiedClick(event)) return;
-                  captureScroll(pathname);
+                  // Same-tab clicks do not navigate; don't arm a capture for them.
+                  if (pathname !== tab.href) captureScroll(pathname);
                   // A tab click always lands on that tab's root view.
                   if (tab.href === "/atlas") closeSubview();
                 }}

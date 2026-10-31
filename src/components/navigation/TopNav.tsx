@@ -56,7 +56,7 @@ export const TopNav: React.FC = () => {
           href="/"
           onClick={(event) => {
             if (isModifiedClick(event)) return;
-            captureScroll(pathname);
+            if (pathname !== "/") captureScroll(pathname);
             closeSubview();
           }}
           className="flex items-center gap-2 group"
