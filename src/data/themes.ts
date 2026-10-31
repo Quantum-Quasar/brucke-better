@@ -1,7 +1,12 @@
 // All 187 themes extracted directly from Monkeytype (open-source typing speed platform)
 // Supports dynamic CSS variable injection across the entire application.
 
-import { DEFAULT_THEME, THEME_VARS_CACHE_KEY, themeDisplayName } from "@/lib/theme-runtime";
+import {
+  DEFAULT_THEME,
+  THEME_VARS_CACHE_KEY,
+  syncThemeColor,
+  themeDisplayName,
+} from "@/lib/theme-runtime";
 
 export interface MonkeytypeTheme {
   bg: string;
@@ -2357,6 +2362,8 @@ export function applyTheme(themeId: string): void {
     root.style.setProperty("--colorful-error-color", theme.colorfulError || theme.error);
     root.style.setProperty("--colorful-error-extra-color", theme.colorfulErrorExtra || theme.errorExtra);
   }
+
+  syncThemeColor(theme.bg);
 
   // Set color-scheme and dark/light class
   const isDark = isColorDark(theme.bg);

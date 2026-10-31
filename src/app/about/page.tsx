@@ -36,7 +36,7 @@ export default function AboutPage() {
       <div className="space-y-3">
         <Link
           href="/"
-          className="inline-flex items-center gap-1.5 text-xs font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] transition"
+          className="inline-flex min-h-11 items-center gap-1.5 text-xs font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] transition"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>return home</span>

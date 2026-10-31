@@ -48,6 +48,17 @@ export function captureScroll(pathname: string): void {
   save(pathname, y);
 }
 
+/** True when this tab has already mounted the path once (a tab switch back). */
+export function hasVisited(pathname: string): boolean {
+  return visited.has(pathname);
+}
+
+/** True when a non-zero position for the path survives in this tab's storage. */
+export function hasSavedPosition(pathname: string): boolean {
+  const saved = readAll()[pathname];
+  return typeof saved === "number" && saved > 0;
+}
+
 export function useScrollMemory(pathname: string): void {
   useEffect(() => {
     if (typeof window === "undefined") return;

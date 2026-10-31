@@ -444,14 +444,14 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
   }, [inRetryPhase, retryQueue, retryIndex, retryAttempts, practiceIndex, lesson.exercises]);
 
   return (
-    <article className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+    <article className={`max-w-4xl mx-auto px-4 pt-8 space-y-8 ${stickyAction ? "pb-32" : "pb-8"}`}>
       {/* Top Header & Navigation — sticky so the close control never scrolls away */}
       <div className="sticky top-0 z-20 -mx-4 -mt-8 px-4 pt-3 pb-3 bg-[var(--bg-color)]/95 backdrop-blur border-b border-[var(--sub-color)]/15">
         <div className="flex items-center justify-between">
           <button
             type="button"
             onClick={closeLesson}
-            className="inline-flex items-center gap-2 text-xs font-mono text-[var(--sub-color)] hover:text-[var(--main-color)] transition px-2.5 py-1.5 rounded border border-[var(--sub-color)]/20 hover:border-[var(--main-color)]/40 cursor-pointer"
+            className="inline-flex min-h-11 items-center gap-2 rounded border border-[var(--sub-color)]/20 px-3 py-2 text-xs font-mono text-[var(--sub-color)] transition hover:border-[var(--main-color)]/40 hover:text-[var(--main-color)] cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Trail
           </button>
@@ -521,7 +521,7 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                 <h2 className="text-xl font-bold font-mono text-[var(--text-color)]">{lesson.hook.title}</h2>
               </div>
 
-              <p className="text-[var(--sub-color)] text-sm leading-relaxed whitespace-pre-line">{lesson.hook.content}</p>
+              <p className="text-[var(--sub-color)] text-base leading-relaxed whitespace-pre-line">{lesson.hook.content}</p>
 
               {/* TM-6: preventative correction — name the shortcut before the mind takes it (§1.9/§1.10) */}
               {lesson.hook.trap_note && (
@@ -590,7 +590,7 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
                 <h2 className="text-xl font-bold font-mono text-[var(--text-color)]">{lesson.pattern.title}</h2>
               </div>
 
-              <p className="text-[var(--sub-color)] text-sm leading-relaxed whitespace-pre-line">{lesson.pattern.content}</p>
+              <p className="text-[var(--sub-color)] text-base leading-relaxed whitespace-pre-line">{lesson.pattern.content}</p>
 
               {/* TM-6: the same preventative-correction slot on the pattern card */}
               {lesson.pattern.trap_note && (
@@ -1181,7 +1181,13 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
       </div>
 
       {stickyAction && (
-        <div className="sm:hidden fixed bottom-3 left-3 right-3 z-30">
+        <div
+          className="sm:hidden fixed bottom-safe z-30"
+          style={{
+            left: "max(0.75rem, env(safe-area-inset-left))",
+            right: "max(0.75rem, env(safe-area-inset-right))",
+          }}
+        >
           <button
             type="button"
             onClick={stickyAction.run}

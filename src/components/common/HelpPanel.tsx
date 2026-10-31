@@ -6,6 +6,7 @@ import { BookOpen, Keyboard, X } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { useViewStore } from "@/lib/view-store";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
+import { useBackDismiss } from "@/lib/use-back-dismiss";
 
 interface HelpPanelProps {
   open: boolean;
@@ -71,6 +72,8 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({ open, onClose }) => {
   const openOnboarding = useAppStore((s) => s.openOnboarding);
   const dialogRef = useRef<HTMLDivElement>(null);
 
+  useBackDismiss(open, onClose);
+
   useDialogFocus({ open, containerRef: dialogRef, onEscape: onClose });
 
   if (!open) return null;
@@ -102,7 +105,7 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({ open, onClose }) => {
         role="dialog"
         aria-modal="true"
         aria-labelledby="help-panel-title"
-        className="w-full sm:max-w-md rounded-t-2xl sm:rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl p-5 sm:p-6 space-y-4 max-h-[85vh] overflow-y-auto"
+        className="safe-x w-full sm:max-w-md rounded-t-2xl sm:rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl p-5 pb-safe sm:p-6 space-y-4 max-h-[85dvh] overflow-y-auto overscroll-contain"
       >
         <div className="flex items-start justify-between gap-3">
           <div>
@@ -116,7 +119,7 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({ open, onClose }) => {
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded text-[var(--sub-color)] hover:text-[var(--text-color)] hover:bg-[var(--sub-alt-color)] transition cursor-pointer"
+            className="inline-flex h-11 w-11 items-center justify-center rounded text-[var(--sub-color)] hover:text-[var(--text-color)] hover:bg-[var(--sub-alt-color)] transition cursor-pointer"
             aria-label="Close help"
           >
             <X className="w-4 h-4" />
@@ -132,7 +135,7 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({ open, onClose }) => {
           ))}
         </ul>
 
-        <div className="p-3 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-2">
+        <div className="keyboard-hints p-3 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-2">
           <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-[var(--main-color)] font-semibold">
             <Keyboard className="w-3.5 h-3.5" /> keyboard
           </div>

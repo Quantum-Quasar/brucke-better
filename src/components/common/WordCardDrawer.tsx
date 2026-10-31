@@ -16,6 +16,7 @@ import { useCompendium, useLessonIndex } from "@/lib/content-client";
 import { buildWordEntityMaps, lookupWordEntity } from "@/lib/word-entities-core";
 import { lessonHref } from "@/lib/routes";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
+import { useBackDismiss } from "@/lib/use-back-dismiss";
 
 export const WordCardDrawer: React.FC = () => {
   const activeWordId = useAppStore((s) => s.activeWordDrawerId);
@@ -41,6 +42,8 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
     [activeLanguageId, compendium.data, lessonIndex.data]
   );
   const dialogRef = useRef<HTMLDivElement>(null);
+
+  useBackDismiss(true, closeDrawer);
 
   useDialogFocus({
     open: true,
@@ -185,7 +188,7 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
         role="dialog"
         aria-modal="true"
         aria-labelledby="word-drawer-title"
-        className="relative z-10 flex flex-col w-full sm:max-w-md h-full sm:h-auto sm:min-h-full bg-[var(--bg-color)] border-l border-[var(--sub-color)]/20 shadow-2xl overflow-y-auto"
+        className="relative z-10 flex flex-col w-full sm:max-w-md h-full sm:h-auto sm:min-h-full bg-[var(--bg-color)] border-l border-[var(--sub-color)]/20 shadow-2xl overflow-y-auto overscroll-contain"
       >
         {/* Header */}
         <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 bg-[var(--bg-color)] border-b border-[var(--sub-color)]/20">
@@ -195,7 +198,7 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
           </div>
           <button
             onClick={closeDrawer}
-            className="p-1 rounded text-[var(--sub-color)] hover:text-[var(--text-color)] hover:bg-[var(--sub-alt-color)] transition flex items-center gap-1"
+            className="min-h-11 min-w-11 justify-center p-2 -mr-1 rounded text-[var(--sub-color)] hover:text-[var(--text-color)] hover:bg-[var(--sub-alt-color)] transition flex items-center gap-1"
             aria-label="Close word drawer"
           >
             <span className="keycap text-[10px]">esc</span>
@@ -204,23 +207,28 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
         </div>
 
         {/* Word Content */}
-        <div className="p-6 space-y-6">
+        <div className="p-6 pb-safe space-y-6">
           {/* Main Word + Pronunciation */}
           <div>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
               <GenderBadge gender={word.gender} size="lg" showLabel />
-              <h2 id="word-drawer-title" className="text-3xl font-mono font-bold text-[var(--main-color)] tracking-tight">{word.target_word}</h2>
+              <h2
+                id="word-drawer-title"
+                className="min-w-0 flex-1 break-words text-2xl leading-tight font-mono font-bold text-[var(--main-color)] tracking-tight sm:text-3xl"
+              >
+                {word.target_word}
+              </h2>
               <button
                 type="button"
                 onClick={() => playTargetAudio(spokenWord, language.ttsLocale)}
-                className="p-1.5 rounded bg-[var(--sub-alt-color)] hover:bg-[var(--main-color)]/10 text-[var(--main-color)] border border-[var(--sub-color)]/20 transition cursor-pointer"
+                className="shrink-0 p-1.5 rounded bg-[var(--sub-alt-color)] hover:bg-[var(--main-color)]/10 text-[var(--main-color)] border border-[var(--sub-color)]/20 transition cursor-pointer"
                 title={`Listen to "${spokenWord}"`}
                 aria-label={`Listen to ${language.name} pronunciation of ${spokenWord}`}
               >
                 <Volume2 className="w-4 h-4" />
               </button>
             </div>
-            <div className="flex items-center gap-3 mt-2 text-xs text-[var(--sub-color)] font-mono">
+            <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-[var(--sub-color)] font-mono">
               <span>{word.ipa}</span>
               <span>·</span>
               <span className="text-[var(--text-color)]">&quot;{word.english_meaning}&quot;</span>
@@ -230,13 +238,13 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
           {/* Sound Shift Card */}
           <div className="p-4 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-2">
             <div className="text-xs font-mono uppercase tracking-wider text-[var(--main-color)]">shift rule</div>
-            <div className="flex items-center justify-between">
-              <div className="text-sm font-mono text-[var(--text-color)]">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="min-w-0 text-sm font-mono text-[var(--text-color)]">
                 <span className="text-[var(--sub-color)]">{word.english_cognate}</span>
                 <span className="mx-2 text-[var(--main-color)]">→</span>
                 <span className="text-[var(--main-color)] font-bold">{word.target_word}</span>
               </div>
-              <span className="text-xs font-mono px-2 py-0.5 rounded bg-[var(--bg-color)] text-[var(--main-color)] border border-[var(--sub-color)]/20">
+              <span className="shrink-0 whitespace-nowrap text-xs font-mono px-2 py-0.5 rounded bg-[var(--bg-color)] text-[var(--main-color)] border border-[var(--sub-color)]/20">
                 {word.shift_rule}
               </span>
             </div>

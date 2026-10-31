@@ -23,7 +23,7 @@ function BackButton({ onBack }: { onBack: () => void }) {
     <button
       type="button"
       onClick={onBack}
-      className="inline-flex items-center gap-1.5 text-xs font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
+      className="inline-flex min-h-11 items-center gap-1.5 text-xs font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
     >
       <ArrowLeft className="w-3.5 h-3.5" /> back to atlas
     </button>
@@ -303,7 +303,7 @@ export function ConstellationDetailClient({
                 setRosterPosition(familyId, { query: event.target.value, visible: 60 });
               }}
               placeholder={`Filter ${words.length} words...`}
-              className="w-full pl-9 pr-3 py-1.5 rounded bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 text-xs text-[var(--text-color)] placeholder-[var(--sub-color)] outline-none focus:border-[var(--main-color)] transition font-mono"
+              className="min-h-11 w-full pl-9 pr-3 py-1.5 rounded bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 text-xs text-[var(--text-color)] placeholder-[var(--sub-color)] outline-none focus:border-[var(--main-color)] transition font-mono"
             />
           </div>
           <span className="text-[11px] font-mono text-[var(--sub-color)]">
@@ -313,7 +313,7 @@ export function ConstellationDetailClient({
             <button
               type="button"
               onClick={() => setRosterPosition(familyId, { visible: roster.visible + 60 })}
-              className="px-3 py-1.5 rounded bg-[var(--sub-alt-color)] hover:border-[var(--main-color)] border border-[var(--sub-color)]/20 text-[var(--text-color)] hover:text-[var(--main-color)] transition cursor-pointer text-[11px] font-mono"
+              className="min-h-11 px-3 py-1.5 rounded bg-[var(--sub-alt-color)] hover:border-[var(--main-color)] border border-[var(--sub-color)]/20 text-[var(--text-color)] hover:text-[var(--main-color)] transition cursor-pointer text-[11px] font-mono"
             >
               show 60 more
             </button>

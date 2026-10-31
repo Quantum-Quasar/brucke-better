@@ -7,6 +7,7 @@ import { createPortal } from "react-dom";
 import { AlertCircle, ArrowRight, Stethoscope, Volume2 } from "lucide-react";
 import { computeLetterDiff } from "@/lib/letter-diff";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
+import { useBackDismiss } from "@/lib/use-back-dismiss";
 import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
 import { playTargetAudio } from "@/lib/audio";
@@ -44,6 +45,8 @@ export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
   const language = getLanguageDefinition(activeLanguageId);
   const spokenText = audioText ?? expectedAnswer;
   const spokenLocale = audioLocale ?? language.ttsLocale;
+
+  useBackDismiss(true, onContinue);
 
   useDialogFocus({
     open: true,
@@ -83,7 +86,7 @@ export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="error-feedback-title"
-        className="w-full sm:max-w-md bg-[var(--bg-color)] border-t sm:border border-[var(--error-color)]/30 sm:rounded-lg rounded-t-lg shadow-2xl p-6 space-y-5 animate-in slide-in-from-bottom duration-200"
+        className="w-full sm:max-w-md max-h-[85dvh] overflow-y-auto overscroll-contain bg-[var(--bg-color)] border-t sm:border border-[var(--error-color)]/30 sm:rounded-lg rounded-t-lg shadow-2xl p-6 pb-safe space-y-5 animate-in slide-in-from-bottom duration-200"
       >
         {/* Header */}
         <div className="flex items-center gap-2 text-[var(--error-color)]">

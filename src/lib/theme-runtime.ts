@@ -6,6 +6,30 @@
 export const DEFAULT_THEME = "alduin";
 export const THEME_VARS_CACHE_KEY = "brucke_theme_vars";
 
+/**
+ * Keep the browser chrome (Android status bar / address bar) in step with the
+ * active palette. Falls back to the current --bg-color when no color is given.
+ */
+export function syncThemeColor(color?: string): void {
+  if (typeof document === "undefined") return;
+  if (typeof document.querySelector !== "function" || typeof document.createElement !== "function") {
+    return;
+  }
+  let value = color;
+  if (!value && typeof window !== "undefined" && typeof window.getComputedStyle === "function") {
+    value = window.getComputedStyle(document.documentElement).getPropertyValue("--bg-color").trim();
+  }
+  if (!value) return;
+
+  let meta = document.querySelector('meta[name="theme-color"]');
+  if (!meta) {
+    meta = document.createElement("meta");
+    meta.setAttribute("name", "theme-color");
+    document.head.appendChild(meta);
+  }
+  meta.setAttribute("content", value);
+}
+
 /** The only non-theme root attribute the settings screen owns. */
 export function applyAppearanceSettings(settings: import("@/data/settings").CustomizationSettings): void {
   if (typeof document === "undefined" || !document?.documentElement) return;

@@ -30,7 +30,7 @@ export const GermanCharBar: React.FC<GermanCharBarProps> = ({ onInsert, classNam
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => onInsert(char)}
           title={`Insert ${char}${digraph ? ` (or type "${digraph}" with lazy mode on)` : ""}`}
-          className="group relative flex flex-col items-center justify-center min-w-[32px] sm:min-w-[36px] h-9 px-2 rounded bg-[var(--bg-color)] hover:bg-[var(--main-color)]/10 active:scale-95 border border-[var(--sub-color)]/30 hover:border-[var(--main-color)]/40 transition-colors cursor-pointer"
+          className="group relative flex h-11 min-w-11 flex-col items-center justify-center rounded bg-[var(--bg-color)] px-2 hover:bg-[var(--main-color)]/10 active:scale-95 border border-[var(--sub-color)]/30 hover:border-[var(--main-color)]/40 transition-colors cursor-pointer sm:h-9 sm:min-w-9"
         >
           <span className="text-sm font-mono font-medium text-[var(--main-color)]">{char}</span>
           <span className="text-[9px] font-mono text-[var(--sub-color)] leading-none hidden sm:block">

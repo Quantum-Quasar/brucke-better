@@ -52,6 +52,8 @@ export const MasterConstellation: React.FC = () => {
   const scrollRef = React.useRef<HTMLDivElement>(null);
   const prevZoomRef = React.useRef(1);
   const [zoom, setZoom] = React.useState(1);
+  const zoomRef = React.useRef(zoom);
+  zoomRef.current = zoom;
   const [selectedNode, setSelectedNode] = React.useState<MasterNode | null>(null);
 
   const fitZoom = () => {
@@ -101,6 +103,45 @@ export const MasterConstellation: React.FC = () => {
     el.scrollTop = centreY * zoom - el.clientHeight / 2;
     prevZoomRef.current = zoom;
   }, [zoom]);
+
+  // Pinch-to-zoom while keeping native one-finger panning. touch-action is
+  // restricted to pan gestures on the container, so the browser does not
+  // hijack the two-finger gesture for page zoom.
+  React.useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    let pinch: { distance: number; zoom: number } | null = null;
+    const distance = (touches: TouchList) => {
+      const [a, b] = [touches[0], touches[1]];
+      return Math.hypot(a.clientX - b.clientX, a.clientY - b.clientY);
+    };
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 2) return;
+      pinch = { distance: distance(event.touches), zoom: zoomRef.current };
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      if (!pinch || event.touches.length !== 2) return;
+      event.preventDefault();
+      const ratio = distance(event.touches) / Math.max(1, pinch.distance);
+      const next = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, Number((pinch.zoom * ratio).toFixed(2))));
+      setZoom((previous) => (previous === next ? previous : next));
+    };
+    const onTouchEnd = (event: TouchEvent) => {
+      if (!pinch || event.touches.length >= 2) return;
+      pinch = null;
+      setMasterPosition(activeLanguageId, { zoom: zoomRef.current });
+    };
+    el.addEventListener("touchstart", onTouchStart, { passive: true });
+    el.addEventListener("touchmove", onTouchMove, { passive: false });
+    el.addEventListener("touchend", onTouchEnd, { passive: true });
+    el.addEventListener("touchcancel", onTouchEnd, { passive: true });
+    return () => {
+      el.removeEventListener("touchstart", onTouchStart);
+      el.removeEventListener("touchmove", onTouchMove);
+      el.removeEventListener("touchend", onTouchEnd);
+      el.removeEventListener("touchcancel", onTouchEnd);
+    };
+  }, [activeLanguageId, graph, setMasterPosition]);
 
   const selectNode = (node: MasterNode | null) => {
     setSelectedNode(node);
@@ -182,11 +223,12 @@ export const MasterConstellation: React.FC = () => {
     <div className="absolute inset-0 flex flex-col font-sans">
       <div
         ref={scrollRef}
-        className="flex-1 overflow-auto bg-[var(--bg-color)]"
+        className="flex flex-1 overflow-auto overscroll-contain bg-[var(--bg-color)]"
+        style={{ touchAction: "pan-x pan-y" }}
         role="region"
-        aria-label="Master Web graph — scroll to explore, use the zoom controls to change scale"
+        aria-label="Master Web graph — drag to explore, pinch or use the zoom controls to change scale"
       >
-        <div style={{ width: WIDTH * zoom, height: HEIGHT * zoom, position: "relative" }}>
+        <div className="m-auto shrink-0" style={{ width: WIDTH * zoom, height: HEIGHT * zoom, position: "relative" }}>
           <div
             style={{
               width: WIDTH,
@@ -219,7 +261,7 @@ export const MasterConstellation: React.FC = () => {
                       onClick={() => node.wordId && openWordDrawer(node.wordId)}
                     >
                       {/* Invisible hit target: the visible dot is only ~8px. */}
-                      <circle cx={Math.round(node.x)} cy={Math.round(node.y)} r={12} fill="transparent" />
+                      <circle cx={Math.round(node.x)} cy={Math.round(node.y)} r={16} fill="transparent" />
                       <circle
                         cx={Math.round(node.x)}
                         cy={Math.round(node.y)}
@@ -284,7 +326,7 @@ export const MasterConstellation: React.FC = () => {
 
       {/* Legend + totals */}
       <div
-        className={`absolute bottom-14 left-3 right-3 sm:bottom-3 sm:right-auto z-10 max-w-[calc(100vw-1.5rem)] sm:max-w-none ${
+        className={`absolute bottom-20 left-3 right-3 sm:bottom-3 sm:right-auto z-10 max-w-[calc(100vw-1.5rem)] sm:max-w-none ${
           selectedNode ? "hidden sm:block" : ""
         }`}
       >
@@ -308,7 +350,7 @@ export const MasterConstellation: React.FC = () => {
           type="button"
           onClick={() => changeZoom(-0.2)}
           disabled={zoom <= MIN_ZOOM}
-          className="p-1.5 rounded hover:bg-[var(--bg-color)] text-[var(--sub-color)] hover:text-[var(--text-color)] disabled:opacity-30 transition cursor-pointer"
+          className="inline-flex h-11 w-11 items-center justify-center rounded hover:bg-[var(--bg-color)] text-[var(--sub-color)] hover:text-[var(--text-color)] disabled:opacity-30 transition cursor-pointer"
           aria-label="Zoom out"
           title="Zoom out"
         >
@@ -319,7 +361,7 @@ export const MasterConstellation: React.FC = () => {
           type="button"
           onClick={() => changeZoom(0.2)}
           disabled={zoom >= MAX_ZOOM}
-          className="p-1.5 rounded hover:bg-[var(--bg-color)] text-[var(--sub-color)] hover:text-[var(--text-color)] disabled:opacity-30 transition cursor-pointer"
+          className="inline-flex h-11 w-11 items-center justify-center rounded hover:bg-[var(--bg-color)] text-[var(--sub-color)] hover:text-[var(--text-color)] disabled:opacity-30 transition cursor-pointer"
           aria-label="Zoom in"
           title="Zoom in"
         >
@@ -328,7 +370,7 @@ export const MasterConstellation: React.FC = () => {
         <button
           type="button"
           onClick={resetZoom}
-          className="p-1.5 rounded hover:bg-[var(--bg-color)] text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
+          className="inline-flex h-11 w-11 items-center justify-center rounded hover:bg-[var(--bg-color)] text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
           aria-label="Fit the graph to the screen"
           title="Fit graph"
         >
@@ -338,7 +380,7 @@ export const MasterConstellation: React.FC = () => {
 
       {/* Details for labelled nodes */}
       {selectedNode && (
-        <div className="absolute bottom-14 right-3 z-20 w-72 max-w-[calc(100vw-1.5rem)] rounded-lg bg-[var(--sub-alt-color)]/95 backdrop-blur border border-[var(--sub-color)]/25 p-3 shadow-lg space-y-1.5">
+        <div className="absolute bottom-20 right-3 z-20 w-72 max-w-[calc(100vw-1.5rem)] rounded-lg bg-[var(--sub-alt-color)]/95 backdrop-blur border border-[var(--sub-color)]/25 p-3 shadow-lg space-y-1.5">
           <div className="flex items-start justify-between gap-2">
             <div>
               <div className="text-[10px] font-mono uppercase tracking-wider text-[var(--sub-color)]">

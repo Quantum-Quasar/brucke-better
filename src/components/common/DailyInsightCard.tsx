@@ -70,7 +70,7 @@ Principle: ${insight.takeaway_principle}`;
   return (
     <aside
       aria-label="Etymology note"
-      className={`fixed bottom-[5.25rem] right-3 z-30 hidden w-[17rem] rounded-lg border border-[var(--sub-color)]/20 bg-[var(--sub-alt-color)] p-3 font-sans shadow-lg shadow-black/10 animate-in fade-in duration-300 sm:block xl:bottom-6 xl:right-4 xl:w-[18rem] ${className}`}
+      className={`fixed bottom-[calc(5.25rem+env(safe-area-inset-bottom))] right-3 z-30 hidden w-[17rem] rounded-lg border border-[var(--sub-color)]/20 bg-[var(--sub-alt-color)] p-3 font-sans shadow-lg shadow-black/10 animate-in fade-in duration-300 sm:block xl:bottom-6 xl:right-4 xl:w-[18rem] ${className}`}
     >
       <div className="flex items-center justify-between gap-2">
         <span className="flex min-w-0 items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-[var(--sub-color)]">

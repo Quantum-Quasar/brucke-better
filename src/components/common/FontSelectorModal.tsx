@@ -5,6 +5,7 @@ import { Search, X, Check, Type, Sparkles } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { FONT_LIST, filterFonts, ensureFontLoaded, type FontMeta } from "@/data/fonts";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
+import { useBackDismiss } from "@/lib/use-back-dismiss";
 
 type FontFilterTab = "all" | "mono" | "sans" | "display";
 
@@ -22,6 +23,8 @@ export const FontSelectorModal: React.FC = () => {
   const [loadAllPreviews, setLoadAllPreviews] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+
+  useBackDismiss(isOpen, closeFontSelector);
 
   useDialogFocus({
     open: isOpen,
@@ -58,7 +61,7 @@ export const FontSelectorModal: React.FC = () => {
         role="dialog"
         aria-modal="true"
         aria-labelledby="font-selector-title"
-        className="w-full max-w-3xl max-h-[85vh] flex flex-col rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/25 text-[var(--text-color)] shadow-2xl overflow-hidden font-sans"
+        className="w-full max-w-3xl max-h-[85dvh] flex flex-col rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/25 text-[var(--text-color)] shadow-2xl overflow-hidden font-sans"
       >
         {/* Header */}
         <div className="px-5 py-4 border-b border-[var(--sub-color)]/15 flex items-center justify-between">
@@ -85,7 +88,7 @@ export const FontSelectorModal: React.FC = () => {
             <button
               type="button"
               onClick={closeFontSelector}
-              className="p-1 rounded text-[var(--sub-color)] hover:text-[var(--text-color)] hover:bg-[var(--sub-alt-color)] transition cursor-pointer"
+              className="inline-flex h-11 w-11 items-center justify-center rounded text-[var(--sub-color)] hover:text-[var(--text-color)] hover:bg-[var(--sub-alt-color)] transition cursor-pointer"
               aria-label="Close font selector"
             >
               <X className="w-4 h-4" />
@@ -103,7 +106,7 @@ export const FontSelectorModal: React.FC = () => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search fonts by name (e.g. fira, lexend, comic)..."
-              className="w-full pl-9 pr-4 py-2 rounded bg-[var(--bg-color)] border border-[var(--sub-color)]/30 text-sm font-mono text-[var(--text-color)] placeholder-[var(--sub-color)] outline-none focus:border-[var(--main-color)] transition"
+              className="min-h-11 w-full pl-9 pr-4 py-2 rounded bg-[var(--bg-color)] border border-[var(--sub-color)]/30 text-sm font-mono text-[var(--text-color)] placeholder-[var(--sub-color)] outline-none focus:border-[var(--main-color)] transition"
             />
           </div>
 

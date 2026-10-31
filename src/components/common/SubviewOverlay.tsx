@@ -7,6 +7,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
+import { useBackDismiss } from "@/lib/use-back-dismiss";
 
 interface SubviewOverlayProps {
   label: string;
@@ -24,6 +25,8 @@ export function SubviewOverlay({
 }: SubviewOverlayProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const [top, setTop] = useState(56);
+
+  useBackDismiss(true, onClose);
 
   useDialogFocus({
     open: true,
@@ -81,9 +84,9 @@ export function SubviewOverlay({
       aria-label={label}
       tabIndex={-1}
       style={{ top }}
-      className="fixed inset-x-0 bottom-0 z-30 overflow-y-auto overscroll-contain bg-[var(--bg-color)] outline-none"
+      className="safe-x fixed inset-x-0 bottom-0 z-30 overflow-y-auto overscroll-contain bg-[var(--bg-color)] outline-none"
     >
-      <div className={dockClearance ? "pb-28" : "pb-8"}>{children}</div>
+      <div className={dockClearance ? "pb-28" : "pb-safe-lg"}>{children}</div>
     </div>
   );
 }

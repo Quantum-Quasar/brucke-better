@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { ArrowRight, BookOpen, Check, Clock, GitBranch, Lock, Star } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { useViewStore, EMPTY_TRAIL_POSITION } from "@/lib/view-store";
+import { hasSavedPosition, hasVisited } from "@/lib/scroll-memory";
 import { useAppNavigation } from "@/lib/app-navigation";
 import { buildTrailEdgePairs, buildTrailLayout, getTrailState, GERMAN_TRAIL_DATA, type TrailData, type TrailNode, type NodeStatus, type GateView } from "@/lib/trail-map";
 import { getLanguageDefinition } from "@/data/languages";
@@ -108,6 +109,10 @@ export const TrailMap: React.FC = () => {
   // must also re-run after the ResizeObserver settles the real map width,
   // otherwise phones scroll to coordinates from the 640px placeholder layout.
   const autoScrollRef = useRef<{ id: number | null; width: number }>({ id: null, width: 0 });
+  // Set when the first pass deliberately leaves the viewport alone (first
+  // visit, or a restored scroll position); a later width re-measure must not
+  // undo that decision.
+  const suppressAutoScrollRef = useRef(false);
   useEffect(() => {
     if (!storeHydrated || state.recommendedId === null) return;
     // A lesson/atlas overlay is open: keep the trail exactly where the learner
@@ -121,7 +126,28 @@ export const TrailMap: React.FC = () => {
     const first = previous.id === null;
     const idChanged = previous.id !== state.recommendedId;
     const widthChanged = previous.width !== width;
-    autoScrollRef.current = { id: state.recommendedId, width };
+
+    if (first) {
+      // A brand-new learner should see the welcome hero, not land 9,000px
+      // down the trail. Returning to the tab or reloading with a saved
+      // position should also keep that position.
+      const shouldKeepViewport =
+        document.documentElement.dataset.returning !== "true" ||
+        hasVisited("/") ||
+        hasSavedPosition("/");
+      autoScrollRef.current = { id: state.recommendedId, width };
+      suppressAutoScrollRef.current = shouldKeepViewport;
+      if (shouldKeepViewport) return;
+    } else {
+      autoScrollRef.current = { id: state.recommendedId, width };
+      if (!idChanged) {
+        // Width-only re-measures exist for the 640px placeholder layout. After
+        // a deliberately skipped first pass they must not steal the viewport.
+        if (suppressAutoScrollRef.current || !widthChanged) return;
+      } else {
+        suppressAutoScrollRef.current = false;
+      }
+    }
     const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
     const behavior: ScrollBehavior =
       !first && idChanged && !widthChanged && !reduceMotion ? "smooth" : "auto";
@@ -370,13 +396,13 @@ export const TrailMap: React.FC = () => {
       </div>
 
       {recommended && (
-        <div className="fixed bottom-[5.25rem] left-3 z-30 xl:bottom-6 xl:left-4">
+        <div className="fixed bottom-[calc(5.25rem+env(safe-area-inset-bottom))] left-[max(0.75rem,env(safe-area-inset-left))] z-30 xl:bottom-6 xl:left-4">
           <button
             type="button"
             onClick={() => openLesson(activeLanguageId, recommended.id)}
             onPointerEnter={() => prefetchLesson(activeLanguageId, recommended.id)}
             onFocus={() => prefetchLesson(activeLanguageId, recommended.id)}
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--sub-color)]/30 bg-[var(--bg-color)]/95 px-3.5 py-2 font-mono text-xs shadow-lg shadow-black/10 backdrop-blur transition hover:border-[var(--main-color)] cursor-pointer"
+            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[var(--sub-color)]/30 bg-[var(--bg-color)]/95 px-3.5 py-2 font-mono text-xs shadow-lg shadow-black/10 backdrop-blur transition hover:border-[var(--main-color)] cursor-pointer"
             aria-label={`${
               recommendedProgress ? "Resume" : hasAnyProgress ? "Continue" : "Start"
             } ${upNextLabel}: ${recommended.title}`}

@@ -29,7 +29,7 @@
   --bg-color: #1c1c1c;
   --main-color: #dfd7af;
   --caret-color: #e3e3e3;
-  --sub-color: #444444;
+  --sub-color: #a0a0a0;
   --sub-alt-color: #242424;
   --text-color: #f5f3ed;
   --error-color: #af5f5f;
@@ -77,12 +77,79 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
+  min-height: 100dvh;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
 /* Returning learners never see the first-visit hero flash before hydration. */
 html[data-returning="true"] .first-visit-hero {
   display: none;
+}
+
+/* Safe-area helpers. env() is 0 unless the viewport opts into cover (which
+   layout.tsx now does), so these are no-ops on devices without cutouts. */
+.safe-x {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+.px-safe-page {
+  padding-left: max(1rem, env(safe-area-inset-left));
+  padding-right: max(1rem, env(safe-area-inset-right));
+}
+.px-safe-dock {
+  padding-left: max(0.5rem, env(safe-area-inset-left));
+  padding-right: max(0.5rem, env(safe-area-inset-right));
+}
+.pb-safe {
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+}
+.pb-safe-sm {
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+}
+.pb-safe-lg {
+  padding-bottom: calc(2rem + env(safe-area-inset-bottom));
+}
+.bottom-safe {
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  /* Clears the sticky app header plus the settings category bar for anchors
+     and scrollIntoView targets. */
+  scroll-padding-top: 7rem;
+}
+
+a,
+button,
+[role="button"],
+input,
+select,
+textarea {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Touch-only adjustments. Keycaps are keyboard affordances; on a phone they
+   are noise. Form controls below 16px make iOS Safari zoom the whole page on
+   focus, so bump them while leaving the deliberately large lesson inputs
+   (text-lg) alone. */
+@media (max-width: 639px) {
+  /* A running review owns the viewport like a lesson does; its sticky card
+     header keeps the exit control reachable. */
+  html[data-review-session="true"] nav[aria-label="Main navigation"] {
+    display: none;
+  }
+  html[data-review-session="true"] main {
+    padding-bottom: 2rem;
+  }
 }
 
 /* Optional readability override; the default theme remains untouched. */
@@ -188,5 +255,24 @@ html[data-contrast="increased"].light {
     animation: none !important;
     outline: 2px solid var(--main-color);
     outline-offset: 4px;
+  }
+}
+
+/* Touch-only adjustments. Keycaps are keyboard affordances; on a phone they
+   are noise. Form controls below 16px make iOS Safari zoom the whole page on
+   focus, so bump them while leaving the deliberately large lesson inputs
+   (text-lg) alone. This block sits last so it can override the base .keycap
+   rule above. */
+@media (max-width: 767px), (hover: none) and (pointer: coarse) {
+  .keycap {
+    display: none;
+  }
+  .keyboard-hints {
+    display: none;
+  }
+  input:not(.text-lg):not(.text-xl):not([type="range"]):not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    font-size: 16px;
   }
 }

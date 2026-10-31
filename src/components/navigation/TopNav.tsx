@@ -50,7 +50,7 @@ export const TopNav: React.FC = () => {
   return (
     <>
     <header className="sticky top-0 z-40 w-full bg-[var(--bg-color)] border-b border-[var(--sub-color)]/20 transition-colors">
-      <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-safe-page h-14 flex items-center justify-between">
         {/* Logo & Identity */}
         <Link
           href="/"
@@ -59,7 +59,7 @@ export const TopNav: React.FC = () => {
             if (pathname !== "/") captureScroll(pathname);
             closeSubview();
           }}
-          className="flex items-center gap-2 group"
+          className="flex min-h-11 items-center gap-2 group"
         >
           <span className="font-bold text-lg text-[var(--main-color)] font-mono tracking-tighter">bü</span>
           <div className="flex items-baseline gap-1.5">
@@ -129,7 +129,7 @@ export const TopNav: React.FC = () => {
           <button
             type="button"
             onClick={() => setHelpOpen(true)}
-            className="flex items-center gap-1 px-2.5 py-1 rounded text-[var(--sub-color)] hover:text-[var(--text-color)] hover:bg-[var(--sub-alt-color)] transition cursor-pointer"
+            className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded px-2.5 py-2 text-[var(--sub-color)] transition hover:bg-[var(--sub-alt-color)] hover:text-[var(--text-color)] cursor-pointer"
             title="Help and shortcuts"
             aria-label="Open help and shortcuts"
           >

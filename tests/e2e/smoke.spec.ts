@@ -322,6 +322,8 @@ test("opening and closing a lesson adds no browser-history entries", async ({ pa
     await expect(page.getByRole("button", { name: /back to trail/i })).toBeVisible();
   }).toPass({ timeout: 30_000 });
 
+  // Desktop keeps the clean-history guarantee; the touch sentinel is covered
+  // by the mobile suite's "system Back closes the lesson overlay" test.
   expect(await page.evaluate(() => history.length)).toBe(before);
   await page.getByRole("button", { name: /back to trail/i }).click();
   await expect(start).toBeVisible();

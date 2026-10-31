@@ -69,7 +69,7 @@ export const ThemeDropdown: React.FC = () => {
         onClick={() => setIsOpen((prev) => !prev)}
         onPointerEnter={() => void loadPanel()}
         onFocus={() => void loadPanel()}
-        className={`flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--sub-alt-color)] hover:bg-[var(--sub-alt-color)]/80 text-[var(--sub-color)] hover:text-[var(--text-color)] border transition cursor-pointer font-mono text-xs ${
+        className={`inline-flex min-h-11 items-center gap-1.5 rounded bg-[var(--sub-alt-color)] px-2.5 py-2 text-[var(--sub-color)] hover:bg-[var(--sub-alt-color)]/80 hover:text-[var(--text-color)] border transition cursor-pointer font-mono text-xs ${
           isOpen
             ? "border-[var(--main-color)] text-[var(--text-color)] ring-1 ring-[var(--main-color)]/30"
             : "border-[var(--sub-color)]/20"

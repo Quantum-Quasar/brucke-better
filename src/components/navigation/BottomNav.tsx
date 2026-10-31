@@ -49,7 +49,7 @@ export const BottomNav: React.FC = () => {
 
   return (
     <nav
-      className="pointer-events-none fixed bottom-0 left-0 right-0 z-40 px-2 pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-1"
+      className="pointer-events-none fixed bottom-0 left-0 right-0 z-40 px-safe-dock pb-[max(env(safe-area-inset-bottom),0.5rem)] pt-1"
       aria-label="Main navigation"
     >
       <div className="mx-auto max-w-md md:max-w-lg">
@@ -71,7 +71,7 @@ export const BottomNav: React.FC = () => {
                 onPointerEnter={() => prefetch(tab.href)}
                 onTouchStart={() => prefetch(tab.href)}
                 onFocus={() => prefetch(tab.href)}
-                className={`relative flex flex-col items-center justify-center min-w-[56px] sm:min-w-[68px] py-1 px-2 rounded-xl transition ${
+                className={`relative flex min-w-0 flex-1 basis-0 flex-col items-center justify-center rounded-xl px-0.5 py-2 sm:px-2 transition ${
                   tab.isActive
                     ? "bg-[var(--main-color)]/12 text-[var(--main-color)] font-bold"
                     : "text-[var(--sub-color)] hover:text-[var(--text-color)]"
@@ -85,7 +85,7 @@ export const BottomNav: React.FC = () => {
                     </span>
                   )}
                 </span>
-                <span className="text-[10px] leading-none">{tab.label}</span>
+                <span className="text-[9px] leading-none min-[360px]:text-[10px] sm:text-[10px]">{tab.label}</span>
               </Link>
             );
           })}

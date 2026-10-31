@@ -54,7 +54,7 @@ export function PanoramaView({ linksByLanguage }: PanoramaViewProps) {
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link
             href="/"
-            className="inline-flex items-center gap-2 text-xs text-[var(--sub-color)] hover:text-[var(--main-color)] transition"
+            className="inline-flex min-h-11 items-center gap-2 text-xs text-[var(--sub-color)] hover:text-[var(--main-color)] transition"
           >
             <ArrowLeft className="w-3.5 h-3.5" /> back to the trail
           </Link>
@@ -69,7 +69,7 @@ export function PanoramaView({ linksByLanguage }: PanoramaViewProps) {
                   key={lid}
                   type="button"
                   onClick={() => view(lid)}
-                  className={`px-3 py-1 rounded text-xs font-mono transition cursor-pointer ${
+                  className={`min-h-11 px-3 py-2 rounded text-xs font-mono transition cursor-pointer ${
                     active
                       ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
                       : "text-[var(--sub-color)] hover:text-[var(--text-color)]"

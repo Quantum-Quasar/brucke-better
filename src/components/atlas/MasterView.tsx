@@ -15,7 +15,7 @@ export function MasterView({ onBack }: { onBack: () => void }) {
   }, []);
 
   return (
-    <div className="relative h-[calc(100dvh-110px)] font-sans overflow-hidden">
+    <div className="relative h-[calc(100dvh-125px-env(safe-area-inset-bottom))] font-sans overflow-hidden">
       <MasterConstellation />
 
       {/* Always-visible caption: the web is a poster, not a mystery screen. */}
@@ -33,12 +33,12 @@ export function MasterView({ onBack }: { onBack: () => void }) {
             <button
               type="button"
               onClick={onBack}
-              className="inline-flex items-center gap-1.5 text-[11px] font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
+              className="inline-flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap text-[11px] font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
             >
               <ArrowLeft className="w-3 h-3" /> back to atlas
             </button>
             <span className="text-[10px] font-mono text-[var(--sub-color)]/80">
-              scroll to explore · +/− to zoom
+              drag to explore · pinch or +/− to zoom
             </span>
           </div>
         </div>

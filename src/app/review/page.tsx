@@ -26,6 +26,7 @@ import { clozeSentence } from "@/lib/sentence";
 import { ShiftPair } from "@/components/common/ShiftPair";
 import { GermanCharBar } from "@/components/common/GermanCharBar";
 import { GenderGuideBanner } from "@/components/common/GenderGuideBanner";
+import { useBackDismiss } from "@/lib/use-back-dismiss";
 import { useAppStore } from "@/lib/store";
 import { isModifiedClick, useAppNavigation } from "@/lib/app-navigation";
 import { clearReviewSession, readReviewSession, writeReviewSession } from "@/lib/review-session";
@@ -225,6 +226,17 @@ function ReviewHub({
   );
   const [isModeSelectorOpen, setIsModeSelectorOpen] = useState(false);
   const [rememberPreference, setRememberPreference] = useState(true);
+
+  useBackDismiss(isModeSelectorOpen, () => setIsModeSelectorOpen(false));
+
+  const hasActiveReviewSession = activeDeck !== null;
+  useEffect(() => {
+    if (!hasActiveReviewSession) return;
+    document.documentElement.dataset.reviewSession = "true";
+    return () => {
+      delete document.documentElement.dataset.reviewSession;
+    };
+  }, [hasActiveReviewSession]);
   const modeDialogRef = useRef<HTMLDivElement>(null);
 
   const closeModeSelector = () => {
@@ -1220,7 +1232,7 @@ function ReviewHub({
                 setReviewMode(mode);
                 setPreferredReviewMode(mode);
               }}
-              className="bg-[var(--bg-color)] border border-[var(--sub-color)]/25 hover:border-[var(--main-color)] rounded px-2 py-0.5 text-xs font-mono text-[var(--main-color)] outline-none cursor-pointer transition"
+              className="min-h-11 bg-[var(--bg-color)] border border-[var(--sub-color)]/25 hover:border-[var(--main-color)] rounded px-2 py-1 font-mono text-[var(--main-color)] outline-none cursor-pointer transition"
               title="Set default review style"
             >
               <option value="flashcard" className="bg-[var(--bg-color)] text-[var(--text-color)]">recall</option>
@@ -1231,7 +1243,7 @@ function ReviewHub({
             <button
               type="button"
               onClick={() => setIsModeSelectorOpen(true)}
-              className="text-[11px] font-mono text-[var(--sub-color)] hover:text-[var(--main-color)] underline underline-offset-2 ml-1 cursor-pointer"
+              className="ml-1 inline-flex min-h-11 items-center text-[11px] font-mono text-[var(--sub-color)] underline underline-offset-2 hover:text-[var(--main-color)] cursor-pointer"
               title="Select review style"
             >
               change style
@@ -1249,7 +1261,7 @@ function ReviewHub({
           className="scroll-mt-20 p-6 sm:p-8 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 shadow-md space-y-6 animate-in fade-in duration-150 focus:outline-none"
         >
           {/* Card Header: Counter, Style Switcher, Exit */}
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--sub-color)]/15 pb-4">
+          <div className="sticky top-14 z-20 -mx-6 -mt-6 flex flex-wrap items-center justify-between gap-3 rounded-t-lg border-b border-[var(--sub-color)]/15 bg-[var(--sub-alt-color)] px-6 pb-4 pt-6 sm:-mx-8 sm:-mt-8 sm:px-8 sm:pt-8">
             <div className="flex items-center gap-3">
               <span className="text-sm font-mono text-[var(--sub-color)] uppercase tracking-wider">
                 card {currentIndex + 1} / {sessionCards.length}
@@ -1270,7 +1282,7 @@ function ReviewHub({
                       setReviewMode(mode);
                       setPreferredReviewMode(mode);
                     }}
-                    className="bg-transparent text-xs font-mono text-[var(--main-color)] outline-none cursor-pointer"
+                    className="min-h-11 bg-transparent px-1 font-mono text-[var(--main-color)] outline-none cursor-pointer"
                     title="Switch Review Style mid-session"
                   >
                     {supportedModesForCard.includes("flashcard") && (
@@ -1304,7 +1316,7 @@ function ReviewHub({
                 tabIndex={-1}
                 onClick={goBack}
                 disabled={!canGoBack}
-                className="text-sm font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] px-2.5 py-1 rounded bg-[var(--bg-color)] border border-[var(--sub-color)]/20 transition flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                className="min-h-11 text-sm font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] px-3 py-1 rounded bg-[var(--bg-color)] border border-[var(--sub-color)]/20 transition flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                 title="Previous card (←)"
               >
                 <ArrowLeft className="w-3 h-3" />
@@ -1317,7 +1329,7 @@ function ReviewHub({
                 tabIndex={-1}
                 onClick={goForward}
                 disabled={!canGoForward}
-                className="text-sm font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] px-2.5 py-1 rounded bg-[var(--bg-color)] border border-[var(--sub-color)]/20 transition flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
+                className="min-h-11 text-sm font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] px-3 py-1 rounded bg-[var(--bg-color)] border border-[var(--sub-color)]/20 transition flex items-center gap-1.5 disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer"
                 title="Next card (→)"
               >
                 <span>next</span>
@@ -1332,7 +1344,7 @@ function ReviewHub({
                 onKeyDown={(e) => {
                   if (e.key === " " || e.key === "Enter") e.preventDefault();
                 }}
-                className="text-sm font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] px-2.5 py-1 rounded bg-[var(--bg-color)] border border-[var(--sub-color)]/20 transition cursor-pointer flex items-center gap-1.5"
+                className="min-h-11 text-sm font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] px-3 py-1 rounded bg-[var(--bg-color)] border border-[var(--sub-color)]/20 transition cursor-pointer flex items-center gap-1.5"
                 title="Exit Session (Esc)"
               >
                 <span>exit</span>
@@ -1845,7 +1857,7 @@ function ReviewHub({
                   type="button"
                   aria-pressed={learnedFilter === id}
                   onClick={() => setLearnedFilter(id)}
-                  className={`px-3 py-1 rounded-lg border transition cursor-pointer ${
+                  className={`min-h-11 px-3 py-1 rounded-lg border transition cursor-pointer ${
                     learnedFilter === id
                       ? "bg-[var(--main-color)] text-[var(--bg-color)] border-[var(--main-color)] font-bold"
                       : "bg-[var(--bg-color)] text-[var(--text-color)] border-[var(--sub-color)]/20 hover:border-[var(--main-color)]/40"
@@ -1863,7 +1875,7 @@ function ReviewHub({
                   type="button"
                   aria-pressed={sessionSize === n}
                   onClick={() => setSessionSize(n)}
-                  className={`px-3 py-1 rounded-lg border transition cursor-pointer ${
+                  className={`min-h-11 px-3 py-1 rounded-lg border transition cursor-pointer ${
                     sessionSize === n
                       ? "bg-[var(--main-color)] text-[var(--bg-color)] border-[var(--main-color)] font-bold"
                       : "bg-[var(--bg-color)] text-[var(--text-color)] border-[var(--sub-color)]/20 hover:border-[var(--main-color)]/40"
@@ -1904,7 +1916,7 @@ function ReviewHub({
                   value={selectedShiftId}
                   onChange={(e) => setSelectedShiftId(e.target.value)}
                   aria-label={`Choose a ${familyNoun} to review`}
-                  className="w-full mt-2 px-3 py-1.5 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 text-xs font-mono text-[var(--text-color)] outline-none"
+                  className="min-h-11 w-full mt-2 px-3 py-1.5 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 text-xs font-mono text-[var(--text-color)] outline-none"
                 >
                   <option value={ALL_ID}>
                     All families ({allFamilyWordIds.length} words)
@@ -1949,7 +1961,7 @@ function ReviewHub({
                   value={selectedDomainId}
                   onChange={(e) => setSelectedDomainId(e.target.value)}
                   aria-label="Choose a thematic domain to review"
-                  className="w-full mt-2 px-3 py-1.5 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 text-xs font-mono text-[var(--text-color)] outline-none"
+                  className="min-h-11 w-full mt-2 px-3 py-1.5 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 text-xs font-mono text-[var(--text-color)] outline-none"
                 >
                   <option value={ALL_ID}>All domains ({data.wordList.length} words)</option>
                   {domainGroups.map((g) => (
@@ -2141,7 +2153,7 @@ function ReviewHub({
             role="dialog"
             aria-modal="true"
             aria-labelledby="review-style-title"
-            className="w-full max-w-xl rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl p-6 sm:p-8 space-y-6"
+            className="w-full max-w-xl max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl p-6 sm:p-8 space-y-6"
           >
             <div className="space-y-1">
               <span className="text-xs font-mono text-[var(--main-color)] uppercase tracking-widest font-semibold">

@@ -5,6 +5,7 @@ import { Search, X, Check, Sparkles, Moon, Sun, Palette } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { THEME_LIST, POPULAR_THEMES } from "@/data/themes";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
+import { useBackDismiss } from "@/lib/use-back-dismiss";
 import { ThemeSwatch, useThemeFilter } from "@/components/common/theme-picker";
 
 export const ThemeSelectorModal: React.FC = () => {
@@ -16,6 +17,8 @@ export const ThemeSelectorModal: React.FC = () => {
   const { query, setQuery, activeTab, setActiveTab, filteredThemes } = useThemeFilter();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
+
+  useBackDismiss(isOpen, closeThemeSelector);
 
   useDialogFocus({
     open: isOpen,
@@ -33,7 +36,7 @@ export const ThemeSelectorModal: React.FC = () => {
         role="dialog"
         aria-modal="true"
         aria-labelledby="theme-selector-title"
-        className="w-full max-w-3xl max-h-[85vh] flex flex-col rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/25 text-[var(--text-color)] shadow-2xl overflow-hidden font-sans"
+        className="w-full max-w-3xl max-h-[85dvh] flex flex-col rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/25 text-[var(--text-color)] shadow-2xl overflow-hidden font-sans"
       >
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sub-color)]/20">
@@ -52,7 +55,7 @@ export const ThemeSelectorModal: React.FC = () => {
             <button
               type="button"
               onClick={closeThemeSelector}
-              className="p-1 rounded text-[var(--sub-color)] hover:text-[var(--text-color)] hover:bg-[var(--sub-alt-color)] transition cursor-pointer"
+              className="inline-flex h-11 w-11 items-center justify-center rounded text-[var(--sub-color)] hover:text-[var(--text-color)] hover:bg-[var(--sub-alt-color)] transition cursor-pointer"
               aria-label="Close theme selector"
             >
               <X className="w-4 h-4" />
@@ -71,7 +74,7 @@ export const ThemeSelectorModal: React.FC = () => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search themes by name (e.g. nord, dracula, serika, cyberpunk)..."
-              className="w-full pl-9 pr-4 py-2 rounded bg-[var(--bg-color)] border border-[var(--sub-color)]/30 text-sm font-mono text-[var(--text-color)] placeholder-[var(--sub-color)] outline-none focus:border-[var(--main-color)] transition"
+              className="min-h-11 w-full pl-9 pr-4 py-2 rounded bg-[var(--bg-color)] border border-[var(--sub-color)]/30 text-sm font-mono text-[var(--text-color)] placeholder-[var(--sub-color)] outline-none focus:border-[var(--main-color)] transition"
             />
           </div>
 

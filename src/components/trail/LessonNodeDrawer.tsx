@@ -2,7 +2,8 @@
 
 import React, { useRef } from "react";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
-import { ArrowRight, BookOpen, Check, GitBranch, Info, Lock, Sparkles, Star } from "lucide-react";
+import { ArrowRight, BookOpen, Check, GitBranch, Info, Lock, Sparkles, Star, X } from "lucide-react";
+import { useBackDismiss } from "@/lib/use-back-dismiss";
 import type { TrailNode, NodeStatus, GateView, NodeGateInfo, GateMarker } from "@/lib/trail-map";
 
 interface LessonNodeDrawerProps {
@@ -34,6 +35,8 @@ export const LessonNodeDrawer: React.FC<LessonNodeDrawerProps> = ({
 }) => {
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
+  useBackDismiss(true, onClose);
+
   useDialogFocus({
     open: true,
     containerRef: dialogRef,
@@ -53,9 +56,9 @@ export const LessonNodeDrawer: React.FC<LessonNodeDrawerProps> = ({
         role="dialog"
         aria-modal="true"
         aria-label={node.title}
-        className="absolute inset-x-0 bottom-0 sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-[440px] max-h-[82vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl"
+        className="absolute inset-x-0 bottom-0 sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-[440px] max-h-[82dvh] overflow-y-auto overscroll-contain rounded-t-2xl sm:rounded-2xl bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl"
       >
-        <div className="p-5 sm:p-6 space-y-4">
+        <div className="safe-x p-5 pb-safe sm:p-6 space-y-4">
           {/* header */}
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-1 min-w-0">
@@ -69,10 +72,10 @@ export const LessonNodeDrawer: React.FC<LessonNodeDrawerProps> = ({
               ref={closeRef}
               type="button"
               onClick={onClose}
-              className="shrink-0 w-8 h-8 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 text-[var(--sub-color)] hover:text-[var(--text-color)] transition text-sm font-mono cursor-pointer"
+              className="shrink-0 inline-flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
               aria-label="Close"
             >
-              esc
+              <X className="h-4 w-4" />
             </button>
           </div>
 
@@ -174,6 +177,8 @@ interface GateDrawerProps {
 export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, onClose }) => {
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
+  useBackDismiss(true, onClose);
+
   useDialogFocus({
     open: true,
     containerRef: dialogRef,
@@ -191,9 +196,9 @@ export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, onClose }) =
         role="dialog"
         aria-modal="true"
         aria-label={gate.title}
-        className="absolute inset-x-0 bottom-0 sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-[440px] max-h-[82vh] overflow-y-auto rounded-t-2xl sm:rounded-2xl bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl"
+        className="absolute inset-x-0 bottom-0 sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-[440px] max-h-[82dvh] overflow-y-auto overscroll-contain rounded-t-2xl sm:rounded-2xl bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl"
       >
-        <div className="p-5 sm:p-6 space-y-4">
+        <div className="safe-x p-5 pb-safe sm:p-6 space-y-4">
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-1 min-w-0">
               <span className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-[var(--main-color)] font-semibold">
@@ -206,10 +211,10 @@ export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, onClose }) =
               ref={closeRef}
               type="button"
               onClick={onClose}
-              className="shrink-0 w-8 h-8 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 text-[var(--sub-color)] hover:text-[var(--text-color)] transition text-sm font-mono cursor-pointer"
+              className="shrink-0 inline-flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
               aria-label="Close"
             >
-              esc
+              <X className="h-4 w-4" />
             </button>
           </div>
 

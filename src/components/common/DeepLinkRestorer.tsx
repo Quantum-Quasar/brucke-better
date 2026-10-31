@@ -6,20 +6,29 @@
 // lands in the browser history.
 
 import { useEffect, useRef } from "react";
-import { usePathname, useRouter } from "next/navigation";
 import { useAppStore } from "@/lib/store";
 import { useViewStore } from "@/lib/view-store";
 import { getFamilyOwnerLanguageIds } from "@/lib/atlas-families";
 import { isValidLanguageId } from "@/data/languages";
 
 export function DeepLinkRestorer() {
-  const router = useRouter();
-  const pathname = usePathname();
   const storeHydrated = useAppStore((s) => s.storeHydrated);
   const handled = useRef(false);
 
   useEffect(() => {
     if (!storeHydrated || handled.current) return;
+
+    // Clean the query synchronously. router.replace is a transition that can
+    // commit after the subview's history sentinel is pushed, overwriting it
+    // and breaking Back; replaceState keeps routing state intact because the
+    // pathname is already the destination.
+    const cleanUrl = (path: string) => {
+      try {
+        window.history.replaceState(window.history.state, "", path);
+      } catch {
+        // history can be unavailable in sandboxed frames; the view still opens
+      }
+    };
 
     const params = new URLSearchParams(window.location.search);
     const rawLesson = params.get("lesson");
@@ -41,23 +50,24 @@ export function DeepLinkRestorer() {
           app.setActiveLanguage(languageId);
           app.completeOnboarding();
         }
+        cleanUrl("/");
         view.openLesson(languageId, lessonId);
       } else {
         view.showNotice("That lesson link isn't valid.");
+        cleanUrl("/");
       }
-      router.replace("/", { scroll: false });
       return;
     }
 
     if (rawFamily !== null) {
+      cleanUrl("/atlas");
       if (rawFamily) view.openAtlasFamily(rawFamily, getFamilyOwnerLanguageIds(rawFamily));
-      router.replace("/atlas", { scroll: false });
       return;
     }
 
+    cleanUrl("/atlas");
     view.openAtlasMaster();
-    router.replace("/atlas", { scroll: false });
-  }, [storeHydrated, pathname, router]);
+  }, [storeHydrated]);
 
   return null;
 }

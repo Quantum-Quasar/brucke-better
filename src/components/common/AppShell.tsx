@@ -12,6 +12,7 @@ import { DeepLinkRestorer } from "@/components/common/DeepLinkRestorer";
 import { useAppStore, STORAGE_KEY, flushSave } from "@/lib/store";
 import { useViewStore, flushViewState } from "@/lib/view-store";
 import { useScrollMemory } from "@/lib/scroll-memory";
+import { syncThemeColor } from "@/lib/theme-runtime";
 
 // ponytail: code-split idle modals, drawer and in-page views so root chunk doesn't bundle content readers
 const WordCardDrawer = dynamic(
@@ -106,6 +107,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     useAppStore.getState().hydrateFromStorage();
     useViewStore.getState().hydrateViewState();
+    // The first visit paints from globals.css without loading the palette
+    // table, so align the browser chrome with whatever --bg-color is active.
+    syncThemeColor();
 
     const handleStorage = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY) {

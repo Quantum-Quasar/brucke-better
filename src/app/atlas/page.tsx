@@ -146,7 +146,7 @@ export default function AtlasPage() {
             value={filterQuery}
             onChange={(e) => setFilterQuery(e.target.value)}
             placeholder={`Filter ${familyWord}...`}
-            className="w-full pl-8 pr-3 py-1.5 rounded bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 text-xs text-[var(--text-color)] placeholder-[var(--sub-color)] outline-none focus:border-[var(--main-color)] transition font-mono"
+            className="min-h-11 w-full pl-8 pr-3 py-1.5 rounded bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 text-xs text-[var(--text-color)] placeholder-[var(--sub-color)] outline-none focus:border-[var(--main-color)] transition font-mono"
           />
         </div>
         )}

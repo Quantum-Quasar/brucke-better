@@ -15,6 +15,38 @@ const FOCUSABLE_SELECTOR = [
 
 const dialogStack: HTMLElement[] = [];
 
+// Nested dialogs share one page-scroll lock, restored when the last closes.
+let scrollLocks = 0;
+let savedBodyOverflow = "";
+let savedBodyPaddingRight = "";
+let savedHtmlOverflow = "";
+
+function lockPageScroll() {
+  if (typeof document === "undefined") return;
+  if (scrollLocks === 0) {
+    const root = document.documentElement;
+    savedBodyOverflow = document.body.style.overflow;
+    savedBodyPaddingRight = document.body.style.paddingRight;
+    savedHtmlOverflow = root.style.overflow;
+    // Compensate for the removed scrollbar so desktop layouts do not jump.
+    const scrollbarWidth = window.innerWidth - root.clientWidth;
+    document.body.style.overflow = "hidden";
+    root.style.overflow = "hidden";
+    if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
+  }
+  scrollLocks += 1;
+}
+
+function unlockPageScroll() {
+  if (typeof document === "undefined") return;
+  scrollLocks = Math.max(0, scrollLocks - 1);
+  if (scrollLocks === 0) {
+    document.body.style.overflow = savedBodyOverflow;
+    document.body.style.paddingRight = savedBodyPaddingRight;
+    document.documentElement.style.overflow = savedHtmlOverflow;
+  }
+}
+
 function getFocusableElements(container: HTMLElement): HTMLElement[] {
   return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
     (element) => !element.hasAttribute("disabled") && element.getAttribute("aria-hidden") !== "true"
@@ -125,11 +157,13 @@ export function useDialogFocus({
 
     document.addEventListener("keydown", handleKeyDown, true);
     document.addEventListener("focusin", handleFocusIn, true);
+    lockPageScroll();
     focusFirst();
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown, true);
       document.removeEventListener("focusin", handleFocusIn, true);
+      unlockPageScroll();
 
       const index = dialogStack.lastIndexOf(container);
       if (index !== -1) dialogStack.splice(index, 1);

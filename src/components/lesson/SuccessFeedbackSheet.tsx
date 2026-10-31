@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { CheckCircle2, ArrowRight, Sparkles, BookOpen, AlertCircle, Repeat, Volume2 } from "lucide-react";
 import type { VocabHint } from "@/lib/types";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
+import { useBackDismiss } from "@/lib/use-back-dismiss";
 import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
 import { playTargetAudio } from "@/lib/audio";
@@ -70,6 +71,8 @@ export const SuccessFeedbackSheet: React.FC<SuccessFeedbackSheetProps> = ({
   const spokenText = audioText ?? targetAnswer;
   const spokenLocale = audioLocale ?? language.ttsLocale;
 
+  useBackDismiss(true, onContinue);
+
   useDialogFocus({
     open: true,
     containerRef: dialogRef,
@@ -111,7 +114,7 @@ export const SuccessFeedbackSheet: React.FC<SuccessFeedbackSheetProps> = ({
         role="dialog"
         aria-modal="true"
         aria-labelledby="success-feedback-title"
-        className={`w-full sm:max-w-md bg-[var(--bg-color)] border-t sm:border sm:rounded-lg rounded-t-lg shadow-2xl p-6 space-y-5 animate-in slide-in-from-bottom duration-200 font-mono ${
+        className={`w-full sm:max-w-md max-h-[85dvh] overflow-y-auto overscroll-contain bg-[var(--bg-color)] border-t sm:border sm:rounded-lg rounded-t-lg shadow-2xl p-6 pb-safe space-y-5 animate-in slide-in-from-bottom duration-200 font-mono ${
           isAlmost
             ? "border-[var(--sub-color)]/40"
             : "border-[var(--main-color)]/40"

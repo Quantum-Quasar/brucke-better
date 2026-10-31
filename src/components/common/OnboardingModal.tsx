@@ -21,6 +21,7 @@ import { THEME_COUNT } from "@/lib/theme-runtime";
 import { FONT_LIST } from "@/data/fonts";
 import { ShiftPair } from "@/components/common/ShiftPair";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
+import { useBackDismiss } from "@/lib/use-back-dismiss";
 
 export const OnboardingModal: React.FC = () => {
   const isOpen = useAppStore((s) => s.isOnboardingOpen);
@@ -57,6 +58,8 @@ export const OnboardingModal: React.FC = () => {
   const availableLanguages = LANGUAGES.filter((l) => l.status === "available");
   const singleLanguage = availableLanguages.length === 1;
   const firstStep = singleLanguage ? 1 : 0;
+
+  useBackDismiss(isOpen, closeOnboarding);
 
   useDialogFocus({
     open: isOpen,
@@ -141,7 +144,7 @@ export const OnboardingModal: React.FC = () => {
         role="dialog"
         aria-modal="true"
         aria-label="Brücke introduction"
-        className="w-full max-w-2xl rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
+        className="w-full max-w-2xl rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl overflow-hidden flex flex-col max-h-[92dvh]"
       >
         <div className="px-6 py-4 flex items-center justify-between border-b border-[var(--sub-color)]/20 bg-[var(--sub-alt-color)]">
           <span className="text-xs font-mono uppercase tracking-widest text-[var(--main-color)] font-semibold">
@@ -157,7 +160,7 @@ export const OnboardingModal: React.FC = () => {
           <button
             type="button"
             onClick={closeOnboarding}
-            className="text-xs font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] transition flex items-center gap-1.5 cursor-pointer"
+            className="inline-flex min-h-11 items-center gap-1.5 text-xs font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
             title={isGuide ? "Close guide (Esc)" : "Skip introduction (Esc)"}
           >
             <span>{isGuide ? "close" : "skip"}</span>
@@ -355,7 +358,7 @@ export const OnboardingModal: React.FC = () => {
           )}
         </div>
 
-        <div className="px-6 py-4 bg-[var(--sub-alt-color)] border-t border-[var(--sub-color)]/20 flex items-center justify-between gap-4 font-mono">
+        <div className="safe-x px-6 py-4 pb-safe-sm bg-[var(--sub-alt-color)] border-t border-[var(--sub-color)]/20 flex items-center justify-between gap-4 font-mono">
           <div className="flex items-center gap-1.5" aria-hidden>
             {Array.from({ length: TOTAL_STEPS }, (_, i) => i).map((i) => (
               <button

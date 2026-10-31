@@ -42,13 +42,13 @@ export default function ThemeDropdownPanel({ onClose }: { onClose: () => void })
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={`Search ${THEME_LIST.length} themes...`}
-            className="w-full pl-8 pr-7 py-1.5 rounded bg-[var(--bg-color)] border border-[var(--sub-color)]/30 text-xs font-mono text-[var(--text-color)] placeholder-[var(--sub-color)] outline-none focus:border-[var(--main-color)] transition"
+            className="min-h-11 w-full pl-8 pr-7 py-1.5 rounded bg-[var(--bg-color)] border border-[var(--sub-color)]/30 text-xs font-mono text-[var(--text-color)] placeholder-[var(--sub-color)] outline-none focus:border-[var(--main-color)] transition"
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--sub-color)] hover:text-[var(--text-color)] p-0.5 cursor-pointer"
+              className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--sub-color)] hover:text-[var(--text-color)] p-1.5 cursor-pointer"
             >
               <X className="w-3 h-3" />
             </button>
@@ -60,7 +60,7 @@ export default function ThemeDropdownPanel({ onClose }: { onClose: () => void })
           <button
             type="button"
             onClick={() => setActiveTab("popular")}
-            className={`px-2 py-0.5 rounded transition cursor-pointer flex items-center gap-1 shrink-0 ${
+            className={`min-h-9 rounded px-2 py-1 transition cursor-pointer flex items-center gap-1 shrink-0 ${
               activeTab === "popular"
                 ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
                 : "bg-[var(--bg-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
@@ -73,7 +73,7 @@ export default function ThemeDropdownPanel({ onClose }: { onClose: () => void })
           <button
             type="button"
             onClick={() => setActiveTab("dark")}
-            className={`px-2 py-0.5 rounded transition cursor-pointer flex items-center gap-1 shrink-0 ${
+            className={`min-h-9 rounded px-2 py-1 transition cursor-pointer flex items-center gap-1 shrink-0 ${
               activeTab === "dark"
                 ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
                 : "bg-[var(--bg-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
@@ -86,7 +86,7 @@ export default function ThemeDropdownPanel({ onClose }: { onClose: () => void })
           <button
             type="button"
             onClick={() => setActiveTab("light")}
-            className={`px-2 py-0.5 rounded transition cursor-pointer flex items-center gap-1 shrink-0 ${
+            className={`min-h-9 rounded px-2 py-1 transition cursor-pointer flex items-center gap-1 shrink-0 ${
               activeTab === "light"
                 ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
                 : "bg-[var(--bg-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
@@ -99,7 +99,7 @@ export default function ThemeDropdownPanel({ onClose }: { onClose: () => void })
           <button
             type="button"
             onClick={() => setActiveTab("all")}
-            className={`px-2 py-0.5 rounded transition cursor-pointer shrink-0 ${
+            className={`min-h-9 rounded px-2 py-1 transition cursor-pointer shrink-0 ${
               activeTab === "all"
                 ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
                 : "bg-[var(--bg-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
@@ -123,7 +123,7 @@ export default function ThemeDropdownPanel({ onClose }: { onClose: () => void })
                 setTheme(theme.id);
                 onClose();
               }}
-              className={`w-full px-2.5 py-1.5 rounded text-left transition flex items-center justify-between cursor-pointer group ${
+              className={`w-full min-h-10 px-2.5 py-1.5 rounded text-left transition flex items-center justify-between cursor-pointer group ${
                 isSelected
                   ? "bg-[var(--sub-alt-color)] border border-[var(--main-color)]/50"
                   : "hover:bg-[var(--sub-alt-color)]/60 border border-transparent"

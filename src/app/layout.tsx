@@ -37,6 +37,14 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
+  // Required for env(safe-area-inset-*) to resolve on notched devices; the
+  // bottom dock and every sheet add their own safe-area padding.
+  viewportFit: "cover",
+  // Let the Android virtual keyboard resize the layout instead of covering
+  // fixed controls.
+  interactiveWidget: "resizes-content",
+  // Updated at runtime from the selected theme (see syncThemeColor).
+  themeColor: "#1c1c1c",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -123,7 +131,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           }}
         />
       </head>
-      <body suppressHydrationWarning className="min-h-screen bg-[var(--bg-color)] text-[var(--text-color)] flex flex-col antialiased selection:bg-[var(--main-color)]/30 selection:text-[var(--text-color)] font-sans">
+      <body suppressHydrationWarning className="min-h-dvh bg-[var(--bg-color)] text-[var(--text-color)] flex flex-col antialiased selection:bg-[var(--main-color)]/30 selection:text-[var(--text-color)] font-sans">
         <AppShell>{children}</AppShell>
       </body>
     </html>

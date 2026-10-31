@@ -8,6 +8,7 @@ import { getLanguageDefinition } from "@/data/languages";
 import { generateMCQOptions, generateWordTiles } from "@/lib/review-modes";
 import type { CompendiumData, ShiftFamily, ExerciseItem } from "@/lib/types";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
+import { useBackDismiss } from "@/lib/use-back-dismiss";
 
 interface BranchDrillModalProps {
   family: ShiftFamily;
@@ -24,6 +25,8 @@ export const BranchDrillModal: React.FC<BranchDrillModalProps> = ({ family, data
   const dialogRef = useRef<HTMLDivElement>(null);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
+
+  useBackDismiss(isOpen, onClose);
 
   useDialogFocus({
     open: isOpen,
@@ -148,7 +151,7 @@ export const BranchDrillModal: React.FC<BranchDrillModalProps> = ({ family, data
         role="dialog"
         aria-modal="true"
         aria-labelledby="branch-drill-title"
-        className="relative w-full max-w-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 rounded-lg shadow-2xl p-5 space-y-5 font-sans text-[var(--text-color)]"
+        className="relative w-full max-w-lg max-h-[calc(100dvh-1.5rem)] overflow-y-auto overscroll-contain bg-[var(--bg-color)] border border-[var(--sub-color)]/30 rounded-lg shadow-2xl p-5 pb-safe space-y-5 font-sans text-[var(--text-color)]"
       >
         {/* Header */}
         <div className="flex items-center justify-between border-b border-[var(--sub-color)]/20 pb-3">
@@ -164,7 +167,7 @@ export const BranchDrillModal: React.FC<BranchDrillModalProps> = ({ family, data
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="p-1 rounded text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
+            className="inline-flex h-11 w-11 items-center justify-center rounded text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>

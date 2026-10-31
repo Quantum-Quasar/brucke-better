@@ -1,4 +1,6 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach } from "vitest";
+import fs from "fs";
+import path from "path";
 import { THEMES, THEME_LIST, POPULAR_THEMES, applyTheme, isColorDark, filterThemes } from "@/data/themes";
 import {
   DEFAULT_THEME,
@@ -195,10 +197,27 @@ describe("Theme Architecture & Contrast Verification", () => {
     expect(getNextPlayableLessonId(spine[spine.length - 1])).toBeNull();
   });
 
-  it("sets alduin as the default theme", () => {
+  it("sets alduin as the default theme and keeps the pre-paint CSS fallback identical", () => {
     expect(DEFAULT_THEME).toBe("alduin");
     expect(THEMES["alduin"].bg).toBe("#1c1c1c");
     expect(THEMES["alduin"].main).toBe("#dfd7af");
+
+    // globals.css is what paints a first visit before the palette table loads
+    // (theme-runtime deliberately skips the default theme). If the two copies
+    // drift, the default theme's muted text silently loses contrast.
+    const css = fs.readFileSync(path.resolve(__dirname, "../app/globals.css"), "utf-8");
+    const rootBlock = css.match(/:root\s*\{([\s\S]*?)\}/)?.[1] ?? "";
+    const cssVar = (name: string) =>
+      rootBlock.match(new RegExp(`${name}:\\s*([^;]+);`))?.[1].trim();
+
+    const alduin = THEMES["alduin"];
+    expect(cssVar("--bg-color")).toBe(alduin.bg);
+    expect(cssVar("--main-color")).toBe(alduin.main);
+    expect(cssVar("--caret-color")).toBe(alduin.caret);
+    expect(cssVar("--sub-color")).toBe(alduin.sub);
+    expect(cssVar("--sub-alt-color")).toBe(alduin.subAlt);
+    expect(cssVar("--text-color")).toBe(alduin.text);
+    expect(cssVar("--error-color")).toBe(alduin.error);
   });
 
   it("searches across all themes regardless of category tab when a search query is entered", () => {

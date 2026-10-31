@@ -125,7 +125,7 @@ export default function SettingsPage() {
 
   if (!mounted) {
     return (
-      <div className="min-h-screen bg-[var(--bg-color)] text-[var(--text-color)] py-8 px-4 sm:px-6">
+      <div className="bg-[var(--bg-color)] text-[var(--text-color)] py-8 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto">
           <h1 className="font-mono text-xl font-bold tracking-tight text-[var(--text-color)]">settings</h1>
           <p className="mt-2 text-xs font-mono text-[var(--sub-color)]" role="status">loading preferences…</p>
@@ -242,7 +242,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-color)] text-[var(--text-color)] py-8 px-4 sm:px-6">
+    <div className="bg-[var(--bg-color)] text-[var(--text-color)] py-8 px-4 sm:px-6">
       <div className="max-w-4xl mx-auto space-y-8">
         {/* Page Title & Search */}
         <div className="space-y-4">
@@ -255,7 +255,7 @@ export default function SettingsPage() {
             </div>
             <Link
               href="/"
-              className="text-xs font-mono text-[var(--sub-color)] hover:text-[var(--main-color)] transition flex items-center gap-1.5"
+              className="inline-flex min-h-11 items-center gap-1.5 text-xs font-mono text-[var(--sub-color)] hover:text-[var(--main-color)] transition"
             >
               <span>← back to dashboard</span>
             </Link>
@@ -271,7 +271,7 @@ export default function SettingsPage() {
                   key={sec.id}
                   type="button"
                   onClick={() => scrollToSection(sec.id)}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded text-[var(--sub-color)] hover:text-[var(--text-color)] hover:bg-[var(--sub-alt-color)] transition shrink-0 cursor-pointer"
+                  className="flex min-h-10 shrink-0 items-center gap-1 rounded px-3 py-1.5 text-[var(--sub-color)] transition hover:bg-[var(--sub-alt-color)] hover:text-[var(--text-color)] cursor-pointer"
                 >
                   <Icon className="w-3.5 h-3.5" />
                   <span>{sec.label}</span>
@@ -289,8 +289,8 @@ export default function SettingsPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="type to search settings... (press / to focus)"
-              className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 text-xs font-mono text-[var(--text-color)] placeholder:text-[var(--sub-color)]/50 focus:outline-none focus:border-[var(--main-color)] transition"
+              placeholder="type to search settings..."
+              className="min-h-11 w-full pl-10 pr-4 py-2.5 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 text-xs font-mono text-[var(--text-color)] placeholder:text-[var(--sub-color)]/50 focus:outline-none focus:border-[var(--main-color)] transition"
             />
             {searchQuery && (
               <button
