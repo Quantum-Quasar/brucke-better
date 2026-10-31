@@ -676,6 +676,51 @@ export const TRAIL_BRANCHES: TrailBranch[] = [
       { ...shell(5312, "Adjektive: richtig, falsch, sauber, leer, offen", "Five adjectives, three of them near-twins of English — richtig/right, falsch/false, offen/open — plus sauber (clean) and leer (empty)."), authored: true },
     ],
   },
+  // -------------------------------------------------------------------------
+  // Reading-comprehension branches. Purely optional: each one hangs off a
+  // natural grammar checkpoint, and none of them is required for the spine or
+  // for a star gate. The lesson bodies live in data/reading-lessons-de.ts.
+  // -------------------------------------------------------------------------
+  {
+    id: 5320,
+    attach: 10,
+    title: "Erste Geschichten",
+    blurb: "Two short present-tense stories for the first reading win: a dog, an open door, and a lost puppy.",
+    lessons: [
+      { ...shell(5321, "Max läuft weg", "Present-tense narrative: Paul, his dog Max, an open door, a search, and a happy ending. Who/what/where comprehension plus one sentence rebuild."), authored: true },
+      { ...shell(5322, "Der kleine Hund", "Present-tense narrative: Anna finds a lost puppy, follows him, and returns him to an old man. Cause, place and feeling questions plus a close-reading gloss."), authored: true },
+    ],
+  },
+  {
+    id: 5330,
+    attach: 20,
+    title: "Alltagsgeschichten",
+    blurb: "Two Perfekt stories about ordinary days that go sideways — a rainy trip and a park Saturday.",
+    lessons: [
+      { ...shell(5331, "Eine Reise mit Pannen", "Perfekt travel narrative: a delayed train, rain in Paris, a wrong bus, and a market that saves the day. Sequence and cause questions."), authored: true },
+      { ...shell(5332, "Ein Tag im Park", "Perfekt diary with clock phrases: Anna and Lisa meet, walk the dog, eat, take photos, and go home. Sequence and duration questions."), authored: true },
+    ],
+  },
+  {
+    id: 5340,
+    attach: 27,
+    title: "Unterwegs",
+    blurb: "Two A2/B1 stories built on comparisons, prepositions, and small misunderstandings.",
+    lessons: [
+      { ...shell(5341, "Fahrrad statt Auto", "Comparison-driven story: a baker's car breaks down, a borrowed bicycle is almost as fast, and Tom changes his mind. Cause, opinion, decision questions."), authored: true },
+      { ...shell(5342, "Die Verspätung", "Perfekt story with a mood twist: Lukas is late to a birthday because the bus breaks down, and Sarah's anger turns out to be a joke. Inference questions."), authored: true },
+    ],
+  },
+  {
+    id: 5350,
+    attach: 30,
+    title: "Leseclub",
+    blurb: "Two capstone readings: a library mystery with an open ending, and a school-morning comedy with a dass-clause.",
+    lessons: [
+      { ...shell(5351, "Das Geheimnis der Bibliothek", "Mystery passage: a book falls in a library-bar, a letter promises a treasure, and the search stays open. Turning-point and inference questions."), authored: true },
+      { ...shell(5352, "Max und der kranke Montag", "Humorous capstone: Max invents an illness, his mother's thermometer disproves it, and a dass-clause delivers the verdict. Claim-evidence-verdict questions."), authored: true },
+    ],
+  },
 ];
 
 /**
@@ -685,11 +730,11 @@ export const TRAIL_BRANCHES: TrailBranch[] = [
  *
  *   1–2   sentence basics            ┐
  *   3–7   the five great shifts      ┘→ Shift Gate      14★ of 22 (7 cores min, 22 max)
- *   8–10  -ieren, conjugation, accusative  → Grammar Gate     6★ of 9 (3 min, 9 max)
+ *   8–10  -ieren, conjugation, accusative  → Grammar Gate     6★ of 11 (3 min, 11 max)
  *   11–16 determiners, negation, questions, word order, prefixes → Verb-Complex Gate  11★ of 22 (6 min, 22 max)
- *   17–20 numbers, Perfekt, ablaut, dative → Past Gate        9★ of 18 (4 min, 18 max)
+ *   17–20 numbers, Perfekt, ablaut, dative → Past Gate        9★ of 20 (4 min, 20 max)
  *   21–26 compounds, gender, plurals, hidden shifts → Atlas Gate       11★ of 22 (6 min, 22 max)
- *   27–29 prepositions, verb families, sein & idioms → Capstone Gate    9★ of 11 (3 min, 11 max)
+ *   27–29 prepositions, verb families, sein & idioms → Capstone Gate    9★ of 13 (3 min, 13 max)
  *   30    capstone
  */
 export const TRAIL_GATES: TrailGate[] = [
@@ -705,7 +750,7 @@ export const TRAIL_GATES: TrailGate[] = [
     afterTopic: 10,
     requiredStars: 6,
     title: "The Grammar Gate",
-    why: "Topics 8–10 land your first grammar: -ieren verbs, the living conjugation endings and the accusative Him-Case. Articles, negation and questions ahead assume solid verbs and direct objects — earn 6 of the 9 lessons in this stretch.",
+    why: "Topics 8–10 land your first grammar: -ieren verbs, the living conjugation endings and the accusative Him-Case. Articles, negation and questions ahead assume solid verbs and direct objects — earn 6 of the 11 lessons in this stretch.",
   },
   {
     id: 3,
@@ -719,7 +764,7 @@ export const TRAIL_GATES: TrailGate[] = [
     afterTopic: 20,
     requiredStars: 9,
     title: "The Past Gate",
-    why: "Topics 17–20 hand you time, the conversational past, ancient ablaut and the dative case. The word-formation stretch ahead reuses past-tense and case-heavy sentences in every example — earn 9 of the 18 lessons in this stretch.",
+    why: "Topics 17–20 hand you time, the conversational past, ancient ablaut and the dative case. The word-formation stretch ahead reuses past-tense and case-heavy sentences in every example — earn 9 of the 20 lessons in this stretch.",
   },
   {
     id: 5,
@@ -733,7 +778,7 @@ export const TRAIL_GATES: TrailGate[] = [
     afterTopic: 29,
     requiredStars: 9,
     title: "The Capstone Gate",
-    why: "Topics 27–29 close the system: prepositions and their cases, verb families, and sein with the idiomatic mindset. The capstone reading assumes near-complete coverage of the language — earn 9 of the 11 lessons in this stretch.",
+    why: "Topics 27–29 close the system: prepositions and their cases, verb families, and sein with the idiomatic mindset. The capstone reading assumes near-complete coverage of the language — earn 9 of the 13 lessons in this stretch.",
   },
 ];
 

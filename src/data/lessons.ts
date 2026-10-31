@@ -1,4 +1,5 @@
 import type { Lesson } from "../lib/types";
+import { READING_LESSONS } from "./reading-lessons-de";
 
 export const LESSONS: Lesson[] = [
   {
@@ -32980,5 +32981,6 @@ export const LESSONS: Lesson[] = [
       ],
       "explanation": "Re-assembling \"Im Februar fahre ich nach Polen\" from scratch locks in the structural pattern of Länder II: die Schweiz, Österreich, die Türkei, Polen, Irland without relying on short-term echo."
     }
-  }
+  },
+  ...READING_LESSONS
 ];
