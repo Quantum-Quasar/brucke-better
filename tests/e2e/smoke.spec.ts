@@ -432,6 +432,26 @@ test("an in-progress review session survives a tab switch", async ({ page }) => 
   await expectCard(page, 2);
 });
 
+test("a reset from another browser tab closes a stale review session", async ({ page, context }) => {
+  await seedAppState(page, THREE_FINISHED_LESSONS);
+  await openRecentReviewSession(page);
+  await expectCard(page, 1);
+
+  const otherTab = await context.newPage();
+  await otherTab.goto("/settings");
+  await otherTab.evaluate((key) => {
+    const state = JSON.parse(localStorage.getItem(key)!);
+    state.progressResetAt = Date.now() + 1000;
+    state.progressByLanguage = {};
+    localStorage.setItem(key, JSON.stringify(state));
+  }, STORAGE_KEY);
+
+  await expect(page.getByText(CARD_COUNTER)).toHaveCount(0);
+  await page.reload();
+  await expect(page.getByText(CARD_COUNTER)).toHaveCount(0);
+  await otherTab.close();
+});
+
 test("theme picker mounts on demand and applies the chosen theme", async ({ page }) => {
   await seedAppState(page);
   await page.goto("/settings");

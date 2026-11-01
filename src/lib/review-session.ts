@@ -35,6 +35,8 @@ const MASTERY_STATES: ReadonlySet<string> = new Set([
 const GRADES: ReadonlySet<number> = new Set([1, 3, 4, 5]);
 
 export interface ReviewSessionSnapshot {
+  progressResetAt: number;
+  progressResetActor: string;
   activeDeck: ReviewDeckType;
   selectedShiftId: string;
   selectedDomainId: string;
@@ -119,7 +121,7 @@ function parseSnapshot(raw: unknown): ReviewSnapshot | null {
 }
 
 /** Validate a raw sessionStorage payload; a bad snapshot is discarded whole. */
-export function parseReviewSession(raw: string | null): ReviewSessionSnapshot | null {
+export function parseReviewSession(raw: string | null, progressResetAt = 0, progressResetActor = ""): ReviewSessionSnapshot | null {
   if (!raw) return null;
   let parsed: unknown;
   try {
@@ -128,6 +130,9 @@ export function parseReviewSession(raw: string | null): ReviewSessionSnapshot | 
     return null;
   }
   if (!isRecord(parsed)) return null;
+  const sessionResetAt = integer(parsed.progressResetAt, 0, Number.MAX_SAFE_INTEGER, 0);
+  const sessionResetActor = typeof parsed.progressResetActor === "string" ? parsed.progressResetActor : "";
+  if (sessionResetAt !== progressResetAt || sessionResetActor !== progressResetActor) return null;
   const activeDeck = typeof parsed.activeDeck === "string" && DECK_IDS.has(parsed.activeDeck)
     ? (parsed.activeDeck as ReviewDeckType)
     : null;
@@ -159,6 +164,8 @@ export function parseReviewSession(raw: string | null): ReviewSessionSnapshot | 
   }
 
   return {
+    progressResetAt: sessionResetAt,
+    progressResetActor: sessionResetActor,
     activeDeck,
     selectedShiftId: safeText(parsed.selectedShiftId),
     selectedDomainId: safeText(parsed.selectedDomainId),
@@ -195,10 +202,10 @@ function storageKey(languageId: string): string {
   return `${STORAGE_PREFIX}${languageId}`;
 }
 
-export function readReviewSession(languageId: string): ReviewSessionSnapshot | null {
+export function readReviewSession(languageId: string, progressResetAt: number, progressResetActor: string): ReviewSessionSnapshot | null {
   if (typeof window === "undefined") return null;
   try {
-    return parseReviewSession(sessionStorage.getItem(storageKey(languageId)));
+    return parseReviewSession(sessionStorage.getItem(storageKey(languageId)), progressResetAt, progressResetActor);
   } catch {
     return null;
   }

@@ -534,8 +534,9 @@ describe("Persistence validation & dual-store fallback merging", () => {
       }
       expect(getStorageHealth()).toBe("failed");
 
-      saveState({ ...useAppStore.getState(), theme: "recovered-theme" });
+      saveState({ ...useAppStore.getState(), theme: "quota-theme" });
       expect(getStorageHealth()).toBe("ok");
+      expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).theme).toBe("quota-theme");
     });
 
     it("drops a pending deferred snapshot when a cross-tab write is adopted", () => {

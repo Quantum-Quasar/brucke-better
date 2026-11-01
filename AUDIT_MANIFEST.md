@@ -217,7 +217,7 @@ All commands should be executed from `/home/shaurya/gemini-tmp/german-app-thinki
 # 1. Run Data Compilation Pipeline
 bun run parse-data
 
-# 2. Run All Automated Test Suites (43 test files / 429 tests)
+# 2. Run All Automated Test Suites (43 test files / 437 tests)
 bun run test
 
 # 3. Compile Production Build (Turbopack + SSG verification)
@@ -253,5 +253,5 @@ When auditing the codebase, verify:
   - State changes in Zustand persist to `localStorage`.
   - Cookie backup stays within safe browser limits (lean payload ≤ 2048 URL-encoded bytes).
 - [ ] **Build & Tests**:
-  - `bun run test` (Vitest) passes with 0 failures across all 43 test files (429 tests).
+  - `bun run test` (Vitest) passes with 0 failures across all 43 test files (437 tests).
   - `bun run build` generates all static pages (6 static routes + 500 lesson payloads) without TypeScript or Turbopack errors.

@@ -234,7 +234,8 @@ export const TrailMap: React.FC = () => {
         </span>
       </div>
 
-      <div className="relative mx-auto" style={{ width: layout.width, height: layout.height, maxWidth: "100%" }}>
+      <div className="overflow-x-auto">
+      <div className="relative mx-auto overflow-hidden" style={{ width: layout.width, height: layout.height }}>
         {/* faint germanic watermark decorations */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none select-none" aria-hidden>
           {layout.decorations.map((d, i) => (
@@ -393,6 +394,7 @@ export const TrailMap: React.FC = () => {
             aria-hidden
           />
         )}
+      </div>
       </div>
 
       {recommended && (

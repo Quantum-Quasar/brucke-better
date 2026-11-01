@@ -142,6 +142,12 @@ textarea {
    focus, so bump them while leaving the deliberately large lesson inputs
    (text-lg) alone. */
 @media (max-width: 639px) {
+  input.text-xs, input.text-sm,
+  select.text-xs, select.text-sm,
+  textarea.text-xs, textarea.text-sm {
+    font-size: 1rem;
+  }
+
   /* A running review owns the viewport like a lesson does; its sticky card
      header keeps the exit control reachable. */
   html[data-review-session="true"] nav[aria-label="Main navigation"] {

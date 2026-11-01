@@ -35,7 +35,12 @@ export interface LanguageProgress {
   srsCards: Record<string, SRSCard>;
   weeklyActivity: boolean[]; // 7 days Mon-Sun
   lastActivityWeek?: string;
+  progressVersions?: ProgressVersions;
 }
+
+type VersionedField = "lessonProgress" | "wordMastery" | "srsCards";
+type ProgressVersions = Record<VersionedField, Record<string, string>>;
+const emptyVersions = (): ProgressVersions => ({ lessonProgress: {}, wordMastery: {}, srsCards: {} });
 
 /**
  * What "back" in a review session restores: the card's SM-2 state and its
@@ -52,6 +57,7 @@ export interface AppState {
   activeLanguageId: string;
   /** per-language progress; the active slice is mirrored to the fields above */
   progressByLanguage: Record<string, LanguageProgress>;
+  progressVersions: ProgressVersions;
   /** languages whose onboarding introduction has been seen */
   seenIntroLanguages: string[];
   completedLessons: number[];
@@ -70,6 +76,7 @@ export interface AppState {
    * the incoming snapshot is a replacement, not an addition. Persisted.
    */
   progressResetAt: number;
+  progressResetActor: string;
   activeWordDrawerId: string | null;
   tolerance: ToleranceSettings;
   preferredReviewMode: ReviewMode;
@@ -156,7 +163,7 @@ export interface AppState {
    * overwrote. Pass `{ reread: true }` to deliberately re-read storage (a
    * cross-tab `storage` event, or a test that re-seeds storage).
    */
-  hydrateFromStorage: (options?: { reread?: boolean }) => void;
+  hydrateFromStorage: (options?: { reread?: boolean; snapshot?: string }) => void;
   importBackupState: (payload: unknown) => boolean;
 }
 
@@ -251,10 +258,14 @@ export function loadSavedState(): Partial<AppState> {
     const localSavedAt = typeof local.savedAt === "number" ? local.savedAt : 0;
     const cookieSavedAt = typeof cookie.savedAt === "number" ? cookie.savedAt : 0;
     const cookieHasProgress = cookie.progressByLanguage !== undefined;
-    parsed =
-      cookieHasProgress && cookieSavedAt > localSavedAt
-        ? { ...local, ...cookie }
-        : { ...cookie, ...local };
+    const localResetAt = typeof local.progressResetAt === "number" ? local.progressResetAt : 0;
+    const cookieResetAt = typeof cookie.progressResetAt === "number" ? cookie.progressResetAt : 0;
+    const localActor = typeof local.progressResetActor === "string" ? local.progressResetActor : "";
+    const cookieActor = typeof cookie.progressResetActor === "string" ? cookie.progressResetActor : "";
+    const cookieHasNewerReset = cookieResetAt > localResetAt || (cookieResetAt === localResetAt && cookieActor > localActor);
+    parsed = cookieSavedAt > localSavedAt && (cookieHasProgress || (cookieHasNewerReset && cookie.storageFailed === true))
+      ? { ...local, ...cookie, ...(cookieHasNewerReset && !cookieHasProgress ? { progressByLanguage: { [isValidLanguageId(cookie.activeLanguageId) ? cookie.activeLanguageId : DEFAULT_LANGUAGE_ID]: {} } } : {}) }
+      : { ...cookie, ...local };
   } else if (isPlausibleStateObject(local)) {
     parsed = local;
   } else if (isPlausibleStateObject(cookie)) {
@@ -492,6 +503,18 @@ function normalizeTolerance(
 
 function normalizeLanguageSlice(raw: unknown): LanguageProgress {
   const slice = isPlausibleStateObject(raw) ? raw : {};
+  const versions = emptyVersions();
+  if (isPlausibleStateObject(slice.progressVersions)) {
+    for (const field of Object.keys(versions) as VersionedField[]) {
+      const entries = slice.progressVersions[field];
+      if (!isPlausibleStateObject(entries)) continue;
+      for (const [key, version] of Object.entries(entries)) {
+        if (!isDangerousKey(key) && typeof version === "string" && /^\d{16}:[a-z0-9]+$/.test(version)) {
+          versions[field][key] = version;
+        }
+      }
+    }
+  }
   return {
     completedLessons: normalizeLessonIdList(slice.completedLessons),
     currentLessonId: parseLessonId(slice.currentLessonId) ?? 1,
@@ -501,6 +524,7 @@ function normalizeLanguageSlice(raw: unknown): LanguageProgress {
     srsCards: normalizeSrsCards(slice.srsCards),
     weeklyActivity: normalizeWeeklyActivity(slice.weeklyActivity) ?? emptyWeek(),
     lastActivityWeek: normalizeWeekKey(slice.lastActivityWeek),
+    progressVersions: versions,
   };
 }
 
@@ -550,21 +574,51 @@ function sliceFromMirrors(state: AppState): LanguageProgress {
     srsCards: state.srsCards,
     weeklyActivity: state.weeklyActivity,
     lastActivityWeek: state.lastActivityWeek,
+    progressVersions: state.progressVersions,
   };
+}
+
+function mergeVersioned<T>(current: Record<string, T>, incoming: Record<string, T>, currentVersions: Record<string, string>, incomingVersions: Record<string, string>, preferLegacyIncoming: boolean): { values: Record<string, T>; versions: Record<string, string> } {
+  const values: Record<string, T> = {};
+  const versions: Record<string, string> = {};
+  for (const key of new Set([...Object.keys(current), ...Object.keys(incoming), ...Object.keys(currentVersions), ...Object.keys(incomingVersions)])) {
+    const a = currentVersions[key] ?? "";
+    const b = incomingVersions[key] ?? "";
+    // Legacy entries lack versions: retain the existing tab's value on a tie.
+    const useIncoming = b > a || (a === "" && b === "" && key in incoming && (preferLegacyIncoming || !(key in current)));
+    const source = useIncoming ? incoming : current;
+    if (key in source) values[key] = source[key];
+    if (a || b) versions[key] = useIncoming ? b : a;
+  }
+  return { values, versions };
 }
 
 /** Union-merge for re-hydration (cross-tab `storage` events must not delete
  * progress this tab already holds). */
-function mergeLanguageSlice(current: LanguageProgress, incoming: LanguageProgress): LanguageProgress {
+function mergeLanguageSlice(current: LanguageProgress, incoming: LanguageProgress, preferLegacyIncoming = false): LanguageProgress {
+  const a = current.progressVersions ?? emptyVersions();
+  const b = incoming.progressVersions ?? emptyVersions();
+  const lessons = mergeVersioned(current.lessonProgress, incoming.lessonProgress, a.lessonProgress, b.lessonProgress, preferLegacyIncoming);
+  const mastery = mergeVersioned(current.wordMastery, incoming.wordMastery, a.wordMastery, b.wordMastery, preferLegacyIncoming);
+  const cards = mergeVersioned(current.srsCards, incoming.srsCards, a.srsCards, b.srsCards, preferLegacyIncoming);
+  const lessonStars = { ...current.lessonStars, ...incoming.lessonStars };
+  for (const [id, star] of Object.entries(current.lessonStars)) {
+    if (star === "purple") lessonStars[Number(id)] = star;
+  }
+  const sameWeek = current.lastActivityWeek === incoming.lastActivityWeek;
+  const incomingIsNewerWeek = (incoming.lastActivityWeek ?? "") > (current.lastActivityWeek ?? "");
   return {
     completedLessons: Array.from(new Set([...current.completedLessons, ...incoming.completedLessons])),
     currentLessonId: Math.max(current.currentLessonId, incoming.currentLessonId),
-    lessonProgress: { ...current.lessonProgress, ...incoming.lessonProgress },
-    lessonStars: { ...current.lessonStars, ...incoming.lessonStars },
-    wordMastery: { ...current.wordMastery, ...incoming.wordMastery },
-    srsCards: { ...current.srsCards, ...incoming.srsCards },
-    weeklyActivity: incoming.weeklyActivity.some(Boolean) ? incoming.weeklyActivity : current.weeklyActivity,
-    lastActivityWeek: incoming.lastActivityWeek ?? current.lastActivityWeek,
+    lessonProgress: lessons.values,
+    lessonStars,
+    wordMastery: mastery.values,
+    srsCards: cards.values,
+    progressVersions: { lessonProgress: lessons.versions, wordMastery: mastery.versions, srsCards: cards.versions },
+    weeklyActivity: sameWeek
+      ? current.weeklyActivity.map((day, index) => day || incoming.weeklyActivity[index])
+      : incomingIsNewerWeek ? incoming.weeklyActivity : current.weeklyActivity,
+    lastActivityWeek: incomingIsNewerWeek ? incoming.lastActivityWeek : current.lastActivityWeek,
   };
 }
 
@@ -648,6 +702,8 @@ function normalizeParsedState(parsed: Record<string, any>): Partial<AppState> {
     typeof parsed.progressResetAt === "number" && Number.isFinite(parsed.progressResetAt) && parsed.progressResetAt > 0
       ? Math.floor(parsed.progressResetAt)
       : 0;
+  parsed.progressResetActor = typeof parsed.progressResetActor === "string" && /^[a-z0-9]{1,32}$/.test(parsed.progressResetActor)
+    ? parsed.progressResetActor : "";
 
   return parsed;
 }
@@ -689,6 +745,26 @@ export function flushSave() {
 
 export function saveState(state: AppState, options?: { immediate?: boolean }) {
   if (typeof window === "undefined") return;
+  // Child effects can run before hydration. Keep their in-memory changes but
+  // do not overwrite either the boot snapshot or another tab's newer write.
+  if (!hasHydratedFromStorage && bootSavedState && Object.keys(bootSavedState).length > 0) return;
+  const current = useAppStore.getState();
+  if (current && (hasHydratedFromStorage || !bootSavedState || Object.keys(bootSavedState).length === 0) && current.activeLanguageId === state.activeLanguageId && current.progressResetAt === state.progressResetAt) {
+    let versions = state.progressVersions;
+    for (const entries of Object.values(versions)) {
+      for (const version of Object.values(entries)) progressClock = Math.max(progressClock, Number(version.slice(0, 16)));
+    }
+    for (const field of ["lessonProgress", "wordMastery", "srsCards"] as const) {
+      const before = current[field];
+      const after = state[field];
+      if (before === after) continue;
+      for (const key of new Set([...Object.keys(before), ...Object.keys(after)])) {
+        if (JSON.stringify(before[key as keyof typeof before]) === JSON.stringify(after[key as keyof typeof after])) continue;
+        versions = { ...versions, [field]: { ...versions[field], [key]: nextProgressVersion() } };
+      }
+    }
+    state.progressVersions = versions;
+  }
   const requestIdle = (window as IdleWindow).requestIdleCallback;
   if (!options?.immediate && typeof requestIdle === "function") {
     pendingSave = state;
@@ -715,9 +791,12 @@ export function saveState(state: AppState, options?: { immediate?: boolean }) {
 const bootSavedState: Partial<AppState> | null =
   typeof window === "undefined" ? null : loadSavedState();
 let hasHydratedFromStorage = false;
-// Highest destructive-reset marker this tab has seen. A snapshot with a newer
-// marker replaces progress instead of union-merging it (see progressResetAt).
-let lastSeenResetAt = 0;
+const progressActor = Math.random().toString(36).slice(2) || "0";
+let progressClock = 0;
+function nextProgressVersion(): string {
+  progressClock = Math.max(Date.now(), progressClock + 1);
+  return `${String(progressClock).padStart(16, "0")}:${progressActor}`;
+}
 
 // the auto-open of onboarding on first visit must only ever happen once per
 // page load — cross-tab `storage` events re-run hydrateFromStorage and must
@@ -729,16 +808,7 @@ function writeState(state: AppState) {
   // the active language's slice is derived from the mirrored top-level fields
   const progressByLanguage: Record<string, LanguageProgress> = {
     ...state.progressByLanguage,
-    [state.activeLanguageId]: {
-      completedLessons: state.completedLessons,
-      currentLessonId: state.currentLessonId,
-      lessonProgress: state.lessonProgress,
-      lessonStars: state.lessonStars,
-      wordMastery: state.wordMastery,
-      srsCards: state.srsCards,
-      weeklyActivity: state.weeklyActivity,
-      lastActivityWeek: state.lastActivityWeek,
-    },
+    [state.activeLanguageId]: sliceFromMirrors(state),
   };
   // The active language's progress lives only in its progressByLanguage
   // slice; the top-level mirrors are rebuilt on load (normalizeParsedState),
@@ -748,6 +818,7 @@ function writeState(state: AppState) {
     progressByLanguage,
     seenIntroLanguages: state.seenIntroLanguages,
     progressResetAt: state.progressResetAt,
+    progressResetActor: state.progressResetActor,
     tolerance: state.tolerance,
     preferredReviewMode: state.preferredReviewMode,
     hasCompletedOnboarding: state.hasCompletedOnboarding,
@@ -757,8 +828,13 @@ function writeState(state: AppState) {
     settings: state.settings,
   };
   const serialized = JSON.stringify(toPersist);
-  if (serialized === lastSerialized) return;
-  lastSerialized = serialized;
+  if (serialized === lastSerialized) {
+    const stored = parseStoredJson(safeStorageGet(STORAGE_KEY));
+    if (isPlausibleStateObject(stored)) {
+      delete stored.savedAt;
+      if (JSON.stringify(stored) === serialized) return;
+    }
+  }
 
   const savedAt = Math.max(Date.now(), lastSavedAt + 1);
   lastSavedAt = savedAt;
@@ -767,6 +843,7 @@ function writeState(state: AppState) {
   let localOk = true;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...toPersist, savedAt }));
+    lastSerialized = serialized;
     reportStorageWrite(true);
   } catch {
     localOk = false;
@@ -780,6 +857,8 @@ function writeState(state: AppState) {
   try {
     const minimal = JSON.stringify({
       savedAt,
+      progressResetAt: state.progressResetAt,
+      progressResetActor: state.progressResetActor,
       theme: state.theme,
       font: state.font,
       activeLanguageId: state.activeLanguageId,
@@ -794,6 +873,8 @@ function writeState(state: AppState) {
     } else {
       const leanJson = JSON.stringify({
         savedAt,
+        progressResetAt: state.progressResetAt,
+        progressResetActor: state.progressResetActor,
         activeLanguageId: state.activeLanguageId,
         progressByLanguage,
         seenIntroLanguages: state.seenIntroLanguages,
@@ -804,7 +885,7 @@ function writeState(state: AppState) {
       });
       setCookie(
         STORAGE_COOKIE_KEY,
-        encodeURIComponent(leanJson).length <= 2048 ? leanJson : minimal,
+        encodeURIComponent(leanJson).length <= 2048 ? leanJson : JSON.stringify({ ...JSON.parse(minimal), storageFailed: true }),
         365
       );
     }
@@ -852,6 +933,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   // mount effect instead.
   activeLanguageId: DEFAULT_LANGUAGE_ID,
   progressByLanguage: {},
+  progressVersions: emptyVersions(),
   seenIntroLanguages: [],
   completedLessons: [],
   currentLessonId: 1,
@@ -862,6 +944,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   weeklyActivity: emptyWeek(),
   lastActivityWeek: undefined,
   progressResetAt: 0,
+  progressResetActor: "",
   activeWordDrawerId: null,
   preferredReviewMode: "flashcard",
   hasCompletedOnboarding: false,
@@ -890,16 +973,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       // incoming language's slice (or a fresh one for a first-time language)
       const progressByLanguage = {
         ...s.progressByLanguage,
-        [s.activeLanguageId]: {
-          completedLessons: s.completedLessons,
-          currentLessonId: s.currentLessonId,
-          lessonProgress: s.lessonProgress,
-          lessonStars: s.lessonStars,
-          wordMastery: s.wordMastery,
-          srsCards: s.srsCards,
-          weeklyActivity: s.weeklyActivity,
-          lastActivityWeek: s.lastActivityWeek,
-        },
+        [s.activeLanguageId]: sliceFromMirrors(s),
       };
       const incoming = progressByLanguage[languageId];
       // the intro is not marked seen at selection time — only completing the
@@ -908,6 +982,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         ...s,
         activeLanguageId: languageId,
         progressByLanguage,
+        progressVersions: incoming?.progressVersions ?? emptyVersions(),
         completedLessons: incoming?.completedLessons || [],
         currentLessonId: incoming?.currentLessonId || 1,
         lessonProgress: incoming?.lessonProgress || {},
@@ -1314,6 +1389,8 @@ export const useAppStore = create<AppState>((set, get) => ({
   },
 
   resetProgress: () => {
+    // Adopt saved preferences before a reset invoked ahead of the root effect.
+    if (!hasHydratedFromStorage && bootSavedState && Object.keys(bootSavedState).length > 0) get().hydrateFromStorage();
     // Reset only what the settings page promises: SRS cards, lesson
     // completions, and word mastery. Appearance, customization settings,
     // language choice and onboarding flags are preferences, not progress.
@@ -1321,6 +1398,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       const next: AppState = {
         ...s,
         progressByLanguage: {},
+        progressVersions: emptyVersions(),
         completedLessons: [],
         currentLessonId: 1,
         lessonProgress: {},
@@ -1333,6 +1411,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         // this marker makes the other tabs adopt the empty snapshot instead of
         // merging their stale in-memory progress back in.
         progressResetAt: Math.max(Date.now(), s.progressResetAt + 1),
+        progressResetActor: progressActor,
         activeWordDrawerId: null,
         isOnboardingOpen: false,
         onboardingIntroLanguage: null,
@@ -1383,6 +1462,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       "font",
     ];
     if (!RECOGNIZED_FIELDS.some((field) => Object.prototype.hasOwnProperty.call(payload, field))) return false;
+    if (!hasHydratedFromStorage && bootSavedState && Object.keys(bootSavedState).length > 0) get().hydrateFromStorage();
     set((s) => {
       const nextSettings = isPlausibleStateObject(payload.settings)
         ? normalizeSettings(payload.settings, s.settings)
@@ -1484,10 +1564,12 @@ export const useAppStore = create<AppState>((set, get) => ({
         ...s,
         activeLanguageId: activeTargetLanguageId,
         progressByLanguage,
+        progressVersions: activeSlice.progressVersions ?? emptyVersions(),
         seenIntroLanguages: nextSeenIntroLanguages,
         // A backup that carries progress replaces it everywhere; tell other
         // tabs so their union-merge does not resurrect the pre-import state.
         progressResetAt: carriesProgress ? Math.max(Date.now(), s.progressResetAt + 1) : s.progressResetAt,
+        progressResetActor: carriesProgress ? progressActor : s.progressResetActor,
         // Mirror the backup's merged active slice. saveState() rebuilds that
         // slice from these fields, so from this point on what gets written back
         // is exactly what the backup imported — a restored slice can no longer
@@ -1538,7 +1620,15 @@ export const useAppStore = create<AppState>((set, get) => ({
     // from that clobbered copy and lose the learner's real progress. Later calls
     // (cross-tab) re-read storage on purpose.
     const fromBoot = !hasHydratedFromStorage && bootSavedState && Object.keys(bootSavedState).length > 0;
-    const saved = fromBoot ? bootSavedState : loadSavedState();
+    const duringBoot = fromBoot ? safeStorageGet(STORAGE_KEY) : null;
+    const duringBootParsed = parseStoredJson(duringBoot);
+    if (isPlausibleStateObject(duringBootParsed)) delete duringBootParsed.savedAt;
+    const externalDuringBoot = duringBoot && isPlausibleStateObject(duringBootParsed) && JSON.stringify(duringBootParsed) !== lastSerialized;
+    const snapshot = options?.snapshot ? parseStoredJson(options.snapshot) : null;
+    const snapshotState = isPlausibleStateObject(snapshot) ? normalizeParsedState(snapshot) : null;
+    const saved = fromBoot ? bootSavedState : snapshotState
+      ? { ...loadSavedState(), progressByLanguage: snapshotState.progressByLanguage, progressResetAt: snapshotState.progressResetAt, progressResetActor: snapshotState.progressResetActor }
+      : loadSavedState();
     if (saved && Object.keys(saved).length > 0) {
       set((s) => {
         const nextSettings = normalizeSettings(saved.settings, s.settings);
@@ -1558,8 +1648,9 @@ export const useAppStore = create<AppState>((set, get) => ({
           typeof saved.progressResetAt === "number" && Number.isFinite(saved.progressResetAt)
             ? saved.progressResetAt
             : 0;
-        const isReset = incomingResetAt > lastSeenResetAt;
-        if (incomingResetAt > lastSeenResetAt) lastSeenResetAt = incomingResetAt;
+        const incomingResetActor = saved.progressResetActor ?? "";
+        const resetComparison = incomingResetAt - s.progressResetAt || incomingResetActor.localeCompare(s.progressResetActor);
+        const isReset = resetComparison > 0;
 
         // Seed the merge with the in-memory mirrors: progressByLanguage is not
         // updated by every action, so the top-level fields are the freshest
@@ -1570,7 +1661,7 @@ export const useAppStore = create<AppState>((set, get) => ({
               ...s.progressByLanguage,
               [s.activeLanguageId]: sliceFromMirrors(s),
             };
-        for (const [langId, rawSlice] of Object.entries(saved.progressByLanguage ?? {})) {
+        for (const [langId, rawSlice] of Object.entries(snapshotState && resetComparison < 0 ? {} : saved.progressByLanguage ?? {})) {
           if (!isValidLanguageId(langId) || isDangerousKey(langId)) continue;
           const incoming = normalizeLanguageSlice(rawSlice);
           const existing = mergedSlices[langId];
@@ -1580,7 +1671,7 @@ export const useAppStore = create<AppState>((set, get) => ({
           mergedSlices[langId] =
             !existing || isReset || (isLangSwitch && langId === nextLang && !isCrossTab)
               ? incoming
-              : mergeLanguageSlice(existing, incoming);
+              : mergeLanguageSlice(existing, incoming, Boolean(fromBoot));
         }
         const activeSlice = mergedSlices[nextLang] ?? normalizeLanguageSlice({});
         mergedSlices[nextLang] = activeSlice;
@@ -1592,7 +1683,9 @@ export const useAppStore = create<AppState>((set, get) => ({
           ...s,
           activeLanguageId: nextLang,
           progressByLanguage: mergedSlices,
-          progressResetAt: Math.max(s.progressResetAt, incomingResetAt),
+          progressVersions: activeSlice.progressVersions ?? emptyVersions(),
+          progressResetAt: isReset ? incomingResetAt : s.progressResetAt,
+          progressResetActor: isReset ? incomingResetActor : s.progressResetActor,
           seenIntroLanguages: Array.isArray(saved.seenIntroLanguages)
             ? Array.from(
                 new Set([
@@ -1648,6 +1741,10 @@ export const useAppStore = create<AppState>((set, get) => ({
     hasAutoOpenedOnboarding = true;
     hasHydratedFromStorage = true;
     if (fromBoot) {
+      // Capture another tab's write that landed before the listener was added.
+      if (externalDuringBoot) {
+        useAppStore.getState().hydrateFromStorage({ reread: true, snapshot: duringBoot });
+      }
       // A child mount effect may have written the defaults over the saved
       // state before this effect ran. Put the hydrated state back, bypassing
       // saveState's dedupe (it still holds the clobbering payload).

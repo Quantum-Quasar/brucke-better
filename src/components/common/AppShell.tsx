@@ -113,7 +113,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
     const handleStorage = (e: StorageEvent) => {
       if (e.key === STORAGE_KEY) {
-        useAppStore.getState().hydrateFromStorage({ reread: true });
+        useAppStore.getState().hydrateFromStorage({ reread: true, snapshot: e.newValue ?? undefined });
       }
     };
     const unsubscribeLanguage = useAppStore.subscribe((state, previous) => {

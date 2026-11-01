@@ -88,7 +88,7 @@ describe("boot hydration snapshot", () => {
       practiceIndex: 0,
       completedSegments: ["hook"],
     });
-    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).progressByLanguage.de.completedLessons).toEqual([]);
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).completedLessons).toEqual([1, 2, 3]);
 
     store.useAppStore.getState().hydrateFromStorage();
 
@@ -200,6 +200,140 @@ describe("boot hydration snapshot", () => {
     const persisted = JSON.parse(localStorage.getItem(STORAGE_KEY)!);
     expect(persisted.completedLessons).toBeUndefined(); // schema v2: slice only
     expect(persisted.progressByLanguage.de.completedLessons).toEqual([]);
+  });
+
+  it("keeps new progress when another tab echoes this tab's reset", async () => {
+    localStorage.clear();
+    (document as any).cookie = "";
+    vi.resetModules();
+    const store = await import("../lib/store");
+    store.useAppStore.getState().hydrateFromStorage();
+    store.useAppStore.getState().resetProgress();
+    const resetSnapshot = localStorage.getItem(STORAGE_KEY)!;
+    store.useAppStore.getState().completeLesson(1);
+    localStorage.setItem(STORAGE_KEY, resetSnapshot);
+    store.useAppStore.getState().hydrateFromStorage({ reread: true });
+    expect(store.useAppStore.getState().completedLessons).toContain(1);
+  });
+
+  it("preserves the best star and combines activity from the same week across tabs", async () => {
+    localStorage.clear();
+    (document as any).cookie = "";
+    vi.resetModules();
+    const store = await import("../lib/store");
+    store.useAppStore.getState().hydrateFromStorage();
+    store.useAppStore.setState({ lessonStars: { 1: "purple" }, lastActivityWeek: "2026-W10-26", weeklyActivity: [true, false, false, false, false, false, false] });
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ activeLanguageId: "de", progressByLanguage: { de: {
+      lessonStars: { 1: "gold" }, lastActivityWeek: "2026-W10-26", weeklyActivity: [false, true, false, false, false, false, false],
+    } } }));
+    store.useAppStore.getState().hydrateFromStorage({ reread: true });
+    expect(store.useAppStore.getState().lessonStars[1]).toBe("purple");
+    expect(store.useAppStore.getState().weeklyActivity).toEqual([true, true, false, false, false, false, false]);
+  });
+
+  it("does not restore the boot snapshot after a reset before hydration", async () => {
+    localStorage.clear();
+    (document as any).cookie = "";
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ activeLanguageId: "de", completedLessons: [1] }));
+    vi.resetModules();
+    const store = await import("../lib/store");
+    store.useAppStore.getState().resetProgress();
+    store.useAppStore.getState().hydrateFromStorage();
+    expect(store.useAppStore.getState().completedLessons).toEqual([]);
+  });
+
+  it("persists an import made before hydration while keeping saved preferences", async () => {
+    localStorage.clear();
+    (document as any).cookie = "";
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ activeLanguageId: "de", completedLessons: [1], preferredReviewMode: "mcq" }));
+    vi.resetModules();
+    const store = await import("../lib/store");
+    expect(store.useAppStore.getState().importBackupState({ completedLessons: [2] })).toBe(true);
+    store.useAppStore.getState().hydrateFromStorage();
+    expect(store.useAppStore.getState().completedLessons).toEqual([2]);
+    expect(store.useAppStore.getState().preferredReviewMode).toBe("mcq");
+    expect(store.loadSavedState().completedLessons).toEqual([2]);
+  });
+
+  it("keeps a newer reset epoch from a minimal cookie over stale local progress", async () => {
+    localStorage.clear();
+    (document as any).cookie = "";
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ activeLanguageId: "de", savedAt: 100, progressResetAt: 1, progressByLanguage: { de: { completedLessons: [1] } } }));
+    vi.resetModules();
+    const store = await import("../lib/store");
+    store.setCookie(store.STORAGE_COOKIE_KEY, JSON.stringify({ activeLanguageId: "de", savedAt: 200, progressResetAt: 2, progressResetActor: "abc", storageFailed: true }));
+    const restored = store.loadSavedState();
+    expect(restored.completedLessons).toEqual([]);
+    expect(restored.progressResetAt).toBe(2);
+    expect(restored.progressResetActor).toBe("abc");
+  });
+
+  it("keeps another tab's update that arrives before boot hydration", async () => {
+    localStorage.clear();
+    (document as any).cookie = "";
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ activeLanguageId: "de", completedLessons: [1] }));
+    vi.resetModules();
+    const a = await import("../lib/store");
+    vi.resetModules();
+    const b = await import("../lib/store");
+    b.useAppStore.getState().hydrateFromStorage();
+    b.useAppStore.getState().markWordMastered("haus");
+    a.useAppStore.getState().setLessonProgress(1, { segment: "hook", practiceIndex: 0, completedSegments: [] });
+    a.useAppStore.getState().hydrateFromStorage();
+    expect(a.useAppStore.getState().completedLessons).toContain(1);
+    expect(a.useAppStore.getState().wordMastery.haus).toBe("mastered");
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).progressByLanguage.de.wordMastery.haus).toBe("mastered");
+  });
+
+  it("merges concurrent tab snapshots and rejects stale events after an undo or reset", async () => {
+    localStorage.clear();
+    (document as any).cookie = "";
+    vi.resetModules();
+    const a = await import("../lib/store");
+    a.useAppStore.getState().hydrateFromStorage();
+    vi.resetModules();
+    const b = await import("../lib/store");
+    b.useAppStore.getState().hydrateFromStorage();
+
+    a.useAppStore.getState().markWordEncountered("haus");
+    a.useAppStore.getState().setLessonProgress(1, { segment: "practice", practiceIndex: 2, completedSegments: ["hook"] });
+    const snapshotA = localStorage.getItem(STORAGE_KEY)!;
+    b.useAppStore.getState().markWordEncountered("boot");
+    const snapshotB = localStorage.getItem(STORAGE_KEY)!;
+    a.useAppStore.getState().hydrateFromStorage({ reread: true, snapshot: snapshotB });
+    b.useAppStore.getState().hydrateFromStorage({ reread: true, snapshot: snapshotA });
+    expect(b.useAppStore.getState().wordMastery).toMatchObject({ haus: "encountered", boot: "encountered" });
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).progressByLanguage.de.lessonProgress[1].practiceIndex).toBe(2);
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).progressByLanguage.de.wordMastery).toMatchObject({ haus: "encountered", boot: "encountered" });
+
+    const original = b.useAppStore.getState().srsCards.haus;
+    b.useAppStore.getState().recordReview("haus", 5);
+    const graded = localStorage.getItem(STORAGE_KEY)!;
+    b.useAppStore.getState().restoreSrsCard("haus", { card: original, mastery: null });
+    const undone = localStorage.getItem(STORAGE_KEY)!;
+    a.useAppStore.getState().hydrateFromStorage({ reread: true, snapshot: undone });
+    a.useAppStore.getState().hydrateFromStorage({ reread: true, snapshot: graded });
+    expect(a.useAppStore.getState().wordMastery.haus).toBeUndefined();
+    expect(a.useAppStore.getState().srsCards.haus).toEqual(original);
+
+    a.useAppStore.getState().resetProgress();
+    a.useAppStore.getState().hydrateFromStorage({ reread: true, snapshot: snapshotA });
+    expect(a.useAppStore.getState().wordMastery).toEqual({});
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).progressByLanguage.de.wordMastery).toEqual({});
+
+    const now = vi.spyOn(Date, "now").mockReturnValue(Date.now() + 10000);
+    try {
+      a.useAppStore.getState().resetProgress();
+      const resetA = localStorage.getItem(STORAGE_KEY)!;
+      b.useAppStore.getState().resetProgress();
+      const resetB = localStorage.getItem(STORAGE_KEY)!;
+      a.useAppStore.getState().hydrateFromStorage({ reread: true, snapshot: resetB });
+      b.useAppStore.getState().hydrateFromStorage({ reread: true, snapshot: resetA });
+      expect(a.useAppStore.getState().progressResetAt).toBe(b.useAppStore.getState().progressResetAt);
+      expect(a.useAppStore.getState().progressResetActor).toBe(b.useAppStore.getState().progressResetActor);
+    } finally {
+      now.mockRestore();
+    }
   });
 
   it("unions a parked slice when another tab switches language", async () => {

@@ -210,7 +210,10 @@ test.describe("small phones", () => {
       const widths = await page.evaluate(() => ({
         scrollWidth: document.documentElement.scrollWidth,
         innerWidth: window.innerWidth,
+        visualWidth: window.visualViewport?.width,
       }));
+      expect(widths.innerWidth, `${route} must retain the phone viewport`).toBe(320);
+      expect(widths.visualWidth).toBeCloseTo(320, 0);
       expect(widths.scrollWidth, `${route} must not scroll horizontally`).toBeLessThanOrEqual(
         widths.innerWidth
       );

@@ -105,6 +105,9 @@ function undoGradeInStats(stats: ReviewSessionStats, grade: ReviewGrade): Review
 
 export default function ReviewPage() {
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
+  const progressResetAt = useAppStore((s) => s.progressResetAt);
+  const progressResetActor = useAppStore((s) => s.progressResetActor);
+  const storeHydrated = useAppStore((s) => s.storeHydrated);
   const compendium = useCompendium(activeLanguageId);
   const lessonIndex = useLessonIndex(activeLanguageId);
 
@@ -128,7 +131,7 @@ export default function ReviewPage() {
     );
   }
 
-  if (!compendium.data || !lessonIndex.data) {
+  if (!storeHydrated || !compendium.data || !lessonIndex.data) {
     return (
       <div className="max-w-xl mx-auto px-4 py-20 text-center font-mono" role="status">
         <p className="text-sm text-[var(--sub-color)]">loading review data…</p>
@@ -138,8 +141,10 @@ export default function ReviewPage() {
 
   return (
     <ReviewHub
-      key={activeLanguageId}
+      key={`${activeLanguageId}:${progressResetAt}:${progressResetActor}`}
       activeLanguageId={activeLanguageId}
+      progressResetAt={progressResetAt}
+      progressResetActor={progressResetActor}
       data={compendium.data}
       lessons={lessonIndex.data}
     />
@@ -148,17 +153,21 @@ export default function ReviewPage() {
 
 function ReviewHub({
   activeLanguageId,
+  progressResetAt,
+  progressResetActor,
   data,
   lessons,
 }: {
   activeLanguageId: string;
+  progressResetAt: number;
+  progressResetActor: string;
   data: CompendiumData;
   lessons: LessonIndexEntry[];
 }) {
   const language = getLanguageDefinition(activeLanguageId);
   const { openLesson } = useAppNavigation();
   // A session survives tab switches; the component remounts per language.
-  const [restoredReview] = useState(() => readReviewSession(activeLanguageId));
+  const [restoredReview] = useState(() => readReviewSession(activeLanguageId, progressResetAt, progressResetActor));
   const restoredFamilies = getAtlasFamilies(data);
   const [mounted, setMounted] = useState(false);
   const [activeDeck, setActiveDeck] = useState<DeckType | null>(restoredReview?.activeDeck ?? null);
@@ -338,6 +347,8 @@ function ReviewHub({
       return;
     }
     writeReviewSession(activeLanguageId, {
+      progressResetAt,
+      progressResetActor,
       activeDeck,
       selectedShiftId,
       selectedDomainId,
@@ -355,6 +366,8 @@ function ReviewHub({
     });
   }, [
     activeLanguageId,
+    progressResetAt,
+    progressResetActor,
     activeDeck,
     selectedShiftId,
     selectedDomainId,

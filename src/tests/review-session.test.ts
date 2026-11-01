@@ -12,6 +12,8 @@ const CARD = {
 };
 
 const SNAPSHOT: ReviewSessionSnapshot = {
+  progressResetAt: 0,
+  progressResetActor: "",
   activeDeck: "due",
   selectedShiftId: "th_to_d",
   selectedDomainId: "",
@@ -31,6 +33,16 @@ const SNAPSHOT: ReviewSessionSnapshot = {
 describe("review session snapshots", () => {
   it("round-trips a valid session", () => {
     expect(parseReviewSession(JSON.stringify(SNAPSHOT))).toEqual(SNAPSHOT);
+  });
+
+  it("rejects sessions from before a progress reset", () => {
+    const beforeReset = JSON.stringify({ ...SNAPSHOT, progressResetAt: 100 });
+    expect(parseReviewSession(beforeReset, 100)).not.toBeNull();
+    expect(parseReviewSession(beforeReset, 101)).toBeNull();
+    expect(parseReviewSession(JSON.stringify(SNAPSHOT), 101)).toBeNull();
+    const tiedReset = JSON.stringify({ ...SNAPSHOT, progressResetAt: 101, progressResetActor: "a" });
+    expect(parseReviewSession(tiedReset, 101, "a")).not.toBeNull();
+    expect(parseReviewSession(tiedReset, 101, "b")).toBeNull();
   });
 
   it("rejects junk, unknown decks and malformed cards", () => {
