@@ -22,8 +22,8 @@ describe("Native Speech Synthesis Audio Engine", () => {
     let spoken = false;
 
     const mockVoices = [
-      { name: "English Voice", lang: "en-US" },
-      { name: "German Voice", lang: "de-DE" },
+      { name: "Austrian Voice", lang: "de-AT" },
+      { name: "German Voice", lang: "DE_de" },
     ];
 
     (globalThis as any).window = {
@@ -47,6 +47,7 @@ describe("Native Speech Synthesis Audio Engine", () => {
       this.voice = null;
     };
 
+    expect(detectLanguageVoice("de-DE").voiceName).toBe("German Voice");
     const res = playTargetAudio("[der] Wasser");
     expect(res).toBe(true);
     expect(cancelCalled).toBe(true);
@@ -55,7 +56,7 @@ describe("Native Speech Synthesis Audio Engine", () => {
     expect(capturedUtterance.text).toBe("Wasser");
     expect(capturedUtterance.lang).toBe("de-DE");
     expect(capturedUtterance.rate).toBe(0.92);
-    expect(capturedUtterance.voice?.lang).toBe("de-DE");
+    expect(capturedUtterance.voice?.name).toBe("German Voice");
 
     delete (globalThis as any).window;
     delete (globalThis as any).SpeechSynthesisUtterance;
@@ -65,7 +66,7 @@ describe("Native Speech Synthesis Audio Engine", () => {
   it("detects when a Linux/Android device has no voice installed for the target language", () => {
     (globalThis as any).window = {
       speechSynthesis: {
-        getVoices: () => [{ name: "English Only", lang: "en-US" }],
+        getVoices: () => [{ name: "Unrelated language", lang: "den" }],
       },
     };
     const diag = detectLanguageVoice("de-DE");

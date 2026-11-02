@@ -77,7 +77,7 @@ export function buildWordEntityMaps(
     const articleEntity: WordEntity = {
       id,
       target_word: correctArticle,
-      english_cognate: `___ ${word.target_word}`,
+      english_cognate: `- ${word.target_word}`,
       english_meaning: `${word.english_meaning} (cognate: ${word.english_cognate})`,
       gender: word.gender,
       ipa: word.ipa,

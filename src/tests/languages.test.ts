@@ -294,6 +294,7 @@ describe("store multi-language progress", () => {
       currentLessonId: 6,
       lessonProgress: {},
       lessonStars: {},
+      passedGateIds: [],
       wordMastery: {},
       srsCards: {},
       weeklyActivity: [true, false, false, false, false, false, false],

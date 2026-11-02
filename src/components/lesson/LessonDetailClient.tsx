@@ -47,6 +47,7 @@ export function LessonDetailClient({
 }: LessonDetailClientProps) {
   const completedLessons = useAppStore((s) => s.completedLessons);
   const lessonStars = useAppStore((s) => s.lessonStars);
+  const passedGateIds = useAppStore((s) => s.passedGateIds);
   const { openLesson, closeLesson } = useAppNavigation();
 
   const trailState = useMemo(
@@ -56,8 +57,8 @@ export function LessonDetailClient({
         branches: curriculum.trailBranches,
         gates: curriculum.trailGates,
         totalTopics: curriculum.totalTopics,
-      }),
-    [completedLessons, lessonStars, curriculum]
+      }, passedGateIds),
+    [completedLessons, lessonStars, curriculum, passedGateIds]
   );
 
   if (!lesson) {

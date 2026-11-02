@@ -133,7 +133,7 @@ describe("Unlock & recommendation logic", () => {
     expect(getTrailState([1, 2, 3], {}).recommendedId).toBe(4);
     // reaching core 10 in real play requires the Shift Gate open (14★ in topics 1–7)
     const reachable = [...Array.from({ length: 9 }, (_, i) => i + 1), 101, 102, 103, 201, 202, 301, 302];
-    expect(getTrailState(reachable, {}).recommendedId).toBe(10);
+    expect(getTrailState(reachable, {}, undefined, undefined, [1]).recommendedId).toBe(10);
   });
 
   it("falls back to the hollow frontier once the authored spine is done", () => {
@@ -142,10 +142,10 @@ describe("Unlock & recommendation logic", () => {
     expect(getTrailState(allAuthored, {}).recommendedId).toBe(702);
     // with the Shift Gate open, the required story after core 10 is next
     const shiftOpen = [...allAuthored, 101, 102, 103, 201, 202, 301, 302];
-    expect(getTrailState(shiftOpen, {}).recommendedId).toBe(9001);
+    expect(getTrailState(shiftOpen, {}, undefined, undefined, [1]).recommendedId).toBe(9001);
     // with both gates open and the story done, the frontier recommendation is core 11
     const gatesOpen = [...shiftOpen, 9001, 801, 802];
-    expect(getTrailState(gatesOpen, {}).recommendedId).toBe(11);
+    expect(getTrailState(gatesOpen, {}, undefined, undefined, [1, 2]).recommendedId).toBe(11);
   });
 
   it("never recommends a locked node", () => {
@@ -174,10 +174,15 @@ describe("Star gates", () => {
     expect(state.litEdges.has("7-8")).toBe(false);
   });
 
-  it("opens once the stretch has enough stars and releases the next stretch", () => {
+  it("requires both the region stars and a checkpoint pass", () => {
     // 7 cores + 7 side lessons across topics 1–7 = 14 stars
     const completed = [...coreRange(1, 7), 101, 102, 103, 201, 202, 301, 302];
-    const state = getTrailState(completed, {});
+    const starsOnly = getTrailState(completed, {});
+    expect(starsOnly.gates.get(1)).toMatchObject({ stars: 14, passed: false, open: false });
+    expect(starsOnly.nodes.get(8)!.status).toBe("locked");
+    const passOnly = getTrailState(coreRange(1, 7), {}, undefined, undefined, [1]);
+    expect(passOnly.gates.get(1)).toMatchObject({ stars: 7, passed: true, open: false });
+    const state = getTrailState(completed, {}, undefined, undefined, [1]);
     expect(state.gates.get(1)!.open).toBe(true);
     expect(state.nodes.get(8)!.status).toBe("available");
     expect(state.nodes.get(8)!.gate).toBeUndefined();

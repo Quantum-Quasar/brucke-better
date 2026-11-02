@@ -1384,7 +1384,13 @@ function ReviewHub({
               )}
             </div>
             <h2 className="text-3xl sm:text-4xl font-mono font-bold text-[var(--text-color)]">
-              {currentWord.english_cognate}
+              {currentWord.id.startsWith("article_") ? (
+                <>
+                  <span className="sr-only">missing article </span>
+                  <span aria-hidden="true" className="inline-block w-16 border-b-2 border-current align-baseline" />{" "}
+                  {currentWord.english_cognate.slice(2)}
+                </>
+              ) : currentWord.english_cognate}
             </h2>
             <p className="text-sm font-mono text-[var(--sub-color)]">&quot;{currentWord.english_meaning}&quot;</p>
             {!isRevealed && currentCloze && (

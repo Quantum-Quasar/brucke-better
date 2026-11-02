@@ -57,6 +57,8 @@ export const TrailMap: React.FC = () => {
   const { openLesson } = useAppNavigation();
   const completedLessons = useAppStore((s) => s.completedLessons);
   const lessonStars = useAppStore((s) => s.lessonStars);
+  const passedGateIds = useAppStore((s) => s.passedGateIds);
+  const passGate = useAppStore((s) => s.passGate);
   const lessonProgress = useAppStore((s) => s.lessonProgress);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const storeHydrated = useAppStore((s) => s.storeHydrated);
@@ -98,8 +100,8 @@ export const TrailMap: React.FC = () => {
   const decoChars = getLanguageDefinition(activeLanguageId).decoChars;
   const layout = useMemo(() => buildTrailLayout(width, trailData, decoChars), [width, trailData, decoChars]);
   const state = useMemo(
-    () => getTrailState(completedLessons, lessonStars, layout.nodes, trailData),
-    [completedLessons, lessonStars, layout, trailData]
+    () => getTrailState(completedLessons, lessonStars, layout.nodes, trailData, passedGateIds),
+    [completedLessons, lessonStars, layout, trailData, passedGateIds]
   );
   const nodeById = useMemo(() => new Map(layout.nodes.map((n) => [n.id, n])), [layout]);
   const groups = useMemo(() => groupNodesByTopic(layout.nodes, layout.topicAnchors), [layout]);
@@ -435,8 +437,19 @@ export const TrailMap: React.FC = () => {
 
       {selectedGate && (
         <GateDrawer
+          key={`${activeLanguageId}-${selectedGate.id}`}
           gate={selectedGate}
           view={state.gates.get(selectedGate.id)!}
+          languageId={activeLanguageId}
+          lessons={trailData.topics
+            .filter((topic) => topic.id >= state.gates.get(selectedGate.id)!.fromTopic && topic.id <= selectedGate.afterTopic)
+            .flatMap((topic) => [topic.core, ...(topic.stories ?? [])].map((lesson) => ({ id: lesson.id, title: lesson.title })))}
+          reached={(() => {
+            const topic = trailData.topics.find((item) => item.id === selectedGate.afterTopic);
+            const last = topic?.stories?.[topic.stories.length - 1] ?? topic?.core;
+            return last ? completedLessons.includes(last.id) : false;
+          })()}
+          onPass={() => passGate(selectedGate.id)}
           onClose={() => setTrailPosition(activeLanguageId, { gateId: null })}
         />
       )}

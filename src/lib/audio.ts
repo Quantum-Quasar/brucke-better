@@ -71,6 +71,14 @@ function resolveLanguageName(locale: string): string {
   return "German";
 }
 
+function findLanguageVoice(voices: SpeechSynthesisVoice[], locale: string) {
+  const normalized = locale.replace(/_/g, "-").toLowerCase();
+  const language = normalized.split("-")[0];
+  const exact = voices.find((voice) => voice.lang.replace(/_/g, "-").toLowerCase() === normalized);
+  const fallback = voices.find((voice) => voice.lang.replace(/_/g, "-").toLowerCase().split("-")[0] === language);
+  return { exact, voice: exact ?? fallback };
+}
+
 /**
  * Inspects the browser's Web Speech API to check whether a voice for `locale`
  * (e.g. "de-DE", "fr-FR", "es-ES") is actually installed on this device.
@@ -102,14 +110,7 @@ export function detectLanguageVoice(locale?: string): VoiceAvailability {
     voices = [];
   }
 
-  const prefix = effectiveLocale.slice(0, 2).toLowerCase();
-  const exactVoice = voices.find(
-    (v) =>
-      v.lang.toLowerCase() === effectiveLocale.toLowerCase() ||
-      v.lang.replace(/_/g, "-").toLowerCase() === effectiveLocale.toLowerCase()
-  );
-  const prefixVoice = voices.find((v) => v.lang.toLowerCase().startsWith(prefix));
-  const chosen = exactVoice ?? prefixVoice ?? null;
+  const { exact: exactVoice, voice: chosen } = findLanguageVoice(voices, effectiveLocale);
 
   if (voices.length === 0) {
     return {
@@ -177,11 +178,7 @@ export function playTargetAudio(text: string, locale?: string): boolean {
     utterance.pitch = 1.0;
 
     const voices = cachedVoices.length > 0 ? cachedVoices : window.speechSynthesis.getVoices();
-    const exactVoice = voices.find(
-      (v) => v.lang === effectiveLocale || v.lang.replace(/_/g, "-") === effectiveLocale
-    );
-    const prefixVoice = voices.find((v) => v.lang.startsWith(effectiveLocale.slice(0, 2)));
-    const voice = exactVoice ?? prefixVoice;
+    const { voice } = findLanguageVoice(voices, effectiveLocale);
     if (voice) {
       utterance.voice = voice;
     }

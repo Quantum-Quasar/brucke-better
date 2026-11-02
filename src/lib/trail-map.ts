@@ -390,6 +390,7 @@ export interface NodeView {
 
 export interface GateView {
   open: boolean;
+  passed: boolean;
   stars: number;
   fromTopic: number;
   toTopic: number;
@@ -413,7 +414,8 @@ export function getTrailState(
   completed: number[],
   stars: Record<number, LessonStar> = {},
   nodes?: Array<Pick<TrailNode, "id" | "kind" | "topicId">>,
-  data: TrailData = GERMAN_TRAIL_DATA
+  data: TrailData = GERMAN_TRAIL_DATA,
+  passedGateIds: number[] = []
 ): TrailState {
   const completedSet = new Set(completed);
   const view = new Map<number, NodeView>();
@@ -431,16 +433,18 @@ export function getTrailState(
   const edgePairs = buildTrailEdgePairs(data);
   const adjacency = data === GERMAN_TRAIL_DATA ? GERMAN_ADJACENCY : buildAdjacency(edgePairs);
 
-  // star gates: stars earned inside each gate's stretch decide whether it is open
+  // Both the region stars and the checkpoint pass are required.
   const topicById = new Map(allNodes.map((n) => [n.id, n.topicId]));
   const gateViews = new Map<number, GateView>();
+  const passedGates = new Set(passedGateIds);
   gates.forEach((gate, i) => {
     const { fromTopic, toTopic } = gateRegion(gates, i);
     const regionStars = Array.from(completedSet).filter((id) => {
       const t = topicById.get(id);
       return t !== undefined && t >= fromTopic && t <= toTopic;
     }).length;
-    gateViews.set(gate.id, { open: regionStars >= gate.requiredStars, stars: regionStars, fromTopic, toTopic });
+    const passed = passedGates.has(gate.id);
+    gateViews.set(gate.id, { open: regionStars >= gate.requiredStars && passed, passed, stars: regionStars, fromTopic, toTopic });
   });
   // the first closed gate at or before a node's topic blocks it (the spine is strict,
   // so a closed gate locks everything beyond it)

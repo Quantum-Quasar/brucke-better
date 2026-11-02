@@ -91,6 +91,37 @@ describe("Persistence validation & dual-store fallback merging", () => {
     (globalThis as any).localStorage.clear();
     (globalThis as any).document.cookie = "";
   });
+  it("persists independent gate passes, imports them and resets them", () => {
+    useAppStore.getState().passGate(1);
+    useAppStore.getState().passGate(1);
+    useAppStore.getState().passGate(-1);
+    expect(useAppStore.getState().passedGateIds).toEqual([1]);
+    expect(JSON.parse(localStorage.getItem(STORAGE_KEY)!).progressByLanguage.de.passedGateIds).toEqual([1]);
+    useAppStore.getState().setActiveLanguage("fr");
+    expect(useAppStore.getState().passedGateIds).toEqual([]);
+    useAppStore.getState().passGate(2);
+    useAppStore.getState().setActiveLanguage("de");
+    expect(useAppStore.getState().passedGateIds).toEqual([1]);
+    expect(useAppStore.getState().importBackupState({ progressByLanguage: { de: { passedGateIds: [3, 3, -1, "4"] }, fr: { passedGateIds: [4] } } })).toBe(true);
+    expect(useAppStore.getState().passedGateIds).toEqual([3]);
+    useAppStore.getState().setActiveLanguage("fr");
+    expect(useAppStore.getState().passedGateIds).toEqual([4]);
+    useAppStore.getState().resetProgress();
+    expect(useAppStore.getState().passedGateIds).toEqual([]);
+    useAppStore.getState().setActiveLanguage("de");
+    expect(useAppStore.getState().passedGateIds).toEqual([]);
+  });
+
+  it("restores gate passes from a fallback cookie and merges cross-tab passes", () => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ theme: "nord" }));
+    document.cookie = `${STORAGE_COOKIE_KEY}=${encodeURIComponent(JSON.stringify({ activeLanguageId: "de", progressByLanguage: { de: { passedGateIds: [1] } } }))}`;
+    expect(loadSavedState().passedGateIds).toEqual([1]);
+    useAppStore.getState().passGate(2);
+    const { progressResetAt, progressResetActor } = useAppStore.getState();
+    useAppStore.getState().hydrateFromStorage({ reread: true, snapshot: JSON.stringify({ activeLanguageId: "de", progressResetAt, progressResetActor, progressByLanguage: { de: { passedGateIds: [1] } } }) });
+    expect(useAppStore.getState().passedGateIds).toEqual([2, 1]);
+  });
+
 
   describe("isPlausibleStateObject schema guard", () => {
     it("accepts plain objects only", () => {

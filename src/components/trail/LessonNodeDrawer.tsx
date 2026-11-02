@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { ArrowRight, BookOpen, Check, GitBranch, Info, Lock, Sparkles, Star, X } from "lucide-react";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
 import type { TrailNode, NodeStatus, GateView, NodeGateInfo, GateMarker } from "@/lib/trail-map";
+import { loadLesson } from "@/lib/content-client";
+import { hasPassedGateAssessment, scoreGateAnswers, selectGateQuestion, type GateQuestion } from "@/lib/gate-assessment";
 
 interface LessonNodeDrawerProps {
   node: TrailNode;
@@ -114,8 +116,7 @@ export const LessonNodeDrawer: React.FC<LessonNodeDrawerProps> = ({
                     <span className="text-[var(--text-color)] font-bold">
                       {view.gate.stars} / {view.gate.requiredStars} ★
                     </span>{" "}
-                    earned in topics {view.gate.fromTopic}–{view.gate.toTopic}. Clear the extra lessons in this stretch —
-                    the gate opens on its own once you have enough stars.
+                    earned in topics {view.gate.fromTopic}–{view.gate.toTopic}. Earn the required stars, reach the gate, and pass its checkpoint to continue.
                   </p>
                 </>
               ) : (
@@ -170,11 +171,15 @@ const PURPLE = "#a78bfa";
 interface GateDrawerProps {
   gate: GateMarker;
   view: GateView;
+  languageId: string;
+  lessons: Array<{ id: number; title: string }>;
+  reached: boolean;
+  onPass: () => void;
   onClose: () => void;
 }
 
 /** Checkpoint drawer explaining why a star gate sits where it sits. */
-export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, onClose }) => {
+export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, languageId, lessons, reached, onPass, onClose }) => {
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const closeRef = useRef<HTMLButtonElement | null>(null);
   useBackDismiss(true, onClose);
@@ -187,6 +192,41 @@ export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, onClose }) =
   });
 
   const pct = Math.min(100, Math.round((view.stars / gate.requiredStars) * 100));
+  const [questions, setQuestions] = useState<GateQuestion[]>([]);
+  const [answers, setAnswers] = useState<string[]>([]);
+  const [result, setResult] = useState<boolean[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const eligible = reached && view.stars >= gate.requiredStars;
+  const startAssessment = async () => {
+    if (!eligible || view.passed || loading) return;
+    setLoading(true);
+    setError(null);
+    try {
+      if (!lessons.length) throw new Error("No required lessons were found for this checkpoint.");
+      const selected = await Promise.all(lessons.map(async (lesson) => {
+        const payload = await loadLesson(languageId, lesson.id);
+        if (!payload?.lesson?.exercises) throw new Error(`Could not load exercises for ${lesson.title}.`);
+        const question = selectGateQuestion(lesson.title, lesson.id, payload.lesson.exercises);
+        if (!question) throw new Error(`No supported assessment question is available for ${lesson.title}.`);
+        return question;
+      }));
+      setQuestions(selected);
+      setAnswers(selected.map(() => ""));
+      setResult(null);
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "Could not load checkpoint questions.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const submitAssessment = (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!eligible || view.passed || !questions.length || answers.some((answer) => !answer.trim())) return;
+    const scored = scoreGateAnswers(questions, answers);
+    setResult(scored);
+    if (hasPassedGateAssessment(scored)) onPass();
+  };
 
   return (
     <div className="fixed inset-0 z-50">
@@ -223,7 +263,7 @@ export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, onClose }) =
           <div className="p-3 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 space-y-2 text-xs font-mono">
             <div className="flex items-center justify-between">
               <span className="text-[var(--sub-color)]">stars in this stretch</span>
-              <span className={view.open ? "text-[var(--main-color)] font-bold" : "text-[var(--text-color)] font-bold"}>
+              <span className={view.stars >= gate.requiredStars ? "text-[var(--main-color)] font-bold" : "text-[var(--text-color)] font-bold"}>
                 {view.stars} / {gate.requiredStars}
               </span>
             </div>
@@ -237,20 +277,72 @@ export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, onClose }) =
             >
               <div
                 className="h-full rounded-full transition-all duration-300"
-                style={{ width: `${pct}%`, background: view.open ? "var(--main-color)" : "var(--sub-color)" }}
+                style={{ width: `${pct}%`, background: view.stars >= gate.requiredStars ? "var(--main-color)" : "var(--sub-color)" }}
               />
             </div>
             {view.open ? (
               <span className="flex items-center gap-1.5 text-[var(--main-color)]">
                 <Check className="w-3.5 h-3.5" /> open — the next stretch awaits
               </span>
-            ) : (
+            ) : view.stars < gate.requiredStars ? (
               <span className="text-[var(--sub-color)] leading-relaxed">
-                {gate.requiredStars - view.stars} more star{gate.requiredStars - view.stars === 1 ? "" : "s"} to open —
-                gold or purple both count.
+                {gate.requiredStars - view.stars} more star{gate.requiredStars - view.stars === 1 ? "" : "s"} needed. Gold or purple both count.
               </span>
+            ) : !reached ? (
+              <span className="text-[var(--sub-color)]">Complete the last main-path lesson before this gate to take the checkpoint.</span>
+            ) : (
+              <span className="text-[var(--sub-color)]">Star requirement met. Pass the checkpoint to open the gate.</span>
             )}
           </div>
+          {!view.passed && (
+            <p className="text-xs text-[var(--sub-color)]">
+              The checkpoint has one question from each required main-path lesson in this stretch.
+              Answer all questions; at least 80% must be correct to pass. You can retry.
+            </p>
+          )}
+          {error && <p role="alert" className="text-sm text-red-500">{error}</p>}
+          {eligible && !view.passed && questions.length === 0 && (
+            <button type="button" onClick={startAssessment} disabled={loading} className="w-full rounded-lg bg-[var(--main-color)] px-4 py-3 text-sm font-bold text-[var(--bg-color)] disabled:opacity-50">
+              {loading ? "Loading checkpoint…" : error ? "Retry loading checkpoint" : "Start checkpoint"}
+            </button>
+          )}
+          {questions.length > 0 && (
+            <form onSubmit={submitAssessment} className="space-y-4">
+              {questions.map(({ lesson, options, prompt }, index) => (
+                <fieldset key={`${index}-${lesson}`} className="space-y-2 rounded-lg border border-[var(--sub-color)]/25 p-3">
+                  <legend className="px-1 text-xs text-[var(--sub-color)]">{index + 1}. {lesson}</legend>
+                  <p className="whitespace-pre-line text-sm font-medium text-[var(--text-color)]">{prompt}</p>
+                  {options.map((option, optionIndex) => (
+                    <label key={optionIndex} className="flex gap-2 text-sm text-[var(--text-color)]">
+                      <input type="radio" name={`gate-question-${index}`} value={option} required disabled={result !== null}
+                        checked={answers[index] === option}
+                        onChange={() => setAnswers((old) => old.map((answer, i) => i === index ? option : answer))} />
+                      {option}
+                    </label>
+                  ))}
+                  {result && <p className="text-xs font-semibold">{result[index] ? "Correct" : "Incorrect"}</p>}
+                </fieldset>
+              ))}
+              {result ? (
+                <div role="status" className="space-y-3">
+                  <p className="text-sm font-semibold">
+                    {view.passed ? "Passed" : "Not passed"}: {result.filter(Boolean).length} / {result.length} correct
+                    {" "}(need {Math.ceil(result.length * 0.8)}).
+                  </p>
+                  {!view.passed && (
+                    <button type="button" onClick={() => { setResult(null); setAnswers(questions.map(() => "")); }}
+                      className="w-full rounded-lg bg-[var(--main-color)] px-4 py-3 text-sm font-bold text-[var(--bg-color)]">
+                      Retry checkpoint
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <button type="submit" className="w-full rounded-lg bg-[var(--main-color)] px-4 py-3 text-sm font-bold text-[var(--bg-color)]">
+                  Submit answers
+                </button>
+              )}
+            </form>
+          )}
         </div>
       </div>
     </div>

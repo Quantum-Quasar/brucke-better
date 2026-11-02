@@ -31,6 +31,7 @@ export interface LanguageProgress {
   currentLessonId: number;
   lessonProgress: Record<number, LessonProgress>;
   lessonStars: Record<number, LessonStar>;
+  passedGateIds: number[];
   wordMastery: Record<string, MasteryState>;
   srsCards: Record<string, SRSCard>;
   weeklyActivity: boolean[]; // 7 days Mon-Sun
@@ -65,6 +66,7 @@ export interface AppState {
   lessonProgress: Record<number, LessonProgress>;
   /** gold = completed; purple = flawless run (retry queue untouched, including a clean replay). Purple is never downgraded. */
   lessonStars: Record<number, LessonStar>;
+  passedGateIds: number[];
   wordMastery: Record<string, MasteryState>;
   srsCards: Record<string, SRSCard>;
   weeklyActivity: boolean[]; // 7 days Mon-Sun
@@ -119,6 +121,7 @@ export interface AppState {
   seedSrsCards: (wordIds: string[]) => void;
   markWordMastered: (wordId: string) => void;
   completeLesson: (lessonId: number, opts?: { perfect?: boolean; nextLessonId?: number | null }) => void;
+  passGate: (gateId: number) => void;
   setLessonProgress: (lessonId: number, progress: LessonProgress) => void;
   recordReview: (wordId: string, grade: ReviewGrade) => void;
   /**
@@ -520,6 +523,7 @@ function normalizeLanguageSlice(raw: unknown): LanguageProgress {
     currentLessonId: parseLessonId(slice.currentLessonId) ?? 1,
     lessonProgress: normalizeLessonProgress(slice.lessonProgress),
     lessonStars: normalizeLessonStars(slice.lessonStars),
+    passedGateIds: normalizeLessonIdList(slice.passedGateIds),
     wordMastery: normalizeWordMastery(slice.wordMastery),
     srsCards: normalizeSrsCards(slice.srsCards),
     weeklyActivity: normalizeWeeklyActivity(slice.weeklyActivity) ?? emptyWeek(),
@@ -551,6 +555,7 @@ function applyImportedSlice(base: LanguageProgress | undefined, rawSlice: unknow
   }
   if ("lessonProgress" in rawSlice) patch.lessonProgress = normalizeLessonProgress(rawSlice.lessonProgress);
   if ("lessonStars" in rawSlice) patch.lessonStars = normalizeLessonStars(rawSlice.lessonStars);
+  if ("passedGateIds" in rawSlice) patch.passedGateIds = normalizeLessonIdList(rawSlice.passedGateIds);
   if ("wordMastery" in rawSlice) patch.wordMastery = normalizeWordMastery(rawSlice.wordMastery);
   if ("srsCards" in rawSlice) patch.srsCards = importSrsCards(rawSlice.srsCards, {});
   if ("weeklyActivity" in rawSlice) {
@@ -570,6 +575,7 @@ function sliceFromMirrors(state: AppState): LanguageProgress {
     currentLessonId: state.currentLessonId,
     lessonProgress: state.lessonProgress,
     lessonStars: state.lessonStars,
+    passedGateIds: state.passedGateIds,
     wordMastery: state.wordMastery,
     srsCards: state.srsCards,
     weeklyActivity: state.weeklyActivity,
@@ -612,6 +618,7 @@ function mergeLanguageSlice(current: LanguageProgress, incoming: LanguageProgres
     currentLessonId: Math.max(current.currentLessonId, incoming.currentLessonId),
     lessonProgress: lessons.values,
     lessonStars,
+    passedGateIds: Array.from(new Set([...current.passedGateIds, ...incoming.passedGateIds])),
     wordMastery: mastery.values,
     srsCards: cards.values,
     progressVersions: { lessonProgress: lessons.versions, wordMastery: mastery.versions, srsCards: cards.versions },
@@ -632,6 +639,7 @@ function normalizeParsedState(parsed: Record<string, any>): Partial<AppState> {
     currentLessonId: parseLessonId(parsed.currentLessonId) ?? 1,
     lessonProgress: normalizeLessonProgress(parsed.lessonProgress),
     lessonStars: normalizeLessonStars(parsed.lessonStars),
+    passedGateIds: normalizeLessonIdList(parsed.passedGateIds),
     wordMastery: normalizeWordMastery(parsed.wordMastery),
     srsCards: normalizeSrsCards(parsed.srsCards),
     weeklyActivity: normalizeWeeklyActivity(parsed.weeklyActivity) ?? emptyWeek(),
@@ -641,6 +649,7 @@ function normalizeParsedState(parsed: Record<string, any>): Partial<AppState> {
   parsed.currentLessonId = topLevelProgress.currentLessonId;
   parsed.lessonProgress = topLevelProgress.lessonProgress;
   parsed.lessonStars = topLevelProgress.lessonStars;
+  parsed.passedGateIds = topLevelProgress.passedGateIds;
   parsed.wordMastery = topLevelProgress.wordMastery;
   parsed.srsCards = topLevelProgress.srsCards;
   parsed.weeklyActivity = topLevelProgress.weeklyActivity;
@@ -694,6 +703,7 @@ function normalizeParsedState(parsed: Record<string, any>): Partial<AppState> {
   parsed.currentLessonId = activeSlice.currentLessonId;
   parsed.lessonProgress = activeSlice.lessonProgress;
   parsed.lessonStars = activeSlice.lessonStars;
+  parsed.passedGateIds = activeSlice.passedGateIds;
   parsed.wordMastery = activeSlice.wordMastery;
   parsed.srsCards = activeSlice.srsCards;
   parsed.weeklyActivity = activeSlice.weeklyActivity;
@@ -939,6 +949,7 @@ export const useAppStore = create<AppState>((set, get) => ({
   currentLessonId: 1,
   lessonProgress: {},
   lessonStars: {},
+  passedGateIds: [],
   wordMastery: {},
   srsCards: {},
   weeklyActivity: emptyWeek(),
@@ -987,6 +998,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         currentLessonId: incoming?.currentLessonId || 1,
         lessonProgress: incoming?.lessonProgress || {},
         lessonStars: incoming?.lessonStars || {},
+        passedGateIds: incoming?.passedGateIds || [],
         wordMastery: incoming?.wordMastery || {},
         srsCards: incoming?.srsCards || {},
         weeklyActivity: incoming?.weeklyActivity || [false, false, false, false, false, false, false],
@@ -1212,6 +1224,16 @@ export const useAppStore = create<AppState>((set, get) => ({
     });
   },
 
+  passGate: (gateId) => {
+    if (!Number.isSafeInteger(gateId) || gateId <= 0) return;
+    set((s) => {
+      if (s.passedGateIds.includes(gateId)) return s;
+      const next = { ...s, passedGateIds: [...s.passedGateIds, gateId] };
+      saveState(next);
+      return next;
+    });
+  },
+
   completeLesson: (lessonId, opts) => {
     set((s) => {
       const nextStars =
@@ -1403,6 +1425,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         currentLessonId: 1,
         lessonProgress: {},
         lessonStars: {},
+        passedGateIds: [],
         wordMastery: {},
         srsCards: {},
         weeklyActivity: emptyWeek(),
@@ -1451,6 +1474,7 @@ export const useAppStore = create<AppState>((set, get) => ({
       "currentLessonId",
       "lessonProgress",
       "lessonStars",
+      "passedGateIds",
       "wordMastery",
       "srsCards",
       "weeklyActivity",
@@ -1487,6 +1511,7 @@ export const useAppStore = create<AppState>((set, get) => ({
           "currentLessonId",
           "lessonProgress",
           "lessonStars",
+          "passedGateIds",
           "wordMastery",
           "srsCards",
           "weeklyActivity",
@@ -1510,6 +1535,9 @@ export const useAppStore = create<AppState>((set, get) => ({
       }
       if (isPlausibleStateObject(payload.lessonStars)) {
         topLevelPatch.lessonStars = normalizeLessonStars(payload.lessonStars);
+      }
+      if (Array.isArray(payload.passedGateIds)) {
+        topLevelPatch.passedGateIds = normalizeLessonIdList(payload.passedGateIds);
       }
       if (isPlausibleStateObject(payload.wordMastery)) {
         topLevelPatch.wordMastery = normalizeWordMastery(payload.wordMastery);
@@ -1578,6 +1606,7 @@ export const useAppStore = create<AppState>((set, get) => ({
         currentLessonId: activeSlice.currentLessonId,
         lessonProgress: activeSlice.lessonProgress,
         lessonStars: activeSlice.lessonStars,
+        passedGateIds: activeSlice.passedGateIds,
         wordMastery: activeSlice.wordMastery,
         srsCards: activeSlice.srsCards,
         weeklyActivity: activeSlice.weeklyActivity,
@@ -1698,6 +1727,7 @@ export const useAppStore = create<AppState>((set, get) => ({
           currentLessonId: activeSlice.currentLessonId,
           lessonProgress: activeSlice.lessonProgress,
           lessonStars: activeSlice.lessonStars,
+          passedGateIds: activeSlice.passedGateIds,
           wordMastery: activeSlice.wordMastery,
           srsCards: activeSlice.srsCards,
           weeklyActivity: activeSlice.weeklyActivity,
