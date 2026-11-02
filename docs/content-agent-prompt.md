@@ -1,132 +1,111 @@
-> **Corrected copy — verified against the implementation on 2026-09-30.**
-> The original append-only version is preserved verbatim in `old documentation/`.
-> Every correction applied here, with its `path:line` evidence, is listed in [`CORRECTIONS.md`](./CORRECTIONS.md).
+# AGENT PROMPT — Brücke German Content Author & Word-Connections Expander
 
-# AGENT PROMPT — Brücke Content Author & Word-Connections Expander
-
-> Copy everything from the `## MISSION` heading down into your coding agent (same workspace as the app).
-> It is written to be self-contained. Run the agent in batches and review between batches. <!-- corrected 2026-09-30: the copy boundary was implicit; the correction header is not part of the prompt -->
+> Copy everything from `## MISSION` down into your coding agent (same workspace as the app).
+> Run it in batches and review between batches. **German course only** — French, Spanish and Dutch
+> are authored as typed modules in `src/data/<lang>/`; see [`courses.md`](./courses.md).
+> Read [`NORTH_STAR.md`](./NORTH_STAR.md) and [`AGENT_PRECAUTIONS.md`](./AGENT_PRECAUTIONS.md) first;
+> where this file and the North Star disagree about how much etymology work to do, the North Star wins.
 
 ---
 
 ## MISSION
 
-You are the content author for **Brücke** (`/home/shaurya/gemini-tmp/german-app-2-new-ui`), a German-learning web app that teaches German to English speakers through **historical sound shifts and living etymological cognates** — never through rote memorization. The curriculum's 30 topics are designed as a trail map of clusters, and **the whole spine is now authored: 30 topic cores + 72 sprigs + 5 branch clusters (7 branch lessons) = 109 `Lesson` objects in `src/data/lessons.ts`**, with every shell in `curriculum.ts` carrying `authored: true`. <!-- corrected 2026-09-30: was "The first 10 topic cores are fully authored. Your job is to fill the remaining ~100 hollow lesson shells" — the curriculum is complete (72 sprig shells + 5 branches, all authored: true; 109 lessons) -->
+You are the content author for **Brücke** (this repository), a web app that teaches German to English speakers through **historical sound shifts and living etymological cognates** — never through rote memorization. The German curriculum is complete: 30 topic cores, their sprigs (extra practice), support branches, and five required reading stories on the spine. Current totals live in `src/data/word-counts.ts` (`COURSE_COUNTS.de`) — do not hardcode them in your own notes; they drift.
 
-Your job today is **maintenance and expansion, not first-fill**: review and correct the existing 109 lessons, deepen thin ones, grow the 310-word connections database that powers the whole app, and — when you discover material that deserves a place — expand the structure itself. A new lesson normally means a new sprig or branch lesson (see EXPANSION PERMISSIONS).
+Your job is **maintenance and expansion, not first-fill**: correct defects in existing lessons, deepen thin ones, grow the word-connections database that powers the app, and — when material deserves a place — add a sprig or branch lesson (see EXPANSION PERMISSIONS).
 
-This is a **multi-batch, long-running assignment**. Work in batches of 3–5 lessons (or review items), validate mechanically after every batch, and stop for human review at each batch boundary. Never author more than 5 lessons before running the validation suite.
+Work in batches of 3–5 lessons (or review items), validate mechanically after every batch, and stop for human review at each batch boundary. Never author more than 5 lessons before running the validation suite.
 
 ## THE PRODUCT PHILOSOPHY (read this twice)
 
 Brücke's core claim to the learner: *"You already understand more German than you think — English and German are siblings, and 500–800 AD sound shifts explain the differences."* Every lesson must deliver an **aha-moment of connection**, not a vocabulary list. A Brücke lesson never says "memorize that German 't' is English 'ss'"; it says *"Water becomes Wasser, better becomes besser — English kept the ancient 't', High German hissed it into 'ss'. Once you hear it, you hear it everywhere."*
 
-- Every word taught should **teach a connection** (a sound shift, a shared root, a calque, or a documented borrowing). If a word has no interesting connection to English, it does not belong in a table — it may appear as a `vocab_hints` entry instead. <!-- corrected 2026-09-30: was `vocab_hint`; the field is `vocab_hints` (src/lib/types.ts:94-98) -->
-- Every etymological claim must be **true and verifiable**. This app's entire credibility rests on it. See the verification protocol below.
-- Grammar is taught as "the historical English you lost": German verb endings are Shakespeare's *thou -st*, the accusative is the *him-case*, German subordinate-clause word order is Old English's habit. Find the English inside the German, always.
+- Every word taught should **teach a connection** (a sound shift, a shared root, a calque, or a documented borrowing). A word with no interesting connection does not belong in a table — it may appear as a `vocab_hints` entry instead.
+- Every etymological claim must be **true and verifiable**. The app's credibility rests on it. See the verification protocol below. (The practical reading, per the North Star: *don't state anything false — and if in doubt, say less.*)
+- Grammar is taught as "the historical English you lost": German verb endings are Shakespeare's *thou -st*, the accusative is the *him-case*, subordinate-clause word order is Old English's habit. Find the English inside the German.
 
 ## WHERE THINGS LIVE (file map)
 
 | File | What it is | Your relationship to it |
 |---|---|---|
-| `src/data/lessons.ts` | The authored lesson content (a `LESSONS` array of 109 full `Lesson` objects) | **Your main writing target.** Append new lessons; review/fix existing ones in place. Treat lessons 1–10 as the register standard and change them only for a real defect. |
-| `src/data/curriculum.ts` | The 30-topic trail structure: cores, sprigs (extra lessons of a topic), branches (support clusters), star gates | Read constantly. Every existing shell is already `authored: true`; new shells you create must be too. May be extended (see Expansion). |
-| `word_connections.md` (repo root) | The source-of-truth etymological compendium: §1 shift laws, §2 vocabulary table (310 words), §3 compound calques, §4 false friends, §5 daily insights | **Grow this first**, then regenerate. |
-| `scripts/parse-compendium.ts` | Compiles `word_connections.md` → `src/data/compendium.json` + `src/data/insights.json` | Run via `bun run parse-data`. It regex-matches section HEADERS — see the parser traps below. |
-| `src/data/compendium.json` | Generated. Do not edit by hand. | Regenerated by the parser. |
-| `src/data/compendium.ts` | The typed wrapper every screen imports: spreads the raw JSON and derives `wordList` from the `words` map at runtime | Read-only, and it needs no edit when you add words — the list is derived, not hand-maintained. Check it if a review surface renders a word you just added. <!-- added 2026-09-30: was absent from the file map; every review/atlas surface consumes it (src/data/compendium.ts:1) --> |
-| `src/lib/types.ts` | All TypeScript types incl. `Lesson`, `ExerciseItem`, and `TOTAL_COMPENDIUM_WORDS` (hardcoded number!) | Update the word count constant when you add words. |
-| `src/tests/trail-map.test.ts` | Curriculum integrity tests, incl. the authored-frontier boundary test | Reads `AUTHORED_SPINE_LIMIT` (currently 30). Only touch it if you deliberately add a topic beyond 30. |
-| `src/tests/compendium.test.ts` | Compendium integrity test: pins 9 shifts / 32 compounds / 16 false friends / 28 insights and asserts `wordList.length >= TOTAL_COMPENDIUM_WORDS` | Read before adding compounds, false friends or insights — those counts are hard assertions, so bump them in the same batch. <!-- added 2026-09-30: was absent from the file map (src/tests/compendium.test.ts:10,16,29,38,46) --> |
-| `src/tests/assets-and-routes.test.ts` | Asserts lessons 1–10 have intact word associations and that audio assets exist | Still loops `id = 1..10` only; extend its loop range to cover new lessons (optional but encouraged). |
-| `src/components/trail/TrailMap.tsx`, `src/lib/trail-map.ts`, `src/lib/store.ts` | Map renderer, layout engine, progress store | Read-only context. Do not restructure. |
-| `src/app/trail/[id]/page.tsx`, `src/components/lesson/LessonReader.tsx` | The 5-segment lesson player | Read to understand how your content renders. |
-| `src/components/common/ShiftPair.tsx`, `WordCardDrawer.tsx` | How table words & word cards display | Read-only context. |
+| `src/data/lessons.ts` | German lessons (`LESSONS`, JSON-style quoted keys; ends with `...READING_LESSONS`) | **Main writing target.** Insert new lessons before the `...READING_LESSONS` line; fix existing ones in place. |
+| `src/data/reading-lessons-de.ts` | The five spine reading stories (ids 9001–9005) | Edit only for a real defect. |
+| `src/data/curriculum.ts` | The 30-topic trail: cores, sprigs, branches (`TRAIL_BRANCHES`), star gates (`TRAIL_GATES`) | Read constantly. New shells you add must be `authored: true`. |
+| `word_connections.md` (repo root) | **Source of truth** for every word, shift family, compound, false friend and insight: §1 shift laws, §2 vocabulary table, §3 compound calques, §4 false friends, §5 daily insights | **Grow this first**, then `bun run parse-data`. |
+| `scripts/parse-compendium.ts` | Compiles the markdown → `src/data/compendium.json` + `src/data/insights.json` (generated; never hand-edit) | Read fully before your first edit. |
+| `scripts/append-words.mjs` | Batch-appends verified records to §2 | Preferred way to add many words. |
+| `src/lib/types.ts` | All types (`Lesson`, `ExerciseItem`, `ExerciseType`) and `TOTAL_COMPENDIUM_WORDS` (hardcoded) | Update the constant when the word count changes. |
+| `src/data/word-counts.ts` | Cheap per-language counts for the nav chrome | Update `de` entries with the word count; pinned by `src/tests/languages.test.ts`. |
+| `src/tests/compendium.test.ts` | Pins 9 shifts / 32 compounds / 16 false friends / 28 insights and `wordList.length >= TOTAL_COMPENDIUM_WORDS` | Bump the pinned counts in the same batch when you add §3/§4/§5 rows. |
+| `src/tests/trail-map.test.ts` | Curriculum integrity: titles match shells, ≤ 7 sprigs per topic, authored frontier | Leave alone unless you deliberately extend the spine past 30 topics. |
+| `src/components/lesson/LessonReader.tsx`, `LessonView` | The lesson player | Read to see how your content renders. Do not restructure. |
+| `src/components/trail/TrailMap.tsx`, `src/lib/trail-map.ts`, `src/lib/store.ts` | Map renderer, layout engine, progress store | Read-only context. |
 
 ## NON-NEGOTIABLE MECHANICAL CONSTRAINTS
 
-These are hard failures if violated. The build and tests enforce most of them, but read them anyway.
+Hard failures if violated. The build and tests enforce most of them.
 
-1. **Lesson ids are not free.** A lesson's `id` in `LESSONS` must equal the shell id in `curriculum.ts`: topic cores use the topic id (1–30, all taken), sprigs use `topicId * 100 + index` via the exported `sprigId` helper (e.g. topic 14's sprigs are 1401, 1402, 1403), branch lessons use `5000 + n*10 + index` (e.g. 5011, 5012 for branch 5010; the five branches are 5010, 5020, 5030, 5040, 5050). The map resolves authored content purely by this id match. <!-- corrected 2026-09-30: was "(11–30)" — all 30 cores are authored and occupy 1–30 -->
-2. **Every word a lesson references must exist in the compendium.** `word_ids` and `table_word_ids` are looked up by lowercase id in `compendium.words`. A missing word = broken lesson page. So: word first into `word_connections.md`, then `bun run parse-data`, then reference it.
-3. **`TOTAL_COMPENDIUM_WORDS` in `src/lib/types.ts` is hardcoded** (currently 310). When you add words, update it. The UI displays it ("x / 310 mastered"), and `src/tests/compendium.test.ts` asserts `wordList.length >= TOTAL_COMPENDIUM_WORDS` — so a stale constant that is *too high* fails the suite, and one that is *too low* silently under-reports mastery. <!-- corrected 2026-09-30: was "currently 218" / "x / 218 mastered" (src/lib/types.ts:1, word_connections.md:72) -->
-4. **The parser's section headers carry the counts, and its regexes accept any number.** The four section regexes are `\(All \d+ Words\)`, `\(All \d+ Compounds\)`, `\(All \d+ Falsche Freunde\)` and `\(All \d+ Days\)` — so `## 2. Exhaustive Core Vocabulary Dictionary (All 260 Words)` parses exactly like `(All 310 Words)`. Update the header counts anyway, for accuracy and for the human reader, but a wrong number will *not* empty the section. What does break the parse is renaming or renumbering a section: the regexes also anchor on the full heading text and on the next section's `## 3.` / `## 4.` / `## 5.` marker, so keep the headings verbatim and add new rows inside them. <!-- corrected 2026-09-30: was "the parser regex-matches them literally … otherwise the section parses as empty and the build/data breaks" (scripts/parse-compendium.ts:108-109,190,231) -->
-5. **Parser table format is strict.** §2 rows are pipe tables under the header row
-   `| # | German Word | English Cognate | Gender / Article | IPA | Sound Shift / Pattern | Context Phrase & Translation | Etymological Derivation |`.
-   Rules the parser actually enforces: a row must start with `|`; it is skipped if it contains `---` (the separator row) or the literal string `German Word`; it must yield **at least 8 cells** after trimming (a short row is silently dropped, which reads as a missing word rather than an error); column 1 is the sequence number, column 2 the German word (`**bold**` is stripped), column 3 the English cognate, column 4 `der`/`die`/`das …` (anything else leaves `gender` null — use `-` for verbs/adverbs), column 5 the IPA, column 6 the shift column, column 7 the context phrase, column 8 the derivation. The shift column must contain one or more of the exact ids: `th_to_d`, `d_to_t`, `p_to_pf_f`, `t_to_s_ss_z`, `k_to_ch`, `v_to_b`, `y_gh_to_g_ch`, `latin_ieren`, `strong_verbs_ablaut`, or backticked `Direct Cognate`. The context phrase MUST end with `*("English translation.")*` — the parser regex-extracts phrase and translation from that one cell, and without it the translation is empty. Read `scripts/parse-compendium.ts` fully before your first edit. <!-- corrected 2026-09-30: was an invented column spec `| # | **German** | cognate | …` that matches no real header (word_connections.md:74, scripts/parse-compendium.ts:114-134) -->
-6. **Authored flag + title consistency.** Every shell in `curriculum.ts` is already `authored: true`; any shell *you* add must be too (you author its content in the same batch). For topic cores the cluster `title`, the core shell `title`, and the `LESSONS` entry `title` must be **identical strings** — `src/tests/trail-map.test.ts` now asserts this for all 30 topics, not just the original 10. The map signpost and the lesson page must never disagree. <!-- corrected 2026-09-30: was "a test enforces it for the original 10"; the frontier is 30 so the invariant is enforced spine-wide (src/tests/trail-map.test.ts:14,32-42) -->
-7. **The authored-frontier test.** `src/tests/trail-map.test.ts` holds `const AUTHORED_SPINE_LIMIT = 30;` and the test "has authored content up to the frontier and hollow shells beyond": topics `<= AUTHORED_SPINE_LIMIT` must have an authored core whose title matches the cluster, topics beyond it must have no lesson at all. <!-- corrected 2026-09-30: was a test named "has authored content for topics 1–10 and shells beyond" with instructions to raise the frontier each batch and a sample `AUTHORED_SPINE_LIMIT = 14`; the frontier is already 30 and the hollow branch is unreachable (src/tests/trail-map.test.ts:12-14,32) -->
-   Leave it alone unless you deliberately extend the spine past 30 topics — a 31st topic means raising both `TOTAL_TOPICS` and `AUTHORED_SPINE_LIMIT` in the same batch.
-   Also extend `expect(THEMES…)`-style count checks only where truly needed — never weaken an assertion to make a build pass silently; change it to reflect a deliberate new reality and say so in your summary.
-8. **Exercise count & variety.** Every lesson has exactly 5 exercises (all 109 shipped lessons follow it), drawn from: `morpheme_tiles`, `matching_pairs`, `shift_select`, `derive`, `reverse_cognate`, `syntax_builder` — plus the Thinking Method types `transcribe` and `literal_gloss` (TM-1/TM-2 in `docs/THINKING_METHOD_UPGRADE.md`; authoring rules in `docs/AGENT_PRECAUTIONS.md` §7 — `transcribe` needs `idea`, 1–3 `cues` and a `word_bank` with ≥ 1 distractor; `literal_gloss` belongs only in the seven word-order clusters). Aim for at least 3 different types per lesson — the shipped corpus is at 3+ except lessons 2202 and 3002, which use 2 — and note that the first exercise of every lesson must be `morpheme_tiles`, `matching_pairs` or `shift_select` (enforced for all lessons; `transcribe` and `literal_gloss` are never first). Fields per type are visible in lessons 1–10 — copy their shapes exactly (e.g. `syntax_builder` needs `word_bank` AND `vocab_hints` for auxiliary words the learner hasn't been taught, and no `syntax_builder` `word_bank` tile or `target_answer` may end in punctuation). Every exercise also needs a non-empty `explanation` and `meaning`. Exercises may also carry `affirmation` / `diagnosis` (TM-3), and lessons may carry one optional ungraded `twist` (TM-5). <!-- updated 2026-10-02: added the Thinking Method types and fields -->
-9. **Reuse density.** Example sentences and exercise targets may only use vocabulary taught in this lesson or earlier lessons (check `word_ids` of lessons with lower ids in the same trail order), plus function words introduced via `vocab_hints`. Never require an untaught content word. This is what makes the app feel fair.
-10. **Cluster size budget.** A topic cluster may hold at most 8 lessons (core + up to 7 sprigs). Branches are 1–3 lessons. If you add sprigs, use the next free sprig id (`topicId * 100 + nextIndex`) and add the shell to `curriculum.ts` with a `plan`-quality title and `authored: true` (you're authoring it immediately).
-11. **`phase` field:** `phase` is a plain `number` in the `Lesson` type. The shipped mapping is topics 1–8 → `phase: 1`, topics 9–16 → `phase: 2`, topics 17–30 → `phase: 3`; a new sprig inherits its topic's phase. Shift lessons set `shift_categories` to the matching shift id (e.g. `["v_to_b"]`) — the lesson page uses the first entry for the Atlas bridge card. Grammar lessons use `[]`. <!-- corrected 2026-09-30: was "topics 9–18 are phase: 2, topics 19–30 are phase: 3"; the boundary is 17, not 19 (src/data/lessons.ts core phases; src/lib/types.ts:129) -->
-12. **Do not touch:** lessons 1–10 content, `src/lib/trail-map.ts`, `src/lib/store.ts`, `src/components/**` (unless a rendering bug blocks you — report instead), gate thresholds in `TRAIL_GATES`, theme data.
+1. **Lesson ids are not free.** A lesson's `id` must equal its shell id in `curriculum.ts`: topic cores use the topic id (1–30), sprigs use `topicId * 100 + index` (e.g. topic 14's sprigs are 1401, 1402, …), branch lessons use `5000 + n*10 + index` (branch 5010 has lessons 5011, 5012, …). Check `TRAIL_BRANCHES` for the next free branch id — there are dozens of branches, so do not assume. (`sprigId` is a module-private helper in `curriculum.ts`.)
+2. **Every referenced word must exist in the compendium.** `word_ids` / `table_word_ids` are looked up by lowercase id. Word first into `word_connections.md`, then `bun run parse-data`, then reference it.
+3. **`TOTAL_COMPENDIUM_WORDS` is hardcoded** in `src/lib/types.ts`. A value that is too high fails `compendium.test.ts`; too low silently under-reports mastery. Sync it once, at the end of the run (see AGENT_PRECAUTIONS §1.3).
+4. **Section headers carry counts, but the regexes accept any number** (`All \d+ Words`, `All \d+ Compounds`, `All \d+ Falsche Freunde`, `All \d+ Days`). Update header counts for accuracy. What breaks parsing is renaming or renumbering a section — keep the headings verbatim and add rows inside them.
+5. **§2 table format is strict.** Header row:
+   `| # | German Word | English Cognate | Gender / Article | IPA | Sound Shift / Pattern | Context Phrase & Translation | Etymological Derivation | Domain |`
+   A row must start with `|`, is skipped if it contains `---` or `German Word`, and needs **≥ 8 cells** (a short row is silently dropped). Column 2 is the German word (`**bold**` stripped), 3 the cognate, 4 `der`/`die`/`das …` (anything else → gender null; use `-` for verbs/adverbs), 5 IPA, 6 the shift column, 7 the context phrase, 8 the derivation, **9 the domain** (omit it and the parser silently files the word under `general`, emptying its *By Domain* review deck). The shift column holds one or more exact ids: `th_to_d`, `d_to_t`, `p_to_pf_f`, `t_to_s_ss_z`, `k_to_ch`, `v_to_b`, `y_gh_to_g_ch`, `latin_ieren`, `strong_verbs_ablaut`, or backticked `Direct Cognate`. The context phrase MUST end with `*("English translation.")*`. The §3 compounds table (7 columns: `# | Compound | Literal Morphemes | Real Meaning | English Counterpart | Morphological Dissection & Lore | Example Sentence & Translation`) and §4 false-friends table (6 columns: `# | German Word | Looks Like English | Actual Meaning | False Friend Trap & Memory Anchor | Example Sentence & Translation`) end with an example column the parser also reads.
+6. **Title consistency.** For topic cores the cluster `title`, the core shell `title` and the `LESSONS` entry `title` are **identical strings** (`trail-map.test.ts` asserts it for all 30 topics).
+7. **Exercises.** Every lesson has exactly 5 graded exercises. The type union is `ExerciseType` in `src/lib/types.ts`: the classics (`morpheme_tiles`, `matching_pairs`, `shift_select`, `derive`, `reverse_cognate`, `syntax_builder`) plus `transcribe`, `literal_gloss`, `dictation`, `family_matrix`, `variant_english`, `pronoun_compression`, `spoken_turn_reply`. Aim for ≥ 3 different types per lesson. The **first exercise must be** `morpheme_tiles`, `matching_pairs` or `shift_select` (`transcribe` and `literal_gloss` are never first). Copy field shapes from lessons 1–10. `syntax_builder` needs a `word_bank` containing every target word, plus `vocab_hints` for untaught auxiliaries, and no tile or target may end in punctuation. Every exercise needs a non-empty `explanation` and `meaning`; it may carry `affirmation` / `diagnosis`; a lesson may carry one ungraded `twist`. Authoring rules for `transcribe`, `literal_gloss`, `twist`: AGENT_PRECAUTIONS §7. Tile exercises must be **solvable** (every required word present as a tile; matching exercises ≤ 12 pairs).
+8. **Reuse density.** Example sentences and exercise targets may only use vocabulary taught in this lesson or *earlier in trail order* (core → that topic's sprigs → next core), plus function words introduced via `vocab_hints`. `bun scripts/audit-vocab-balance.ts --strict` checks this.
+9. **Cluster size budget.** A topic holds a core + at most 7 sprigs. Branches are 1–3 lessons. A new sprig takes the next free `topicId * 100 + index`, a shell in `curriculum.ts` with a real title/plan, and `authored: true`.
+10. **`phase`** is a plain number: topics 1–8 → 1, 9–16 → 2, 17–30 → 3; a sprig inherits its topic's phase. Shift lessons set `shift_categories` to the matching shift id (e.g. `["v_to_b"]`); grammar lessons use `[]`.
+11. **Do not touch:** `src/lib/trail-map.ts`, `src/lib/store.ts`, `src/components/**` (report rendering bugs instead), `TRAIL_GATES` thresholds, theme data. Existing lessons change only for a real defect (see AGENT_PRECAUTIONS §4.5).
 
-## PRIORITY ORDER — THE GATES STILL GOVERN ANY NEW LESSON (do not skip this section)
+## WORK ORDER
 
-The trail has star gates (`TRAIL_GATES` in `curriculum.ts`). A gate opens only when enough lessons **within its stretch** are completed, and every gate's stretch is now fully authored, so the spine is walkable end to end. <!-- corrected 2026-09-30: this section assumed a half-empty spine; all 6 stretches are now fully authored (src/data/curriculum.ts:419-451) -->
+More authored side lessons in a stretch only make its gate easier, so adding content is always safe for gates. In priority order:
 
-The gate table is still the right guide for *where new lessons are worth adding* — more authored side lessons in a stretch only make its gate easier. Current stretches and thresholds (stretch size = cores + sprigs + attached branch lessons):
-
-1. **Stretch 1 (topics 1–7) — Shift Gate, after topic 7: 14★ of 25.** 7 cores + 15 sprigs + 3 branch lessons (branches 5010, 5020). If you add anything here, prioritize the sprigs of topics 1–5, which the beginner meets first.
-2. **Stretch 2 (topics 8–10) — Grammar Gate, after topic 10: 6★ of 10.** 3 cores + 6 sprigs + 1 branch lesson (5030). <!-- corrected 2026-09-30: this gate's threshold was never stated -->
-3. **Stretch 3 (topics 11–16) — Verb-Complex Gate, after topic 16: 11★ of 20.** 6 cores + 14 sprigs. The "Grammar Gate needs 11★ of 20" figure the original text attached to this stretch belongs to the **Verb-Complex Gate**, not the Grammar Gate. <!-- corrected 2026-09-30: was "Topic cores 11–16 … (the Grammar Gate needs 11★ of 20)" — the Grammar Gate is 6★ of 10; 11★ of 20 is the Verb-Complex Gate (src/data/curriculum.ts:427-429,434-436) -->
-4. **Stretch 4 (topics 17–20) — Past Gate, after topic 20: 9★ of 17.** 4 cores + 12 sprigs + 1 branch lesson (5040).
-5. **Stretch 5 (topics 21–26) — Atlas Gate, after topic 26: 11★ of 20.** 6 cores + 14 sprigs.
-6. **Stretch 6 (topics 27–29) — Capstone Gate, after topic 29: 9★ of 13.** 3 cores + 8 sprigs + 2 branch lessons (5050).
-7. **Topic 30** (the capstone reading synthesizes everything) sits after the last gate and needs no side-lesson quota.
-
-Because nothing is hollow any more, there is no "fill the remaining shells" queue. In its place, work in this order: **(a)** correctness fixes — wrong etymologies, missing sources, broken `word_ids`, unresolvable table words; **(b)** thin lessons — under-length patterns, fewer than 4 `table_word_ids`, or stale `curiosity_teaser`s that no longer point at the next topic; **(c)** new sprigs/branch lessons from the Expansion list; **(d)** compendium growth (§3/§4/§5), which needs no lesson at all. <!-- added 2026-09-30: replaces the obsolete hollow-shell backlog -->
+**(a)** correctness fixes — wrong German, unfinishable exercises, untaught words, wrong or unsourced etymologies, broken `word_ids`; **(b)** thin lessons — short patterns, fewer than 4 `table_word_ids`, stale `curiosity_teaser`s; **(c)** new sprigs/branch lessons; **(d)** compendium growth (§3/§4/§5), which needs no lesson. Start with the earliest topics (1–5): that is where a beginner meets any error first.
 
 ## THE AUTHORING WORKFLOW (per lesson)
 
-1. **Re-read the shells:** open `src/data/curriculum.ts`, find your topic, read the core/sprig `plan` lines. They are the content brief. The cluster `blurb` tells you the topic's one-line promise. Note that a core shell's `plan` is a placeholder (`authoredCore` writes "Authored — full content lives in data/lessons.ts.") — the brief for an existing core is the lesson itself, and only *new* sprig/branch shells carry a real plan. <!-- corrected 2026-09-30: core shells no longer carry a content brief (src/data/curriculum.ts:26-30) -->
-2. **Select vocabulary.** Choose 5–8 table words per lesson that (a) the `plan` calls for, (b) carry the topic's connection pattern, and (c) are genuinely high-frequency (cross-check against a frequency list — see Sourcing below). Grammar lessons need fewer table words (3–6) but rich example sentences.
-3. **Verify etymologies** (protocol below). Discard any word whose connection you cannot verify.
-4. **Grow `word_connections.md`** for every new word (§2 table; new compounds → §3, new false friends → §4, new insights → §5). Update the counts in the section headers for accuracy, and bump the pinned counts in `src/tests/compendium.test.ts` if you touched §3/§4/§5. Update `TOTAL_COMPENDIUM_WORDS`. <!-- corrected 2026-09-30: added the compendium test counts the suite pins -->
-5. **Run `bun run parse-data`** and confirm "Compiled" output shows your new words. Fix parser complaints before proceeding.
-6. **Author the lesson** in `lessons.ts` following the schema and voice guide below, and add its shell to `curriculum.ts` with `authored: true` if it is new.
-7. **Update the frontier test** only if you deliberately extended the spine past 30 topics (see constraint 7). <!-- corrected 2026-09-30: was an unconditional per-batch step; AUTHORED_SPINE_LIMIT is already 30 -->
-8. **Validate:** `bun run parse-data && bun run test && bunx tsc --noEmit && bun run build`. All green or you're not done.
-9. **Every 5 lessons:** stop, produce a batch summary (lessons authored, words added with sources, any structure changes, anything you flagged as unverified), and wait for human review.
+1. **Read the shell** in `curriculum.ts`: the sprig/branch `plan` line is the brief; the cluster `blurb` is the topic's promise. (A core's `plan` is a placeholder — the lesson itself is its brief.)
+2. **Select vocabulary:** 5–8 table words that the plan calls for, carry the topic's connection pattern, and are high-frequency. Grammar lessons need fewer (3–6) but rich example sentences.
+3. **Verify etymologies** (protocol below). Drop any word whose connection you cannot verify.
+4. **Grow `word_connections.md`** for each new word (§2; compounds → §3; false friends → §4; insights → §5). Bump the pinned counts in `compendium.test.ts` if you touched §3/§4/§5.
+5. **`bun run parse-data`** and confirm the new words compile.
+6. **Author the lesson** in `lessons.ts` per the schema and voice guide; add its shell to `curriculum.ts` if new.
+7. **Validate** (see Definition of Done).
+8. **Every 5 lessons:** stop and write a batch summary.
 
 ## ETYMOLOGY VERIFICATION PROTOCOL (the no-invention rule)
 
-LLM-generated etymology is plausible-sounding nonsense more often than almost anything else. Brücke's brand is **trust**. Therefore:
+LLM-generated etymology is plausible-sounding nonsense more often than almost anything else. Brücke's brand is **trust**.
 
-- **Every** §2 derivation, §3 lore line, and lesson etymology claim must be verified against at least one of:
-  - **en.wiktionary.org** — the German entry's "Etymology" section (best single source; cites Proto-Germanic reconstructions).
-  - **etymonline.com** — for the English cognate's history.
-  - **Kluge, Etymologisches Wörterbuch der deutschen Sprache** (older editions are public domain) and **Pfeifer** — for German-side depth.
-  - A linguistics reference already cited in `word_connections.md` §1 (Joseph Wright's Historical German Grammar for the shift laws).
-- If you have web access, actually check the sources and note them: append the source to the derivation cell like `… Proto-Germanic *dagaz. [wiktionary]`.
-- If you cannot verify a connection, **do not present it as fact**. Either drop the word or add `[UNVERIFIED — check]` in the derivation and list it in your batch summary under "needs human check". Never silently guess.
-- Sound-shift claims must respect the laws documented in §1 of `word_connections.md`. If a word seems to fit a shift but the direction is wrong (e.g. it's a Latin loan that entered German directly), classify it honestly (`Direct Cognate`, `latin_ieren`, borrowing, etc.).
-- German IPA: use standard dictionary IPA. If unsure of the exact transcription, mark it for review rather than inventing it.
+- Every §2 derivation, §3 lore line and lesson etymology claim must be verified against at least one of: **en.wiktionary.org** (the German entry's Etymology section), **etymonline.com** (English side), **Kluge** / **Pfeifer** (German side), or a reference already cited in `word_connections.md` §1.
+- With web access, actually check and note the source in the derivation cell: `… Proto-Germanic *dagaz. [wiktionary]`.
+- If you cannot verify a connection, **do not present it as fact**: drop the word or add `[UNVERIFIED — check]` and list it in your batch summary under "needs human check".
+- Sound-shift claims must respect the laws in §1. If the direction is wrong (e.g. a Latin loan that entered German directly), classify it honestly (`Direct Cognate`, `latin_ieren`, borrowing).
+- IPA: standard dictionary IPA; if unsure, mark it for review rather than inventing it.
 
-## SOURCING STRATEGY (where the words and ideas come from)
+## SOURCING STRATEGY
 
-- **Frequency-first selection:** draw table words from the top ~1,500 German words (any public frequency list — e.g. Wiktionary's German frequency lists, the OpenSubtitles top-German list, or the Routledge *Frequency Dictionary of German* if available). A rare word is only acceptable when its connection is spectacular.
-- **Traditional coursewares (Goethe-Zertifikat A1/A2 wordlists, DW "Nicos Weg", the Menschen/Schritte/Netzwerk table of contents) are your scope checklists**, not your copy source. Use them to answer: "will a learner who finished this topic be missing something they'll need this week?" If yes, add that word as a `vocab_hint` or pick a better table word. Never copy their exercise formats, sentences, or content — Brücke's exercises are its own.
-- **Compound calques (§3) and false friends (§4) grow opportunistically:** whenever you meet a great `Handschuh`-style calque or a `Gift`-style trap while researching a topic, add it to §3/§4 with the same table format (update the header count for accuracy) — and bump the matching pinned count in `src/tests/compendium.test.ts`, which currently asserts 32 compounds and 16 false friends. They feed the Review Hub decks automatically.
-- **Daily insights (§5)** may grow slowly — they are cultural-etymology vignettes. Add only ones with a solid story, and bump the pinned count in `src/tests/compendium.test.ts` (currently 28). <!-- corrected 2026-09-30: added the compendium test's pinned counts, which any §3/§4/§5 addition must update -->
+- **Frequency first:** draw table words from the top ~1,500 German words (any public frequency list). A rare word is acceptable only when its connection is spectacular.
+- **Traditional coursewares** (Goethe A1/A2 wordlists, DW *Nicos Weg*, *Menschen*/*Schritte*/*Netzwerk* tables of contents) are scope checklists, not copy sources: ask "will a learner who finished this topic be missing something they need this week?" Never copy their sentences or exercise formats.
+- **Compounds (§3), false friends (§4) and insights (§5)** grow opportunistically, with the same table format, and the pinned counts in `compendium.test.ts` bumped in the same batch.
 
-## VOICE & PEDAGOGY GUIDE (match lessons 1–10 exactly)
+## VOICE & PEDAGOGY GUIDE (match lessons 1–10)
 
-Before writing, read lessons 1 and 4 in `src/data/lessons.ts` completely — they are the register standard. Rules distilled from them:
+Before writing, read lessons 1 and 4 in `src/data/lessons.ts` completely — they are the register standard.
 
-- **Second person, confident, playful.** "Notice how 'ich will' asserts your will…" Never academic, never cutesy. The footnotes carry the scholarly depth so the main text can stay punchy.
-- **The hook** opens with a paradox or a secret the learner already half-knows ("You don't start from zero", "Why German has no 'TH' sound"). 3–6 sentences. 1–2 footnotes with deeper history. It ends by pointing at what the pattern will unlock.
-- **The pattern** states the rule as a transformation with 4–6 worked examples in flowing prose. Include the living-English evidence (e.g. "English still does this in 'midwife' — literally 'with-woman'"). `linguist_note` holds the technical detail (phonetics, Proto-Germanic reconstructions, exceptions) — always honest about exceptions: "teach patterns with their exceptions."
-- **The transformation table** lists 4–8 `table_word_ids` whose pairs visually demonstrate the rule (`ShiftPair` renders English ↔ German with the shifted consonants highlighted).
-- **The 5 exercises** escalate: recognize → match → select the rule → produce (derive) → assemble a sentence (`syntax_builder`). Every exercise carries an `explanation` that teaches even on review. Wrong answers feed the retry queue, and a flawless run earns a purple star — so exercises must be exactly solvable from the lesson's own content.
-- **The summary** states the outcome as an ability ("Say what you want or can do…"), one usable German sentence, the takeaway rule, and a `curiosity_teaser` that **sews forward into the next lesson's topic** — check `curriculum.ts` for what comes next and write the teaser for it.
-- Example sentences across the lesson: short, natural, adult (ordering beer is fine, "the children play" is fine — no nursery-rhyme filler), and built from taught words per constraint 9.
-- **Cue the wild.** When the trail touches a word or structure that wears common real-world variants — clitic contractions (hat's, ist's), dialect pronunciations (Berlin /ick/, southern /ish/ for ich), colloquial syntax (weil + main-clause order) — add a one-line "you might hear…" note (hint note or footnote) framed strictly as recognition: "variants to hear, not to learn." The guidebook cues these so a learner who meets real German in the wild doesn't lose faith in the course (guidebook §3.4, German analysis). Never solicit a variant as a target.
+- **Second person, confident, playful.** Never academic, never cutesy. Footnotes carry the scholarly depth so the main text stays punchy.
+- **The hook** opens with a paradox or a secret the learner half-knows. 3–6 sentences, 1–2 footnotes, ends by pointing at what the pattern unlocks.
+- **The pattern** states the rule as a transformation with 4–6 worked examples in flowing prose, with living-English evidence (e.g. *midwife* = "with-woman"). `linguist_note` holds technical detail and is honest about exceptions.
+- **The transformation table** lists 4–8 `table_word_ids` whose pairs demonstrate the rule.
+- **The 5 exercises** escalate: recognize → match → select the rule → produce → assemble a sentence. Each `explanation` teaches even on review. Wrong answers feed the retry queue and a flawless run earns a purple star, so exercises must be exactly solvable from the lesson's own content.
+- **The summary** states the outcome as an ability, one usable German sentence, the takeaway rule, and a `curiosity_teaser` that points at the **actual next node in trail order**.
+- **Example sentences:** short, natural, adult, built from taught words (constraint 8).
+- **Cue the wild.** Where a word or structure wears common real-world variants (clitics like *hat's*, dialect /ick/ and /ish/, *weil* + main-clause order), add a one-line "you might hear…" note framed strictly as recognition — "variants to hear, not to learn." Never solicit a variant as a target.
 
-## LESSON SCHEMA (author against this exactly)
+## LESSON SCHEMA
 
 ```ts
 {
@@ -134,35 +113,39 @@ Before writing, read lessons 1 and 4 in `src/data/lessons.ts` completely — the
   slug: string,          // kebab-case, unique, descriptive
   title: string,         // identical to the curriculum shell title
   subtitle: string,      // one line, the connection promise
-  phase: number,         // topics 1–8 → 1, 9–16 → 2, 17–30 → 3 <!-- corrected 2026-09-30: was `phase: 2 | 3, // topics 9–18 → 2, topics 19–30 → 3`; the type is a plain `number` and the boundary is 17 (src/lib/types.ts:129) -->
+  phase: number,         // topics 1–8 → 1, 9–16 → 2, 17–30 → 3
   shift_categories: string[], // shift id(s) or []
-  word_ids: string[],    // all new+old compendium words this lesson drills (lowercase ids)
+  word_ids: string[],    // compendium words this lesson drills (lowercase ids)
   hook:    { title, content, footnotes?: [{marker, title, content}], linguist_note? },
   pattern: { title, content, footnotes?, linguist_note? },
   table_word_ids: string[], // 4–8 words that demo the pattern
   exercises: [ /* 5 items; copy field shapes from lessons 1–10 */ ],
   summary: { outcome, use_example: { german, english }, takeaway, curiosity_teaser },
+  twist?: { /* ungraded, skippable — AGENT_PRECAUTIONS §7.3 */ },
 }
 ```
 
-## EXPANSION PERMISSIONS (when the content outgrows the shell)
+The authoritative definition is `Lesson` in `src/lib/types.ts`; if this block and the type disagree, the type wins.
 
-You are allowed — encouraged, when justified — to grow the structure:
+## EXPANSION PERMISSIONS
 
-- **Add sprigs to a cluster** (up to the 8-lesson budget, enforced by `src/tests/trail-map.test.ts` as `sprigs.length <= 7`; every topic currently has 2–3 sprigs): if research surfaces another natural lesson inside a topic (e.g. topic 18's Perfekt already has three sprigs and could take a fourth), add the shell to `curriculum.ts` with the next free sprig id (`sprigId(topicId, nextIndex)`), a real title, a `plan`, and `authored: true` (you author it now). <!-- corrected 2026-09-30: the old example ("topic 18's … third drill lesson") already exists as sprig 1803 -->
-- **Add new branches** (support clusters, 1–3 lessons, ids `5000+n*10` — the next free branch id is 5060, `attach` = a topic core, add to `TRAIL_BRANCHES`): only for genuinely separate support material (a pronunciation clinic, a drill isle). A branch must never reconnect to the spine. <!-- corrected 2026-09-30: added the next free branch id; 5010–5050 are taken -->
-- **Restructure a lesson's internals** if the material demands it: you may vary the exercise mix (keep 5 exercises, ≥ 3 types), add footnotes, or split one shell's content across two lessons. You may NOT change the 5-segment player structure, the `Lesson` type, or the shell id scheme.
-- **Do not** renumber existing ids, move topics between positions on the spine, or change gate thresholds. If you believe a threshold is wrong, note it in the batch summary for the human.
-- If a discovered gem fits nowhere (e.g. a wonderful etymology for a word outside every topic), add it to `word_connections.md` anyway (it feeds the Atlas and Review Hub), and mention it in the batch summary as a proposal for a future lesson.
+- **Add sprigs to a cluster** (budget: core + up to 7 sprigs, enforced by `trail-map.test.ts`): add the shell to `curriculum.ts` with the next free sprig id, a real title, a `plan`, and `authored: true`.
+- **Add branches** (support clusters of 1–3 lessons, ids `5000 + n*10`, `attach` = a topic core, entry in `TRAIL_BRANCHES`) only for genuinely separate support material. A branch never reconnects to the spine.
+- **Restructure a lesson's internals** if the material demands it (vary the exercise mix, add footnotes, split one shell's content across two lessons). You may NOT change the 5-segment player, the `Lesson` type, or the id scheme.
+- **Do not** renumber ids, move topics on the spine, or change gate thresholds. If you think a threshold is wrong, say so in the batch summary.
+- A gem that fits nowhere: add it to `word_connections.md` anyway (it feeds the Atlas and Review Hub) and propose a lesson in the summary.
 
 ## VALIDATION & DEFINITION OF DONE
 
-After every single lesson:
+After every lesson:
+
 ```bash
-bun run parse-data && bun run test && bunx tsc --noEmit
+bun run parse-data && bun run test && bun run lint && bun run typecheck
+bun scripts/audit-word-refs.ts && bun scripts/audit-vocab-balance.ts --strict
 ```
-After every batch (max 5 lessons): add `bun run build`, then stop and report.
 
-A lesson is **done** when: parser accepts its words; `bun run test` green (this includes `src/tests/compendium.test.ts`, whose pinned 9-shift / 32-compound / 16-false-friend / 28-insight counts must match what you actually shipped, and whose `wordList.length >= TOTAL_COMPENDIUM_WORDS` floor must hold); `tsc` green; every `word_ids`/`table_word_ids` entry resolves; every etymology carries a source or an explicit `[UNVERIFIED]` flag; the summary's teaser points at the next topic; `curriculum.ts` carries the shell with `authored: true` and matching titles; and the batch summary lists (1) lessons authored with ids, (2) words added with sources, (3) structure changes made, (4) items flagged for human review (etymologies you couldn't fully verify, IPA you're unsure of, scope gaps you noticed against the Goethe A1/A2 lists). <!-- corrected 2026-09-30: added the compendium integrity test to the DoD; "the frontier test reflects reality" replaced since AUTHORED_SPINE_LIMIT is fixed at 30 -->
+After every batch (and before reporting): add `bun scripts/audit-teasers.ts`, `bun scripts/audit-wording.ts`, `bun run trail`, and `bun run build`.
 
-**Start with:** read `src/data/lessons.ts` (lessons 1, 4, 9 fully; skim the rest), `src/data/curriculum.ts` in full, `scripts/parse-compendium.ts` in full, and §1 + the first 30 rows of §2 of `word_connections.md`. Then take the top of the priority list — start with a correctness pass over the earliest topics (1–5), which is where a beginner meets any error first, and work down the trail. <!-- corrected 2026-09-30: was "begin with Stretch 1's side lessons (topics 1–5 sprigs)" — those sprigs are already authored -->
+A lesson is **done** when: the parser accepts its words; the commands above are green (including `compendium.test.ts`'s pinned counts and its `>= TOTAL_COMPENDIUM_WORDS` floor); every `word_ids`/`table_word_ids` entry resolves; every etymology carries a source or an explicit `[UNVERIFIED]` flag; the teaser points at the next node; `curriculum.ts` carries the shell with `authored: true` and matching titles; and the batch summary lists (1) lessons authored with ids, (2) words added with sources, (3) structure changes, (4) items flagged for human review.
+
+**Start with:** `src/data/lessons.ts` (lessons 1, 4, 9 fully; skim the rest), `src/data/curriculum.ts`, `scripts/parse-compendium.ts`, and §1 plus the first 30 rows of §2 of `word_connections.md`.

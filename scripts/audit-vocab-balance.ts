@@ -1,7 +1,7 @@
 // Vocabulary-balance audit (vocab-rebalance-650 campaign).
 //
 // Complements scripts/audit-word-refs.ts (existence) with the ORDERING and
-// BALANCE dimensions from docs/vocab-rebalance-movelist.md:
+// BALANCE dimensions (the original vocabulary-rebalance campaign):
 //   a. new-words-per-lesson within bands (classification printed for eyeballing)
 //   b. no word required before its introduction lesson in trail order
 //      (word_ids ordering is exact; German exercise-surface tokens are resolved
@@ -39,7 +39,7 @@ const roleOf = (id: number, kind: string) =>
   PATTERN.has(id) ? "pattern" : GRAMMAR_CORE.has(id) ? "grammarCore" : REVISION.has(id) ? "revision" : kind === "story" ? "story" : kind === "branch" ? "branch" : "consolidation";
 
 // ---------------------------------------------------------------- deferrals
-// Lesson-level: (reason, Campaign 2 plan) — see docs/vocab-rebalance-movelist.md.
+// Lesson-level: (reason, Campaign 2 plan). The reasons below are the record.
 const LESSON_DEFERRALS: Record<number, string> = {
   2401: "Twin Suppletions: closed-class suppletion; no fitting untouched compendium words. Campaign 2: add gern/lieber entries and host here.",
   2801: "fahren & its Dynasty: the planned words (urlaub, meer) were hosted at l29, where the sea/vacation idioms belong; fahren, Fahrt and Zug are all taught earlier in full, so the lesson consolidates. Campaign 2: host Fahrplan/Fahrkarte here.",
@@ -289,8 +289,8 @@ const WEAVE_PLAN: Record<string, number[]> = {
   reiten: [5302, 5311],
 };
 
-// Zero-new lessons that are deliberately deferred rather than filled (see
-// docs/vocab-rebalance-movelist.md). Superset of LESSON_DEFERRALS' rationale:
+// Zero-new lessons that are deliberately deferred rather than filled.
+// Superset of LESSON_DEFERRALS' rationale:
 // these are reported, never silently counted into the ≤25% budget.
 const ZERO_NEW_DEFERRALS: Record<number, string> = {
   2801: "fahren & its Dynasty: the planned words (urlaub, meer) were hosted at l29, where the sea/vacation idioms belong; fahren, Fahrt and Zug are all taught earlier in full, so the lesson consolidates. Campaign 2: host Fahrplan/Fahrkarte here.",

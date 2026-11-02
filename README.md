@@ -6,12 +6,13 @@
 
 ## Overview
 
-**Brücke** is an open-source web application designed to help English speakers learn German rapidly by decoding the underlying linguistic mechanics that connect both languages. 
+**Brücke** is a self-contained web application designed to help English speakers learn German rapidly by decoding the underlying linguistic mechanics that connect both languages.
 
 Rather than relying on rote memorization or gamified streaks without substance, Brücke leverages the **Second High German Consonant Shift (500–800 AD)** to reveal that English speakers already understand hundreds of German words.
 
-- **Comprehensive Audit Manifest**: See [`AUDIT_MANIFEST.md`](./AUDIT_MANIFEST.md) for full architectural specifications, data schemas, and audit instructions.
-- **Design Specification**: See [`docs/german_learning_platform_design-final.md`](./docs/german_learning_platform_design-final.md).
+- **Docs index**: [`docs/INDEX.md`](./docs/INDEX.md) maps every maintained doc to the task it serves. Agents: read [`AGENTS.md`](./AGENTS.md) and [`docs/NORTH_STAR.md`](./docs/NORTH_STAR.md) first.
+- **Audit Manifest**: [`AUDIT_MANIFEST.md`](./AUDIT_MANIFEST.md) — data schemas, performance notes and the auditor checklist.
+- **Architecture**: [`docs/ARCHITECTURE.md`](./docs/ARCHITECTURE.md) — how the app is put together and which constraints are load-bearing.
 
 ---
 
@@ -23,8 +24,8 @@ Rather than relying on rote memorization or gamified streaks without substance, 
 - **Styling**: Tailwind CSS v4 (native CSS tokens, dark mode default)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) 5 (dual `localStorage` + size-guarded cookie persistence)
 - **Icons**: Lucide React
-- **Testing**: Vitest / `bun run test` (43 test files, 437 automated tests) <!-- corrected 2026-10-08 against the actual vitest run; counts pinned by src/tests/docs-sync.test.ts -->
-- **Audio Engine**: Zero-dependency browser-native Web Speech API (`window.speechSynthesis`) + a Web Audio sample engine that plays bundled `.wav` packs
+- **Testing**: Vitest / `bun run test` (44 test files, 444 automated tests)
+- **Audio Engine**: Zero-dependency browser-native Web Speech API (`window.speechSynthesis`) + a Web Audio sample engine that plays bundled `.wav` packs. Pronunciation prefers an exact locale voice, then another voice for the same language.
 
 ---
 
@@ -38,7 +39,7 @@ bun install
 
 ### Compile Knowledge Compendium
 
-Compiles raw markdown dictionaries into `/src/data/compendium.json`:
+Compiles the markdown compendium into `src/data/compendium.json` and `src/data/insights.json`:
 
 ```bash
 bun run parse-data
@@ -46,7 +47,7 @@ bun run parse-data
 
 ### Run Automated Tests
 
-Executes the full Vitest suite — 43 test files, 437 automated tests:
+Executes the full Vitest suite — 44 test files, 444 automated tests:
 
 ```bash
 bun run test
@@ -54,7 +55,7 @@ bun run test
 
 ### Production Build
 
-Pre-renders every route to static HTML (`● SSG`): 6 static routes — the six top-level tabs `/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`. Lessons and atlas details are in-page client views, so opening them adds no URL and no browser-history entry: 188 unique lesson ids ship as 500 per-lesson payloads, and the four atlases expose 37 atlas families. Legacy `/trail/...`, `/trail/<id>`, `/atlas/<family>` and `/atlas/master` links are redirected into the matching in-page state:
+`bun run build` runs `parse-data`, then `export-data` (per-language payloads under `public/data/<lang>/`), then `next build`. It pre-renders every route to static HTML (`● SSG`): 6 static routes — the six top-level tabs `/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`. Lessons and atlas details are in-page client views, so opening them adds no URL and no browser-history entry: 188 unique lesson ids ship as 500 per-lesson payloads, and the four atlases expose 37 atlas families. Legacy `/trail/...`, `/trail/<id>`, `/atlas/<family>` and `/atlas/master` links are redirected into the matching in-page state:
 
 ```bash
 bun run build
@@ -83,8 +84,9 @@ Visit `http://localhost:3000` in your browser.
    - Read the map top-to-bottom from topic 1; the pulsing theme-colored selector marks your recommended node.
    - The entire curriculum is authored: 30 cores + 79 sprigs + 65 branch lessons + 5 required reading stories = **179 lessons** (`src/data/curriculum.ts`, `src/data/lessons.ts`). The required spine is 35 lessons.
    - Custom DOM+SVG renderer (no game libraries) with `content-visibility` windowing per topic cluster, sized for hundreds of future lessons.
+   - Trail gates require the stretch's stars and a passed checkpoint test based on its required spine lessons.
    - 5-part card-by-card lesson wizard (Hook, Pattern, Transformation Table, Bite-Sized Practice, Summary & Retries) in the in-page lesson reader.
-   - Scaffolded exercises (morpheme tiles, matching pairs, shift select, syntax builder, derivation typing).
+   - Scaffolded exercises (morpheme tiles, matching pairs, shift select, syntax builder, derivation typing, reverse-cognate typing; the full list is `ExerciseType` in `src/lib/types.ts`).
    - **Production drills** (`transcribe`): a thought and a lexicon in, German out - with a scaled cue ladder that reveals on demand or on failure, and an optional "break the thought up" step before the builder.
    - **Direct translations** (`literal_gloss`): pick the English that is built the German way.
    - **Listening drills** (`dictation`): the sentence is played, not written - capped replays, and a one-tap "I can't listen right now" that silences every dictation for 15 minutes and degrades it to an ordinary on-page exercise.
@@ -112,7 +114,7 @@ Visit `http://localhost:3000` in your browser.
 4. **Multi-Modal Review Hub (`/review`)**:
    - Algorithmic spaced repetition powered by SuperMemo SM-2.
    - Decks include *Due Today*, *By Shift Family*, *By Domain*, *Weakest Words*, *Recent Lessons*, *Compounds & Traps*, *Sentence Patterns*, *Article & Gender Drill*, and *Everything*.
-   - The article drill covers the usual singular definite article for gendered nouns in German, Dutch, French and Spanish; it does not practise cases or articles in sentence context.
+   - The article drill covers the usual singular definite article for gendered nouns in German, Dutch, French and Spanish; a fixed-width blank marks the missing article. It does not practise cases or articles in sentence context.
    - 4 selectable review styles: *Quick Flip*, *Multiple Choice (MCQ)*, *Tile Builder*, and *Derivation Typing*.
    - Anti-spoiler gender shields: Front card prompts with `[ der / die / das ? ]` instead of leaking the article before recall.
    - Desktop keyboard navigation (`1`–`4`, `Space`, `Enter`, `Backspace`, `←`/`→` back and forward between cards, `[R]` audio replay, `Esc`).
@@ -143,15 +145,16 @@ src/
 │   ├── layout.tsx        # App layout and global shell
 ├── components/
 │   ├── atlas/            # Radial constellation and drill components
-│   ├── common/           # GenderBadge, ShiftPair, WordCardDrawer, CharBar, Onboarding
-│   ├── lesson/           # 5-step wizard, exercise widgets, retry queue, feedback sheets
-│   ├── navigation/       # Game-style bottom dock (all destinations), slim TopNav, Footer
-│   └── trail/            # TrailMap, MapNode, LessonNodeDrawer (the homepage map)
+│   ├── common/           # GenderBadge, ShiftPair, WordCardDrawer, GermanCharBar, Onboarding, AppShell
+│   ├── lesson/           # LessonView/LessonReader, exercise widgets, retry queue, feedback sheets
+│   ├── navigation/       # Game-style bottom dock (all destinations), slim TopNav
+│   └── trail/            # TrailMap (incl. star-gate pills), LessonNodeDrawer (the homepage map)
 ├── data/
 │   ├── compendium.json   # 1226 core words, 9 shifts, 32 compounds, 16 traps, 28 insights
 │   ├── curriculum.ts     # 30 topic clusters: cores, sprigs, branches + star gates
 │   ├── lessons.ts        # All 179 authored lessons (cores 1–30, stories 9001–9005, sprigs, branches 50xx–53xx)
-│   └── ...               # themes, fonts, settings, phonetics, insights, languages
+│   ├── french/ spanish/ dutch/  # typed modules for the sibling courses (see docs/courses.md)
+│   └── ...               # themes, fonts, settings, phonetics, insights, languages, word-counts
 ├── lib/
 │   ├── audio.ts          # Native speech pronunciation engine
 │   ├── gender.ts         # 3-color gender metadata & styling
@@ -165,7 +168,7 @@ src/
 │   ├── store.ts          # Zustand store with dual persistence (+ lessonStars)
 │   ├── trail-map.ts      # Map graph, responsive layout engine, unlock/recommend logic
 │   └── types.ts          # Core domain TypeScript interfaces
-└── tests/                # 43 test files (Vitest)
+└── tests/                # 44 test files (Vitest)
 ```
 
 ---
@@ -180,17 +183,17 @@ The `src/` tree above is the app. Everything else in the repo:
 | `src/data/compendium.json` | **Generated.** Do not hand-edit — run `bun run parse-data`. |
 | `scripts/` | Build and audit tooling. See [`scripts/README.md`](./scripts/README.md). |
 | `tests/` | Playwright browser smoke suite (`bun run test:e2e`). Unit and integration tests live in `src/tests/`. |
-| `docs/` | Specifications, audits, and design notes. See [`docs/README.md`](./docs/README.md) — the longer, correction-tracked twin of this file. |
-| `docs/dont open untill mentioned/` | Live working notes and in-flight thinking. Tracked for handoff; **not** reference material. See its [`README.md`](./docs/dont%20open%20untill%20mentioned/README.md). |
-| `AUDIT_MANIFEST.md` | Architectural spec and data schemas. |
-| `TRAIL.md` | Trail map / curriculum export. |
+| `docs/` | Maintained documentation — start at [`docs/INDEX.md`](./docs/INDEX.md). [`docs/README.md`](./docs/README.md) is the longer feature-by-feature twin of this file. |
+| `docs/dont open untill mentioned/` | Working notes (the long Thinking Method design). Tracked for handoff; **not** reference material. See its [`README.md`](./docs/dont%20open%20untill%20mentioned/README.md). |
+| `AUDIT_MANIFEST.md` | Data schemas, performance notes and the auditor checklist. |
+| `TRAIL.md` | **Generated** trail map / curriculum export (`bun run trail`). |
 
 ### Deliberately not in this repository
 
 Some material is local-only and gitignored: `pitch/` (investor material),
 `docs/thinking-method-images/`, `auditreview.md`, superseded copies under
 `old documentation/` and `documented docs/`, and local agent config
-(`CLAUDE.md`, `REBALANCE_PROMPT.md`, `.zcodeignore`). See `.gitignore` for the
+(`CLAUDE.md`, `.zcodeignore`). See `.gitignore` for the
 current list. If a fresh clone is missing something you expected, it is
 deliberate.
 

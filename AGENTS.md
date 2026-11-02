@@ -5,11 +5,18 @@ below enforceable. `.gitignore` gates **git**, not the filesystem: a tracked
 file is in every clone, and a directory name is a label, not a control. If you
 are an agent, read this before you open anything.
 
+## Where to start
+
+[`docs/INDEX.md`](docs/INDEX.md) maps every maintained doc to the task it serves.
+Always read [`docs/NORTH_STAR.md`](docs/NORTH_STAR.md) (what the app is for — it wins
+over every other doc). Before touching lessons or `word_connections.md`, read
+[`docs/AGENT_PRECAUTIONS.md`](docs/AGENT_PRECAUTIONS.md).
+
 ## Do not open unless the user explicitly asks
 
-- **`docs/dont open untill mentioned/`** — live working notes, not reference
-  material. Tracked so the work travels; several files contradict the shipped
-  code. `thinking-method.md` alone is 691 KB and will flood your context.
+- **`docs/dont open untill mentioned/`** — working notes, not reference
+  material. Tracked so the work travels; they may contradict the shipped
+  code. `thinking-method-short.md` alone is ~130 KB and will flood your context.
   If the user asks for a broad sweep ("read everything", "be thorough"),
   this folder is still excluded unless named.
 - **`docs/thinking-method-images/`** — gitignored, local only.
@@ -18,7 +25,7 @@ are an agent, read this before you open anything.
 
 `pitch/` · `docs/thinking-method-images/` · `auditreview.md` ·
 `old documentation/` · `documented docs/` · `CLAUDE.md` ·
-`REBALANCE_PROMPT.md` · `.zcodeignore` · `.freebuff/` · `.fractal/` ·
+`.zcodeignore` · `.freebuff/` · `.fractal/` ·
 `.worktrees/` · `test-results/` · `playwright-report/` · `*.tsbuildinfo` ·
 `.next/` · `node_modules/` · `gui-test-screenshots/`
 
@@ -45,7 +52,11 @@ word_connections.md  ──parse-compendium.ts──▶  src/data/compendium.jso
 
 - `src/data/compendium.json` and `src/data/insights.json` are **generated**.
   Never hand-edit them. Edit the markdown, then `bun run parse-data`.
-- `bun run build` is `parse-data && next build` — the parse step is not optional.
+- `bun run build` is `parse-data && export-data && next build` — the parse step
+  is not optional. `export-data` writes the per-language payloads under
+  `public/data/<lang>/`.
+- This pipeline is **German-only**. French, Spanish and Dutch are typed modules in
+  `src/data/<lang>/` (see `docs/courses.md`).
 - Use `scripts/append-words.mjs` to batch-append records to §2 of the markdown
   rather than editing it by hand.
 - `scripts/README.md` documents every script and what it writes.
@@ -54,7 +65,9 @@ word_connections.md  ──parse-compendium.ts──▶  src/data/compendium.jso
 
 `src/tests/docs-sync.test.ts` asserts that `README.md`, `AUDIT_MANIFEST.md`,
 `docs/README.md` and `pitch/*.md` quote the current word/lesson/test/theme/font
-counts. When the data changes the test **fails by design**.
+counts (plus route, payload and atlas-family counts). When the data changes the
+test **fails by design**. `src/data/word-counts.ts` is pinned separately by
+`src/tests/languages.test.ts` — update it together with the compendium.
 
 - `TEST_FILE_COUNT`, `THEME_COUNT`, `FONT_COUNT` are derived from the data.
 - `TEST_COUNT` and `TAUGHT_WORDS` are maintained **by hand** in that file — they
@@ -64,10 +77,10 @@ counts. When the data changes the test **fails by design**.
 - `pitch/` is private, so the three pitch assertions self-skip via
   `it.skipIf(!PITCH_PRESENT)`. Do not "fix" that skip by making them required.
 
-⚠️ **`README.md` and `docs/README.md` are near-duplicates that have drifted.**
-`docs/README.md` is the longer, correction-tracked copy and covers more of the
-shipped surface. Both are pinned by the same test, so a count change must be
-applied to **both**. Prefer editing one and mirroring, not diverging further.
+⚠️ **`README.md` and `docs/README.md` are near-duplicates.** `docs/README.md` is
+the longer copy and covers more of the shipped surface. Both are pinned by the
+same test, so a count change must be applied to **both**. Prefer editing one and
+mirroring, not diverging further.
 
 ## Architecture invariants
 
@@ -92,15 +105,20 @@ tests or the build:
 bun install                # deps
 bun run parse-data         # regenerate compendium.json + insights.json
 bun run dev                # dev server :3000
-bun run build              # parse-data + next build (production SSG)
-bun run test               # vitest — 32 test files in src/tests/
-bun run lint               # eslint
+bun run export-data        # per-language payloads -> public/data/ (dev/build run it)
+bun run build              # parse-data + export-data + next build (production SSG)
+bun run test               # vitest — every file in src/tests/ (see docs-sync for the pinned count)
+bun run lint               # eslint + oxlint
 bun run typecheck          # tsc --noEmit
 bun run test:e2e           # playwright smoke suite (tests/e2e/)
-bun run trail              # scripts/export-trail.ts
+bun run trail              # scripts/export-trail.ts -> TRAIL.md
 ```
 
-CI runs **test, lint, typecheck** on every push to `main`. All three must pass.
+CI runs on every push to `main`: **test, lint, typecheck**, the four content
+audits (`scripts/audit-word-refs.ts`, `audit-teasers.ts`, `audit-wording.ts`,
+`audit-vocab-balance.ts --strict`), the production **build**, and a check that
+`compendium.json` / `insights.json` are committed in sync; Playwright e2e runs as
+a separate job. All must pass.
 
 ## Conventions
 

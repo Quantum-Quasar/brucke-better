@@ -5,11 +5,18 @@
 > grouped by area, and each states the **condition** under which it applies. If your task
 > doesn't trigger any condition, proceed normally. If it triggers one, follow the action.
 
-**Validation baseline (always applicable):** `bun run parse-data && bun run test && bunx tsc --noEmit` must be green before you start and after every batch. Full `bun run build` at phase boundaries. Never declare done without all four.
+**Validation baseline (always applicable):** `bun run parse-data && bun run test && bun run lint && bun run typecheck` must be green before you start and after every batch. Full `bun run build` (`parse-data && export-data && next build`) at phase boundaries. CI runs exactly these, plus the four audits below — never declare done without all of them.
 
-**The two audit tools (always applicable at the end of content work):**
-- `bun scripts/audit-teasers.ts` — must report `title drift: 0 | teaser flags: 0`
-- `bun scripts/export-trail.ts` — regenerates `TRAIL.md`; run it after any lesson/teaser change
+**The audit tools (always applicable at the end of content work; CI runs the first four):**
+- `bun scripts/audit-word-refs.ts` — every word reference resolves (exits 1 on failure)
+- `bun scripts/audit-teasers.ts` — must report `title drift: 0 | teaser flags: 0`. It never sets a failing exit code, so read the output yourself; `⚠` means "look at this", not "broken"
+- `bun scripts/audit-wording.ts` — no prose copy-pasted between neighbouring lessons
+- `bun scripts/audit-vocab-balance.ts --strict` — words are taught before they are used; new-word bands and floors hold
+- `bun run trail` (`scripts/export-trail.ts`) — regenerates `TRAIL.md`; run it after any lesson/teaser change
+
+The audits and the `lessons.ts` rules below are **German-only**. French, Spanish and Dutch are authored as typed modules under `src/data/<lang>/` and guarded by their own `*-content.test.ts` files; see [`courses.md`](./courses.md).
+
+Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 
 ---
 
@@ -17,7 +24,7 @@
 
 ### 1.1 §2 table format is machine-parsed and strict
 - **Applies when:** adding or editing any row in §2 (the vocabulary table).
-- **Action:** rows are exactly 8 columns: `| # | **German** | cognate | der (m)/die (f)/das (n)/- | /IPA/ | \`shift_id\` | Phrase *("Translation.")* | Derivation |`. The shift column may only contain the exact ids (`th_to_d`, `d_to_t`, `p_to_pf_f`, `t_to_s_ss_z`, `k_to_ch`, `v_to_b`, `y_gh_to_g_ch`, `latin_ieren`, `strong_verbs_ablaut`) or `` `Direct Cognate` ``. The context phrase MUST end with `*("...")*` — the parser regex-extracts the translation. The gender cell must start with `der`/`die`/`das` or be `-`.
+- **Action:** rows have 9 columns: `| # | **German** | cognate | der (m)/die (f)/das (n)/- | /IPA/ | \`shift_id\` | Phrase *("Translation.")* | Derivation | domain |`. The parser accepts 8 cells and silently defaults the missing `domain` to `general`, which empties the *By Domain* review deck for that word — always write the 9th column. The shift column may only contain the exact ids (`th_to_d`, `d_to_t`, `p_to_pf_f`, `t_to_s_ss_z`, `k_to_ch`, `v_to_b`, `y_gh_to_g_ch`, `latin_ieren`, `strong_verbs_ablaut`) or `` `Direct Cognate` ``. The context phrase MUST end with `*("...")*` — the parser regex-extracts the translation. The gender cell must start with `der`/`die`/`das` or be `-`.
 - **Known incident:** a row with the article inside the German word cell (`**das Gift** (trap)`) produced the id `das gift` and silently broke every lesson referencing `gift`.
 
 ### 1.2 Word ids are the German word lowercased — check for duplicates
@@ -26,7 +33,7 @@
 
 ### 1.3 Count sync happens ONCE, at the end of a content run
 - **Applies when:** you are adding words across multiple batches.
-- **Action:** do NOT update the §2 header (`All N Words`), the inventory block, or `TOTAL_COMPENDIUM_WORDS` in `src/lib/types.ts` per batch. Sync all three once, to the true final count, at the very end. Per-batch syncing causes test churn and wasted context. (The count test in `compendium.test.ts` is deliberately tolerant — `≥ TOTAL_COMPENDIUM_WORDS` — do not "fix" it back to strict equality without syncing.)
+- **Action:** do NOT update the §2 header (`All N Words`), the inventory block, or `TOTAL_COMPENDIUM_WORDS` in `src/lib/types.ts` per batch. Sync all of them once, to the true final count, at the very end (also `WORD_COUNTS.de` / `COURSE_COUNTS.de` in `src/data/word-counts.ts`, which `languages.test.ts` pins to the data, and the counts quoted in the README files, which `docs-sync.test.ts` pins). Per-batch syncing causes test churn and wasted context. (The count test in `compendium.test.ts` is deliberately tolerant — `≥ TOTAL_COMPENDIUM_WORDS` — do not "fix" it back to strict equality without syncing.)
 
 ### 1.4 Section regexes vs. section headers
 - **Applies when:** editing any `##` section header in `word_connections.md`.
@@ -84,7 +91,7 @@
 ### 4.1 Schema discipline (tests enforce most of this)
 - **Applies when:** authoring a lesson or editing exercises.
 - **Action:**
-  - Exactly 5 exercises, ≥3 types from `morpheme_tiles`, `matching_pairs`, `shift_select`, `derive`, `reverse_cognate`, `syntax_builder`.
+  - Exactly 5 graded exercises. The classic types are `morpheme_tiles`, `matching_pairs`, `shift_select`, `derive`, `reverse_cognate`, `syntax_builder`; the full union (`ExerciseType` in `src/lib/types.ts`) also has `transcribe`, `literal_gloss`, `dictation`, `family_matrix`, `variant_english`, `pronoun_compression` and `spoken_turn_reply`. `src/tests/exercises.test.ts` pins the per-type rules (e.g. a lesson never opens with `transcribe`/`literal_gloss`); read it before using a newer type.
   - **First exercise must be** `morpheme_tiles`, `matching_pairs`, or `shift_select` — never cold typing (`derive` first has failed a test before).
   - `syntax_builder`: `word_bank` must contain every word of `target_answer`; untaught auxiliary words need `vocab_hints`; no trailing periods/punctuation in targets.
   - `morpheme_tiles`: tiles must be able to form the answer.
@@ -103,7 +110,7 @@
 
 ### 4.5 Do not touch authored lessons or protected files
 - **Applies when:** you feel like "improving" existing content.
-- **Action:** all 109 authored lessons are frozen unless the human asks. Also protected: `src/lib/trail-map.ts`, `src/lib/store.ts`, `src/components/**` (report rendering bugs instead of fixing them), `TRAIL_GATES` thresholds, theme data. The compendium's §1 shift definitions are parser-anchored — edit only with extreme care.
+- **Action:** treat authored lessons as frozen unless the human asks you to change them. Surgical learner-facing fixes (wrong German, unfinishable exercise, untaught word, stale text) are allowed under [`NORTH_STAR.md`](./NORTH_STAR.md); never change a lesson's `id`/`slug`/`title`/`phase`/`shift_categories`/position. Also protected unless the task is about them: `src/lib/trail-map.ts`, `src/lib/store.ts`, `src/components/**` (report rendering bugs instead of fixing them), `TRAIL_GATES` thresholds, theme data. The compendium's §1 shift definitions are parser-anchored — edit only with extreme care. If a prompt from the human grants an explicit override, that prompt wins for that task.
 
 ---
 
@@ -124,11 +131,11 @@
 
 ### 5.4 Bulk-append checklist for `lessons.ts`
 - **Applies when:** appending lessons via script/heredoc.
-- **Action:** the appended block must end exactly with `  },\n];` — nothing between the last lesson's close and the array close. After any bulk append: run `tsc --noEmit` immediately, then grep for `^]` (a stray closing bracket on its own line).
+- **Action:** `lessons.ts` is JSON-style (quoted keys) and its array now ends with `  },\n  ...READING_LESSONS\n];` — the five spine stories live in `reading-lessons-de.ts`. Insert new lessons *before* the `...READING_LESSONS` line, with nothing between the last lesson's close and that line. After any bulk append: run `bun run typecheck` immediately, then grep for `^]` (a stray closing bracket on its own line).
 
 ### 5.5 Audit word references before declaring done
 - **Applies when:** you added lessons and/or words.
-- **Action:** verify every `word_ids` / `table_word_ids` entry in every lesson resolves against `src/data/compendium.json` (a missing word = broken lesson page at runtime, even when all tests pass — the test suite does not fully check this). A ~15-line script walking the lesson blocks and set-checking ids is enough; it has caught real misses twice.
+- **Action:** run `bun scripts/audit-word-refs.ts`. It verifies every `word_ids` / `table_word_ids` entry resolves against the compendium (a missing word = broken lesson page at runtime). The same logic runs inside `bun run test` via `src/lib/word-refs-audit.ts` / `src/tests/word-refs.test.ts`, so a failure there is the same bug.
 
 ### 5.6 AI prose self-review
 - **Applies when:** you generated long prose (hooks, patterns, summaries).
@@ -154,11 +161,11 @@
 
 ## 7. Thinking Method surfaces (`transcribe`, `literal_gloss`, `twist`) — applies when you author or edit the TM content
 
-> Added 2026-10-01 by the Thinking Method upgrade (`docs/THINKING_METHOD_UPGRADE.md`), which
-> also amends §4.5: surgical edits to existing lessons are permitted under that document's
-> §0.3 rules (never `id`/`slug`/`title`/`phase`/`shift_categories`/position; at most one
-> exercise swap per lesson per batch; lessons 1–10 are add-only). `src/lib/store.ts` remains
-> frozen except for its documented additive TM-4 settings keys.
+> These surfaces shipped with the Thinking Method upgrade, which also amends §4.5: surgical
+> edits to existing lessons are permitted (never `id`/`slug`/`title`/`phase`/`shift_categories`/
+> position; at most one exercise swap per lesson per batch; lessons 1–10 are add-only).
+> The method's design rationale lives in `docs/dont open untill mentioned/thinking-method-short.md`
+> (large; open it only when the task is about the method itself).
 
 ### 7.1 `transcribe` invariants (tests enforce most of this)
 - **Applies when:** authoring a production drill.
@@ -181,7 +188,7 @@
 - **Action:** exactly one optional twist per lesson; it never counts toward the 5 exercises,
   never touches `everQueued`, the retry queue, star logic, or completion gating. Its
   `target_answer` obeys the no-trailing-punctuation rule; its `word_bank` (if present) must
-  contain every target word. Grading a twist would violate the guidebook twice — do not.
+  contain every target word. Grading a twist would turn a deliberate tangent into a test — do not.
 
 ### 7.4 Word-reference audit is wider now
 - **Applies when:** any content batch.
@@ -203,8 +210,8 @@
 - **Applies when:** editing exercises in `lessons.ts`.
 - **Action:** the id convention is `l<lessonId>_e<n>`; sprig 202's e5 shipped as `l2_e5`
   (duplicate of core 2's) and was only found when a regex edit landed on the wrong block.
-  After any exercise edit: `grep -o 'id: "l[0-9]*_e[0-9]*"' src/data/lessons.ts | sort | uniq -d`
-  must print nothing.
+  After any exercise edit: `grep -o '"id": "l[0-9]*_e[0-9]*"' src/data/lessons.ts | sort | uniq -d`
+  must print nothing. (The file uses quoted JSON keys — an unquoted `id:` pattern matches nothing and "passes" falsely; sanity-check that the grep without `uniq -d` prints hundreds of lines.)
 
 ---
 

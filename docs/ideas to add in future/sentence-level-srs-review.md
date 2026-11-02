@@ -1,118 +1,37 @@
-# Sentence-level spaced repetition in the Review Hub
+# Sentence-level spaced repetition — what is still open
 
-> **Status:** idea, not implemented.
-> **Source:** guidebook §1.7 (masked repetition), §4.2 ("we want to build sentences, and
-> quickly"), and the observation that Brücke's SRS is word-level only.
+> **Status:** partly shipped. The Review Hub already has a **Sentence Patterns** deck: lesson
+> example sentences become review entities (`src/lib/word-entities-core.ts`,
+> `src/lib/review-decks.ts`, `src/app/review/page.tsx`). What follows is the part that is **not**
+> built.
 
-## The gap
+## The remaining gap
 
-`SRSCard` is keyed by `word_id`. Every deck, every review style, every mastery signal
-is a single German word against a single English meaning. That is coherent with the
-Atlas's thesis — the app teaches decoding, and decoding a word is the unit.
-
-But the Thinking Method's unit is the **sentence**. The guidebook is explicit that a
-course builds "sentences, and quickly", and that repetition of *processes* — not of
-items — is what installs fluency. A learner can have every card at `interval: 21`
-and still be unable to order two clauses, because the thing that decays is the
-sentence-building law, and nothing currently schedules it.
-
-The trail already produces exactly the right material: 38 `transcribe` exercises,
-9 `literal_gloss`, 30 `twist` cards, plus every `syntax_builder`. All of them grade a
-whole thought. None of them are ever scheduled again.
+`SRSCard` is keyed by `word_id`, so SM-2 schedules *words and example sentences as items*, but it
+never reschedules the **processes** a learner got wrong — the `transcribe`, `literal_gloss`,
+`syntax_builder` and twist exercises that grade a whole thought. A learner can have every card at a
+long interval and still be unable to order two clauses, because the sentence-building law decays
+and nothing schedules it.
 
 ## What to build
 
-### 1. A sentence card type (additive)
-
-```ts
-// src/lib/types.ts
-export interface SentenceCard {
-  /** stable id: `${lessonId}:${exerciseId}` */
-  id: string;
-  /** the lesson that first asked for it */
-  lesson_id: number;
-  /** the exercise to replay — unchanged, so no new authoring */
-  exercise: ExerciseItem;
-  /** SM-2 fields, identical to SRSCard */
-  interval: number;
-  repetitions: number;
-  ease_factor: number;
-  due_date: string;
-  lapses: number;
-  last_reviewed: string | null;
-}
-```
-
-Store as `sentenceCards: Record<string, SentenceCard>` beside `srsCards`. **Additive
-only** — `store.ts` stays otherwise untouched, and the existing word decks must not
-change behaviour.
-
-### 2. When a card is created
-
-One card per *exercise* (not per attempt), created the first time the learner
-completes that exercise **incorrectly** — i.e. exactly the moment a process is not yet
-installed. A first-try-correct production exercise needs no scheduling; a queued one
-does. This keeps the sentence deck small and honest.
-
-### 3. A fifth deck
-
-`sentences` — "Sentences you're still building". Sorted by `due_date`, capped at 15
-per session. It should appear in the deck list only when non-empty, so a new learner is
-never shown an empty hub.
-
-### 4. Replay, not re-grade
-
-Replay the exercise through the **existing** `ExerciseWidget` — no new widgets. Two
-consequences that matter:
-
-- A `transcribe` replays with a **cleared cue ladder**. That is the whole point: the
-  learner must rebuild the thought from nothing.
-- The exercise's `idea_parts` come back collapsed. They are a teaching aid for the
-  first meeting, not a walking stick.
-
-### 5. The fifth review style — "Same thought, but *she* says it"
-
-This is the important part, and it is pure guidebook §1.7. `src/lib/retry-variation.ts`
-already exists (it rotates a retry's surface deterministically). Extend it with the
-twist patterns the guidebook names:
-
-- **person swap** — `Ich hoffe, du kommst.` → `Sie hofft, du kommst.`
-- **tense swap** — present → Perfekt, where the lesson has taught both
-- **object swap** — `den Kaffee` → `den Tee` (case stays masculine: the Him-Case again)
-- **negate it** — add `nicht`
-- **front something** — move a constituent to position 1 and let the verb follow
-- **basement check** — main clause → `dass`-clause
-
-Each variant is generated from the *stored* exercise at replay time, so no extra
-authoring. The generated sentence must be checked against `audit-word-refs.ts`'s
-resolver at runtime — if any token does not resolve, fall back to replaying the
-original rather than shipping a broken sentence.
-
-**Grading is deliberately lenient on the variant:** the swing is the exercise, so a
-wrong inflection on the swapped word should still fire the shift-diagnosis path
-("the modal's ending jumped onto the infinitive") rather than a generic error sheet.
-
-## Why this and not "more word decks"
-
-The guidebook's warning applies directly: "The more we overtly repeat, the more our
-learners' minds will begin to abandon conscious thought processes in preference for
-more intuitive ones." Word decks train recognition. Sentence cards with a varied
-surface train *production under variation*, which is the only thing that survives
-contact with the real language.
+1. **Exercise-replay cards (additive).** One `SentenceCard` per *exercise* (`${lessonId}:${exerciseId}`),
+   created the first time the learner completes that exercise **incorrectly** — i.e. exactly when a
+   process isn't installed. Same SM-2 fields as `SRSCard`, stored in a new `sentenceCards` record
+   beside `srsCards`. Additive only: existing word decks must not change behaviour.
+2. **Replay through the existing widgets** — no new exercise UI. A `transcribe` replays with a
+   **cleared cue ladder** and collapsed `idea_parts`; the learner rebuilds the thought from nothing.
+3. **Surface variation on replay.** Extend `src/lib/retry-variation.ts` with generated variants:
+   person swap, tense swap (only where both are taught), object swap, negate, front a constituent,
+   main clause → `dass`-clause. Variants are generated from the stored exercise at replay time, so
+   no extra authoring; every token of a generated sentence must resolve through the
+   `audit-word-refs` resolver at runtime, otherwise fall back to replaying the original. Grade
+   leniently on the swing and route wrong inflections through the shift-diagnosis path.
+4. **Deck rules.** Show the deck only when non-empty; cap at 15 per session (a full backlog drain
+   turns the hub into a wall); keep sentence cards **out of the star/mastery economy** entirely.
 
 ## Effort
 
-- Schema + store: small (additive).
-- Deck + ordering: small.
-- The variant generator: **medium** — this is the real work. It needs a per-exercise
-  "swingable" declaration, most naturally an optional authored `variants` array on
-  `ExerciseItem`, falling back to the five patterns above where the grammar allows.
-- Tests: reuse `srs-timezone.test.ts` patterns for due-date handling; add a case for
-  every swing pattern with a golden German sentence.
-
-## Open questions
-
-- Should sentence cards count toward the star/met mastery counters? **No** — keep them
-  out of the trail economy entirely (§1.8: target sentences are not tests).
-- Cap the deck at 15 per session, or drain it fully? Start at 15; a full drain of a
-  backlog turns the hub into a wall.
+Schema + store + deck ordering: small. The variant generator is the real work (~medium); it wants an
+optional authored `variants` array on `ExerciseItem` with the generic patterns as a fallback.
+Tests: reuse `srs-timezone.test.ts` patterns for due dates, plus a golden German sentence per swing.

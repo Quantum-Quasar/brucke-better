@@ -7,7 +7,7 @@ import type { CompendiumData, FalseFriend, CompoundCalque, ShiftFamily, WordEnti
 // untouched; Spanish words are hand-authored here and machine-checked by
 // src/tests/spanish-content.test.ts. The "shift families" are the Spanish
 // decode engine: conversion bridges from shared Latin roots
-// (see docs/spanish-course/spanish-course-design.md).
+// (see docs/courses.md).
 // ---------------------------------------------------------------------------
 
 const W = (w: WordEntity): WordEntity => w;

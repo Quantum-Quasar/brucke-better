@@ -72,3 +72,4 @@ docs/thinking-method-images/
 next-env.d.ts
 docs/distribution.md
 docs/response.md
+.vitest/

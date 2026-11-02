@@ -9,8 +9,10 @@
 | Role | Path | Description |
 |---|---|---|
 | **Primary Codebase (Working Dir)** | `.` (project root) | Complete Next.js 16 + React 19 + TypeScript + Bun application. All source code, tests, and build scripts live here. |
-| **Master Design & Reference Archive** | `docs/` | Master design document (`german_learning_platform_design-final.md`), historical survey transcripts, and early notes. |
-| **Synchronized Design Document** | `docs/german_learning_platform_design-final.md` | In-repo copy of the 16-section master design specification, kept in sync with the reference archive. |
+| **Documentation** | `docs/` | Maintained docs, indexed in [`docs/INDEX.md`](docs/INDEX.md). Architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Sibling courses: [`docs/courses.md`](docs/courses.md). |
+| **Content source of truth** | `word_connections.md` | Hand-maintained German compendium; parsed into `src/data/compendium.json` + `insights.json` (generated). |
+
+The app teaches German and also ships French, Spanish and Dutch courses on the same engine (typed modules in `src/data/<lang>/`). The rest of this manifest describes the German course unless it says otherwise.
 
 ---
 
@@ -55,12 +57,16 @@ English and German are sibling West Germanic languages sharing over 60% of core 
 
 ### Pillar 3: Spaced Repetition Review Hub (`/review`)
 - **Algorithm**: Unified SuperMemo SM-2 interval scheduler (`src/lib/srs.ts`) tracking repetitions, ease factors, lapses, intervals, and due dates.
-- **5 Playable Decks**:
-  1. **Due Today Deck**: Spaced repetition queue filtered by algorithmic due date.
-  2. **By Shift Family Deck**: Filterable practice by individual consonant shift.
-  3. **Weakest Words Deck**: High-lapse words requiring immediate consolidation.
-  4. **Recent Lessons Deck**: Fast reinforcement of the last 20 words encountered on The Trail.
-  5. **Compound Calques & Traps Deck**: 48 specialized cards covering 32 compound calques (*Handschuh*, *Kühlschrank*, *Flugzeug*) and 16 false friend traps (*Gift*, *bald*, *bekommen*).
+- **9 Deck Types** (`src/lib/review-decks.ts`):
+  1. **Due Today**: Spaced repetition queue filtered by algorithmic due date.
+  2. **By Shift Family**: Filterable practice by individual consonant shift.
+  3. **By Domain**: Words grouped by the `domain` column of the compendium.
+  4. **Weakest Words**: High-lapse words requiring immediate consolidation.
+  5. **Recent Lessons**: Words from the most recently completed lessons.
+  6. **Compounds & Traps**: 48 specialized cards covering 32 compound calques (*Handschuh*, *Kühlschrank*, *Flugzeug*) and 16 false friend traps (*Gift*, *bald*, *bekommen*).
+  7. **Sentence Patterns**: Lesson example sentences as review items.
+  8. **Article & Gender Drill**: The singular definite article for gendered nouns, with a fixed-width blank.
+  9. **Everything**: The full pool.
 - **4 Selectable Review Styles**:
   - `flashcard` (Quick Flip): Recall in mind $\rightarrow$ Space/Enter reveals $\rightarrow$ 1–4 SM-2 grade.
   - `mcq` (Multiple Choice): Pick target word from 4 options (hotkeys 1–4).
@@ -79,8 +85,8 @@ English and German are sibling West Germanic languages sharing over 60% of core 
    - `das` (Neuter): Emerald Green (`#10b981` / `text-emerald-200 bg-emerald-500/25 border-emerald-400/60`)
    - Introduced via an educational dismissible banner (`GenderGuideBanner.tsx`) and onboarding.
 2. **Zero-Dependency Native Speech Synthesis (`src/lib/audio.ts`)**:
-   - Uses `window.speechSynthesis` with `de-DE` locale, German voice matching, and `0.92x` learner pace.
-   - Zero MP3 bundles, zero cloud API keys, zero network latency.
+   - Uses `window.speechSynthesis` with the active language's locale (`de-DE` for German), voice matching, and `0.92x` learner pace.
+   - Zero speech MP3 bundles, zero cloud API keys, zero network latency. (Keyboard-click sounds are bundled `.wav` packs under `public/sounds/`, played by `src/lib/sound.ts`.)
    - Embedded speaker buttons across `ShiftPair`, `WordCardDrawer`, `ReviewPage`, and `LessonReader`, plus keyboard shortcut `[R]` / `[A]`.
 3. **Desktop Keyboard First Ergonomics**:
    - `1`, `2`, `3`, `4`: Select MCQ options or grade SM-2 cards (Again, Hard, Good, Easy).
@@ -94,100 +100,38 @@ English and German are sibling West Germanic languages sharing over 60% of core 
 
 ## 5. File Structure & Component Map
 
+A short map of where things live; list the directories yourself for the full tree (it rots when written out here).
+
 ```
-/home/shaurya/gemini-tmp/german-app-thinking-method/
+.
 ├── package.json               # Next 16.3.4, React 19.2.8, Tailwind v4, Zustand 5, Vitest 5, Bun
-├── next.config.mjs            # Next.js configuration with React strict mode
-├── tsconfig.json              # TypeScript config with '@/*' path aliases
-├── scripts/
-│   ├── parse-compendium.ts    # Parses markdown dictionaries into compendium.json
-│   ├── audit-word-refs.ts     # Every vocabulary reference resolves (incl. family grids and the new types)
-│   ├── audit-teasers.ts       # Title + curiosity_teaser chain drift must stay 0
-│   ├── audit-wording.ts       # No copy-pasted prose/prompt formulas between neighbours
-│   ├── audit-vocab-balance.ts # Taught-word balance across the trail
-│   ├── contrast-audit.ts      # One-off theme-contrast fixer (WCAG is enforced by tests)
-│   ├── export-trail.ts        # `bun run trail` — export the trail graph
-│   ├── capture-demo-images.ts # Local demo screenshots
-│   └── append-words.mjs       # Batch helper for word_connections.md §2
+├── next.config.mjs            # Redirects for legacy /trail and /atlas URLs; cache headers
+├── word_connections.md        # German content source of truth (parsed into src/data/*.json)
+├── scripts/                   # Build + audit tooling — see scripts/README.md
+├── public/data/<lang>/        # Generated per-language payloads (bun run export-data)
 ├── src/
-│   ├── app/                   # Next.js App Router
-│   │   ├── layout.tsx         # Root HTML structure, dark background, TopNav & BottomNav
-│   │   ├── page.tsx           # Dashboard / Home: Streak stats, Daily Insight, Quick Start
-│   │   ├── globals.css        # Tailwind v4 theme, custom dark tokens, font setup
-│   │   ├── trail/
-│   │   │   ├── page.tsx       # Trail overview: 5 learning phases & 30 lesson milestones
-│   │   │   └── [id]/page.tsx  # Server component exporting generateStaticParams()
-│   │   ├── atlas/
-│   │   │   ├── page.tsx       # Atlas index: grid of 9 consonant shift families
-│   │   │   └── [family]/page.tsx # Server component exporting generateStaticParams()
-│   │   ├── panorama/
-│   │   │   └── page.tsx       # Grammar Panorama: five consultable structure diagrams
-│   │   └── review/
-│   │       └── page.tsx       # Multi-modal SRS Review Hub with 4 styles & 5 decks
-│   ├── components/
-│   │   ├── common/
-│   │   │   ├── ShiftPair.tsx          # Memoized cognate pair with letter highlights & audio
-│   │   │   ├── GenderBadge.tsx        # Memoized 3-color gender indicator pill
-│   │   │   ├── GenderGuideBanner.tsx  # Educational dismissible gender color guide
-│   │   │   ├── WordCardDrawer.tsx     # Slide-over word detail sheet with etymology & audio
-│   │   │   ├── GermanCharBar.tsx      # One-click umlaut & eszett input chips
-│   │   │   ├── DailyInsightCard.tsx   # Dashboard cultural insight widget
-│   │   │   ├── OnboardingModal.tsx    # 4-step interactive first-time onboarding modal
-│   │   │   └── DonutChart.tsx         # SVG progress breakdown ring
-│   │   ├── lesson/
-│   │   │   ├── LessonDetailClient.tsx # Client boundary for [id]/page.tsx
-│   │   │   ├── LessonReader.tsx       # 5-step wizard container with progress bar & Atlas bridge
-│   │   │   ├── ProgressBar5.tsx       # 5-segment interactive step navigation bar
-│   │   │   ├── ExerciseWidgets.tsx    # Morpheme tiles, matching pairs, shift select, syntax builder, dictation, family grid, variant English
-│   │   │   ├── exercise-tiles.ts      # Deterministic hash/shuffle/tile-order helpers (imported by the widget and every per-type chunk)
-│   │   │   ├── DictationExercise.tsx  # TM-6 played-audio listening drill with a capped replay budget
-│   │   │   ├── FamilyMatrixExercise.tsx # TM-6 prefix × base grid: one cell graded, the family revealed
-│   │   │   ├── VariantEnglishExercise.tsx # TM-6 every honest English rendering + word-match traps
-│   │   │   ├── SuccessFeedbackSheet.tsx # Explicit answer meaning & explanation sheet
-│   │   │   ├── ErrorFeedbackSheet.tsx # Letter-by-letter diff comparison sheet
-│   │   │   └── RetryQueue.tsx         # End-of-lesson reinforcement queue
-│   │   ├── atlas/
-│   │   │   ├── ConstellationDetailClient.tsx # Client boundary for [family]/page.tsx
-│   │   │   ├── RadialConstellation.tsx       # SVG radial spoke graph with animated nodes
-│   │   │   └── BranchDrillModal.tsx          # 5-question shift practice drill modal
-│   │   └── navigation/
-│   │       ├── TopNav.tsx             # Desktop top navigation header
-│   │       └── BottomNav.tsx          # Mobile bottom tab navigation bar
-│   ├── lib/
-│   │   ├── types.ts           # Core TypeScript interfaces & domain types
-│   │   ├── store.ts           # Zustand store, mastery state machine, dual persistence
-│   │   ├── srs.ts             # SuperMemo SM-2 spaced repetition calculation engine
-│   │   ├── gender.ts          # Color mapping & metadata for der / die / das
-│   │   ├── shift-annotator.ts # Memoized letter-by-letter consonant shift aligner
-│   │   ├── review-modes.ts    # Question generator for MCQ, Tile Builder, and Typing
-│   │   ├── lemmatizer.ts      # English inflection normalizer (verbs, nouns, participles)
-│   │   ├── letter-diff.ts     # Character-by-character typo alignment & diffing
-│   │   └── audio.ts           # Web Speech API German speech synthesis wrapper
-│   ├── data/
-│   │   ├── compendium.json    # 1226 words, 9 shifts, 32 compounds, 16 false friends, 28 insights
-│   │   └── lessons.ts         # All 179 authored lesson definitions, exercises, and clues
-│   └── tests/                 # 43 test files (Vitest) — whole-curriculum integrity, timezone boundaries, persistence merging, security
-│       ├── store.test.ts
-│       ├── exercises.test.ts
-│       ├── letter-diff.test.ts
-│       ├── lemmatizer.test.ts
-│       ├── review-modes.test.ts
-│       ├── gender.test.ts
-│       ├── compendium.test.ts
-│       ├── review.test.ts
-│       ├── audio.test.ts
-│       ├── srs.test.ts
-│       └── shift-annotator.test.ts
+│   ├── app/                   # Six static routes: /, /atlas, /panorama, /review, /settings, /about
+│   ├── components/            # common/ (AppShell, ShiftPair, WordCardDrawer…), lesson/ (LessonView,
+│   │                          #   LessonReader, one widget per exercise type), atlas/, trail/, navigation/
+│   ├── lib/                   # types.ts, store.ts, srs.ts, letter-diff.ts, shift-annotator.ts,
+│   │                          #   trail-map.ts, review-decks.ts, review-modes.ts, word-entities-core.ts, audio.ts, sound.ts
+│   ├── data/                  # compendium.json (1226 words, 9 shifts, 32 compounds, 16 false friends, 28 insights),
+│   │                          #   lessons.ts (all 179 authored German lessons), curriculum.ts, french/ spanish/ dutch/
+│   └── tests/                 # 44 test files (Vitest) — whole-curriculum integrity, timezone boundaries,
+│                              #   persistence merging, security, docs-sync
+└── tests/e2e/                 # Playwright smoke suite
 ```
+
+In-page views: lessons and atlas details are rendered by `AppShell.tsx` (`LessonView`, `ConstellationDetailClient`); there are no `/trail/[id]` or `/atlas/[family]` pages.
 
 ---
 
 ## 6. Key Data Entities & Schemas (`src/lib/types.ts`)
 
-- **`WordEntity`**: Primary vocabulary item. Fields: `id`, `target_word`, `english_cognate`, `english_meaning`, `gender` (`der` | `die` | `das` | `null`), `ipa`, `sound_shift_ids`, `shift_rule`, `context_phrase`, `context_translation`, `etymology_derivation`.
+- **`WordEntity`**: Primary vocabulary item. Fields include `id`, `target_word`, `english_cognate`, `english_meaning`, `gender` (`der`/`die`/`das` for German; `le`/`la`, `el`/`la`, `de`/`het` for the sibling courses; or `null`), `ipa`, `sound_shift_ids`, `shift_rule`, `context_phrase`, `context_translation`, `etymology_derivation`, `domain`.
 - **`ShiftFamily`**: Consonant shift definition. Fields: `id`, `name`, `symbol`, `phonetic_rule`, `historical_linguistics`, `philological_note`, `literature_source`, `word_ids`.
 - **`SRSCard`**: Spaced repetition tracking card. Fields: `word_id`, `interval`, `repetitions`, `ease_factor`, `due_date`, `lapses`, `last_reviewed`.
-- **`Lesson`**: Curriculum unit. Fields: `id`, `slug`, `title`, `subtitle`, `phase`, `shift_categories`, `word_ids`, `hook`, `pattern`, `table_word_ids`, `exercises`, `summary`.
+- **`Lesson`**: Curriculum unit. Fields: `id`, `slug`, `title`, `subtitle`, `phase`, `shift_categories`, `word_ids`, `hook`, `pattern`, `table_word_ids`, `exercises` (typed by `ExerciseType`), `summary`, and an optional `twist`.
 - **`CompoundCalque`**: Transparent compound nouns. Fields: `id`, `compound`, `gender`, `literal_morphemes`, `real_meaning`, `english_counterpart`, `lore`.
 - **`FalseFriend`**: Deceptive cognate traps. Fields: `id`, `german_word`, `looks_like`, `actual_meaning`, `trap_note`.
 
@@ -211,16 +155,18 @@ English and German are sibling West Germanic languages sharing over 60% of core 
 
 ## 8. Verification Commands
 
-All commands should be executed from `/home/shaurya/gemini-tmp/german-app-thinking-method`:
+All commands run from the repository root:
 
 ```bash
 # 1. Run Data Compilation Pipeline
 bun run parse-data
 
-# 2. Run All Automated Test Suites (43 test files / 437 tests)
+# 2. Run All Automated Test Suites (44 test files / 444 tests), then lint and typecheck
 bun run test
+bun run lint
+bun run typecheck
 
-# 3. Compile Production Build (Turbopack + SSG verification)
+# 3. Compile Production Build (parse-data + export-data + next build; SSG verification)
 bun run build
 
 # 4. Launch Local Development Server
@@ -253,5 +199,5 @@ When auditing the codebase, verify:
   - State changes in Zustand persist to `localStorage`.
   - Cookie backup stays within safe browser limits (lean payload ≤ 2048 URL-encoded bytes).
 - [ ] **Build & Tests**:
-  - `bun run test` (Vitest) passes with 0 failures across all 43 test files (437 tests).
+  - `bun run test` (Vitest) passes with 0 failures across all 44 test files (444 tests).
   - `bun run build` generates all static pages (6 static routes + 500 lesson payloads) without TypeScript or Turbopack errors.

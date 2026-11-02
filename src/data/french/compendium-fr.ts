@@ -7,7 +7,7 @@ import type { CompendiumData, FalseFriend, CompoundCalque, ShiftFamily, WordEnti
 // untouched; French words are hand-authored here and machine-checked by
 // src/tests/french-content.test.ts. The "shift families" are the French
 // decode engine: conversion bridges from the formal register of English
-// (see docs/french-course/french-course-design.md).
+// (see docs/courses.md).
 // ---------------------------------------------------------------------------
 
 const W = (w: WordEntity): WordEntity => w;

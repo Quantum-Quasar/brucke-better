@@ -12,7 +12,7 @@ import type {
 // untouched; Dutch words are hand-authored here and machine-checked by
 // src/tests/dutch-content.test.ts. The "correspondence families" are the Dutch
 // decode engine: the consonants English and Dutch still share, plus the vowel
-// spellings Dutch turned its own way (see docs/dutch-course/dutch-course-design.md).
+// spellings Dutch turned its own way (see docs/courses.md).
 
 const W = (
   id: string,

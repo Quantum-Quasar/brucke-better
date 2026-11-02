@@ -39,8 +39,7 @@ Audits are useful; unlimited audits slowly turn the app into an etymology refere
    experience instead: can I finish every exercise, is every word taught first, is it
    clear and encouraging?
 3. If a rule in an older doc (for example "every etymological claim must be verifiable" in
-   `REBALANCE_PROMPT.md` / `content-agent-prompt.md`) pushes you toward more etymology work,
-   this page wins. The practical reading of that rule is: *don't state anything false — and if
+   `content-agent-prompt.md`) pushes you toward more etymology work, this page wins. The practical reading of that rule is: *don't state anything false — and if
    in doubt, say less.*
 
 ## Guard rails that already exist (keep them green)
