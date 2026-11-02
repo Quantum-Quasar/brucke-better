@@ -1459,10 +1459,9 @@ function ReviewHub({
               {!isRevealed && settings.showKeyTips && (
                 <div className="text-center text-[11px] font-mono text-[var(--sub-color)] pt-1 flex items-center justify-center gap-1">
                   <span>press</span>
-                  <span className="keycap text-[10px]">1</span>
-                  <span className="keycap text-[10px]">2</span>
-                  <span className="keycap text-[10px]">3</span>
-                  <span className="keycap text-[10px]">4</span>
+                  {mcqOptions.map((option, index) => (
+                    <span key={option} className="keycap text-[10px]">{index + 1}</span>
+                  ))}
                   <span>to select</span>
                 </div>
               )}
@@ -2109,7 +2108,7 @@ function ReviewHub({
                   </span>
                 </div>
                 <p className="text-sm font-mono text-[var(--sub-color)]">
-                  rapid-fire 4-option article mcq ({language.genderSystem ? language.genderSystem.articles.join(" / ") : "der / die / das"}) for every gendered {language.name.toLowerCase()} noun. launches directly into mcq.
+                  choose the usual singular definite article for a {language.name.toLowerCase()} noun ({language.genderSystem ? language.genderSystem.articles.join(" / ") : "article"}). this drill does not practise articles in sentence context or grammatical cases.
                 </p>
                 <div className="text-xs font-mono text-[var(--main-color)] pt-1">
                   {articleCount} nouns in scope

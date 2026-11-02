@@ -109,7 +109,8 @@ Visit `http://localhost:3000` in your browser.
 
 3. **Multi-Modal Review Hub (`/review`)**:
    - Algorithmic spaced repetition powered by SuperMemo SM-2.
-   - 5 playable decks: *Due Today*, *By Shift Family*, *Weakest Words*, *Recent Lessons*, and *Compound Calques & False Friends*.
+   - Decks include *Due Today*, *By Shift Family*, *By Domain*, *Weakest Words*, *Recent Lessons*, *Compounds & Traps*, *Sentence Patterns*, *Article & Gender Drill*, and *Everything*.
+   - The article drill covers the usual singular definite article for gendered nouns in German, Dutch, French and Spanish; it does not practise cases or articles in sentence context.
    - 4 selectable review styles: *Quick Flip*, *Multiple Choice (MCQ)*, *Tile Builder*, and *Derivation Typing*.
    - Anti-spoiler gender shields: Front card prompts with `[ der / die / das ? ]` instead of leaking the article before recall.
    - Desktop keyboard navigation (`1`–`4`, `Space`, `Enter`, `Backspace`, `←`/`→` back and forward between cards, `[R]` audio replay, `Esc`).
