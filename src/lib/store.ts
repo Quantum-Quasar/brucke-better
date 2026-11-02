@@ -381,6 +381,15 @@ function sanitizeLessonProgressEntry(raw: unknown): LessonProgress | null {
     completedSegments,
   };
   if (typeof raw.everQueued === "boolean") entry.everQueued = raw.everQueued;
+  if (Array.isArray(raw.retryExerciseIds)) {
+    entry.retryExerciseIds = [...new Set(raw.retryExerciseIds.filter(
+      (id): id is string => typeof id === "string" && id.length > 0 && id.length <= 200
+    ))].slice(0, 100);
+  }
+  if (typeof raw.inRetryPhase === "boolean") entry.inRetryPhase = raw.inRetryPhase;
+  if (typeof raw.retryIndex === "number" && Number.isInteger(raw.retryIndex) && raw.retryIndex >= 0) {
+    entry.retryIndex = raw.retryIndex;
+  }
   return entry;
 }
 
@@ -1272,7 +1281,11 @@ export const useAppStore = create<AppState>((set, get) => ({
         current.practiceIndex === safeProgress.practiceIndex &&
         current.everQueued === safeProgress.everQueued &&
         current.completedSegments.length === safeProgress.completedSegments.length &&
-        current.completedSegments.every((segment, index) => segment === safeProgress.completedSegments[index])
+        current.completedSegments.every((segment, index) => segment === safeProgress.completedSegments[index]) &&
+        current.inRetryPhase === safeProgress.inRetryPhase &&
+        current.retryIndex === safeProgress.retryIndex &&
+        (current.retryExerciseIds ?? []).length === (safeProgress.retryExerciseIds ?? []).length &&
+        (current.retryExerciseIds ?? []).every((id, index) => id === safeProgress.retryExerciseIds?.[index])
       ) {
         return s;
       }

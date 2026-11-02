@@ -98,11 +98,14 @@ are typed TS modules under `src/data/<lang>/`, not parsed from markdown. Details
   umlaut/digraph substitution such as `ae`/`ss`, missing infinitive ending or article,
   single-character typo on words ≥ 4 letters, commas ignored) — a pass that queues the
   item for reinforcement when caused by a typo; `incorrect` with a letter-by-letter diff
-  and shift diagnosis (`src/lib/shift-diagnosis.ts`).
+  and shift diagnosis (`src/lib/shift-diagnosis.ts`). Multiple-choice exercises compare
+  the selected option directly with the authored answer, without spelling tolerance.
 - **Retry queue:** missed items replay at the end of Practice and must drain before
-  Summary unlocks; touching it forfeits the purple star. Retries rotate their surface
-  deterministically (`src/lib/retry-variation.ts`); an "I guessed" flag on a correct
-  answer re-grades the word as Hard.
+  Summary unlocks; touching it forfeits the purple star. Pending exercise IDs and
+  the reinforcement position persist with lesson progress, so leaving or reloading
+  cannot bypass retries. Retries rotate their surface deterministically
+  (`src/lib/retry-variation.ts`); an "I guessed" flag on a correct answer re-grades
+  the word as Hard.
 - **Anti-spoilers:** matching columns are cyclically shifted so pairs never align;
   `syntax_builder` banks strip trailing punctuation; review cards hide the gender colour
   behind `[ der / die / das ? ]` until recall.
@@ -124,6 +127,8 @@ are typed TS modules under `src/data/<lang>/`, not parsed from markdown. Details
   `src/lib/review-decks.ts` / `src/lib/review-modes.ts` (due, by shift family, by domain,
   weakest, recent lessons, compounds & traps, sentence patterns, article & gender drill,
   everything; four styles: flip, MCQ, tile builder, derivation typing).
+  Focused buttons and links retain their native Enter and Space activation instead of
+  triggering review's reveal or quick-grade shortcuts.
 
 ## 7. Personalisation, audio, settings
 

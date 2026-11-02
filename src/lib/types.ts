@@ -14,6 +14,9 @@ export interface LessonProgress {
   completedSegments: LessonSegment[];
   /** true once any exercise was queued for retry this lesson — a purple star requires it to stay false */
   everQueued?: boolean;
+  retryExerciseIds?: string[];
+  inRetryPhase?: boolean;
+  retryIndex?: number;
 }
 
 export interface WordEntity {

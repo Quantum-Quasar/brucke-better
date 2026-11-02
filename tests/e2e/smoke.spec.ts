@@ -181,6 +181,42 @@ test.describe("browser smoke", () => {
       await expect(nextTable).toBeVisible();
     });
 
+    test("missed exercises survive leaving and reopening a lesson", async ({ page }) => {
+      await seedAppState(page, {
+        lessonProgress: {
+          1: { segment: "practice", practiceIndex: 0, completedSegments: ["hook", "pattern", "table"] },
+        },
+      });
+      await page.goto("/trail/1");
+      await page.getByRole("button", { name: /\d+ komm/ }).click();
+      await page.getByRole("button", { name: /\d+ en/ }).click();
+      await page.getByRole("button", { name: /verify/i }).click();
+      await expect(page.getByText("sound shift breakdown")).toBeVisible();
+      expect((await readAppState(page)).lessonProgress["1"].retryExerciseIds).toEqual(["l1_e1"]);
+
+      await page.reload();
+      await page.goto("/trail/1");
+      await expect(page.getByText(/Assemble the German infinitive/)).toBeVisible();
+      expect((await readAppState(page)).lessonProgress["1"].retryExerciseIds).toEqual(["l1_e1"]);
+    });
+
+    test("reopening during reinforcement resumes the pending exercise", async ({ page }) => {
+      await seedAppState(page, {
+        lessonProgress: {
+          1: {
+            segment: "practice", practiceIndex: 4, completedSegments: ["hook", "pattern", "table"],
+            everQueued: true, retryExerciseIds: ["l1_e1"], inRetryPhase: true, retryIndex: 0,
+          },
+        },
+      });
+      await page.goto("/trail/1");
+      await expect(page.getByText(/reinforcement · problem 1 of 1/i)).toBeVisible();
+      await expect(page.getByText(/Assemble the German infinitive/)).toBeVisible();
+      await page.reload();
+      await page.goto("/trail/1");
+      await expect(page.getByText(/reinforcement · problem 1 of 1/i)).toBeVisible();
+    });
+
     test("review session: keyboard reveal + SM-2 grading persist to SRS storage", async ({ page }) => {
       await seedAppState(page, THREE_FINISHED_LESSONS);
       await openRecentReviewSession(page);

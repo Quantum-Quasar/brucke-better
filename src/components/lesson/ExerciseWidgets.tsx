@@ -8,7 +8,7 @@ import { Check, AlertCircle, Sparkles } from "lucide-react";
 import { GermanCharBar } from "@/components/common/GermanCharBar";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
-import { evaluateAnswerAccuracy, evaluateBestOf } from "@/lib/letter-diff";
+import { evaluateBestOf } from "@/lib/letter-diff";
 import { matchingPairForKey } from "@/lib/matching";
 import { diagnoseAttempt, affirmationFor } from "@/lib/shift-diagnosis";
 import { useAppStore } from "@/lib/store";
@@ -566,28 +566,13 @@ const LegacyExerciseWidget: React.FC<Omit<ExerciseWidgetProps, never>> = ({
 
   const handleShiftOptionSelect = (option: string) => {
     void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
-    const evalOptions = {
-      umlautTolerance: Boolean(settings.lazyMode ?? tolerance.umlautTolerance),
-      capitalizationTolerance: Boolean(settings.capitalizationTolerance ?? tolerance.capitalizationTolerance),
-    };
-    const evaluation = evaluateAnswerAccuracy(option, exercise.target_answer, evalOptions);
-    if (evaluation.accuracy === "exact") {
+    if (option === exercise.target_answer) {
       setStatus("correct");
       setFeedbackNote("Spot On! Perfect.");
       setSheetVariant("exact");
       setVerifiedAttemptText(option);
       setAlmostWarningNote(undefined);
       setShowSuccessSheet(true);
-    } else if (evaluation.accuracy === "almost") {
-      setStatus("almost");
-      setFeedbackNote(evaluation.warningNote || "Almost right!");
-      setSheetVariant("almost");
-      setVerifiedAttemptText(option);
-      setAlmostWarningNote(evaluation.warningNote);
-      setShowSuccessSheet(true);
-      if ((evaluation.reason === "typo" || evaluation.reason === "sharp-s") || (evaluation.reason === "umlaut" && !evalOptions.umlautTolerance)) {
-        onQueueRetry?.();
-      }
     } else {
       setStatus("incorrect");
       void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);

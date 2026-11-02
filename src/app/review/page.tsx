@@ -1019,6 +1019,9 @@ function ReviewHub({
         return;
       }
 
+      if ((e.key === "Enter" || e.key === " ") && e.target instanceof Element &&
+          e.target.closest("button, a, select, [role='button']")) return;
+
       // Confidence mode: blocks backspacing in typing review
       if (e.target === inputRef.current && settings.confidenceMode === "on" && e.key === "Backspace") {
         e.preventDefault();

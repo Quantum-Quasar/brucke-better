@@ -30,7 +30,7 @@ import { consciousnessLineFor } from "@/data/consciousness";
 import { getSoundImportsForLanguage, importLineFor, type SoundImport } from "@/data/sound-imports";
 
 import { getLanguageDefinition } from "@/data/languages";
-import type { CompendiumData, Lesson, ExerciseItem } from "@/lib/types";
+import type { CompendiumData, Lesson, ExerciseItem, LessonProgress } from "@/lib/types";
 
 /**
  * The practice segment is the only place that renders an exercise. Keeping the
@@ -60,6 +60,13 @@ interface LessonReaderProps {
   /** Locked deep links can be walked as a preview, but must not change progress. */
   preview?: boolean;
 }
+function restoreRetries(lesson: Lesson, progress?: LessonProgress): ExerciseItem[] {
+  const exercises = new Map(lesson.exercises.map((exercise) => [exercise.id, exercise]));
+  return (progress?.retryExerciseIds ?? [])
+    .map((id) => exercises.get(id))
+    .filter((exercise): exercise is ExerciseItem => exercise !== undefined);
+}
+
 
 export const LessonReader: React.FC<LessonReaderProps> = ({
   lesson,
@@ -85,10 +92,14 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
   const savedProgress = useAppStore((s) => s.lessonProgress[lesson.id]);
   const [currentSegment, setCurrentSegment] = useState<LessonSegment>(savedProgress?.segment || "hook");
   const [practiceIndex, setPracticeIndex] = useState(savedProgress?.practiceIndex || 0);
-  const [retryIndex, setRetryIndex] = useState(0);
-  const [inRetryPhase, setInRetryPhase] = useState(false);
+  const [retryQueue, setRetryQueue] = useState<ExerciseItem[]>(() => restoreRetries(lesson, savedProgress));
+  const [retryIndex, setRetryIndex] = useState(() =>
+    Math.min(savedProgress?.retryIndex ?? 0, Math.max(0, retryQueue.length - 1))
+  );
+  const [inRetryPhase, setInRetryPhase] = useState(() =>
+    Boolean(savedProgress?.inRetryPhase && retryQueue.length)
+  );
   const [completedSegments, setCompletedSegments] = useState<LessonSegment[]>(savedProgress?.completedSegments || []);
-  const [retryQueue, setRetryQueue] = useState<ExerciseItem[]>([]);
   const [isLessonFinished, setIsLessonFinished] = useState(false);
   // purple star ledger: stays false only when the retry queue was never touched all lesson
   const [everQueued, setEverQueued] = useState(savedProgress?.everQueued ?? false);
@@ -166,16 +177,26 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
       adoptedEpochRef.current = hydrateEpoch;
       const persisted = useAppStore.getState().lessonProgress[lesson.id];
       if (persisted) {
+        const restoredQueue = restoreRetries(lesson, persisted);
+        const restoredRetryPhase = Boolean(persisted.inRetryPhase && restoredQueue.length);
+        const restoredRetryIndex = Math.min(persisted.retryIndex ?? 0, Math.max(0, restoredQueue.length - 1));
         const samePosition =
           persisted.segment === currentSegment &&
           persisted.practiceIndex === practiceIndex &&
           persisted.completedSegments.join("|") === completedSegments.join("|") &&
-          (persisted.everQueued ?? false) === everQueued;
+          (persisted.everQueued ?? false) === everQueued &&
+          restoredRetryPhase === inRetryPhase &&
+          restoredRetryIndex === retryIndex &&
+          restoredQueue.length === retryQueue.length &&
+          restoredQueue.every((exercise, index) => exercise.id === retryQueue[index].id);
         if (!samePosition) {
           setCurrentSegment(persisted.segment);
           setPracticeIndex(persisted.practiceIndex);
           setCompletedSegments(persisted.completedSegments);
           setEverQueued(persisted.everQueued ?? false);
+          setRetryQueue(restoredQueue);
+          setInRetryPhase(restoredRetryPhase);
+          setRetryIndex(restoredRetryIndex);
           return;
         }
       } else if (isRehydration) {
@@ -197,13 +218,19 @@ export const LessonReader: React.FC<LessonReaderProps> = ({
       practiceIndex,
       completedSegments,
       everQueued,
+      retryExerciseIds: retryQueue.map((exercise) => exercise.id),
+      inRetryPhase,
+      retryIndex,
     });
   }, [
-    lesson.id,
+    lesson,
     currentSegment,
     practiceIndex,
     completedSegments,
     everQueued,
+    retryQueue,
+    inRetryPhase,
+    retryIndex,
     storeHydrated,
     hydrateEpoch,
     setLessonProgress,
