@@ -730,7 +730,7 @@ export const TRAIL_BRANCHES: TrailBranch[] = [
   // -------------------------------------------------------------------------
   // Optional reading-comprehension branches. The five required stories live
   // directly on the spine (topic.stories); these side lessons are extra
-  // practice and never gate the next core. Bodies live in reading-lessons-de.ts.
+  // practice and never gate the next core. Bodies live in lessons/<id>.ts.
   // -------------------------------------------------------------------------
   {
     id: 5320,

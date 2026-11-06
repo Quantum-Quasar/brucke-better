@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
-import { loadSavedState, saveState, useAppStore, STORAGE_KEY, STORAGE_COOKIE_KEY, getCookie } from "../lib/store";
+import { useAppStore } from "../lib/store";
+import { loadSavedState, saveState, getCookie } from "../lib/store/persistence";
+import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "../lib/storage-keys";
 import { DEFAULT_THEME } from "@/lib/theme-runtime";
 import { DEFAULT_FONT } from "@/data/fonts";
 

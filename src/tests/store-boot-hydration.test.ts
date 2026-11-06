@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
+import { STORAGE_COOKIE_KEY } from "../lib/storage-keys";
 
 // Regression guard for a boot-order bug that only exists in a real browser:
 //
@@ -252,7 +253,8 @@ describe("boot hydration snapshot", () => {
     store.useAppStore.getState().hydrateFromStorage();
     expect(store.useAppStore.getState().completedLessons).toEqual([2]);
     expect(store.useAppStore.getState().preferredReviewMode).toBe("mcq");
-    expect(store.loadSavedState().completedLessons).toEqual([2]);
+    const { loadSavedState } = await import("../lib/store/persistence");
+    expect(loadSavedState().completedLessons).toEqual([2]);
   });
 
   it("keeps a newer reset epoch from a minimal cookie over stale local progress", async () => {
@@ -260,9 +262,10 @@ describe("boot hydration snapshot", () => {
     (document as any).cookie = "";
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ activeLanguageId: "de", savedAt: 100, progressResetAt: 1, progressByLanguage: { de: { completedLessons: [1] } } }));
     vi.resetModules();
-    const store = await import("../lib/store");
-    store.setCookie(store.STORAGE_COOKIE_KEY, JSON.stringify({ activeLanguageId: "de", savedAt: 200, progressResetAt: 2, progressResetActor: "abc", storageFailed: true }));
-    const restored = store.loadSavedState();
+    await import("../lib/store");
+    const { setCookie, loadSavedState } = await import("../lib/store/persistence");
+    setCookie(STORAGE_COOKIE_KEY, JSON.stringify({ activeLanguageId: "de", savedAt: 200, progressResetAt: 2, progressResetActor: "abc", storageFailed: true }));
+    const restored = loadSavedState();
     expect(restored.completedLessons).toEqual([]);
     expect(restored.progressResetAt).toBe(2);
     expect(restored.progressResetActor).toBe("abc");

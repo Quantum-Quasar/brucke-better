@@ -1,13 +1,8 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from "vitest";
-import {
-  loadSavedState,
-  isPlausibleStateObject,
-  useAppStore,
-  saveState,
-  flushSave,
-  STORAGE_KEY,
-  STORAGE_COOKIE_KEY,
-} from "../lib/store";
+import { useAppStore } from "../lib/store";
+import { loadSavedState, saveState, flushSave } from "../lib/store/persistence";
+import { isPlausibleStateObject } from "../lib/store/schema";
+import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "../lib/storage-keys";
 import { getStorageHealth } from "../lib/storage-health";
 import { DEFAULT_LANGUAGE_ID } from "../data/languages";
 import { getDueCards } from "../lib/srs";

@@ -7,7 +7,7 @@
 import React, { useEffect, useMemo } from "react";
 import { ArrowLeft } from "lucide-react";
 import { LessonDetailClient } from "@/components/lesson/LessonDetailClient";
-import { useLesson, useLessonIndex, prefetchLesson } from "@/lib/content-client";
+import { useLesson, useLessonIndex } from "@/lib/content-client";
 import { useCurriculum } from "@/data/curriculum-client";
 import { getNextPlayableLessonIdFrom } from "@/data/curriculum-core";
 import { useAppNavigation } from "@/lib/app-navigation";
@@ -108,9 +108,6 @@ function LessonContent({ languageId, lessonId, entries, curriculum }: LessonCont
   const entry = payload.data?.lesson ?? null;
   const nextLessonId = entry ? getNextPlayableLessonIdFrom(curriculum, entry.id) : null;
 
-  useEffect(() => {
-    if (nextLessonId) prefetchLesson(languageId, nextLessonId);
-  }, [languageId, nextLessonId]);
 
   const lessonTitle = payload.data?.lesson.title;
   useEffect(() => {

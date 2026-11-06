@@ -5,7 +5,7 @@
 // in the main durable store.
 
 import type { MasteryState, ReviewMode, SRSCard } from "@/lib/types";
-import type { ReviewSnapshot } from "@/lib/store";
+import type { ReviewSnapshot } from "@/lib/store/types";
 import type { LearnedFilter, ReviewDeckType, SessionSize } from "@/lib/review-decks";
 
 const STORAGE_PREFIX = "brucke_review_session_v1:";

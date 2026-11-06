@@ -1,0 +1,54 @@
+import type { Dispatch, RefObject, SetStateAction } from "react";
+import type { LanguageDefinition } from "@/data/languages";
+import type { CustomizationSettings } from "@/data/settings";
+import type { ExerciseDiagnosis, ExerciseItem } from "@/lib/types";
+import type { ExerciseWidgetProps } from "./exercise-widget-props";
+
+export type ExerciseStatus = "idle" | "correct" | "almost" | "incorrect";
+
+export interface ClassicExerciseController {
+  exercise: ExerciseItem;
+  onSuccess: () => void;
+  onFlagGuessed: ExerciseWidgetProps["onFlagGuessed"];
+  isRetry: boolean;
+  userInput: string;
+  setUserInput: Dispatch<SetStateAction<string>>;
+  selectedIndices: number[];
+  setSelectedIndices: Dispatch<SetStateAction<number[]>>;
+  status: ExerciseStatus;
+  setStatus: Dispatch<SetStateAction<ExerciseStatus>>;
+  sheetVariant: "exact" | "almost";
+  verifiedAttemptText: string;
+  almostWarningNote: string | undefined;
+  feedbackNote: string | null;
+  setFeedbackNote: Dispatch<SetStateAction<string | null>>;
+  showErrorSheet: boolean;
+  setShowErrorSheet: Dispatch<SetStateAction<boolean>>;
+  showSuccessSheet: boolean;
+  setShowSuccessSheet: Dispatch<SetStateAction<boolean>>;
+  failedAttemptText: string;
+  failedDiagnosis: ExerciseDiagnosis | undefined;
+  isCapsLock: boolean;
+  setIsCapsLock: Dispatch<SetStateAction<boolean>>;
+  isInputFocused: boolean;
+  setIsInputFocused: Dispatch<SetStateAction<boolean>>;
+  selectedEnglish: string | null;
+  matchedPairs: string[];
+  inputRef: RefObject<HTMLInputElement | null>;
+  settings: CustomizationSettings;
+  language: LanguageDefinition;
+  isReverseCognate: boolean;
+  reverseCognateForeignWord: string | null;
+  displayGermanPairs: NonNullable<ExerciseItem["matching_pairs"]>;
+  sanitizedWordBank: string[];
+  sanitizedTileOptions: string[];
+  displayOptions: string[];
+  resetCurrentExercise: () => void;
+  handleInputChange: (value: string) => void;
+  handleVerify: () => void;
+  handleShiftOptionSelect: (option: string) => void;
+  pickTileIndex: (index: number) => void;
+  unpickTilePosition: (position: number) => void;
+  handleSelectEnglish: (english: string) => void;
+  handleSelectGerman: (german: string, pairId: string, english: string) => void;
+}

@@ -1,0 +1,201 @@
+import type { Lesson } from "@/lib/types";
+
+const lesson: Lesson = {
+  "id": 5,
+  "slug": "etre-secrets",
+  "title": "être & Its Secrets",
+  "subtitle": "c'est, je suis ('I follow'), tu es — the being-verbs as evidence",
+  "phase": 1,
+  "shift_categories": [],
+  "word_ids": [
+    "être",
+    "cest",
+    "suis",
+    "es",
+    "est",
+    "très",
+    "vous"
+  ],
+  "table_word_ids": [
+    "être",
+    "cest",
+    "suis",
+    "es",
+    "est",
+    "très",
+    "vous"
+  ],
+  "hook": {
+    "title": "The Oldest Cognate on the Trail",
+    "content": "est and is are the same Proto-Indo-European word — a 6,000-year-old cognate pair, older than farming. French être comes from Latin esse (the root of English essence), and its forms hide stories: je suis is literally 'I follow' (Latin sequor — sequence, sequel). Being, in French, is following the moments as they come.",
+    "footnotes": [
+      {
+        "marker": "1",
+        "title": "The follow behind suis",
+        "content": "Latin sequor 'I follow' → Old French 'I follow (behind)' → je suis. English kept sequor in sequence, sequel, consequence. Spanish soy and Italian sono lost the connection; French kept the fossil.",
+        "interest": true
+      }
+    ]
+  },
+  "pattern": {
+    "title": "suis, es, est — and c'est for Everything Else",
+    "content": "je suis (I am), tu es (you are — thou art's exact twin), il/elle est. But the workhorse is c'est: that is, it is, this is — ce + est fused. C'est bon. C'est la vie. C'est pas possible (spoken). When in doubt about a subject, c'est is the door.",
+    "footnotes": [
+      {
+        "marker": "2",
+        "title": "tu es = thou art",
+        "content": "Latin es survived into English only in KJV 'thou art'. When you say tu es, you are speaking Shakespeare's English with a French accent.",
+        "interest": true
+      }
+    ],
+    "linguist_note": "English 'is' and French 'est' from *h₁ésti; the paradigm is the most stable piece of either language. Even où est…? questions ride on it.",
+    "trap_note": "The tempting wrong move: using c'est with names — c'est Marie is right for 'that's Marie', but 'she is tall' needs elle est grande. C'est points; elle/il describes."
+  },
+  "exercises": [
+    {
+      "id": "fr5_e1",
+      "type": "matching_pairs",
+      "prompt": "Match each English form with its French twin:",
+      "matching_pairs": [
+        {
+          "id": "p1",
+          "english": "I am",
+          "german": "je suis"
+        },
+        {
+          "id": "p2",
+          "english": "you are (thou art)",
+          "german": "tu es"
+        },
+        {
+          "id": "p3",
+          "english": "he/she is",
+          "german": "il/elle est"
+        },
+        {
+          "id": "p4",
+          "english": "it is / that is",
+          "german": "c'est"
+        },
+        {
+          "id": "p5",
+          "english": "very",
+          "german": "très"
+        }
+      ],
+      "target_answer": "je suis, tu es, il/elle est, c'est, très",
+      "meaning": "the être family",
+      "explanation": "es = art; est = is (the 6,000-year-old pair); suis = 'I follow'."
+    },
+    {
+      "id": "fr5_e2",
+      "type": "reverse_cognate",
+      "prompt": "suis ('I am') hides an English word-family about things coming one after another. Which family?",
+      "target_answer": "sequence",
+      "meaning": "sequence, sequel, consequence — Latin sequor",
+      "explanation": "je suis is 'I follow'. Being is following — the etymology makes the form stick."
+    },
+    {
+      "id": "fr5_e3",
+      "type": "syntax_builder",
+      "prompt": "Assemble: 'It's very good'",
+      "target_answer": "C'est très bon",
+      "meaning": "It's very good",
+      "word_bank": [
+        "C'est",
+        "bien",
+        "très",
+        "est",
+        "bon"
+      ],
+      "explanation": "c'est + très + bon — three conversions deep (fusion, trans-root, bonus)."
+    },
+    {
+      "id": "fr5_e4",
+      "type": "transcribe",
+      "prompt": "Tell me:",
+      "idea": "you're pointing someone out: that's Marie, the sister",
+      "cues": [
+        "Pointing → c'est",
+        "the family word: la sœur",
+        "C'est ma sœur, Marie"
+      ],
+      "target_answer": "C'est ma sœur, Marie",
+      "meaning": "That's my sister, Marie",
+      "vocab_hints": [
+        {
+          "word": "ma",
+          "translation": "my (feminine thing)",
+          "note": "sœur is feminine, so ma — the possessive follows the thing, preview of topic 14"
+        }
+      ],
+      "word_bank": [
+        "Marie",
+        "est",
+        "ma",
+        "C'est",
+        "sœur",
+        "la"
+      ],
+      "idea_parts": [
+        "the pointer → c'est",
+        "the person → ma sœur",
+        "the name → Marie, as a tag"
+      ],
+      "explanation": "c'est points; the name rides as a tag. This is how French introduces everyone."
+    },
+    {
+      "id": "fr5_e5",
+      "type": "dictation",
+      "prompt": "Listen and write the whole sentence.",
+      "spoken": "Tu es très gentille",
+      "replays": 2,
+      "target_answer": "Tu es très gentille",
+      "meaning": "You are very kind (to a woman)",
+      "cues": [
+        "tu es — thou art",
+        "très — the trans-root",
+        "gentille — feminine -e (and -lle) at work"
+      ],
+      "explanation": "gentille doubles the l before the feminine e — just like bon doubles its n to bonne.",
+      "affirmation": "You caught the double-l — gentille, the feminine that spells its doubling."
+    }
+  ],
+  "twist": {
+    "prompt": "Ungraded — 'It's not very good, but that's life.'",
+    "target_answer": "Ce n'est pas très bon, mais c'est la vie",
+    "word_bank": [
+      "bon",
+      "très",
+      "le",
+      "Ce",
+      "c'est",
+      "mais",
+      "vie",
+      "il",
+      "pas",
+      "la",
+      "n'est"
+    ],
+    "explanation": "The sandwich un-fuses c'est, mais re-fuses it two words later. You are now assembling philosophy."
+  },
+  "summary": {
+    "outcome": "Conjugate être's first forms, use c'est as the universal pointer, and hear the follow inside suis.",
+    "use_example": {
+      "german": "C'est très bon — je suis content.",
+      "english": "It's very good — I'm happy."
+    },
+    "takeaway": "est/is is the oldest cognate you own; suis means 'I follow'; c'est is the door when in doubt.",
+    "curiosity_teaser": "Up next on Le Pont ([501] je suis: I Follow): see how être & Its Secrets leads directly into je suis: I Follow."
+  },
+  "payoff": {
+    "ofLesson": 4,
+    "text": "Notice how Ce n'est pas bon in our twist uses Lesson 4's sandwich around est — un-fusing c'est so n'est pas can hug the verb."
+  },
+  "foreshadow": {
+    "line": "With être in place, we can describe any noun — and Topic 6 hands us two more feminine noun bridges (-ité and -ance).",
+    "resolvedIn": 6
+  }
+};
+
+export default lesson;

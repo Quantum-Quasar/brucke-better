@@ -9,10 +9,14 @@ import { StorageWarningBanner } from "@/components/common/StorageWarningBanner";
 import { LazyLoadBoundary } from "@/components/common/LazyLoadBoundary";
 import { SubviewOverlay } from "@/components/common/SubviewOverlay";
 import { DeepLinkRestorer } from "@/components/common/DeepLinkRestorer";
-import { useAppStore, STORAGE_KEY, flushSave } from "@/lib/store";
+import { useAppStore } from "@/lib/store";
+import { STORAGE_KEY } from "@/lib/storage-keys";
+import { flushSave } from "@/lib/store/persistence";
 import { useViewStore, flushViewState } from "@/lib/view-store";
 import { useScrollMemory } from "@/lib/scroll-memory";
 import { syncThemeColor } from "@/lib/theme-runtime";
+import { BackupReminder } from "@/components/common/BackupReminder";
+import { OfflineSupport } from "@/components/common/OfflineSupport";
 
 // ponytail: code-split idle modals, drawer and in-page views so root chunk doesn't bundle content readers
 const WordCardDrawer = dynamic(
@@ -164,7 +168,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <>
       <StorageWarningBanner />
+      <OfflineSupport />
       <TopNav />
+      {!subView && !isOnboardingOpen && <BackupReminder />}
 
       {/* Main Content Viewport (bottom padding clears the fixed game-style dock) */}
       <main

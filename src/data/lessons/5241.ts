@@ -1,0 +1,224 @@
+import type { Lesson } from "@/lib/types";
+
+const lesson: Lesson = {
+  "id": 5241,
+  "slug": "farben-i-rot-blau-gruen-schwarz-bunt",
+  "title": "Farben I: rot, blau, grün, schwarz, bunt",
+  "subtitle": "the first row of colors — three twins, one half-lost twin, and the honest odd one out",
+  "phase": 3,
+  "shift_categories": [
+    "d_to_t"
+  ],
+  "word_ids": [
+    "rot",
+    "blau",
+    "grün",
+    "schwarz",
+    "bunt",
+    "schal",
+    "teppich",
+    "schrank",
+    "vorhang",
+    "balkon",
+    "null",
+    "dezember",
+    "berg",
+    "weiß",
+    "blume",
+    "himmel",
+    "wald",
+    "katze",
+    "vogel"
+  ],
+  "table_word_ids": [
+    "rot",
+    "blau",
+    "grün",
+    "schwarz",
+    "bunt",
+    "schal",
+    "teppich",
+    "schrank",
+    "vorhang",
+    "balkon",
+    "null",
+    "dezember",
+    "berg",
+    "weiß",
+    "blume",
+    "himmel",
+    "wald",
+    "katze",
+    "vogel"
+  ],
+  "hook": {
+    "title": "Three Twins, a Ghost, and a Mystery",
+    "content": "Color words are ancient — most of this row is older than the countries that speak it — and the five show every kind of kinship at once. rot ↔ red is the badge one: the same Proto-Germanic word, *raudaz, with English keeping the D and German hardening it to T — the d_to_t family, the same law that made day into Tag. blau ↔ blue and grün ↔ green are pure twins, no shift at all: German and English read the same sky and the same forest. schwarz ↔ swart is the ghost: the same word on both sides, but everyday English retired it — it survives only in the poetic swarthy — while German still says schwarz for everything dark. And then bunt: no twin, no borrowing anyone can prove, its origin still argued over by German etymologists. Every family has one member like this, and the honest answer is the lesson: bunt means colorful, and its past is a blur. One bonus twin rides along — weiß ↔ white, the mountain's December color.",
+    "footnotes": [
+      {
+        "marker": "1",
+        "title": "The Flag Reads Itself",
+        "content": "Die deutsche Fahne ist schwarz, rot und gold — the German flag is black, red and gold. Two of the flag's three colors are in this lesson, and das Gold has been yours since lesson 101. The sentence needs only one new word, die Fahne (the flag) — the colors do the rest, which is exactly what a first-row color lesson is for."
+      }
+    ]
+  },
+  "pattern": {
+    "title": "Colors Stand After sein",
+    "content": "Four frames, one rule. 1. With sein, the color never changes: Die Blume ist rot, der Himmel ist blau, der Wald ist grün, die Katze ist schwarz, der Vogel ist bunt — no ending, no gender agreement, the adjective just stands. 2. Two colors stack with und: Die Katze ist schwarz und weiß. 3. The month frame fronts and swaps: Im Dezember ist der Berg weiß — the time phrase takes position 1 and pushes ist to slot 2, the swap you know from Heute lerne ich Deutsch. 4. The count: Null Blumen im Dezember — null is your lesson-5122 zero, counting what the snow replaced.",
+    "footnotes": [],
+    "linguist_note": "English black and German schwarz are not twins: black is the Germanic 'burned' word — kin to bleach, the burned one and the bright one from one root — while English's real black-twin swart was pushed into poetry. German kept schwarz as the everyday word and never needed a replacement. Color words are the slowest-moving layer of a language, which is why this row is a museum of every kinship type."
+  },
+  "exercises": [
+    {
+      "id": "l5241_e1",
+      "type": "matching_pairs",
+      "prompt": "The first row of colors — match each sentence with its reading:",
+      "matching_pairs": [
+        {
+          "id": "cl1",
+          "english": "The flower is red",
+          "german": "Die Blume ist rot"
+        },
+        {
+          "id": "cl2",
+          "english": "The sky is blue",
+          "german": "Der Himmel ist blau"
+        },
+        {
+          "id": "cl3",
+          "english": "The forest is green",
+          "german": "Der Wald ist grün"
+        },
+        {
+          "id": "cl4",
+          "english": "The cat is black",
+          "german": "Die Katze ist schwarz"
+        },
+        {
+          "id": "cl5",
+          "english": "The bird is colorful",
+          "german": "Der Vogel ist bunt"
+        },
+        {
+          "id": "cl6",
+          "english": "Zero flowers in December — the mountain is white",
+          "german": "Null Blumen im Dezember — der Berg ist weiß"
+        },
+        {
+          "id": "cl7",
+          "english": "The scarf is colorful",
+          "german": "Der Schal ist bunt"
+        },
+        {
+          "id": "cl8",
+          "english": "The rug is green, the wardrobe is black",
+          "german": "Der Teppich ist grün, der Schrank ist schwarz"
+        },
+        {
+          "id": "cl9",
+          "english": "The curtain is blue, the flowers on the balcony are colorful",
+          "german": "Der Vorhang ist blau, die Blumen auf dem Balkon sind bunt"
+        }
+      ],
+      "target_answer": "Die Blume ist rot, Der Himmel ist blau, Der Wald ist grün, Die Katze ist schwarz, Der Vogel ist bunt, Null Blumen im Dezember — der Berg ist weiß, Der Schal ist bunt, Der Teppich ist grün, der Schrank ist schwarz, Der Vorhang ist blau, die Blumen auf dem Balkon sind bunt",
+      "meaning": "red flower, blue sky, green forest, black cat, colorful bird, white mountain in December",
+      "explanation": "The color stands after sein and never takes an ending: rot, blau, grün, schwarz, bunt. And the December count is null — zero flowers — because the mountain took over in weiß, the twin of white."
+    },
+    {
+      "id": "l5241_e2",
+      "type": "shift_select",
+      "prompt": "Which color wears the D→T badge — German T where English keeps D (Tag ↔ day)?",
+      "options": [
+        "grün",
+        "schwarz",
+        "blau",
+        "rot"
+      ],
+      "target_answer": "rot",
+      "meaning": "rot ↔ red: the D→T family",
+      "explanation": "rot and red are the same Proto-Germanic word: English kept the D, German hardened it to T — the same road Tag took from day. blau, grün and schwarz are twins without a shift, and bunt stays out of the quiz: no twin, no proven loan."
+    },
+    {
+      "id": "l5241_e3",
+      "type": "reverse_cognate",
+      "prompt": "'schwarz' has an English twin that everyday English retired — it survives only in a poetic word. Which one?",
+      "options": [
+        "swarthy",
+        "swell",
+        "sword",
+        "swan"
+      ],
+      "target_answer": "swarthy",
+      "meaning": "schwarz ↔ swart/swarthy: the same word, English kept only the ghost",
+      "explanation": "Both come from Proto-Germanic *swartz, Old English sweart. German still says schwarz every day; English kept the word only as the poetic swarthy — a twin living in the attic."
+    },
+    {
+      "id": "l5241_e4",
+      "type": "morpheme_tiles",
+      "prompt": "Assemble: 'In December the mountain is white'",
+      "tile_options": [
+        "weiß",
+        "Im",
+        "Dezember",
+        "Berg",
+        "grün",
+        "ist",
+        "schwarz",
+        "der"
+      ],
+      "target_answer": "Im Dezember ist der Berg weiß",
+      "meaning": "In December the mountain is white",
+      "explanation": "The month phrase takes position 1 and pushes ist to slot 2 — the same swap as Jetzt lerne ich Deutsch. And weiß wears the T→S badge: English kept the T in white, German turned it to ss, exactly like Wasser from water."
+    },
+    {
+      "id": "l5241_e5",
+      "type": "syntax_builder",
+      "prompt": "Assemble: 'The sky is blue and the forest is green'",
+      "target_answer": "Der Himmel ist blau und der Wald ist grün",
+      "word_bank": [
+        "bunt",
+        "ist",
+        "der",
+        "und",
+        "Der",
+        "Himmel",
+        "rot",
+        "blau",
+        "ist",
+        "grün",
+        "Wald"
+      ],
+      "meaning": "The sky is blue and the forest is green",
+      "explanation": "Two sein-frames joined by und, the verb second in each half. Swap the nouns and the colors still fit: der Himmel ist blau, der Wald ist grün, die Blume ist rot, der Vogel ist bunt."
+    }
+  ],
+  "summary": {
+    "outcome": "Say five colors after sein without inflecting them, spot the D→T badge on rot, and keep weiß and bunt in the December picture.",
+    "use_example": {
+      "german": "Im Dezember ist der Berg weiß — null Blumen, aber der Himmel ist blau.",
+      "english": "In December the mountain is white — zero flowers, but the sky is blue."
+    },
+    "takeaway": "rot wears D→T (red kept the D), blau and grün are pure twins, schwarz survives in English only as swarthy, bunt's origin is honestly unknown — and weiß is white with the T→S badge.",
+    "curiosity_teaser": "Next: braun, grau, rosa, lila — and die Farbe, the head noun that colors them all."
+  },
+  "twist": {
+    "prompt": "Without looking back — rebuild the core sentence from Farben I: rot, blau, grün, schwarz, bunt (The sky is blue and the forest is green):",
+    "target_answer": "Der Himmel ist blau und der Wald ist grün",
+    "word_bank": [
+      "Der",
+      "Wald",
+      "ist",
+      "Himmel",
+      "blau",
+      "ist",
+      "der",
+      "nicht",
+      "heute",
+      "grün",
+      "und"
+    ],
+    "explanation": "Re-assembling \"Der Himmel ist blau und der Wald ist grün\" from scratch locks in the structural pattern of Farben I: rot, blau, grün, schwarz, bunt without relying on short-term echo."
+  }
+};
+
+export default lesson;

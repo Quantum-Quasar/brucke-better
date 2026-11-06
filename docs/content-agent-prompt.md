@@ -28,8 +28,8 @@ Brücke's core claim to the learner: *"You already understand more German than y
 
 | File | What it is | Your relationship to it |
 |---|---|---|
-| `src/data/lessons.ts` | German lessons (`LESSONS`, JSON-style quoted keys; ends with `...READING_LESSONS`) | **Main writing target.** Insert new lessons before the `...READING_LESSONS` line; fix existing ones in place. |
-| `src/data/reading-lessons-de.ts` | The five spine reading stories (ids 9001–9005) | Edit only for a real defect. |
+| `src/data/lessons/<id>.ts` | One typed German lesson per file, including stories 9001–9005 | **Main writing target.** Fix the individual module; for a new lesson add its import and ordered entry to the build-time aggregate `src/data/lessons.ts`. |
+| `src/data/lessons.ts` | Ordered `LESSONS` aggregate used by builds, audits and tests | Preserve order. Never import full authored content into client components. |
 | `src/data/curriculum.ts` | The 30-topic trail: cores, sprigs, branches (`TRAIL_BRANCHES`), star gates (`TRAIL_GATES`) | Read constantly. New shells you add must be `authored: true`. |
 | `word_connections.md` (repo root) | **Source of truth** for every word, shift family, compound, false friend and insight: §1 shift laws, §2 vocabulary table, §3 compound calques, §4 false friends, §5 daily insights | **Grow this first**, then `bun run parse-data`. |
 | `scripts/parse-compendium.ts` | Compiles the markdown → `src/data/compendium.json` + `src/data/insights.json` (generated; never hand-edit) | Read fully before your first edit. |
@@ -72,7 +72,7 @@ More authored side lessons in a stretch only make its gate easier, so adding con
 3. **Verify etymologies** (protocol below). Drop any word whose connection you cannot verify.
 4. **Grow `word_connections.md`** for each new word (§2; compounds → §3; false friends → §4; insights → §5). Bump the pinned counts in `compendium.test.ts` if you touched §3/§4/§5.
 5. **`bun run parse-data`** and confirm the new words compile.
-6. **Author the lesson** in `lessons.ts` per the schema and voice guide; add its shell to `curriculum.ts` if new.
+6. **Author the lesson** in `src/data/lessons/<id>.ts` per the schema and voice guide; add its import/ordered entry to `lessons.ts` and its shell to `curriculum.ts` if new.
 7. **Validate** (see Definition of Done).
 8. **Every 5 lessons:** stop and write a batch summary.
 
@@ -94,7 +94,7 @@ LLM-generated etymology is plausible-sounding nonsense more often than almost an
 
 ## VOICE & PEDAGOGY GUIDE (match lessons 1–10)
 
-Before writing, read lessons 1 and 4 in `src/data/lessons.ts` completely — they are the register standard.
+Before writing, read `src/data/lessons/1.ts` and `src/data/lessons/4.ts` completely — they are the register standard.
 
 - **Second person, confident, playful.** Never academic, never cutesy. Footnotes carry the scholarly depth so the main text stays punchy.
 - **The hook** opens with a paradox or a secret the learner half-knows. 3–6 sentences, 1–2 footnotes, ends by pointing at what the pattern unlocks.
@@ -148,4 +148,4 @@ After every batch (and before reporting): add `bun scripts/audit-teasers.ts`, `b
 
 A lesson is **done** when: the parser accepts its words; the commands above are green (including `compendium.test.ts`'s pinned counts and its `>= TOTAL_COMPENDIUM_WORDS` floor); every `word_ids`/`table_word_ids` entry resolves; every etymology carries a source or an explicit `[UNVERIFIED]` flag; the teaser points at the next node; `curriculum.ts` carries the shell with `authored: true` and matching titles; and the batch summary lists (1) lessons authored with ids, (2) words added with sources, (3) structure changes, (4) items flagged for human review.
 
-**Start with:** `src/data/lessons.ts` (lessons 1, 4, 9 fully; skim the rest), `src/data/curriculum.ts`, `scripts/parse-compendium.ts`, and §1 plus the first 30 rows of §2 of `word_connections.md`.
+**Start with:** `src/data/lessons/1.ts`, `4.ts`, `9.ts` fully, `src/data/curriculum.ts`, `scripts/parse-compendium.ts`, and §1 plus the first 30 rows of §2 of `word_connections.md`.

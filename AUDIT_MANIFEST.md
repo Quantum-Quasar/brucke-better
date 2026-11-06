@@ -116,8 +116,8 @@ A short map of where things live; list the directories yourself for the full tre
 │   ├── lib/                   # types.ts, store.ts, srs.ts, letter-diff.ts, shift-annotator.ts,
 │   │                          #   trail-map.ts, review-decks.ts, review-modes.ts, word-entities-core.ts, audio.ts, sound.ts
 │   ├── data/                  # compendium.json (1226 words, 9 shifts, 32 compounds, 16 false friends, 28 insights),
-│   │                          #   lessons.ts (all 179 authored German lessons), curriculum.ts, french/ spanish/ dutch/
-│   └── tests/                 # 44 test files (Vitest) — whole-curriculum integrity, timezone boundaries,
+│   │                          #   lessons/<id>.ts (all 179 authored German lessons), ordered lessons.ts, curriculum.ts
+│   └── tests/                 # 45 test files (Vitest) — whole-curriculum integrity, timezone boundaries,
 │                              #   persistence merging, security, docs-sync
 └── tests/e2e/                 # Playwright smoke suite
 ```
@@ -145,7 +145,7 @@ In-page views: lessons and atlas details are rendered by `AppShell.tsx` (`Lesson
 2. **Shift Alignment Memoization**:
    - `alignShiftPair` in `src/lib/shift-annotator.ts` uses an in-memory `Map` cache. Redundant letter parsing is eliminated; test suite executes in < 200ms.
 3. **Storage I/O Deduplication & Cookie Guard**:
-   - `saveState` in `src/lib/store.ts` checks `lastSerialized` to prevent redundant writes to `localStorage` and `document.cookie`.
+   - `saveState` in `src/lib/store/persistence.ts` checks `lastSerialized` to prevent redundant writes to `localStorage` and `document.cookie`.
    - Cookie storage is size-gated (lean payload written only if it URL-encodes to ≤ 2048 bytes) with a minimal fallback to prevent cookie truncation and HTTP request header bloat.
    - `loadSavedState` parses both stores and merges them field-by-field (localStorage wins; the cookie fills gaps), so a truncated localStorage payload can no longer bury recoverable cookie data.
 4. **Leaf Component Memoization**:
@@ -161,7 +161,7 @@ All commands run from the repository root:
 # 1. Run Data Compilation Pipeline
 bun run parse-data
 
-# 2. Run All Automated Test Suites (44 test files / 444 tests), then lint and typecheck
+# 2. Run All Automated Test Suites (45 test files / 449 tests), then lint and typecheck
 bun run test
 bun run lint
 bun run typecheck
@@ -199,5 +199,5 @@ When auditing the codebase, verify:
   - State changes in Zustand persist to `localStorage`.
   - Cookie backup stays within safe browser limits (lean payload ≤ 2048 URL-encoded bytes).
 - [ ] **Build & Tests**:
-  - `bun run test` (Vitest) passes with 0 failures across all 44 test files (444 tests).
+  - `bun run test` (Vitest) passes with 0 failures across all 45 test files (449 tests).
   - `bun run build` generates all static pages (6 static routes + 500 lesson payloads) without TypeScript or Turbopack errors.

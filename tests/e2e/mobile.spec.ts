@@ -110,6 +110,7 @@ test.describe("mobile shell", () => {
   test("form controls avoid iOS focus zoom and the dock is tappable", async ({ page }) => {
     await page.goto("/atlas");
     await waitForApp(page);
+    await expect(page.getByPlaceholder("Filter sound shifts...")).toBeVisible();
     const sizes = await page.evaluate(() =>
       [...document.querySelectorAll('input:not([type="checkbox"]):not([type="range"]), select, textarea')]
         .filter((el) => el.getBoundingClientRect().height > 0)

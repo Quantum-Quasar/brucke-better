@@ -23,7 +23,10 @@ import { getLanguageContent, getTotalWordCount, EMPTY_COMPENDIUM, getNextPlayabl
 import { getCourseCounts, getWordCount, COURSE_COUNTS, WORD_COUNTS } from "@/data/word-counts";
 import { getAtlasFamilies } from "@/lib/atlas-families";
 import { getWordEntity, getWordEntityMap, getWordLessonMap } from "./word-entity-fixtures";
-import { loadSavedState, useAppStore, STORAGE_KEY, type LanguageProgress } from "@/lib/store";
+import { useAppStore } from "@/lib/store";
+import { loadSavedState } from "@/lib/store/persistence";
+import { STORAGE_KEY } from "@/lib/storage-keys";
+import type { LanguageProgress } from "@/lib/store/types";
 import { TOTAL_TOPICS } from "@/data/curriculum";
 import { spineNodeIds } from "@/data/curriculum-core";
 

@@ -1,5 +1,7 @@
 import { describe, it, expect, beforeEach, beforeAll, afterAll } from "vitest";
-import { useAppStore, loadSavedState, STORAGE_KEY, STORAGE_COOKIE_KEY, getCookie, setCookie } from "../lib/store";
+import { useAppStore } from "../lib/store";
+import { loadSavedState, getCookie, setCookie } from "../lib/store/persistence";
+import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "../lib/storage-keys";
 import { DEFAULT_THEME } from "@/lib/theme-runtime";
 import { DEFAULT_SETTINGS } from "../data/settings";
 

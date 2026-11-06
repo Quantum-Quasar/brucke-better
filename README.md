@@ -24,7 +24,7 @@ Rather than relying on rote memorization or gamified streaks without substance, 
 - **Styling**: Tailwind CSS v4 (native CSS tokens, dark mode default)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) 5 (dual `localStorage` + size-guarded cookie persistence)
 - **Icons**: Lucide React
-- **Testing**: Vitest / `bun run test` (44 test files, 444 automated tests)
+- **Testing**: Vitest / `bun run test` (45 test files, 449 automated tests)
 - **Audio Engine**: Zero-dependency browser-native Web Speech API (`window.speechSynthesis`) + a Web Audio sample engine that plays bundled `.wav` packs. Pronunciation prefers an exact locale voice, then another voice for the same language.
 
 ---
@@ -47,7 +47,7 @@ bun run parse-data
 
 ### Run Automated Tests
 
-Executes the full Vitest suite — 44 test files, 444 automated tests:
+Executes the full Vitest suite — 45 test files, 449 automated tests:
 
 ```bash
 bun run test
@@ -152,7 +152,7 @@ src/
 ├── data/
 │   ├── compendium.json   # 1226 core words, 9 shifts, 32 compounds, 16 traps, 28 insights
 │   ├── curriculum.ts     # 30 topic clusters: cores, sprigs, branches + star gates
-│   ├── lessons.ts        # All 179 authored lessons (cores 1–30, stories 9001–9005, sprigs, branches 50xx–53xx)
+│   ├── lessons.ts        # ordered German aggregate; individual lessons in lessons/<id>.ts
 │   ├── french/ spanish/ dutch/  # typed modules for the sibling courses (see docs/courses.md)
 │   └── ...               # themes, fonts, settings, phonetics, insights, languages, word-counts
 ├── lib/
@@ -165,10 +165,10 @@ src/
 │   ├── srs.ts            # SuperMemo SM-2 interval scheduler
 │   ├── listening.ts      # 15-minute listening-skip window (environment honesty)
 │   ├── retry-variation.ts # deterministic surface rotation for retries (§1.7/§1.9)
-│   ├── store.ts          # Zustand store with dual persistence (+ lessonStars)
+│   ├── store.ts, store/  # composed Zustand slices, validation and persistence
 │   ├── trail-map.ts      # Map graph, responsive layout engine, unlock/recommend logic
 │   └── types.ts          # Core domain TypeScript interfaces
-└── tests/                # 44 test files (Vitest)
+└── tests/                # 45 test files (Vitest)
 ```
 
 ---
@@ -204,4 +204,6 @@ deliberate.
 - **No Third-Party Component Bloat**: The UI strictly avoids component libraries like Radix, Headless UI, or Framer Motion. Standard DOM and Tailwind CSS are used.
 - **Zero Cloud TTS Dependency**: Pronunciation uses the browser's native `window.speechSynthesis` (`de-DE`), avoiding external API costs, latency, or asset downloads.
 - **Durable Local Storage**: Progress is preserved across sessions using `localStorage` with a size-guarded cookie backup (the lean payload is written only if it URL-encodes to ≤ 2048 bytes) and field-level fallback merging between the two stores.
+- **Local-first recovery**: After progress exists, the app offers JSON backup downloads and reminds learners weekly. Settings can request persistent storage; neither it nor installing the app protects against browser-data deletion or device loss.
+- **Installable and selectively offline**: In production over HTTPS, install from the browser menu. The service worker caches visited pages, lesson payloads and lazy exercise chunks, not the whole course. Unopened or evicted content needs a connection; open each segment online before relying on it offline. No accounts or cross-device sync.
 - **All Routes Static**: Every route in `/app` must pre-render via `generateStaticParams()` to guarantee instant navigation; dynamic segments set `dynamicParams = false` so unknown params 404 instead of server-rendering.

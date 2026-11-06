@@ -56,7 +56,7 @@ import { getLanguageDefinition } from "@/data/languages";
 import { useCompendium, useLessonIndex } from "@/lib/content-client";
 import { buildWordEntityMaps } from "@/lib/word-entities-core";
 import type { CompendiumData, LessonIndexEntry, ReviewMode, SRSCard, WordEntity } from "@/lib/types";
-import type { ReviewSnapshot } from "@/lib/store";
+import type { ReviewSnapshot } from "@/lib/store/types";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
 
 type DeckType = ReviewDeckType;

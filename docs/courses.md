@@ -18,6 +18,12 @@ read those, not a prose copy that can drift. Counts: `COURSE_COUNTS` in `src/dat
 
 Every lesson in all three languages ends with a Twist card (`docs-sync.test.ts` asserts it).
 
+Each course authors one typed lesson per `src/data/<language>/lessons/<id>.ts`;
+`lessons-fr.ts`, `lessons-es.ts` and `lessons-nl.ts` preserve the build-time order.
+Dutch modules contain `DutchLessonSpec`, still expanded by `lesson-factory.ts`.
+German uses the equivalent `src/data/lessons/<id>.ts` and `src/data/lessons.ts`.
+Client views fetch only individual exported payloads, never these aggregates.
+
 ## The method every course follows
 
 The German and sibling courses all obey the same design principles (the long form is in

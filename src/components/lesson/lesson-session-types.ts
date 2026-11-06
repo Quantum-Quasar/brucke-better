@@ -1,0 +1,74 @@
+import type { Dispatch, SetStateAction } from "react";
+import type { LanguageGenderSystem } from "@/data/languages";
+import type { SoundImport } from "@/data/sound-imports";
+import type { CompendiumData, ExerciseItem, Lesson, LessonSegment, ShiftFamily } from "@/lib/types";
+
+export interface LessonReaderProps {
+  lesson: Lesson;
+  languageId?: string;
+  compendium: CompendiumData;
+  nextLesson?: { id: number; title: string };
+  nextLessonId?: number | null;
+  totalTopics?: number;
+  preview?: boolean;
+}
+
+export interface LessonSession {
+  lesson: Lesson;
+  data: CompendiumData;
+  activeLanguageId: string;
+  totalTopics: number;
+  genderSystem: LanguageGenderSystem | null;
+  nextLessonId: number | null;
+  isReading: boolean;
+  goToNextLesson: () => void;
+  currentSegment: LessonSegment;
+  setCurrentSegment: Dispatch<SetStateAction<LessonSegment>>;
+  practiceIndex: number;
+  setPracticeIndex: Dispatch<SetStateAction<number>>;
+  retryQueue: ExerciseItem[];
+  retryIndex: number;
+  setRetryIndex: Dispatch<SetStateAction<number>>;
+  inRetryPhase: boolean;
+  setInRetryPhase: Dispatch<SetStateAction<boolean>>;
+  completedSegments: LessonSegment[];
+  isLessonFinished: boolean;
+  everQueued: boolean;
+  setEverQueued: Dispatch<SetStateAction<boolean>>;
+  twistPhase: boolean;
+  twistCompleted: boolean;
+  twistMeetAgain: boolean;
+  twistResurfaced: boolean;
+  setTwistResurfaced: Dispatch<SetStateAction<boolean>>;
+  failCounts: Record<string, number>;
+  mercyRevealFor: string | null;
+  setMercyRevealFor: Dispatch<SetStateAction<string | null>>;
+  showPostureCues: boolean;
+  listeningSkippedUntil: number;
+  flagGuessed: (wordIds: string[]) => void;
+  detourFootnote: NonNullable<Lesson["hook"]["footnotes"]>[number] | null;
+  setDetourDismissed: Dispatch<SetStateAction<boolean>>;
+  soundImports: SoundImport[];
+  showDetour: boolean;
+  consciousnessLine: string | null;
+  listeningOff: boolean;
+  whisperCues: Record<number, string>;
+  primaryShift: ShiftFamily | null | undefined;
+  familyCount: number;
+  handleExerciseError: (exercise: ExerciseItem) => void;
+  handleRetryError: (exercise: ExerciseItem) => void;
+  handleTwistDone: (meetAgain: boolean) => void;
+  handleResurfaceTwist: () => void;
+  drainCurrentRetry: () => void;
+  handlePracticeSuccess: () => void;
+  handleCompleteAll: () => void;
+  nextLesson: LessonReaderProps["nextLesson"];
+  markSegmentDone: (segment: LessonSegment, next: LessonSegment) => void;
+  startPractice: () => void;
+  stickyAction: { label: string; run: () => void } | null;
+  currentExercise: ExerciseItem;
+  closeLesson: () => void;
+  openAtlasFamily: (familyId: string) => void;
+  openAtlasIndex: () => void;
+  preview: boolean;
+}

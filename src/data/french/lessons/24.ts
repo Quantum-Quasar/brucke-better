@@ -1,0 +1,194 @@
+import type { Lesson } from "@/lib/types";
+
+const lesson: Lesson = {
+  "id": 24,
+  "slug": "reflexives-and-la-routine",
+  "title": "Reflexives & la Routine",
+  "subtitle": "se lever, se laver, s'habiller, se coucher — when the subject and the left-walking pronoun are the same person",
+  "phase": 4,
+  "shift_categories": [],
+  "word_ids": [
+    "lever",
+    "laver",
+    "habiller",
+    "coucher",
+    "appeler",
+    "me",
+    "te",
+    "nous",
+    "vous",
+    "heure"
+  ],
+  "table_word_ids": [
+    "lever",
+    "laver",
+    "habiller",
+    "coucher",
+    "appeler",
+    "me",
+    "te",
+    "nous",
+    "vous",
+    "heure"
+  ],
+  "hook": {
+    "title": "Why You 'Lift Yourself' Out of Bed in French",
+    "content": "In English, many verbs hide the object when you do the action to yourself: you 'get up', 'wash', 'dress', 'go to bed'. French is physically explicit: lever means 'to lift/raise' (cousin of lever and levitate), so getting out of bed is se lever — 'to raise oneself'! Couch comes from French coucher ('to lay down'), so going to bed is se coucher — 'to lay oneself down'! You already know how object pronouns walk left of the verb; a reflexive verb is simply a verb whose object pronoun points back at the speaker.",
+    "footnotes": [
+      {
+        "marker": "1",
+        "title": "How English 'couch' is literally the French verb coucher",
+        "content": "Latin collocāre ('to place together') became Old French couchier ('to lay down'). A couch is literally the place where you lay yourself down (se coucher)!",
+        "interest": true
+      }
+    ]
+  },
+  "pattern": {
+    "title": "je me, tu te, il/elle/on se, nous nous, vous vous",
+    "content": "Match the reflexive pronoun to the subject: je me lève ('I get [myself] up'), tu te lèves ('you get up'), il/elle/on se lève ('he/she/we get up'), nous nous levons, vous vous levez. Before a vowel or mute H, me, te, se elide to m', t', s': je m'appelle ('I call myself'), je m'habille ('I dress myself'). And in an infinitive chain after je vais or je veux, the reflexive pronoun still matches the speaker: Je vais me lever ('I am going to get myself up')!",
+    "linguist_note": "Latin 3rd-person reflexive sē survived as French se, while 1st and 2nd persons reuse the regular object pronouns me, te, nous, vous.",
+    "trap_note": "The shortcut your mind will offer: leaving se unchanged when chaining after je vais (*Je vais se lever). Even before an infinitive, the reflexive pronoun must match 'I': Je vais me lever!"
+  },
+  "exercises": [
+    {
+      "type": "matching_pairs",
+      "prompt": "Match each reflexive daily-routine verb with its English meaning and cognate root:",
+      "matching_pairs": [
+        {
+          "id": "p1",
+          "english": "se lever (lever / elevate)",
+          "german": "to get up (lit. raise oneself)"
+        },
+        {
+          "id": "p2",
+          "english": "se laver (lavatory / lava)",
+          "german": "to wash oneself"
+        },
+        {
+          "id": "p3",
+          "english": "s'habiller (habiliment, mute H)",
+          "german": "to get dressed"
+        },
+        {
+          "id": "p4",
+          "english": "se coucher (couch)",
+          "german": "to go to bed (lit. lay oneself down)"
+        },
+        {
+          "id": "p5",
+          "english": "s'appeler (appeal / appellation)",
+          "german": "to be named (lit. call oneself)"
+        }
+      ],
+      "target_answer": "to get up (lit. raise oneself), to wash oneself, to get dressed, to go to bed (lit. lay oneself down), to be named (lit. call oneself)",
+      "meaning": "se lever (lever / elevate), se laver (lavatory / lava), s'habiller (habiliment, mute H), se coucher (couch), s'appeler (appeal / appellation)",
+      "explanation": "Every reflexive verb puts me/te/se/nous/vous directly before the verb.",
+      "id": "fr24_e1"
+    },
+    {
+      "type": "shift_select",
+      "prompt": "How do you say 'I am going to get up' (near future of se lever)?",
+      "options": [
+        "Je vais se lever",
+        "Je vais me lever",
+        "Je me vais lever"
+      ],
+      "target_answer": "Je vais me lever",
+      "meaning": "I am going to get up",
+      "explanation": "The reflexive pronoun sits right in front of the infinitive it belongs to, and changes to me to match Je!",
+      "id": "fr24_e2"
+    },
+    {
+      "type": "literal_gloss",
+      "prompt": "What is the literal word-for-word structure of 'Je me couche tôt'?",
+      "german": "Je me couche tôt",
+      "natural": "I go to bed early",
+      "options": [
+        "I go to couch early",
+        "I go to bed early",
+        "I myself lay-down early"
+      ],
+      "target_answer": "I myself lay-down early",
+      "meaning": "Literal structure: I myself lay-down early",
+      "explanation": "Je (I) + me (myself) + couche (lay-down) + tôt (early).",
+      "id": "fr24_e3"
+    },
+    {
+      "type": "transcribe",
+      "prompt": "Tell me:",
+      "idea": "I get dressed quickly in the morning (le matin)",
+      "cues": [
+        "I myself dress quickly the morning → Je m'habille rapidement le matin"
+      ],
+      "idea_parts": [
+        "subject + elided reflexive → Je m'habille",
+        "adverb → rapidement",
+        "time → le matin"
+      ],
+      "target_answer": "Je m'habille rapidement le matin",
+      "meaning": "I get dressed quickly in the morning",
+      "word_bank": [
+        "rapidement",
+        "Je",
+        "matin",
+        "me",
+        "s'habille",
+        "m'habille",
+        "le"
+      ],
+      "explanation": "me elides before mute-H habiller: Je m'habille.",
+      "diagnosis": {
+        "slip": "used me without elision or s'habille",
+        "cue": "Elide me before habiller: Je m'habille."
+      },
+      "id": "fr24_e4"
+    },
+    {
+      "type": "dictation",
+      "prompt": "Listen and write the whole sentence.",
+      "spoken": "Je me lève à sept heures",
+      "replays": 2,
+      "target_answer": "Je me lève à sept heures",
+      "meaning": "I get up at seven o'clock",
+      "cues": [
+        "reflexive: Je me lève",
+        "time: à sept heures"
+      ],
+      "explanation": "lève takes a grave accent è when the syllable is stressed.",
+      "affirmation": "You caught Je me lève and à sept heures.",
+      "id": "fr24_e5"
+    }
+  ],
+  "summary": {
+    "outcome": "Conjugate reflexive verbs across the daily routine and adapt the reflexive pronoun inside infinitive chains (je vais me lever).",
+    "use_example": {
+      "german": "Je me lève à sept heures et je m'habille.",
+      "english": "I get up at seven o'clock and get dressed."
+    },
+    "takeaway": "Reflexives are just left-walking pronouns pointing back at the subject — and they adapt to the speaker even before an infinitive.",
+    "curiosity_teaser": "Up next on Le Pont ([2401] I Call Myself): see how Reflexives & la Routine leads directly into I Call Myself."
+  },
+  "twist": {
+    "prompt": "Ungraded — 'We see each other tomorrow' (use On se voit):",
+    "target_answer": "On se voit demain",
+    "word_bank": [
+      "se",
+      "On",
+      "voir",
+      "nous",
+      "demain",
+      "voit"
+    ],
+    "explanation": "Reflexive se also expresses reciprocal 'each other': On se voit demain ('We'll see each other tomorrow')!"
+  },
+  "foreshadow": {
+    "line": "Having mastered Reflexives & la Routine, look ahead to Topic 25 (il y a), where this machinery expands into the next dimension of French thought.",
+    "resolvedIn": 25
+  },
+  "payoff": {
+    "ofLesson": 23,
+    "text": "The foundation from Topic 23 (Pronouns Walk Left) now pays off directly inside Reflexives & la Routine: every sentence here builds on that earlier step."
+  }
+};
+
+export default lesson;

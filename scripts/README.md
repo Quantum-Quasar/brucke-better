@@ -29,6 +29,11 @@ is what writes all four languages' payloads to `public/data/<lang>/`. The `publi
 files are tracked in git, but CI's "generated data in sync" step only diffs
 `compendium.json` and `insights.json`.
 
+Lesson authoring is per-file (`src/data/lessons/<id>.ts` for German;
+`src/data/<language>/lessons/<id>.ts` for the sibling courses). Ordered aggregates
+are build/audit inputs only. Exporting still creates one JSON payload per lesson;
+splitting source files does not make the browser download the full course.
+
 ## Audits
 
 These read the codebase and report. `audit-word-refs`, `audit-teasers`, `audit-wording` and

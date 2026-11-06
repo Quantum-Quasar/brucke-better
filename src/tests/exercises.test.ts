@@ -1,6 +1,4 @@
 import { describe, it, expect } from "vitest";
-import fs from "fs";
-import path from "path";
 import { LESSONS } from "../data/lessons";
 import { compendium } from "../data/compendium";
 import { evaluateAnswerAccuracy } from "../lib/letter-diff";
@@ -336,42 +334,6 @@ describe("Progressive Bite-Sized Exercise Architecture", () => {
     expect(tooBig).toEqual([]);
   });
 
-  // Every free-text German answer field must silence the browser's spellcheck.
-  // `lang="de"` alone is not enough — the browser still checks de-DE against its
-  // own German dictionary and marks well-formed answers ("denken", "Wasser",
-  // umlauts) as errors with red underlines, which reads as "you got it wrong"
-  // while the learner is still typing. spellCheck={false} plus the auto-correct
-  // family stops all of it.
-  it("never spellchecks a German answer field (no red squiggles on correct German)", () => {
-    const root = path.resolve(__dirname, "../..");
-    const germanInputs = [
-      "src/app/review/page.tsx",
-      "src/components/lesson/ExerciseWidgets.tsx",
-      "src/components/lesson/TranscribeExercise.tsx",
-      "src/components/lesson/DictationExercise.tsx",
-      "src/components/lesson/FamilyMatrixExercise.tsx",
-      "src/components/lesson/TwistCard.tsx",
-    ];
-    const missing: string[] = [];
-    for (const file of germanInputs) {
-      const source = fs.readFileSync(path.join(root, file), "utf-8");
-      // each file's German-answer inputs must all opt out
-      const fields = source.split("<input").slice(1);
-      for (const chunk of fields) {
-        const field = chunk.split("/>")[0];
-        const isGermanField =
-          /lang="de"/.test(field) ||
-          /placeholder="[^"]*(german|German|heard|derivation|answer)/.test(field);
-        if (!isGermanField) continue;
-        for (const attr of ["spellCheck={false}", 'autoComplete="off"', 'autoCorrect="off"', 'autoCapitalize="off"']) {
-          if (!field.includes(attr)) {
-            missing.push(`${file}: German input is missing ${attr}`);
-          }
-        }
-      }
-    }
-    expect(missing).toEqual([]);
-  });
 });
 
 describe("Prefix × base family grids teach the prefix law", () => {

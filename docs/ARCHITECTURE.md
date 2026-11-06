@@ -39,6 +39,10 @@ cache); `ShiftPair.tsx` renders the highlighted result.
   (`scripts/export-client-data.ts`, run by `dev` and `build`) writes each language's
   compendium, a compact lesson index and one payload per lesson to `public/data/<lang>/`,
   so heavy lesson data stays out of the shared chunk.
+- **Lesson code is split by segment and input.** `LessonReader` renders lazy
+  `segments/` views; `use-lesson-session.ts` owns progression and retries.
+  `ExerciseWidgets` dispatches to lazy exercise implementations; classic input
+  surfaces live in `inputs/` with a shared grading controller.
 - **Root layout:** an inline pre-paint script reads `localStorage` / the fallback cookie
   and applies theme variables before first paint (no FOUC); `darkreader-lock` protects
   the calibrated palettes; a `storage` listener re-hydrates every open tab when
@@ -58,6 +62,13 @@ laws, compounds, false friends and insights; the generated JSON is never hand-ed
 `bun run build` is `parse-data && export-data && next build`. French, Spanish and Dutch
 are typed TS modules under `src/data/<lang>/`, not parsed from markdown. Details:
 [`scripts/README.md`](../scripts/README.md).
+
+Authored lessons are individual typed modules: German in `src/data/lessons/<id>.ts`,
+the sibling courses in `src/data/<language>/lessons/<id>.ts`. The existing
+`lessons.ts` / `lessons-xx.ts` modules are ordered build-time aggregates.
+Dutch still expands each `DutchLessonSpec` through its existing factory.
+Browser views never import these aggregates and never prefetch the next lesson
+automatically; only opening a lesson or showing pointer/keyboard intent fetches it.
 
 ## 4. The trail (homepage)
 
@@ -144,22 +155,37 @@ are typed TS modules under `src/data/<lang>/`, not parsed from markdown. Details
   warning, quick restart (`off`/`esc`), German character bar (focus-preserving).
 - **JSON backup export/import** and a two-step danger zone (reset settings / reset
   progress).
+- **Local-first safety:** a nonblocking reminder offers a portable JSON backup
+  after learning progress exists, then weekly after download; dismissal snoozes
+  for a day. Settings can request persistent storage, but explicitly warns that
+  it cannot prevent manual deletion or device loss.
+- **Install/offline:** `manifest.webmanifest` enables home-screen installation.
+  Production registers `public/sw.js` over HTTPS (localhost works for testing).
+  A build-versioned cache keeps requested pages, data and chunks, capped at 240
+  entries plus the offline fallback. Installation fetches only the fallback,
+  manifest and icons—not lessons. Open segments and exercises online before
+  relying on them offline; unopened or evicted content still needs a connection.
+  Native pronunciation depends on installed device voices.
 
 ## 8. Storage and safety
 
 - Progress is `localStorage` plus a **≤ 2048-byte URL-encoded cookie fallback** merged
-  field-by-field (`src/lib/store.ts`); over the cap, only `{theme, font}` is written, to
+  field-by-field (`src/lib/store/persistence.ts`); over the cap, only preferences are written, to
   avoid HTTP 431. Each language keeps its own progress slice and SRS queue.
 - Backup import allow-lists review modes and drops `__proto__`/`constructor`/`prototype`
   keys (`src/tests/store-security.test.ts`).
 - `evaluateAnswerAccuracy` (`src/lib/letter-diff.ts`) rejects inputs over 200 characters
   before any diff, preventing quadratic CPU lockups on pasted text.
+- `src/lib/store.ts` only composes Zustand slices. `store/` owns settings,
+  progress, review, backup import/reset, hydration, validated schemas and
+  versioned cross-tab merging. Persistence receives the store getter at startup,
+  avoiding a runtime import cycle. Saved keys and migration behavior are unchanged.
 
 ## 9. Deliberately not built
 
-- No PWA / service worker / offline sync; no backend, accounts or cross-device sync; no
-  analytics or telemetry; no push notifications (daily insights rotate by date); no cloud
-  TTS; no third-party component libraries.
+- No backend, accounts or cross-device sync; no analytics or telemetry; no push
+  notifications (daily insights rotate by date); no cloud TTS; no third-party
+  component libraries. The offline cache is not a progress backup.
 - No adaptive difficulty — exercise order is fixed and authored. A specified-but-unbuilt
   design is in [`ideas to add in future/cognitive-load-adaptivity.md`](./ideas%20to%20add%20in%20future/cognitive-load-adaptivity.md).
 

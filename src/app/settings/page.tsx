@@ -23,6 +23,8 @@ import {
 import { useAppStore } from "@/lib/store";
 import { SettingItem } from "@/components/settings/SettingItem";
 import { VoiceStatusBanner } from "@/components/common/VoiceStatusBanner";
+import { LocalDataControls } from "@/components/settings/LocalDataControls";
+import { downloadProgressBackup } from "@/lib/progress-backup";
 import { THEME_COUNT } from "@/lib/theme-runtime";
 import { FONT_LIST } from "@/data/fonts";
 import { LANGUAGES, getLanguageDefinition } from "@/data/languages";
@@ -80,6 +82,7 @@ const SECTION_TERMS: Record<string, string[]> = {
   danger_zone: [
     "backup", "export", "import", "restore", "json", "progress", "reset settings", "default",
     "restore defaults", "reset progress", "clear data", "delete progress",
+    "offline", "install", "persistent", "storage", "eviction", "protection",
   ],
 };
 
@@ -108,6 +111,12 @@ export default function SettingsPage() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (mounted && window.location.hash === "#backup") {
+      document.getElementById("backup")?.scrollIntoView();
+    }
+  }, [mounted]);
 
   // Keyboard shortcut to focus search with "/"
   useEffect(() => {
@@ -157,51 +166,13 @@ export default function SettingsPage() {
     void soundEngine.playError(errorId, settings.soundVolume || 0.5);
   };
 
-  // Export JSON backup
   const handleExportBackup = () => {
-    const state = useAppStore.getState();
-    const backupData = {
-      timestamp: new Date().toISOString(),
-      version: 2,
-      activeLanguageId: state.activeLanguageId,
-      progressByLanguage: {
-        ...state.progressByLanguage,
-        [state.activeLanguageId]: {
-          completedLessons: state.completedLessons,
-          currentLessonId: state.currentLessonId,
-          lessonProgress: state.lessonProgress,
-          lessonStars: state.lessonStars,
-          passedGateIds: state.passedGateIds,
-          wordMastery: state.wordMastery,
-          srsCards: state.srsCards,
-          weeklyActivity: state.weeklyActivity,
-          lastActivityWeek: state.lastActivityWeek,
-        },
-      },
-      seenIntroLanguages: state.seenIntroLanguages,
-      settings: state.settings,
-      completedLessons: state.completedLessons,
-      currentLessonId: state.currentLessonId,
-      lessonProgress: state.lessonProgress,
-      lessonStars: state.lessonStars,
-      passedGateIds: state.passedGateIds,
-      wordMastery: state.wordMastery,
-      srsCards: state.srsCards,
-      weeklyActivity: state.weeklyActivity,
-      lastActivityWeek: state.lastActivityWeek,
-      preferredReviewMode: state.preferredReviewMode,
-      hasCompletedOnboarding: state.hasCompletedOnboarding,
-      hasSeenGenderIntro: state.hasSeenGenderIntro,
-      theme: state.theme,
-      font: state.font,
-    };
-    const blob = new Blob([JSON.stringify(backupData, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `brucke_backup_${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    try {
+      downloadProgressBackup(useAppStore.getState());
+      setBackupStatusNote("Backup download started. Keep the file outside this browser.");
+    } catch {
+      setBackupStatusNote("Could not start the backup download. Please try again.");
+    }
   };
 
   // Import JSON backup
@@ -848,6 +819,7 @@ export default function SettingsPage() {
 
           {/* Dedicated Progress Backup & Restore (JSON File + Raw JSON) */}
           <div id="backup" className="space-y-2">
+            <LocalDataControls />
             <SettingItem
               id="export-import"
               icon={Download}
@@ -858,10 +830,7 @@ export default function SettingsPage() {
               <div className="flex flex-wrap items-center gap-2">
                 <button
                   type="button"
-                  onClick={() => {
-                    handleExportBackup();
-                    setBackupStatusNote("Exported progress backup JSON file.");
-                  }}
+                  onClick={handleExportBackup}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-mono bg-[var(--sub-alt-color)] text-[var(--text-color)] hover:border-[var(--main-color)] border border-[var(--sub-color)]/20 transition cursor-pointer"
                 >
                   <Download className="w-3.5 h-3.5 text-[var(--main-color)]" />

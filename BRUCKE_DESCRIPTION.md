@@ -21,6 +21,6 @@ Production drills run from lesson two onward: transcription, literal-gloss trans
 
 Most language apps reward streaks, not speech. Learners memorize thousands of disconnected pairs and re-forget most of them, then conclude they're bad at languages. Brücke flips the frame: the lesson isn't "here's a new word," it's "you already knew this — nobody told you the rule." That's a fundamentally different motivational surface, and it's the same insight quality teachers like Language Transfer have been quietly demonstrating for years, without a productized interactive version — until this.
 
-Everything is sourced (a 1,226-word compendium where every derivation cites Wiktionary/etymonline), tested (444 automated tests including solvability and fair-content gates), and private (100% static, local-first, no accounts, no telemetry, JSON export). The whole curriculum runs in the browser with zero marginal infra cost.
+Everything is sourced (a 1,226-word compendium where every derivation cites Wiktionary/etymonline), tested (449 automated tests including solvability and fair-content gates), and private (100% static, local-first, no accounts, no telemetry, JSON export). The whole curriculum runs in the browser with zero marginal infra cost.
 
 **The pitch in one line:** *Duolingo taught you streaks. Anki taught you forgetting curves. Brücke teaches you the one insight that makes German feel less like a foreign language and more like your own vocabulary wearing a different suit.*

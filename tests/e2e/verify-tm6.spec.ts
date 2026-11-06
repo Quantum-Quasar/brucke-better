@@ -83,20 +83,24 @@ function labelWithoutKeycap(raw: string): string {
  */
 async function clickLabelledButton(page: Page, text: string): Promise<boolean> {
   const buttons = page.getByRole("button");
-  const count = await buttons.count();
-  for (let i = 0; i < count; i++) {
-    const button = buttons.nth(i);
-    if (!(await button.isEnabled().catch(() => false))) continue;
-    if (!(await button.isVisible().catch(() => false))) continue;
-    // the tile rack keeps already-picked tiles on screen — those unpick
-    if ((await button.getAttribute("title")) === "Click or press Backspace to unpick") continue;
-    const label = labelWithoutKeycap((await button.innerText().catch(() => "")) ?? "");
-    if (label === text) {
-      await button.click();
-      return true;
+  let target = -1;
+  await expect.poll(async () => {
+    const count = await buttons.count();
+    for (let i = 0; i < count; i++) {
+      const button = buttons.nth(i);
+      if (!(await button.isEnabled().catch(() => false))) continue;
+      if (!(await button.isVisible().catch(() => false))) continue;
+      if ((await button.getAttribute("title")) === "Click or press Backspace to unpick") continue;
+      const label = labelWithoutKeycap((await button.innerText().catch(() => "")) ?? "");
+      if (label === text) {
+        target = i;
+        return true;
+      }
     }
-  }
-  return false;
+    return false;
+  }, { message: `Expected button "${text}" to appear` }).toBe(true);
+  await buttons.nth(target).click();
+  return true;
 }
 
 /** Answer a shuffle-proof shift_select: the option whose label is the target. */

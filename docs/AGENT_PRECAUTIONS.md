@@ -86,7 +86,7 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 
 ---
 
-## 4. Lessons (`src/data/lessons.ts`) — applies when you author or edit lessons
+## 4. Lessons (`src/data/lessons/<id>.ts`) — applies when you author or edit lessons
 
 ### 4.1 Schema discipline (tests enforce most of this)
 - **Applies when:** authoring a lesson or editing exercises.
@@ -129,9 +129,9 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 - **Action:** first search for a **newline inside a string literal** or an unterminated string earlier in the appended block — a raw line break inside a quoted string cascades to errors at the file end. Only then check for stray closing brackets. (Known incident: a python-append left `]\n];` at the file end — happened three times; check for it by name.)
 - **Related:** `TS2561 ... does not exist in type 'LessonSection'` means a typo'd object key (`footones` for `footnotes`) — passes runtime, fails tsc.
 
-### 5.4 Bulk-append checklist for `lessons.ts`
-- **Applies when:** appending lessons via script/heredoc.
-- **Action:** `lessons.ts` is JSON-style (quoted keys) and its array now ends with `  },\n  ...READING_LESSONS\n];` — the five spine stories live in `reading-lessons-de.ts`. Insert new lessons *before* the `...READING_LESSONS` line, with nothing between the last lesson's close and that line. After any bulk append: run `bun run typecheck` immediately, then grep for `^]` (a stray closing bracket on its own line).
+### 5.4 Individual lesson authoring
+- **Applies when:** adding or editing lesson sources.
+- **Action:** edit the typed module `src/data/lessons/<id>.ts` (including stories 9001–9005). `src/data/lessons.ts` is only the ordered build-time aggregate: add its import and array entry without moving existing entries. Sibling courses use `<language>/lessons/<id>.ts`; Dutch files remain `DutchLessonSpec` inputs to the factory. Run `bun run typecheck` and `bun run export-data`; never edit generated `public/data` JSON by hand.
 
 ### 5.5 Audit word references before declaring done
 - **Applies when:** you added lessons and/or words.
@@ -155,7 +155,7 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 
 ### 6.3 Subagents are for reading and research, not writing
 - **Applies when:** the task is big enough to parallelize.
-- **Action:** fan out verification/analysis to subagents (they save enormous time), but file writes stay with the main agent. `lessons.ts` especially is append-only and single-writer.
+- **Action:** fan out verification/analysis to subagents, but file writes stay with the main agent. Lesson aggregates are ordered and single-writer.
 
 ---
 
@@ -207,11 +207,11 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
   the table is data — new rows are allowed but every cue must state a real law (P7).
 
 ### 7.6 Duplicate exercise ids were a live bug — keep checking
-- **Applies when:** editing exercises in `lessons.ts`.
+- **Applies when:** editing exercises in individual lesson modules.
 - **Action:** the id convention is `l<lessonId>_e<n>`; sprig 202's e5 shipped as `l2_e5`
   (duplicate of core 2's) and was only found when a regex edit landed on the wrong block.
-  After any exercise edit: `grep -o '"id": "l[0-9]*_e[0-9]*"' src/data/lessons.ts | sort | uniq -d`
-  must print nothing. (The file uses quoted JSON keys — an unquoted `id:` pattern matches nothing and "passes" falsely; sanity-check that the grep without `uniq -d` prints hundreds of lines.)
+  Check exercise ids across the German lesson modules, including generated reading
+  lessons; duplicate ids can cause one missed exercise to hide another in retries.
 
 ---
 

@@ -2,29 +2,30 @@ import { createHash } from "node:crypto";
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 
-// Content version for /data/* URLs: a hash of the exported JSON, so every
-// content change yields new URLs and the files can be cached as immutable.
-function contentVersion() {
+// Keep data URLs stable across code-only changes, but isolate offline caches
+// by both content and application code.
+function versionOf(paths) {
   const hash = createHash("sha1");
-  const walk = (dir) => {
-    if (!existsSync(dir)) return;
-    for (const name of readdirSync(dir).sort()) {
-      const full = path.join(dir, name);
-      if (statSync(full).isDirectory()) walk(full);
-      else {
-        hash.update(full);
-        hash.update(readFileSync(full));
-      }
+  const walk = (entry) => {
+    if (!existsSync(entry)) return;
+    if (statSync(entry).isDirectory()) {
+      for (const name of readdirSync(entry).sort()) walk(path.join(entry, name));
+    } else {
+      hash.update(entry);
+      hash.update(readFileSync(entry));
     }
   };
-  walk(path.join(process.cwd(), "public", "data"));
+  for (const entry of paths) walk(path.join(process.cwd(), entry));
   return hash.digest("hex").slice(0, 12);
 }
+
+const dataVersion = versionOf(["public/data"]);
+const appVersion = versionOf(["src", "public/data", "public/sw.js", "public/offline.html", "public/icons", "next.config.mjs", "bun.lock"]);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  env: { NEXT_PUBLIC_CONTENT_VERSION: contentVersion() },
+  env: { NEXT_PUBLIC_CONTENT_VERSION: dataVersion, NEXT_PUBLIC_APP_VERSION: appVersion },
   experimental: {
     optimizePackageImports: ["lucide-react"],
   },
@@ -80,6 +81,14 @@ const nextConfig = {
             key: "Permissions-Policy",
             value: "microphone=(), camera=(), geolocation=()",
           },
+        ],
+      },
+      {
+        source: "/sw.js",
+        headers: [
+          { key: "Content-Type", value: "application/javascript; charset=utf-8" },
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self'" },
         ],
       },
       {

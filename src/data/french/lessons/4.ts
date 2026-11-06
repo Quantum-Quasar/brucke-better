@@ -1,0 +1,171 @@
+import type { Lesson } from "@/lib/types";
+
+const lesson: Lesson = {
+  "id": 4,
+  "slug": "ne-pas-sandwich",
+  "title": "Ne...Pas: The Sandwich",
+  "subtitle": "Negation wraps the verb — and pas is literally a footstep",
+  "phase": 1,
+  "shift_categories": [],
+  "word_ids": [
+    "pas",
+    "ne",
+    "vouloir",
+    "gâteau",
+    "café"
+  ],
+  "table_word_ids": [
+    "pas",
+    "ne",
+    "vouloir",
+    "gâteau",
+    "café"
+  ],
+  "hook": {
+    "title": "Two Halves, One Hug",
+    "content": "French negates by wrapping the verb in two halves: ne before it, pas after it. Je ne veux pas — I don't want. The verb sits inside a sandwich, and everything else stays where it was. No auxiliaries, no word-order gymnastics: the sentence you can already build, plus two small words around its engine.",
+    "footnotes": [
+      {
+        "marker": "1",
+        "title": "pas is a step",
+        "content": "pas is the same word as 'pace' (Latin passus, a footstep). Negation began as je ne vais pas un pas — 'I don't go a single step'. The refusal got generic; the footstep stayed in the word.",
+        "interest": true
+      }
+    ]
+  },
+  "pattern": {
+    "title": "ne [verb] pas — and Spoken French Drops One Slice",
+    "content": "The written law: ne + verb + pas. The spoken truth: French conversation drops the ne — je veux pas — exactly as English conversation drops 'I am' to 'I'm'. Learn the full sandwich first; your ear will meet the dropped slice in the wild and understand it as laziness, not a different rule.",
+    "footnotes": [
+      {
+        "marker": "2",
+        "title": "ne is 'not's' cousin",
+        "content": "ne comes from Latin nōn, the very word English 'not' descends from. English kept nōn and added do-support; French kept nōn's stub and wrapped the verb. Two solutions, one problem.",
+        "interest": true
+      }
+    ],
+    "linguist_note": "pas un pas — the etymology is a 12th-century emphasis that grammaticalized: 'not a step' → 'not'. Other French negatives kept their nouns: rien (a thing), jamais (ever), personne (a person).",
+    "trap_note": "The tempting wrong move: putting ne...pas around the whole sentence, English-style ('ne je veux pas'). The sandwich is tight — it hugs only the verb: je ne veux pas."
+  },
+  "exercises": [
+    {
+      "id": "fr4_e1",
+      "type": "morpheme_tiles",
+      "prompt": "Wrap 'veux' inside the two slices of the French negation sandwich ('I do not want'):",
+      "tile_options": [
+        "pas",
+        "non",
+        "ne",
+        "veux",
+        "Je"
+      ],
+      "target_answer": "Jeneveuxpas",
+      "meaning": "Je ne veux pas (I don't want)",
+      "explanation": "ne goes before the conjugated verb and pas ('a step') goes right after it."
+    },
+    {
+      "id": "fr4_e2",
+      "type": "transcribe",
+      "prompt": "Tell me:",
+      "idea": "you don't want it — and the it is the coffee",
+      "cues": [
+        "The it walks left as always: le before the verb",
+        "The sandwich hugs the verb: ne … veux … pas",
+        "the pronoun stands INSIDE the sandwich: je ne le veux pas"
+      ],
+      "target_answer": "Je ne le veux pas",
+      "meaning": "I don't want it",
+      "word_bank": [
+        "le",
+        "pas",
+        "la",
+        "ne",
+        "veux",
+        "Je",
+        "un"
+      ],
+      "idea_parts": [
+        "who? → je",
+        "it → le, before veux",
+        "negation → ne before the pronoun+verb, pas after"
+      ],
+      "explanation": "je ne le veux pas — the pronoun walked left INTO the sandwich. One structure, every pronoun.",
+      "diagnosis": {
+        "slip": "the pronoun walked outside the sandwich",
+        "cue": "The sandwich hugs the verb AND its pronouns: je ne le veux pas. The left-walking pronoun lives inside."
+      }
+    },
+    {
+      "id": "fr4_e3",
+      "type": "literal_gloss",
+      "prompt": "Which English sentence is built the French way?",
+      "german": "Tu ne veux pas le café",
+      "natural": "You don't want the coffee",
+      "options": [
+        "You not want the coffee",
+        "Not you want the coffee",
+        "You do not want the coffee"
+      ],
+      "target_answer": "You not want the coffee",
+      "meaning": "The odd English is the lesson: French negates the verb itself, no do-support.",
+      "explanation": "French has no do-support: ne...pas grips veux directly. English needed 'do' to do the same job."
+    },
+    {
+      "id": "fr4_e4",
+      "type": "reverse_cognate",
+      "prompt": "pas ('not') is a worn-down English word about walking. Which one?",
+      "target_answer": "pace",
+      "meaning": "Latin passus 'step' → pace, and the pas of negation",
+      "explanation": "je ne vais pas un pas: 'I won't go a step' became plain negation. The footstep is still inside the word."
+    },
+    {
+      "id": "fr4_e5",
+      "type": "dictation",
+      "prompt": "Listen and write the whole sentence.",
+      "spoken": "Je ne veux pas participer",
+      "replays": 2,
+      "target_answer": "Je ne veux pas participer",
+      "meaning": "I don't want to participate",
+      "cues": [
+        "Sandwich around veux: ne … pas",
+        "The infinitive stays parked after pas",
+        "participer — participation minus -ation"
+      ],
+      "explanation": "The sandwich grips veux; participer stays parked outside the hug, untouched.",
+      "affirmation": "You kept the infinitive outside the sandwich — the hug is for the verb only."
+    }
+  ],
+  "twist": {
+    "prompt": "One more, ungraded — 'Do you want the invitation?' as a NEGATIVE question.",
+    "target_answer": "Tu ne veux pas l'invitation",
+    "word_bank": [
+      "Tu",
+      "la",
+      "ne",
+      "veux",
+      "le",
+      "l'invitation",
+      "pas"
+    ],
+    "explanation": "Everything you own in one sentence: the sandwich, the elision, the -ION noun, the intonation question."
+  },
+  "summary": {
+    "outcome": "Wrap any verb in ne...pas, keep pronouns inside the sandwich, and hear the dropped ne in spoken French without flinching.",
+    "use_example": {
+      "german": "Je ne le veux pas, merci.",
+      "english": "I don't want it, thanks."
+    },
+    "takeaway": "ne [verb] pas hugs the verb — pas is a refused footstep, and the pronoun lives inside the hug.",
+    "curiosity_teaser": "Up next on Le Pont ([401] Pas Un Pas): see how Ne...Pas: The Sandwich leads directly into Pas Un Pas."
+  },
+  "payoff": {
+    "ofLesson": 3,
+    "text": "Every je veux + infinitive chain from Lesson 3 can now be flipped negative simply by hugging veux with ne...pas."
+  },
+  "foreshadow": {
+    "line": "Next we meet être ('to be'), whose first-person form je suis hides the Latin verb 'I follow'.",
+    "resolvedIn": 5
+  }
+};
+
+export default lesson;

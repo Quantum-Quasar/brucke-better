@@ -1,0 +1,164 @@
+import type { Lesson } from "@/lib/types";
+
+const lesson: Lesson = {
+  "id": 602,
+  "slug": "mente-adverb-factory",
+  "title": "The -mente Adverb Factory",
+  "subtitle": "-ly → feminine adjective + -mente: naturalmente, perfectamente, rápidamente",
+  "phase": 1,
+  "shift_categories": [
+    "mente"
+  ],
+  "word_ids": [
+    "exactamente",
+    "naturalmente",
+    "perfectamente",
+    "totalmente",
+    "rápidamente",
+    "fácilmente",
+    "actualmente"
+  ],
+  "table_word_ids": [
+    "exactamente",
+    "naturalmente",
+    "perfectamente",
+    "totalmente",
+    "rápidamente",
+    "fácilmente",
+    "actualmente"
+  ],
+  "hook": {
+    "title": "Two-in-One Words: Why Tildes Survive on -mente",
+    "content": "When you attach -mente to an adjective that already has a written accent mark — like rápida ('rapid') or fácil ('easy') — Spanish keeps that original written accent mark right where it was: rápidamente, fácilmente! Why? Because phonetically, -mente adverbs still have two stressed beats ('with a RAPID MIND')!"
+  },
+  "pattern": {
+    "title": "One Caveat: Actualmente",
+    "content": "Remember our false-friend warning: mientras exactamente, perfectamente, totalmente, and naturalmente mean what they look like, actualmente means 'currently / at present' (never 'actually'!)."
+  },
+  "exercises": [
+    {
+      "type": "matching_pairs",
+      "prompt": "Match each English expression with its Spanish partner:",
+      "matching_pairs": [
+        {
+          "id": "p1",
+          "english": "exactly",
+          "german": "exactamente"
+        },
+        {
+          "id": "p2",
+          "english": "naturally",
+          "german": "naturalmente"
+        },
+        {
+          "id": "p3",
+          "english": "perfectly",
+          "german": "perfectamente"
+        },
+        {
+          "id": "p4",
+          "english": "totally",
+          "german": "totalmente"
+        },
+        {
+          "id": "p5",
+          "english": "rapidly / quickly",
+          "german": "rápidamente"
+        },
+        {
+          "id": "p6",
+          "english": "easily",
+          "german": "fácilmente"
+        }
+      ],
+      "target_answer": "exactamente, naturalmente, perfectamente, totalmente, rápidamente, fácilmente",
+      "meaning": "exactly, naturally, perfectly, totally, rapidly / quickly, easily",
+      "explanation": "Adjectives with a tilde (rápida, fácil) keep their tilde when -mente is attached.",
+      "id": "es602_e1"
+    },
+    {
+      "type": "morpheme_tiles",
+      "prompt": "Build 'totally' in Spanish from the invariable adjective 'total':",
+      "tile_options": [
+        "mente",
+        "total",
+        "a",
+        "dad"
+      ],
+      "target_answer": "totalmente",
+      "meaning": "totalmente (totally)",
+      "explanation": "Because total ends in a consonant (-l), it has no -a form — -mente glues directly onto total: totalmente.",
+      "id": "es602_e2"
+    },
+    {
+      "type": "shift_select",
+      "prompt": "Which spelling of 'quickly / rapidly' properly preserves the original adjective's accent mark?",
+      "options": [
+        "rápidamente",
+        "rapidamente",
+        "rápidomente"
+      ],
+      "target_answer": "rápidamente",
+      "meaning": "quickly, rapidly",
+      "explanation": "rápida (feminine) + mente keeps the tilde on rá-: rápidamente.",
+      "id": "es602_e3"
+    },
+    {
+      "type": "syntax_builder",
+      "prompt": "Assemble: 'Currently I live in Madrid'",
+      "target_answer": "Actualmente vivo en Madrid",
+      "meaning": "Currently I live in Madrid",
+      "word_bank": [
+        "en",
+        "Madrid",
+        "Exactamente",
+        "el",
+        "vivo",
+        "Actualmente",
+        "vivir"
+      ],
+      "explanation": "Actualmente ('Currently') + vivo ('I live') + en Madrid.",
+      "id": "es602_e4"
+    },
+    {
+      "type": "dictation",
+      "prompt": "Listen and write the whole sentence.",
+      "spoken": "Lo comprendo totalmente",
+      "replays": 2,
+      "target_answer": "Lo comprendo totalmente",
+      "meaning": "I understand it totally",
+      "cues": [
+        "It (walking left): Lo",
+        "I understand: comprendo",
+        "totally: totalmente"
+      ],
+      "explanation": "Lo comprendo totalmente — object pronoun before verb, adverb after verb.",
+      "affirmation": "Clean pronoun + verb + -mente adverb!",
+      "id": "es602_e5"
+    }
+  ],
+  "summary": {
+    "outcome": "Build -mente adverbs from both -o/-a and invariable adjectives while preserving written tildes.",
+    "use_example": {
+      "german": "Lo comprendo perfectamente y hablo fácilmente.",
+      "english": "I understand it perfectly and I speak easily."
+    },
+    "takeaway": "Adjectives in -o flip to -a before -mente; invariable adjectives glue directly; tildes always survive.",
+    "curiosity_teaser": "Up next ([7] Questions: Inverted & Intonation): master Spanish question words and why they always wear an accent mark."
+  },
+  "twist": {
+    "prompt": "Assemble: 'I understand it perfectly'",
+    "target_answer": "Lo comprendo perfectamente",
+    "word_bank": [
+      "perfectamente",
+      "quiero",
+      "totalmente",
+      "Lo",
+      "comprendo",
+      "La"
+    ],
+    "explanation": "Lo comprendo perfectamente places lo before comprendo."
+  }
+};
+
+export default lesson;
