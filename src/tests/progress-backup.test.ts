@@ -42,6 +42,23 @@ describe("portable progress backups", () => {
     expect(useAppStore.getState().completedLessons).toEqual([1, 2, 3]);
     expect(useAppStore.getState().lessonStars[1]).toBe("purple");
   });
+
+  it("restores an empty SRS snapshot without retaining later cards", () => {
+    const backup = createProgressBackup(initial);
+    useAppStore.setState({ srsCards: { haus: createInitialCard("haus") } });
+    expect(useAppStore.getState().importBackupState(backup)).toBe(true);
+    expect(useAppStore.getState().srsCards).toEqual({});
+  });
+
+  it("does not import the active course's cards into a different backup language", () => {
+    const backup = createProgressBackup({ ...initial, srsCards: { haus: createInitialCard("haus") } });
+    useAppStore.setState({ activeLanguageId: "fr", srsCards: { maison: createInitialCard("maison") } });
+    expect(useAppStore.getState().importBackupState(backup)).toBe(true);
+    expect(useAppStore.getState().activeLanguageId).toBe("de");
+    expect(Object.keys(useAppStore.getState().srsCards)).toEqual(["haus"]);
+    useAppStore.getState().setActiveLanguage("fr");
+    expect(Object.keys(useAppStore.getState().srsCards)).toEqual(["maison"]);
+  });
 });
 
 describe("backup reminder timing", () => {

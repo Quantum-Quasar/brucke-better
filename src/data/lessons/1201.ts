@@ -159,6 +159,7 @@ const lesson: Lesson = {
       "type": "transcribe",
       "prompt": "Say in German: \"I have no time / I do not have time\"",
       "target_answer": "Ich habe keine Zeit",
+      "accepted_answers": ["Zeit habe ich keine"],
       "meaning": "I have no time / I do not have time",
       "word_bank": [
         "für",

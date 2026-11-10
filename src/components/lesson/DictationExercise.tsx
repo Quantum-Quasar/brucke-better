@@ -17,7 +17,7 @@ import { GermanCharBar } from "@/components/common/GermanCharBar";
 import { VoiceStatusBanner } from "@/components/common/VoiceStatusBanner";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
-import { evaluateAnswerAccuracy } from "@/lib/letter-diff";
+import { gradeLessonAnswer } from "@/lib/lesson-grading";
 import { playTargetAudio } from "@/lib/audio";
 import { getLanguageDefinition } from "@/data/languages";
 import { useAppStore } from "@/lib/store";
@@ -170,7 +170,7 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
       umlautTolerance: Boolean(settings.lazyMode ?? tolerance.umlautTolerance),
       capitalizationTolerance: Boolean(settings.capitalizationTolerance ?? tolerance.capitalizationTolerance),
     };
-    const evaluation = evaluateAnswerAccuracy(answerToCheck, target, evalOptions);
+    const { result: evaluation } = gradeLessonAnswer([answerToCheck], [target], evalOptions, isRetry);
 
     if (evaluation.accuracy === "exact" || evaluation.accuracy === "almost") {
       setStatus(evaluation.accuracy === "exact" ? "correct" : "almost");

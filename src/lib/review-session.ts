@@ -14,6 +14,7 @@ const MAX_TEXT = 200;
 
 const DECK_IDS: ReadonlySet<string> = new Set([
   "due",
+  "learned",
   "shift",
   "weakest",
   "recent",

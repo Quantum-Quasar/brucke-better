@@ -73,6 +73,16 @@ describe("backup import rejects entirely-corrupt progress instead of wiping it",
     expect(useAppStore.getState().importBackupState({ completedLessons: [2, "lesson 3", "no digits"] })).toBe(true);
     expect(useAppStore.getState().completedLessons).toEqual([2, 3]);
   });
+
+  it.each(["completedLessons", "passedGateIds", "lessonProgress", "lessonStars", "wordMastery", "srsCards"])("rejects wrong-type nested %s before changing progress", (field) => {
+    useAppStore.getState().completeLesson(1);
+    useAppStore.getState().markWordMastered("haus");
+    const before = useAppStore.getState();
+    expect(before.importBackupState({ progressByLanguage: { de: { [field]: null } } })).toBe(false);
+    expect(useAppStore.getState().completedLessons).toEqual([1]);
+    expect(useAppStore.getState().wordMastery.haus).toBe("mastered");
+    expect(useAppStore.getState().progressResetAt).toBe(before.progressResetAt);
+  });
 });
 
 describe("loadSavedState merges a newer fallback cookie per language", () => {

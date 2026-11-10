@@ -34,12 +34,13 @@ English and German are sibling West Germanic languages sharing over 60% of core 
 
 ### Pillar 1: The Trail (`/` and the in-page lesson reader)
 - **Curriculum Scope**: 30 topic clusters with the entire curriculum authored — 30 cores + 79 sprigs + 65 branch lessons + 5 required reading stories = **179 lessons**, all fully interactive. Unknown lesson ids open the reader's "Coming Soon" state instead of creating a route.
+- **Recommendation bar**: every authored lesson, including sprigs and branches, in topic order. Earlier gaps are offered first; Continue ahead suppresses automatic gap reminders after three explicit bypasses without awarding progress. Tab from an unfocused trail focuses Start; Enter launches it. Map layout and gate thresholds are unchanged.
 - **5-Segment Card-by-Card Wizard (`LessonReader.tsx`)**:
-  1. **Part 01: The Hook**: Historical intuition and living English cognate framing.
-  2. **Part 02: The Pattern**: Mechanical shift rules, suffix patterns (`-en`), with margin philological notes.
+  1. **Part 01: The Hook**: Familiar German first; historical notes are optional disclosures.
+  2. **Part 02: The Pattern**: Mechanical shift rules and suffix patterns (`-en`), with optional linguistic background.
   3. **Part 03: Transformation Table**: Interactive `ShiftPair` grid highlighting shifted letters in cyan and target words in amber. Includes a bridge card to the Sound Shift Atlas family view (`/atlas`).
   4. **Part 04: Interactive Practice**: Exactly **ONE bite-sized problem mounted at a time** with Duolingo-style progress indicator dots. Starting exercises are never cold typing (scaffolded with morpheme tiles, matching pairs, and multiple choice). Features explicit vocabulary hint chips (`vocab_hints`) for auxiliary words (e.g. `mit`).
-  5. **Part 05: Summary & Retries**: Key takeaway, curiosity teaser, Sound Shift Atlas deep-dive link, and an end-of-lesson **Retry Queue** ensuring 100% mastery before completion.
+  5. **Part 05: Summary & Retries**: Key takeaway, curiosity teaser, Atlas link, and persisted reinforcement. Grammatical omissions cannot pass; repeated spelling errors do not clear a retry. Guided re-learning remains available.
 
 ### Pillar 2: Sound Shift Atlas (`/atlas`, with in-page family detail and master web)
 - **Visual Exploration**: Radial spatial spoke constellation visualization connecting English cognate seeds to German words.
@@ -57,7 +58,7 @@ English and German are sibling West Germanic languages sharing over 60% of core 
 
 ### Pillar 3: Spaced Repetition Review Hub (`/review`)
 - **Algorithm**: Unified SuperMemo SM-2 interval scheduler (`src/lib/srs.ts`) tracking repetitions, ease factors, lapses, intervals, and due dates.
-- **9 Deck Types** (`src/lib/review-decks.ts`):
+- **10 Deck Types** (`src/lib/review-decks.ts`); beginner actions lead, advanced filters are disclosed on demand:
   1. **Due Today**: Spaced repetition queue filtered by algorithmic due date.
   2. **By Shift Family**: Filterable practice by individual consonant shift.
   3. **By Domain**: Words grouped by the `domain` column of the compendium.
@@ -67,6 +68,7 @@ English and German are sibling West Germanic languages sharing over 60% of core 
   7. **Sentence Patterns**: Lesson example sentences as review items.
   8. **Article & Gender Drill**: The singular definite article for gendered nouns, with a fixed-width blank.
   9. **Everything**: The full pool.
+  10. **Learned Words**: Up to 20 encountered/mastered words, independent of advanced new-word filters.
 - **4 Selectable Review Styles**:
   - `flashcard` (Quick Flip): Recall in mind $\rightarrow$ Space/Enter reveals $\rightarrow$ 1–4 SM-2 grade.
   - `mcq` (Multiple Choice): Pick target word from 4 options (hotkeys 1–4).
@@ -117,7 +119,7 @@ A short map of where things live; list the directories yourself for the full tre
 │   │                          #   trail-map.ts, review-decks.ts, review-modes.ts, word-entities-core.ts, audio.ts, sound.ts
 │   ├── data/                  # compendium.json (1226 words, 9 shifts, 32 compounds, 16 false friends, 28 insights),
 │   │                          #   lessons/<id>.ts (all 179 authored German lessons), ordered lessons.ts, curriculum.ts
-│   └── tests/                 # 48 test files (Vitest) — whole-curriculum integrity, timezone boundaries,
+│   └── tests/                 # 49 test files (Vitest) — whole-curriculum integrity, timezone boundaries,
 │                              #   persistence merging, security, docs-sync
 └── tests/e2e/                 # Playwright smoke suite
 ```
@@ -161,7 +163,7 @@ All commands run from the repository root:
 # 1. Run Data Compilation Pipeline
 bun run parse-data
 
-# 2. Run All Automated Test Suites (48 test files / 481 tests), then lint and typecheck
+# 2. Run All Automated Test Suites (49 test files / 494 tests), then lint and typecheck
 bun run test
 bun run lint
 bun run typecheck
@@ -199,5 +201,5 @@ When auditing the codebase, verify:
   - State changes in Zustand persist to `localStorage`.
   - Cookie backup stays within safe browser limits (lean payload ≤ 2048 URL-encoded bytes).
 - [ ] **Build & Tests**:
-  - `bun run test` (Vitest) passes with 0 failures across all 48 test files (481 tests).
+  - `bun run test` (Vitest) passes with 0 failures across all 49 test files (494 tests).
   - `bun run build` generates all static pages (6 static routes + 500 lesson payloads) without TypeScript or Turbopack errors.

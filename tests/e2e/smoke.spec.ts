@@ -41,7 +41,7 @@ async function seedAppState(page: Page, state: Record<string, unknown> = {}) {
         window.localStorage.setItem(key, value);
       }
     },
-    [STORAGE_KEY, JSON.stringify({ hasCompletedOnboarding: true, ...state })] as const
+    [STORAGE_KEY, JSON.stringify({ hasCompletedOnboarding: true, settings: { showKeyTips: true }, ...state })] as const
   );
 }
 
@@ -116,6 +116,7 @@ function gradedWordId(before: any, after: any): string {
 /** Open the "recent lessons" deck in recall (flashcard) mode. */
 async function openRecentReviewSession(page: Page) {
   await page.goto("/review");
+  await page.getByText("More practice options", { exact: true }).click();
   // enabled only when at least one lesson has been completed
   const recent = page.getByRole("button", { name: /review recent/i });
   await expect(recent).toBeEnabled();
@@ -309,6 +310,7 @@ test.describe("browser smoke", () => {
         srsCards: { [DUE_CARD.word_id]: DUE_CARD },
       });
       await page.goto("/review");
+      await page.getByText("More practice options", { exact: true }).click();
 
       // a deck click starts the session in the stored style — no picker gate
       const recent = page.getByRole("button", { name: /review recent/i });
@@ -360,13 +362,13 @@ test("language-scoped lesson URL opens the named course in-page", async ({ page 
 test("opening and closing a lesson adds no browser-history entries", async ({ page }) => {
   await seedAppState(page);
   await page.goto("/");
+  await page.waitForFunction(() => document.documentElement.dataset.appReady === "true");
   const before = await page.evaluate(() => history.length);
 
-  const start = page.getByRole("button", { name: /^(start|continue|resume) topic 1/i });
-  await expect(async () => {
-    await start.click();
-    await expect(page.getByRole("button", { name: /back to trail/i })).toBeVisible();
-  }).toPass({ timeout: 30_000 });
+  const start = page.locator("[data-next-lesson-start]");
+  await expect(start).toBeVisible();
+  await start.click();
+  await expect(page.getByRole("button", { name: /back to trail/i })).toBeVisible();
 
   // Desktop keeps the clean-history guarantee; the touch sentinel is covered
   // by the mobile suite's "system Back closes the lesson overlay" test.

@@ -46,8 +46,8 @@ export default function HookSegment({ session }: { session: LessonSession }) {
               )}
 
               {lesson.hook.footnotes && lesson.hook.footnotes.length > 0 && (
-                <div className="p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 space-y-2 lg:hidden font-mono">
-                  <span className="text-xs uppercase tracking-wider text-[var(--sub-color)] block">historical notes</span>
+                <details className="p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 space-y-2 lg:hidden font-mono">
+                  <summary className="min-h-11 cursor-pointer text-xs uppercase tracking-wider text-[var(--sub-color)]">historical notes · optional</summary>
                   {lesson.hook.footnotes.map((fn) => (
                     <div key={fn.marker} className="text-sm text-[var(--sub-color)]">
                       <span className="text-[var(--main-color)] font-bold">[{fn.marker}] {fn.title}:</span> {fn.content}
@@ -58,7 +58,7 @@ export default function HookSegment({ session }: { session: LessonSession }) {
                       )}
                     </div>
                   ))}
-                </div>
+                </details>
               )}
 
               <div className="pt-4 border-t border-[var(--sub-color)]/15 flex items-center justify-end">

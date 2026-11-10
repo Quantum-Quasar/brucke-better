@@ -51,7 +51,7 @@ const lesson: Lesson = {
   },
   "pattern": {
     "title": "Walk the Wall",
-    "content": "The up-row: aufwachen/wake up, aufstehen/get up, aufmachen/open up. The back-row: zurückkommen/come back. The along-row: mitnehmen/take along. The in-row: einschlafen/fall asleep (literally fall INTO sleep). The out-row: aussuchen/pick out, aussehen/look (Du siehst gut aus — you look good OUT). The on-row: anmachen/turn on. The shut-row: zumachen/shut. The off-row: abmachen/agree (work it off — Das ist abgemacht! 'that is off-made' = deal!). Notice anmachen/aufmachen/zumachen all share machen — make — with the particle doing the meaning: German kept make and let the particle steer; English kept make and lost the system.",
+    "content": "The up-row: aufwachen/wake up, aufstehen/get up, aufmachen/open up. The back-row: zurückkommen/come back. The along-row: mitnehmen/take along. The in-row: einschlafen/fall asleep (literally fall INTO sleep). The out-row: aussuchen/pick out, aussehen/look (Du siehst gut aus — you look good OUT). The on-row: anmachen/turn on. The shut-row: zumachen/shut. The off-row: abmachen/agree (work it off — Das ist abgemacht! 'that is off-made' = deal!). Notice anmachen/aufmachen/zumachen all share machen — make — with the particle doing the meaning: German kept make and let the particle steer; English kept make and lost the system.\n\nIn a main clause the verb splits: Wir wachen heute hier auf — we wake up here today. Wachen agrees with wir in position 2; auf moves to the end.",
     "footnotes": [],
     "linguist_note": "English phrasal verbs exploded after 1066 as the native alternative to French/Latin verbs — 'give up' instead of 'surrender'. German never needed the replacement, so its prefixed system stayed intact. The phrasal verbs are English re-Germanizing itself."
   },
@@ -157,16 +157,17 @@ const lesson: Lesson = {
   },
   "twist": {
     "prompt": "Without looking back — build in German: \"We wake up here today\"",
-    "target_answer": "Wir aufwachen heute hier",
+    "target_answer": "Wir wachen heute hier auf",
     "word_bank": [
       "hier",
       "nicht",
       "heute",
-      "aufwachen",
+      "wachen",
+      "auf",
       "Wir",
       "sehr"
     ],
-    "explanation": "Building \"Wir aufwachen heute hier\" from the lesson's core pattern locks in Phrasal Verb Mirrors."
+    "explanation": "Wir takes wachen in position 2. The separable prefix auf closes the sentence: Wir wachen heute hier auf."
   }
 };
 

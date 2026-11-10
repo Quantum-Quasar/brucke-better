@@ -15,7 +15,7 @@ import { GermanCharBar } from "@/components/common/GermanCharBar";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
 import { arrangeTilesDeterministically } from "./exercise-tiles";
-import { evaluateAnswerAccuracy } from "@/lib/letter-diff";
+import { gradeLessonAnswer } from "@/lib/lesson-grading";
 import { diagnoseAttempt, affirmationFor } from "@/lib/shift-diagnosis";
 import { DIAGNOSIS_BY_LANGUAGE, GERMAN_DIAGNOSIS } from "@/data/shift-diagnosis-table";
 import { getLanguageDefinition } from "@/data/languages";
@@ -57,6 +57,7 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
   const [status, setStatus] = useState<"idle" | "correct" | "almost" | "incorrect">("idle");
   const [sheetVariant, setSheetVariant] = useState<"exact" | "almost">("exact");
   const [verifiedAttemptText, setVerifiedAttemptText] = useState("");
+  const [acceptedTarget, setAcceptedTarget] = useState(exercise.target_answer);
   const [almostWarningNote, setAlmostWarningNote] = useState<string | undefined>(undefined);
   const [feedbackNote, setFeedbackNote] = useState<string | null>(null);
   const [showErrorSheet, setShowErrorSheet] = useState(false);
@@ -151,7 +152,9 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
       umlautTolerance: Boolean(settings.lazyMode ?? tolerance.umlautTolerance),
       capitalizationTolerance: Boolean(settings.capitalizationTolerance ?? tolerance.capitalizationTolerance),
     };
-    const evaluation = evaluateAnswerAccuracy(answerToCheck, target, evalOptions);
+    const graded = gradeLessonAnswer([answerToCheck], [target, ...(exercise.accepted_answers ?? [])], evalOptions, isRetry);
+    const evaluation = graded.result;
+    setAcceptedTarget(graded.target);
 
     if (evaluation.accuracy === "exact") {
       setStatus("correct");
@@ -467,7 +470,7 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
       {showSuccessSheet && (
         <SuccessFeedbackSheet
           onFlagGuessed={!isRetry ? onFlagGuessed : undefined}
-          targetAnswer={target}
+          targetAnswer={acceptedTarget}
           meaning={exercise.meaning}
           explanation={exercise.explanation}
           vocabHints={exercise.vocab_hints}

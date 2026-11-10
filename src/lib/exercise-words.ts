@@ -6,6 +6,7 @@ import type { ExerciseItem } from "./types";
 function germanSurfaces(exercise: ExerciseItem): string[] {
   const surfaces: string[] = [];
   if (exercise.target_answer) surfaces.push(exercise.target_answer);
+  surfaces.push(...(exercise.accepted_answers ?? []));
   if (exercise.german) surfaces.push(exercise.german);
   if (exercise.spoken) surfaces.push(exercise.spoken);
   if (exercise.full_sentence) surfaces.push(exercise.full_sentence);

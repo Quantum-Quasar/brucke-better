@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { evaluateBestOf } from "@/lib/letter-diff";
+import { gradeLessonAnswer } from "@/lib/lesson-grading";
 import { matchingPairForKey } from "@/lib/matching";
 import { diagnoseAttempt } from "@/lib/shift-diagnosis";
 import { useAppStore } from "@/lib/store";
@@ -345,7 +345,7 @@ export const useClassicExercise = ({
       capitalizationTolerance: Boolean(settings.capitalizationTolerance ?? tolerance.capitalizationTolerance),
       languageId: isReverseCognate ? "en" : undefined,
     };
-    const graded = evaluateBestOf([answerToCheck, ...alternateReadings], expected, evalOptions);
+    const graded = gradeLessonAnswer([answerToCheck, ...alternateReadings], [expected], evalOptions, isRetry);
     const evaluation = graded.result;
     answerToCheck = graded.answer;
 
@@ -466,9 +466,8 @@ export const useClassicExercise = ({
       void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
       setFeedbackNote(`"${selectedEnglish}" does not match "${de}". Try again!`);
       setSelectedEnglish(null);
-      // one item, one miss: a 6-pair grid must not burn the mercy prompt or the
-      // purple star on a single slip — report only the first mismatch
-      if (!reportedErrorRef.current) {
+      // Count every reinforcement miss so guided help remains reachable.
+      if (isRetry || !reportedErrorRef.current) {
         reportedErrorRef.current = true;
         onError("spelling");
         onQueueRetry?.();

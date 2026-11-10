@@ -9,7 +9,7 @@ import { ArrowLeft } from "lucide-react";
 import { LessonDetailClient } from "@/components/lesson/LessonDetailClient";
 import { useLesson, useLessonIndex } from "@/lib/content-client";
 import { useCurriculum } from "@/data/curriculum-client";
-import { getNextPlayableLessonIdFrom } from "@/data/curriculum-core";
+import { useCourseRecommendation } from "@/lib/use-course-recommendation";
 import { useAppNavigation } from "@/lib/app-navigation";
 import type { CompendiumData, LessonIndexEntry } from "@/lib/types";
 import type { CurriculumData } from "@/data/curriculum-core";
@@ -106,7 +106,8 @@ interface LessonContentProps {
 function LessonContent({ languageId, lessonId, entries, curriculum }: LessonContentProps) {
   const payload = useLesson(languageId, lessonId);
   const entry = payload.data?.lesson ?? null;
-  const nextLessonId = entry ? getNextPlayableLessonIdFrom(curriculum, entry.id) : null;
+  const { nextLesson: recommended } = useCourseRecommendation(languageId, entry?.id);
+  const nextLessonId = recommended?.id ?? null;
 
 
   const lessonTitle = payload.data?.lesson.title;

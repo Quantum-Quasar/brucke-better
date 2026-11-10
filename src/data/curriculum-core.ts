@@ -1,7 +1,7 @@
 // Pure curriculum shapes and lookups. No language data is imported here, so
 // both the sync server registry and the lazy client loader can share it.
 
-import type { TopicCluster, TrailBranch, TrailGate } from "@/lib/types";
+import type { LessonShell, TopicCluster, TrailBranch, TrailGate } from "@/lib/types";
 
 export interface CurriculumData {
   topics: TopicCluster[];
@@ -33,59 +33,33 @@ export function spineNodeIds(topics: TopicCluster[]): number[] {
   return ids;
 }
 
-/**
- * The spine topic that owns a trail node — core, story, sprig or branch lesson.
- * Sprig ids follow `topicId * 100 + index`; branch lessons belong to the
- * topic their branch attaches to. Returns null for ids outside the trail.
- */
-function owningTopicId(content: CurriculumData, nodeId: number): number | null {
-  for (const topic of content.topics) {
-    if (topic.core.id === nodeId) return topic.id;
-    if ((topic.stories ?? []).some((story) => story.id === nodeId)) return topic.id;
-    if (topic.sprigs.some((sprig) => sprig.id === nodeId)) return topic.id;
-  }
-  for (const branch of content.trailBranches) {
-    if (branch.lessons.some((lesson) => lesson.id === nodeId)) {
-      const attachTopic = content.topics.find((topic) => topic.core.id === branch.attach);
-      return attachTopic ? attachTopic.id : null;
+/** Every map lesson, topic by topic: core, sprigs, support branches, then story. */
+export function orderedTrailLessons(topics: TopicCluster[], branches: TrailBranch[]): LessonShell[] {
+  const lessons: LessonShell[] = [];
+  const includedBranches = new Set<number>();
+  for (const topic of topics) {
+    lessons.push(topic.core, ...topic.sprigs);
+    const owners = new Set([topic.core.id, ...topic.sprigs.map((lesson) => lesson.id)]);
+    for (const branch of branches) {
+      if (!owners.has(branch.attach)) continue;
+      lessons.push(...branch.lessons);
+      includedBranches.add(branch.id);
     }
+    lessons.push(...(topic.stories ?? []));
   }
-  // Unlisted sprig ids still decode arithmetically (index 0 is not a node).
-  const series = Math.floor(nodeId / 100);
-  if (series >= 1 && series <= content.totalTopics && nodeId % 100 !== 0) return series;
-  return null;
+  for (const branch of branches) {
+    if (!includedBranches.has(branch.id)) lessons.push(...branch.lessons);
+  }
+  return lessons;
 }
 
-/**
- * Next authored spine node after the current one (null = caught up). A core or
- * story answers with the next spine node; a sprig or branch answers with the
- * first spine node after its owning core, so a story inserted after that core
- * is recommended before the next core.
- */
+/** Next authored lesson, including side lessons; progress and gates are resolved by the trail. */
 export function getNextPlayableLessonIdFrom(
   content: CurriculumData,
   currentId: number
 ): number | null {
-  const owner = owningTopicId(content, currentId);
-  if (owner === null) return null;
-
-  const spine = spineNodeIds(content.topics);
-  const shells = new Map<number, { authored?: boolean }>();
-  for (const topic of content.topics) {
-    shells.set(topic.core.id, topic.core);
-    for (const story of topic.stories ?? []) shells.set(story.id, story);
-  }
-  const nextAuthored = (from: number): number | null => {
-    for (let i = from; i < spine.length; i++) {
-      if (shells.get(spine[i])?.authored) return spine[i];
-    }
-    return null;
-  };
-
-  const currentIndex = spine.indexOf(currentId);
-  if (currentIndex >= 0) return nextAuthored(currentIndex + 1);
-
-  const ownerIndex = spine.indexOf(owner);
-  if (ownerIndex < 0) return null;
-  return nextAuthored(ownerIndex + 1);
+  const lessons = orderedTrailLessons(content.topics, content.trailBranches);
+  const index = lessons.findIndex((lesson) => lesson.id === currentId);
+  if (index < 0) return null;
+  return lessons.slice(index + 1).find((lesson) => lesson.authored)?.id ?? null;
 }

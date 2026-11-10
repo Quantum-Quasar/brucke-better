@@ -43,3 +43,24 @@ understand, remember, use or keep wanting to learn German?
 - **Typing challenges and ranks** — speed-typing competitions on top of the typing mechanics.
 - **Marketing and outreach** — distribution, not code.
 - **Full UI translation** and a native-speaker pass on non-German courses (human-dependent).
+
+## Settled — do not re-litigate without a learner-facing symptom
+
+These were investigated and deliberately left as they are. The per-finding audit log that
+recorded them has been removed, so the dispositions live here; re-open only with an observed
+learner problem, not with a preference.
+
+- **`word_ids` entries taught in prose with no exercise line** (e.g. `hundert`/`minute` @5122,
+  `zeit`/`morgen`/`garten` @5132, `bad` @5212): removing them would breach the taught-word floor,
+  and adding exercise pairs would breach the 12-pair matching cap. Keep until a learner-facing
+  reason appears.
+- **Desktop browser Back** keeps the documented touch-only history sentinel. A sentinel consumes a
+  history entry even after the overlay closes, so desktop uses Escape/close.
+- **26/179 lessons introduce no new word** (14.5%). Revision lessons intentionally consolidate
+  known German and stay inside the strict 25% bound; unclassified zero-new lessons are still
+  rejected.
+- **Overlay measurements** are already `requestAnimationFrame`-throttled and skip unchanged state.
+- **Etymology precision** — shift-badge nuance, root reconstructions, loan-chain detail, softening
+  a partly-true claim, source citations — is drift: `../NORTH_STAR.md` wins. Cut a shaky
+  connection or replace it with plain German teaching instead of deepening or hedging it.
+- **Matching pairs repeated between a core lesson and its side lesson** are the recap design.

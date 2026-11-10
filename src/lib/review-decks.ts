@@ -32,6 +32,7 @@ export type SessionSize = (typeof SESSION_SIZES)[number];
 
 export type ReviewDeckType =
   | "due"
+  | "learned"
   | "shift"
   | "weakest"
   | "recent"
@@ -55,6 +56,12 @@ export const DECK_CAPABILITIES: Record<ReviewDeckType, DeckCapabilitySpec> = {
   due: {
     id: "due",
     label: "due cards",
+    supportedModes: ALL_REVIEW_MODES,
+    defaultMode: "flashcard",
+  },
+  learned: {
+    id: "learned",
+    label: "learned words",
     supportedModes: ALL_REVIEW_MODES,
     defaultMode: "flashcard",
   },

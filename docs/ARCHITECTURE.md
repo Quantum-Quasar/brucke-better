@@ -89,8 +89,14 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   (retry queue never touched) — never downgraded on replay.
 - **Layout:** topic 1 at the bottom, the learner climbs upward; a serpentine spine,
   responsive width via `ResizeObserver` (no CSS scaling), `content-visibility` windowing
-  per cluster, deterministic decorative glyphs. A recommendation cascade (next core →
-  nearest core/sprig → nearest branch lesson) drives the pulsing selector.
+  per cluster, deterministic decorative glyphs. `use-course-recommendation.ts` drives the
+  selector, next-lesson bar, Review continuation and lesson-summary continuation from one policy.
+- **Recommendation order:** each topic's core, sprigs, attached support branches and stories;
+  every authored lesson participates. Earlier incomplete lessons are recommended before the
+  frontier. Continue ahead increments language-scoped view preferences for those gaps; after
+  three explicit bypasses they stop resurfacing but remain incomplete and manually playable.
+  A progress-reset epoch invalidates those preferences. The bar also opens reached checkpoints.
+  Tab from the unfocused trail targets Start; Enter launches it; ordinary focus navigation remains intact.
 - **Topic ids are welded** into lesson ids, spine edges, gate positions, store progress
   and tests — never renumber or insert before 30 (see `AGENT_PRECAUTIONS.md` §3.1).
 
@@ -105,18 +111,20 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   Method types: transcribe, literal gloss, dictation, family grid, variant English,
   pronoun compression, spoken turn reply). Per-type authoring rules:
   [`AGENT_PRECAUTIONS.md`](./AGENT_PRECAUTIONS.md) §4 and §7.
-- **Three-tier grading** (`src/lib/letter-diff.ts`): `exact`; `almost` (capitalisation,
-  umlaut/digraph substitution such as `ae`/`ss`, missing infinitive ending or article,
-  single-character typo on words ≥ 4 letters, commas ignored) — a pass that queues the
-  item for reinforcement when caused by a typo; `incorrect` with a letter-by-letter diff
-  and shift diagnosis (`src/lib/shift-diagnosis.ts`). Multiple-choice exercises compare
-  the selected option directly with the authored answer, without spelling tolerance.
+- **Grading:** `letter-diff.ts` diagnoses exact, near and incorrect answers;
+  `lesson-grading.ts` applies the learning policy. Missing infinitive endings or articles
+  do not satisfy production. Initial spelling near-misses queue reinforcement; repeated
+  spelling errors cannot drain it. Configured casing/digraph tolerances remain respected.
+  Free-production `accepted_answers` are explicitly authored, with exact alternatives preferred
+  over near matches to the canonical target. Multiple-choice grading remains direct equality.
 - **Retry queue:** missed items replay at the end of Practice and must drain before
   Summary unlocks; touching it forfeits the purple star. Pending exercise IDs and
   the reinforcement position persist with lesson progress, so leaving or reloading
   cannot bypass retries. Retries rotate their surface deterministically
   (`src/lib/retry-variation.ts`); an "I guessed" flag on a correct answer re-grades
   the word as Hard.
+  Matching counts each reinforcement miss so guided re-learning is reachable after two misses.
+  Historical notes, margin notes and linguistic background use closed native disclosures.
 - **Anti-spoilers:** matching columns are cyclically shifted so pairs never align;
   `syntax_builder` banks strip trailing punctuation; review cards hide the gender colour
   behind `[ der / die / das ? ]` until recall.
@@ -140,6 +148,10 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   everything; four styles: flip, MCQ, tile builder, derivation typing).
   Focused buttons and links retain their native Enter and Space activation instead of
   triggering review's reveal or quick-grade shortcuts.
+  `components/review/` separates the session controller, deck selection, answer entry,
+  session card and style dialog. Beginner actions precede a closed advanced-options disclosure.
+  The learned-word deck is independent of the advanced scope filter. Tiles and typing use
+  the same grading policy: exact Good, spelling near-miss Hard with feedback, grammar omission Again.
 
 ## 7. Personalisation, audio, settings
 
@@ -165,6 +177,9 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   entries plus the offline fallback. Installation fetches only the fallback,
   manifest and icons—not lessons. Open segments and exercises online before
   relying on them offline; unopened or evicted content still needs a connection.
+  Activation retains the previous build for offline navigation and exact asset URLs; older caches
+  are pruned on activation only when no tabs may need them. Cached navigation also survives
+  transient HTTP 5xx failures without masking legitimate 404 responses.
   Native pronunciation depends on installed device voices.
 
 ## 8. Storage and safety
@@ -174,6 +189,8 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   avoid HTTP 431. Each language keeps its own progress slice and SRS queue.
 - Backup import allow-lists review modes and drops `__proto__`/`constructor`/`prototype`
   keys (`src/tests/store-security.test.ts`).
+  Imports reject wrong-type carried progress fields before mutation and restore SRS snapshots
+  without retaining unrelated current cards or borrowing another course's active cards.
 - `evaluateAnswerAccuracy` (`src/lib/letter-diff.ts`) rejects inputs over 200 characters
   before any diff, preventing quadratic CPU lockups on pasted text.
 - `src/lib/store.ts` only composes Zustand slices. `store/` owns settings,

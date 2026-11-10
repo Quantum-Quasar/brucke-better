@@ -25,6 +25,8 @@ export type SubView =
 export interface TrailPosition {
   nodeId: number | null;
   gateId: number | null;
+  bypasses?: Record<number, number>;
+  recommendationResetAt?: number;
 }
 
 export interface MasterPosition {
@@ -126,6 +128,15 @@ export function parseStoredView(raw: string | null): PersistedViewState {
         nodeId: finiteInt(value.nodeId),
         gateId: finiteInt(value.gateId),
       };
+      if (isRecord(value.bypasses)) {
+        const bypasses: Record<number, number> = {};
+        for (const [id, count] of Object.entries(value.bypasses)) {
+          if (!/^[1-9]\d*$/.test(id) || finiteInt(count) === null) continue;
+          bypasses[Number(id)] = Math.min(3, count as number);
+        }
+        next.trailByLanguage[languageId].bypasses = bypasses;
+        next.trailByLanguage[languageId].recommendationResetAt = finiteInt(value.recommendationResetAt) ?? 0;
+      }
     }
   }
 
@@ -254,6 +265,8 @@ export const useViewStore = create<ViewStoreState>((set, get) => ({
         trailByLanguage: {
           ...state.trailByLanguage,
           [languageId]: {
+            ...current,
+            ...patch,
             nodeId: patch.nodeId !== undefined ? patch.nodeId : current.nodeId,
             gateId: patch.gateId !== undefined ? patch.gateId : current.gateId,
           },

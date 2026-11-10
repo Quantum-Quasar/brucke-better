@@ -16,13 +16,13 @@ import { isPlausibleStateObject, isDangerousKey, normalizeSettings, normalizeThe
 function isCorruptProgressField(field: string, value: unknown): boolean {
   switch (field) {
     case "completedLessons":
-      return Array.isArray(value) && value.length > 0 && normalizeLessonIdList(value, true).length === 0;
+      return !Array.isArray(value) || (value.length > 0 && normalizeLessonIdList(value, true).length === 0);
     case "passedGateIds":
-      return Array.isArray(value) && value.length > 0 && normalizeLessonIdList(value).length === 0;
+      return !Array.isArray(value) || (value.length > 0 && normalizeLessonIdList(value).length === 0);
     case "lessonProgress":
     case "lessonStars":
     case "wordMastery": {
-      if (!isPlausibleStateObject(value)) return false;
+      if (!isPlausibleStateObject(value)) return true;
       const meaningful = Object.keys(value).filter((key) => !isDangerousKey(key)).length;
       const normalized =
         field === "lessonProgress" ? normalizeLessonProgress(value)
@@ -41,7 +41,7 @@ function isCorruptProgressField(field: string, value: unknown): boolean {
         const meaningful = Object.keys(value).filter((key) => !isDangerousKey(key)).length;
         return meaningful > 0 && Object.keys(importSrsCards(value, {})).length === 0;
       }
-      return false;
+      return true;
     }
     default:
       return false;
@@ -197,7 +197,7 @@ export const createBackupSlice: StoreSlice<"resetProgress" | "importBackupState"
         topLevelPatch.wordMastery = normalizeWordMastery(payload.wordMastery);
       }
       if (Array.isArray(payload.srsCards) || isPlausibleStateObject(payload.srsCards)) {
-        topLevelPatch.srsCards = importSrsCards(payload.srsCards, s.srsCards);
+        topLevelPatch.srsCards = importSrsCards(payload.srsCards, {});
       }
       if (Array.isArray(payload.weeklyActivity)) {
         const week = normalizeWeeklyActivity(payload.weeklyActivity);

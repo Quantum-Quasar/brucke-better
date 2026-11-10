@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useMemo } from "react";
+import React from "react";
 import { ArrowLeft, MapPin, Eye } from "lucide-react";
 import { LessonReader } from "@/components/lesson/LessonReader";
-import { useAppStore } from "@/lib/store";
-import { getTrailState } from "@/lib/trail-map";
+import { useCourseRecommendation } from "@/lib/use-course-recommendation";
 import { useAppNavigation } from "@/lib/app-navigation";
 import type {
   CompendiumData,
@@ -45,21 +44,9 @@ export function LessonDetailClient({
   nextLesson,
   nextLessonId,
 }: LessonDetailClientProps) {
-  const completedLessons = useAppStore((s) => s.completedLessons);
-  const lessonStars = useAppStore((s) => s.lessonStars);
-  const passedGateIds = useAppStore((s) => s.passedGateIds);
   const { openLesson, closeLesson } = useAppNavigation();
 
-  const trailState = useMemo(
-    () =>
-      getTrailState(completedLessons, lessonStars, undefined, {
-        topics: curriculum.topics,
-        branches: curriculum.trailBranches,
-        gates: curriculum.trailGates,
-        totalTopics: curriculum.totalTopics,
-      }, passedGateIds),
-    [completedLessons, lessonStars, curriculum, passedGateIds]
-  );
+  const { state: trailState } = useCourseRecommendation(languageId);
 
   if (!lesson) {
     return (

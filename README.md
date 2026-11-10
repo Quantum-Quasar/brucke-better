@@ -24,7 +24,7 @@ Rather than relying on rote memorization or gamified streaks without substance, 
 - **Styling**: Tailwind CSS v4 (native CSS tokens, dark mode default)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) 5 (dual `localStorage` + size-guarded cookie persistence)
 - **Icons**: Lucide React
-- **Testing**: Vitest / `bun run test` (48 test files, 481 automated tests)
+- **Testing**: Vitest / `bun run test` (49 test files, 494 automated tests)
 - **Audio Engine**: Zero-dependency browser-native Web Speech API (`window.speechSynthesis`) + a Web Audio sample engine that plays bundled `.wav` packs. Pronunciation prefers an exact locale voice, then another voice for the same language.
 
 ---
@@ -47,7 +47,7 @@ bun run parse-data
 
 ### Run Automated Tests
 
-Executes the full Vitest suite — 48 test files, 481 automated tests:
+Executes the full Vitest suite — 49 test files, 494 automated tests:
 
 ```bash
 bun run test
@@ -81,13 +81,16 @@ Visit `http://localhost:3000` in your browser.
 1. **The Trail Map (`/` — the homepage)**:
    - Baba Is You-style node map: 30 topic clusters on one linear spine, with skip-able extra-practice nodes ("sprigs") and support-material branches hanging off each cluster.
    - All adjacent nodes unlock at once when a node is completed; the spine itself stays strictly ordered.
-   - Read the map top-to-bottom from topic 1; the pulsing theme-colored selector marks your recommended node.
+   - Topic 1 starts at the bottom; the learner climbs upward. The pulsing selector and minimalist next-lesson bar share the same recommendation.
    - The entire curriculum is authored: 30 cores + 79 sprigs + 65 branch lessons + 5 required reading stories = **179 lessons** (`src/data/curriculum.ts`, `src/data/lessons.ts`). The required spine is 35 lessons.
+   - Recommendations cover every authored lesson in topic order: core, sprigs, attached support branches, then story. Missed lessons come first; **Continue ahead** bypasses them without awarding completion. After three explicit bypasses, those lessons stop resurfacing automatically but remain on the map. Preferences stay language-scoped and reset with a progress reset.
+   - From the unfocused trail, **Tab** focuses the bar and **Enter** starts the recommendation; subsequent Tab presses retain normal navigation. Existing star/checkpoint gates are unchanged.
    - Custom DOM+SVG renderer (no game libraries) with `content-visibility` windowing per topic cluster, sized for hundreds of future lessons.
    - Trail gates require the stretch's stars and a passed checkpoint test based on its required spine lessons.
    - 5-part card-by-card lesson wizard (Hook, Pattern, Transformation Table, Bite-Sized Practice, Summary & Retries) in the in-page lesson reader.
+   - Lesson 1 starts with familiar German words and a verb to build; historical and linguistic background is optional, collapsed disclosure content.
    - Scaffolded exercises (morpheme tiles, matching pairs, shift select, syntax builder, derivation typing, reverse-cognate typing; the full list is `ExerciseType` in `src/lib/types.ts`).
-   - **Production drills** (`transcribe`): a thought and a lexicon in, German out - with a scaled cue ladder that reveals on demand or on failure, and an optional "break the thought up" step before the builder.
+   - **Production drills** (`transcribe`): a thought and a lexicon in, German out, with a scaled cue ladder and optional thought breakdown. Authored `accepted_answers` allow valid complete alternatives without guessing which word orders are grammatical.
    - **Direct translations** (`literal_gloss`): pick the English that is built the German way.
    - **Listening drills** (`dictation`): the sentence is played, not written - capped replays, and a one-tap "I can't listen right now" that silences every dictation for 15 minutes and degrades it to an ordinary on-page exercise.
    - **Family grids** (`family_matrix`): a prefix x base matrix - one cell is graded, the whole family is revealed.
@@ -95,7 +98,7 @@ Visit `http://localhost:3000` in your browser.
    - **Trap notes**: the over-simplification your mind will offer, named before you offer it.
    - **Foreshadow / payoff**: a reference left deliberately open, resolved by a later lesson.
    - Pre-exercise vocabulary hints (`vocab_hints`) for auxiliary words (e.g., `mit`).
-   - End-of-lesson Retry Queue ensuring mastery before progression; a flawless first-try run earns a **purple star** (gold otherwise).
+   - End-of-lesson Retry Queue: grammatical omissions do not pass, and a repeated spelling error cannot clear reinforcement. Correct it or use the guided re-learn; a flawless first-try run earns a **purple star** (gold otherwise).
    - **Rotating retry surfaces** - the same missed thought, freshly arranged. "Don't remember where the answer was - work it out again."
    - **"I guessed"** on a *correct* answer: honest uncertainty re-grades the word as Hard and brings it back sooner.
    - **30-second detour**: an ungraded, skippable tangent at the lesson's mid-point - the load-reset trough.
@@ -113,9 +116,10 @@ Visit `http://localhost:3000` in your browser.
 
 4. **Multi-Modal Review Hub (`/review`)**:
    - Algorithmic spaced repetition powered by SuperMemo SM-2.
-   - Decks include *Due Today*, *By Shift Family*, *By Domain*, *Weakest Words*, *Recent Lessons*, *Compounds & Traps*, *Sentence Patterns*, *Article & Gender Drill*, and *Everything*.
+   - Start with **Continue lesson**, **Review learned words**, or **Practise difficult words**. Due reviews stay prominent; **More practice options** opens family/domain filters, recent lessons, compounds/traps, sentence patterns, article drills and everything.
    - The article drill covers the usual singular definite article for gendered nouns in German, Dutch, French and Spanish; a fixed-width blank marks the missing article. It does not practise cases or articles in sentence context.
    - 4 selectable review styles: *Quick Flip*, *Multiple Choice (MCQ)*, *Tile Builder*, and *Derivation Typing*.
+   - Typing and tile modes use the same acceptance policy: exact answers suggest Good, spelling near-misses suggest Hard with corrective feedback, and grammatical omissions suggest Again.
    - Anti-spoiler gender shields: Front card prompts with `[ der / die / das ? ]` instead of leaking the article before recall.
    - Desktop keyboard navigation (`1`–`4`, `Space`, `Enter`, `Backspace`, `←`/`→` back and forward between cards, `[R]` audio replay, `Esc`).
 
@@ -147,6 +151,7 @@ src/
 │   ├── atlas/            # Radial constellation and drill components
 │   ├── common/           # GenderBadge, ShiftPair, WordCardDrawer, GermanCharBar, Onboarding, AppShell
 │   ├── lesson/           # LessonView/LessonReader, exercise widgets, retry queue, feedback sheets
+│   ├── review/           # Review controller, deck selector, session card, answer entry and style dialog
 │   ├── navigation/       # Game-style bottom dock (all destinations), slim TopNav
 │   └── trail/            # TrailMap (incl. star-gate pills), LessonNodeDrawer (the homepage map)
 ├── data/
@@ -168,7 +173,7 @@ src/
 │   ├── store.ts, store/  # composed Zustand slices, validation and persistence
 │   ├── trail-map.ts      # Map graph, responsive layout engine, unlock/recommend logic
 │   └── types.ts          # Core domain TypeScript interfaces
-└── tests/                # 48 test files (Vitest)
+└── tests/                # 49 test files (Vitest)
 ```
 
 ---

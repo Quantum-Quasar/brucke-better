@@ -9,8 +9,7 @@ import {
   applyTheme as applyRuntimeTheme,
   THEME_VARS_CACHE_KEY,
 } from "@/lib/theme-runtime";
-import { TOPICS, TRAIL_BRANCHES, getNextPlayableLessonId } from "@/data/curriculum";
-import { spineNodeIds } from "@/data/curriculum-core";
+import { TOPICS, TRAIL_BRANCHES } from "@/data/curriculum";
 import { getGenderInfo } from "@/lib/gender";
 import { LESSONS } from "@/data/lessons";
 import { DEFAULT_SETTINGS } from "@/data/settings";
@@ -182,19 +181,13 @@ describe("Theme Architecture & Contrast Verification", () => {
     expect(dasInfo?.badgeClass).toContain("text-emerald-700");
   });
 
-  it("verifies authored lesson count and spine advancement", () => {
+  it("provides content for every authored map shell", () => {
     // every authored shell on the map must have a full Lesson behind it
     const authoredShells = [
       ...TOPICS.flatMap((t) => [t.core, ...(t.stories ?? []), ...t.sprigs]),
       ...TRAIL_BRANCHES.flatMap((b) => b.lessons),
     ].filter((s) => s.authored).length;
     expect(LESSONS.length).toBe(authoredShells);
-    const spine = spineNodeIds(TOPICS);
-    for (let i = 0; i < spine.length - 1; i++) {
-      expect(getNextPlayableLessonId(spine[i])).toBe(spine[i + 1]);
-    }
-    // past the final story there is no next stop
-    expect(getNextPlayableLessonId(spine[spine.length - 1])).toBeNull();
   });
 
   it("sets alduin as the default theme and keeps the pre-paint CSS fallback identical", () => {

@@ -413,6 +413,7 @@ const RESOLVED: Record<string, string> = {
   kannst: "können", kann: "können", willst: "wollen", hast: "haben", hilft: "helfen",
   hilf: "helfen", gefunden: "finden", fand: "finden", gegessen: "essen", stehe: "aufstehen",
   steht: "aufstehen", genommen: "nehmen", gibst: "geben", kaufe: "einkaufen",
+  wachen: "aufwachen",
 };
 const stemOf = (id: string) => (id.length > 4 && id.endsWith("en") ? id.slice(0, -2) : id);
 const stems = new Map<string, string[]>();
@@ -474,7 +475,7 @@ function surfaces(lesson: (typeof LESSONS)[number]): Array<{ where: string; text
     else if (ex.type === "shift_select") out.push({ where: w, text: [...(ex.options ?? []), ex.target_answer].join(" ") });
     else if (ex.type === "derive" || ex.type === "reverse_cognate") out.push({ where: w, text: ex.target_answer });
     else if (ex.type === "syntax_builder") out.push({ where: w, text: [...(ex.word_bank ?? []), ex.target_answer].join(" ") });
-    else if (ex.type === "transcribe") out.push({ where: w, text: [ex.target_answer, ...(ex.word_bank ?? [])].join(" ") });
+    else if (ex.type === "transcribe") out.push({ where: w, text: [ex.target_answer, ...(ex.accepted_answers ?? []), ...(ex.word_bank ?? [])].join(" ") });
     else if (ex.type === "literal_gloss") out.push({ where: w, text: [ex.german ?? "", ex.target_answer].join(" ") });
     else if (ex.type === "family_matrix")
       out.push({ where: w, text: (ex.cells ?? []).flat().map((c) => c.german).join(" ") });

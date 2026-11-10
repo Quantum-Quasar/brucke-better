@@ -1,16 +1,17 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, BookOpen, Check, Clock, GitBranch, Lock, Star } from "lucide-react";
+import { BookOpen, Check, Clock, GitBranch, Lock, Star } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { useViewStore, EMPTY_TRAIL_POSITION } from "@/lib/view-store";
 import { hasSavedPosition, hasVisited } from "@/lib/scroll-memory";
 import { useAppNavigation } from "@/lib/app-navigation";
-import { buildTrailEdgePairs, buildTrailLayout, getTrailState, GERMAN_TRAIL_DATA, type TrailData, type TrailNode, type NodeStatus, type GateView } from "@/lib/trail-map";
+import { buildTrailEdgePairs, buildTrailLayout, type TrailNode, type NodeStatus, type GateView } from "@/lib/trail-map";
 import { getLanguageDefinition } from "@/data/languages";
-import { useCurriculum } from "@/data/curriculum-client";
-import { prefetchLesson } from "@/lib/content-client";
+import { useCourseRecommendation } from "@/lib/use-course-recommendation";
+import { NextLessonBar } from "./NextLessonBar";
 import { LessonNodeDrawer, GateDrawer } from "./LessonNodeDrawer";
+import { prefetchLesson } from "@/lib/content-client";
 
 const GOLD_STAR = "#eab308";
 const PURPLE_STAR = "#a78bfa";
@@ -56,25 +57,12 @@ const groupNodesByTopic = (
 export const TrailMap: React.FC = () => {
   const { openLesson } = useAppNavigation();
   const completedLessons = useAppStore((s) => s.completedLessons);
-  const lessonStars = useAppStore((s) => s.lessonStars);
-  const passedGateIds = useAppStore((s) => s.passedGateIds);
   const passGate = useAppStore((s) => s.passGate);
   const lessonProgress = useAppStore((s) => s.lessonProgress);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const storeHydrated = useAppStore((s) => s.storeHydrated);
 
-  // the trail graph is language-scoped: German data by default, the French
-  // bundle when French is active (see lib/trail-map.ts TrailData)
-  const { curriculum } = useCurriculum(activeLanguageId);
-  const trailData: TrailData = useMemo(() => {
-    if (curriculum.topics.length === 0) return GERMAN_TRAIL_DATA;
-    return {
-      topics: curriculum.topics,
-      branches: curriculum.trailBranches,
-      gates: curriculum.trailGates,
-      totalTopics: curriculum.totalTopics,
-    };
-  }, [curriculum]);
+  const { state, trailData } = useCourseRecommendation(activeLanguageId);
   const edgePairs = useMemo(() => buildTrailEdgePairs(trailData), [trailData]);
 
   const wrapRef = useRef<HTMLDivElement | null>(null);
@@ -99,10 +87,6 @@ export const TrailMap: React.FC = () => {
 
   const decoChars = getLanguageDefinition(activeLanguageId).decoChars;
   const layout = useMemo(() => buildTrailLayout(width, trailData, decoChars), [width, trailData, decoChars]);
-  const state = useMemo(
-    () => getTrailState(completedLessons, lessonStars, layout.nodes, trailData, passedGateIds),
-    [completedLessons, lessonStars, layout, trailData, passedGateIds]
-  );
   const nodeById = useMemo(() => new Map(layout.nodes.map((n) => [n.id, n])), [layout]);
   const groups = useMemo(() => groupNodesByTopic(layout.nodes, layout.topicAnchors), [layout]);
 
@@ -196,21 +180,10 @@ export const TrailMap: React.FC = () => {
     [nodeById]
   );
 
-  const upNextLabel = recommended
-    ? recommended.kind === "core"
-      ? `Topic ${recommended.topicId}`
-      : recommended.kind === "story"
-      ? `Story ${recommended.label ?? ""}`
-      : recommended.kind === "sprig"
-      ? `Extra lesson · Topic ${recommended.topicId}`
-      : `Support branch · Topic ${recommended.topicId}`
-    : "Trail complete";
-  const recommendedProgress = recommended ? lessonProgress[recommended.id] : undefined;
-  const hasAnyProgress =
-    completedLessons.length > 0 || Object.keys(lessonProgress).length > 0;
 
   return (
     <div ref={wrapRef} className="relative w-full">
+      <NextLessonBar />
       {/* Map legend — the next step is the fixed resume control below */}
       <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] font-mono text-[var(--sub-color)]">
         <span className="inline-flex items-center gap-1.5">
@@ -399,27 +372,6 @@ export const TrailMap: React.FC = () => {
       </div>
       </div>
 
-      {recommended && (
-        <div className="fixed bottom-[calc(5.25rem+env(safe-area-inset-bottom))] left-[max(0.75rem,env(safe-area-inset-left))] z-30 xl:bottom-6 xl:left-4">
-          <button
-            type="button"
-            onClick={() => openLesson(activeLanguageId, recommended.id)}
-            onPointerEnter={() => prefetchLesson(activeLanguageId, recommended.id)}
-            onFocus={() => prefetchLesson(activeLanguageId, recommended.id)}
-            className="inline-flex min-h-11 items-center gap-2 rounded-full border border-[var(--sub-color)]/30 bg-[var(--bg-color)]/95 px-3.5 py-2 font-mono text-xs shadow-lg shadow-black/10 backdrop-blur transition hover:border-[var(--main-color)] cursor-pointer"
-            aria-label={`${
-              recommendedProgress ? "Resume" : hasAnyProgress ? "Continue" : "Start"
-            } ${upNextLabel}: ${recommended.title}`}
-            title={`${upNextLabel} — ${recommended.title}`}
-          >
-            <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--main-color)]">
-              {recommendedProgress ? "resume" : hasAnyProgress ? "continue" : "start"}
-            </span>
-            <span className="truncate font-semibold text-[var(--text-color)]">{upNextLabel}</span>
-            <ArrowRight className="h-3.5 w-3.5 shrink-0 text-[var(--main-color)]" />
-          </button>
-        </div>
-      )}
 
       {selected && (
         <LessonNodeDrawer

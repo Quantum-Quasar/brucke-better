@@ -22,6 +22,11 @@ app works. Run this with 5 people who have not seen Brücke.
 5. **Share/resume:** Send them a lesson URL (including a non-German one), then ask
    what language/course they think they are in.
 6. **Mobile pass:** Repeat tasks 1–3 at 390×844.
+7. **Unaided recall:** After a short unrelated task, ask them to say or write the
+   lesson's German sentence without tiles or hints. Repeat the next day.
+8. **Skipped lessons:** With an earlier gap present, ask them to resume it, then
+   choose Continue ahead. Check whether the three-bypass reminder policy feels
+   understandable rather than punitive. Skipped lessons must remain incomplete.
 
 ## What to record
 
@@ -29,6 +34,8 @@ app works. Run this with 5 people who have not seen Brücke.
 - Every point where they say “what do I do?” or click a dead end.
 - Whether they notice the language of the lesson and the language of the UI.
 - Whether they return voluntarily the next day.
+- What they can produce without tiles immediately and the following day.
+- Whether the next-lesson bar, Tab → Enter, and optional background are discoverable.
 - One quote that explains their mental model of the product.
 
 ## What not to do

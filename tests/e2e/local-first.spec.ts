@@ -15,14 +15,14 @@ test("loads only the opened lesson and resumes visited practice after an offline
   await page.evaluate(async () => { await navigator.serviceWorker.ready; });
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
   await page.getByRole("link", { name: "Start topic 1", exact: true }).click();
-  await page.getByRole("button", { name: /next: pattern.*enter/i }).click();
-  await page.getByRole("button", { name: /next: transformation table.*enter/i }).click();
-  await page.getByRole("button", { name: /Start Exercises.*problems.*Enter/i }).click();
-  await page.getByRole("button", { name: /^\d+ lern$/ }).click();
-  await page.getByRole("button", { name: /^\d+ en$/ }).click();
-  await page.getByRole("button", { name: /verify.*enter/i }).click();
-  await expect(page.getByText("correct", { exact: true })).toBeVisible();
-  await page.getByRole("button", { name: /continue.*enter/i }).click();
+  await page.getByRole("button", { name: /^next: pattern/i }).click();
+  await page.getByRole("button", { name: /^next: transformation table/i }).click();
+  await page.getByRole("button", { name: /^start exercises/i }).click();
+  await page.getByRole("button", { name: /^(?:\d+\s+)?lern$/ }).click();
+  await page.getByRole("button", { name: /^(?:\d+\s+)?en$/ }).click();
+  await page.getByRole("button", { name: /^verify/i }).click();
+  await expect(page.getByRole("heading", { name: "correct", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: /^continue/i }).click();
   await expect(page.getByText(/problem 2 of 5/i)).toBeVisible();
   expect([...new Set(lessons)]).toEqual(["/data/de/lessons/1.json"]);
 
@@ -33,7 +33,7 @@ test("loads only the opened lesson and resumes visited practice after an offline
   });
   await context.setOffline(true);
   await page.reload();
-  await page.getByRole("button", { name: "Resume Topic 1: The Germanic Core", exact: true }).click();
+  await page.getByRole("button", { name: "Resume next recommended lesson: The Germanic Core", exact: true }).click();
   await expect(page.getByText(/problem 2 of 5/i)).toBeVisible();
   await expect(page.getByText(/Offline — cached pages/)).toBeVisible();
   await context.setOffline(false);

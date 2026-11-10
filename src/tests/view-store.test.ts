@@ -4,7 +4,6 @@ import { getAtlasFamily, getFamilyOwnerLanguageIds, UNSHIFTED_FAMILY_ID } from "
 import { compendium } from "@/data/compendium";
 import { getNextPlayableLessonIdFrom } from "@/data/curriculum-core";
 import { GERMAN_CURRICULUM } from "@/data/curriculum";
-import { getNextPlayableLessonIdFor } from "@/data/curriculum-registry";
 
 describe("persisted view state", () => {
   it("returns empty maps for missing or malformed storage", () => {
@@ -63,6 +62,18 @@ describe("persisted view state", () => {
     expect(Object.keys(parsed.rosterByFamily)).toEqual(["safe"]);
     expect(({} as Record<string, unknown>).polluted).toBeUndefined();
   });
+
+  it("keeps valid per-language bypass counts and rejects malformed entries", () => {
+    const parsed = parseStoredView(JSON.stringify({
+      trailByLanguage: {
+        de: { nodeId: null, gateId: null, bypasses: { 101: 99, 102: -1, 103: 1.5, constructor: 3 }, recommendationResetAt: 42 },
+        fr: { nodeId: null, gateId: null, bypasses: { 101: 1 }, recommendationResetAt: 7 },
+      },
+    }));
+    expect(parsed.trailByLanguage.de.bypasses).toEqual({ 101: 3 });
+    expect(parsed.trailByLanguage.de.recommendationResetAt).toBe(42);
+    expect(parsed.trailByLanguage.fr.bypasses).toEqual({ 101: 1 });
+  });
 });
 
 describe("atlas family ownership", () => {
@@ -89,12 +100,6 @@ describe("atlas family ownership", () => {
 });
 
 describe("next playable lesson", () => {
-  it("matches the synchronous registry for the default course", () => {
-    expect(getNextPlayableLessonIdFrom(GERMAN_CURRICULUM, 1)).toBe(
-      getNextPlayableLessonIdFor("de", 1)
-    );
-    expect(getNextPlayableLessonIdFrom(GERMAN_CURRICULUM, 1)).not.toBeNull();
-  });
 
   it("returns null outside the trail", () => {
     expect(getNextPlayableLessonIdFrom(GERMAN_CURRICULUM, 999999)).toBeNull();

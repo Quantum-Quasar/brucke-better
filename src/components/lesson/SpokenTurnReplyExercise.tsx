@@ -20,7 +20,7 @@ import { VoiceStatusBanner } from "@/components/common/VoiceStatusBanner";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
 import { arrangeTilesDeterministically } from "./exercise-tiles";
-import { evaluateAnswerAccuracy } from "@/lib/letter-diff";
+import { gradeLessonAnswer } from "@/lib/lesson-grading";
 import { diagnoseAttempt, affirmationFor } from "@/lib/shift-diagnosis";
 import { DIAGNOSIS_BY_LANGUAGE, GERMAN_DIAGNOSIS } from "@/data/shift-diagnosis-table";
 import { getLanguageDefinition } from "@/data/languages";
@@ -165,7 +165,7 @@ export const SpokenTurnReplyExercise: React.FC<SpokenTurnReplyExerciseProps> = (
         settings.capitalizationTolerance ?? tolerance.capitalizationTolerance
       ),
     };
-    const evaluation = evaluateAnswerAccuracy(answerToCheck, target, evalOptions);
+    const { result: evaluation } = gradeLessonAnswer([answerToCheck], [target], evalOptions, isRetry);
 
     if (evaluation.accuracy === "exact") {
       setStatus("correct");

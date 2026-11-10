@@ -316,6 +316,8 @@ export interface ExerciseItem {
   supportedModes?: ReviewMode[];
   // --- transcribe (TM-1): the thought the learner must render into German ---
   idea?: string;
+  /** Authored alternative complete sentences for free-production transcribe drills. */
+  accepted_answers?: string[];
   cues?: string[]; // 1–3 scaled prompts, ordered easy→late, revealed on demand or on failure
   // --- TM-6: break the thought up before German orders it (guidebook §0.3) ---
   /** The elements of the thought, one per line. Taught skill, not decoration. */

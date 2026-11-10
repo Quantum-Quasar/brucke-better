@@ -211,6 +211,7 @@ export const useLessonSession = ({
         active instanceof HTMLButtonElement ||
         active instanceof HTMLAnchorElement ||
         active instanceof HTMLSelectElement ||
+        active?.tagName === "SUMMARY" ||
         active?.getAttribute("role") === "button" ||
         active?.getAttribute("role") === "link";
       if (isInteractive && isActivationKey) return;

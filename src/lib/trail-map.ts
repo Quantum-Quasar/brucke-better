@@ -1,6 +1,6 @@
 import { TOPICS, TRAIL_BRANCHES, TRAIL_GATES, TOTAL_TOPICS } from "@/data/curriculum";
-import { spineNodeIds } from "@/data/curriculum-core";
-import type { LessonStar, TopicCluster, TrailBranch, TrailGate } from "./types";
+import { orderedTrailLessons, spineNodeIds } from "@/data/curriculum-core";
+import type { LessonProgress, LessonStar, TopicCluster, TrailBranch, TrailGate } from "./types";
 
 // ---------------------------------------------------------------------------
 // Baba-style trail map engine — pure, deterministic, testable.
@@ -401,6 +401,8 @@ export interface TrailState {
   /** edge is lit when it touches completed territory or opens available ground */
   litEdges: Set<string>;
   recommendedId: number | null;
+  forwardId: number | null;
+  missedIds: number[];
   gates: Map<number, GateView>;
 }
 
@@ -415,7 +417,11 @@ export function getTrailState(
   stars: Record<number, LessonStar> = {},
   nodes?: Array<Pick<TrailNode, "id" | "kind" | "topicId">>,
   data: TrailData = GERMAN_TRAIL_DATA,
-  passedGateIds: number[] = []
+  passedGateIds: number[] = [],
+  recommendation: {
+    lessonProgress?: Record<number, LessonProgress>;
+    bypasses?: Record<number, number>;
+  } = {}
 ): TrailState {
   const completedSet = new Set(completed);
   const view = new Map<number, NodeView>();
@@ -505,48 +511,24 @@ export function getTrailState(
     }
   }
 
-  // recommendation: keep the learner on the required spine (cores + stories),
-  // then fall back to the hollow frontier, sprigs, and branches.
-  const isAvailable = (id: number) => view.get(id)?.status === "available";
-  const shells = new Map<number, { authored?: boolean }>();
-  for (const topic of data.topics) {
-    shells.set(topic.core.id, topic.core);
-    for (const story of topic.stories ?? []) shells.set(story.id, story);
-  }
-  let recommendedId: number | null = null;
-  for (const id of spineNodeIds(data.topics)) {
-    if (shells.get(id)?.authored && isAvailable(id)) {
-      recommendedId = id;
-      break;
-    }
-  }
-  if (recommendedId === null) {
-    outer: for (const topic of [...data.topics].reverse()) {
-      if (isAvailable(topic.core.id)) {
-        recommendedId = topic.core.id;
-        break;
-      }
-      for (const sprig of [...topic.sprigs].reverse()) {
-        if (isAvailable(sprig.id)) {
-          recommendedId = sprig.id;
-          break outer;
-        }
-      }
-    }
-  }
-  if (recommendedId === null) {
-    for (const branch of [...data.branches].reverse()) {
-      for (const lesson of [...branch.lessons].reverse()) {
-        if (isAvailable(lesson.id)) {
-          recommendedId = lesson.id;
-          break;
-        }
-      }
-      if (recommendedId !== null) break;
-    }
-  }
+  const ordered = orderedTrailLessons(data.topics, data.branches).filter((lesson) => lesson.authored);
+  const started = recommendation.lessonProgress ?? {};
+  const bypasses = recommendation.bypasses ?? {};
+  let frontier = 0;
+  ordered.forEach((lesson, index) => {
+    if (completedSet.has(lesson.id)) frontier = Math.max(frontier, index + 1);
+    else if (started[lesson.id]) frontier = Math.max(frontier, index);
+  });
+  const available = ordered.filter((lesson) => view.get(lesson.id)?.status === "available");
+  const missedIds = ordered.slice(0, frontier)
+    .filter((lesson) => view.get(lesson.id)?.status === "available" && (bypasses[lesson.id] ?? 0) < 3)
+    .map((lesson) => lesson.id);
+  const forwardId = ordered.slice(frontier)
+    .find((lesson) => view.get(lesson.id)?.status === "available")?.id ?? null;
+  const recommendedId = missedIds[0] ??
+    available.find((lesson) => (bypasses[lesson.id] ?? 0) < 3)?.id ?? null;
 
-  return { nodes: view, litEdges, recommendedId, gates: gateViews };
+  return { nodes: view, litEdges, recommendedId, forwardId, missedIds, gates: gateViews };
 }
 
 /** topic range each gate closes: (previous gate's afterTopic, gate.afterTopic] */
@@ -555,12 +537,6 @@ const gateRegion = (gates: TrailGate[], index: number): { fromTopic: number; toT
   toTopic: gates[index].afterTopic,
 });
 
-/** Order used for the recommendation fallback and list views: core, stories, sprigs, then branches. */
-export const trailNodeOrder = (data: TrailData = GERMAN_TRAIL_DATA): number[] => [
-  ...data.topics.flatMap((t) => [
-    t.core.id,
-    ...(t.stories ?? []).map((s) => s.id),
-    ...t.sprigs.map((s) => s.id),
-  ]),
-  ...data.branches.flatMap((b) => b.lessons.map((l) => l.id)),
-];
+/** The same full-course order used by recommendations and lesson continuation. */
+export const trailNodeOrder = (data: TrailData = GERMAN_TRAIL_DATA): number[] =>
+  orderedTrailLessons(data.topics, data.branches).map((lesson) => lesson.id);

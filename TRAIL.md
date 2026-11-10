@@ -14,7 +14,9 @@
 
 *Hundreds of German words you already know without realizing it*
 
-**You Don't Start from Zero** — English and German are sibling languages born from the same ancestral tribe in northern Europe. Before Latin, French, and the Norman Conquest reshaped English, English and German were virtually…
+**You Don't Start from Zero** — You already know a little German: Hand means "hand," and Finger means "finger." Say them aloud.
+
+Now try lernen — "to learn." Build it from lern + en, then use it in a sentence. The familiar words…
 
 > 🔭 **Next:** the Hidden Twins — Arm, Hand, Finger, Haus, Brot: the zero-shift words you already own, waiting to be recognized.
 

@@ -34,8 +34,24 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
-    for (const key of await caches.keys()) {
-      if (key.startsWith(prefix) && key !== cacheName) await caches.delete(key);
+    const previous = (await caches.keys()).filter((key) => key.startsWith(prefix) && key !== cacheName);
+    // Keep the last usable build; open tabs may still need even older chunks.
+    const clients = await self.clients.matchAll({ includeUncontrolled: true });
+    if (clients.length === 0) {
+      let usable;
+      for (const key of [...previous].reverse()) {
+        const requests = await (await caches.open(key)).keys();
+        if (requests.some((request) => {
+          const url = new URL(request.url);
+          return routes.has(url.pathname) && !url.search && request.headers.get("RSC") !== "1";
+        })) {
+          usable = key;
+          break;
+        }
+      }
+      for (const key of previous) {
+        if (key !== usable) await caches.delete(key);
+      }
     }
     await self.clients.claim();
   })());
@@ -52,15 +68,23 @@ self.addEventListener("fetch", (event) => {
 
   event.respondWith((async () => {
     const cache = await caches.open(cacheName);
-    const saved = await cache.match(request);
+    let saved = await cache.match(request);
+    if (!saved) {
+      const previous = (await caches.keys()).filter((key) => key.startsWith(prefix) && key !== cacheName).reverse();
+      for (const key of previous) {
+        saved = await (await caches.open(key)).match(request);
+        if (saved) break;
+      }
+    }
     if (asset && saved) {
       // LRU touch: re-insert the hit at the newest end so frequently opened
       // lessons/assets are not evicted ahead of stale ones under the size cap.
-      event.waitUntil(cache.put(request, saved.clone()).catch(() => {}));
+      event.waitUntil(remember(request, saved.clone()).catch(() => {}));
       return saved;
     }
     try {
       const response = await fetch(request);
+      if (response.status >= 500 && saved) return saved;
       event.waitUntil(remember(request, response.clone()).catch(() => {}));
       return response;
     } catch (error) {

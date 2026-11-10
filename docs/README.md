@@ -38,7 +38,7 @@ Per-language design notes, shared method and test constraints: [`courses.md`](./
 - **Styling**: Tailwind CSS v4 (native CSS tokens, dark mode default)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) 5 (dual `localStorage` + size-guarded cookie persistence)
 - **Icons**: Lucide React
-- **Testing**: Vitest 5 (`bun run test` → `vitest run`) — 48 test files, 481 automated tests. There is no `bun test` script.
+- **Testing**: Vitest 5 (`bun run test` → `vitest run`) — 49 test files, 494 automated tests. There is no `bun test` script.
 - **Audio Engine**: Two independent zero-dependency browser-native paths: `window.speechSynthesis` for pronunciation (voice locale chosen per language, 0.92x, preferring an exact locale voice and then another voice for the same language), and a Web Audio **sample** engine (`src/lib/sound.ts`) that decodes bundled Monkeytype mechanical-keyboard `.wav` packs with a 24-entry buffer cache and negative URL caching.
 
 ---
@@ -61,7 +61,7 @@ bun run parse-data
 
 ### Run Automated Tests
 
-Executes the full Vitest suite — 48 test files, 481 automated tests:
+Executes the full Vitest suite — 49 test files, 494 automated tests:
 
 ```bash
 bun run test
@@ -96,14 +96,17 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
 1. **The Trail Map (`/` — the homepage)**:
    - Baba Is You-style node map: 30 topic clusters on one linear spine, with skip-able extra-practice nodes ("sprigs") and support-material branches hanging off each cluster.
    - All adjacent nodes unlock at once when a node is completed; the spine itself stays strictly ordered. Each gate requires both its stretch's star quota and a passed checkpoint test covering the preceding spine lessons.
-   - Read the map top-to-bottom from topic 1; the pulsing theme-colored selector marks your recommended node.
+   - Topic 1 starts at the bottom; the learner climbs upward. The pulsing selector and minimalist next-lesson bar share the same recommendation.
    - The entire curriculum is authored — 30 cores + 79 sprigs + 65 branch lessons + 5 required reading stories = 179 lessons, each with a title, plan and full `Lesson` object (`src/data/curriculum.ts`, `src/data/lessons.ts`).
+   - Recommendations visit every authored lesson: core, sprigs, attached support branches, then story. Earlier missed lessons come first; **Continue ahead** bypasses them without marking completion. Three explicit bypasses stop automatic reminders for those gaps; the lessons remain available on the map. Preferences are language-scoped and reset with progress.
+   - From the unfocused trail, **Tab** focuses the next-lesson bar and **Enter** starts it. Further Tab presses work normally; existing gates remain in force.
+   - The first lesson leads with usable German. Historical notes, margin notes and linguistic background are collapsed optional disclosures.
    - Custom DOM+SVG renderer (no game libraries) with `content-visibility` windowing per topic cluster.
    - 5-part card-by-card lesson wizard (Hook, Pattern, Transformation Table, Bite-Sized Practice, Summary & Retries) in the in-page lesson reader.
    - Scaffolded exercises across 13 types (`ExerciseType` in `src/lib/types.ts`): morpheme tiles, matching pairs, shift select, syntax builder, derivation typing, reverse-cognate typing, **transcribe** production drills (thought + lexicon + cue ladder), **literal gloss** direct translations, **dictation** listening drills (played audio, capped replays, a 15-minute listening skip), **family grid** prefix × base matrices, **variant English** "every honest rendering" drills, **pronoun compression**, and **spoken turn reply**.
    - Every authored lesson (cores, sprigs, and branches) ends with an ungraded, skippable **Twist** card (deliberate friction, outside the 5-exercise contract) and may whisper up to two **posture cues** per lesson; onboarding is three steps and closes with a short posture summary.
    - Pre-exercise vocabulary hints (`vocab_hints`) for auxiliary words (e.g., `mit`).
-   - End-of-lesson Retry Queue ensuring mastery before progression; a flawless first-try run earns a **purple star** (gold otherwise).
+   - End-of-lesson Retry Queue: grammatical omissions do not pass, and spelling mistakes must be corrected during reinforcement or resolved through guided re-learning. A flawless first-try run earns a **purple star** (gold otherwise).
 
 2. **Sound Shift Atlas (`/atlas`)** (family detail and the master web open in-page):
    - Radial spatial spoke visualization for the consonant shift families ($TH \rightarrow D$, $P \rightarrow FF/PF$, $T \rightarrow SS/S/Z$, etc.).
@@ -113,9 +116,10 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
 
 4. **Multi-Modal Review Hub (`/review`)**:
    - Algorithmic spaced repetition powered by SuperMemo SM-2.
-   - Decks include *Due Today*, *By Shift Family*, *By Domain*, *Weakest Words*, *Recent Lessons*, *Compounds & Traps*, *Sentence Patterns*, *Article & Gender Drill*, and *Everything*.
+   - Beginner actions are **Continue lesson**, **Review learned words**, and **Practise difficult words**, followed by Due Today. **More practice options** contains family/domain filters, recent lessons, compounds/traps, sentence patterns, article drills and everything.
    - The article drill covers the usual singular definite article for gendered nouns in German, Dutch, French and Spanish; a fixed-width blank marks the missing article. It does not practise cases or articles in sentence context.
    - 4 selectable review styles: *Quick Flip*, *Multiple Choice (MCQ)*, *Tile Builder*, and *Derivation Typing*.
+   - Typing and tiles share grading: exact → Good, spelling near-miss → Hard with a correction, grammatical omission → Again. Authored `accepted_answers` support valid complete alternatives in free-production exercises.
    - Anti-spoiler gender shields: front card prompts with `[ der / die / das ? ]` instead of leaking the article before recall.
    - Desktop keyboard navigation (`1`–`4`, `Space`, `Enter`, `Backspace`, `←`/`→` back and forward between cards, `[R]` audio replay, `Esc`).
 
@@ -176,6 +180,7 @@ src/
 │   ├── lesson/           # LessonView/LessonReader, exercise widgets (Transcribe, LiteralGloss,
 │   │                     # Dictation, FamilyMatrix, VariantEnglish, PronounCompression,
 │   │                     # SpokenTurnReply, TwistCard), retry queue, feedback sheets
+│   ├── review/           # Session controller, deck selector, answer entry, card and style dialog
 │   ├── navigation/       # Game-style bottom dock (all destinations) + slim TopNav
 │   ├── settings/         # SettingItem row primitive
 │   └── trail/            # TrailMap (incl. star-gate pills), LessonNodeDrawer
@@ -202,7 +207,7 @@ src/
 │   ├── retry-variation.ts, listening.ts   # Retry surface rotation; 15-minute listening skip
 │   ├── types.ts          # Core domain TypeScript interfaces
 │   └── ...
-└── tests/                # 48 test files (Vitest)
+└── tests/                # 49 test files (Vitest)
 ```
 
 ---

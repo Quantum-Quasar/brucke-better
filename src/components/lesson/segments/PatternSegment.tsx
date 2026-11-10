@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Info, TriangleAlert } from "lucide-react";
+import { ArrowLeft, ArrowRight, TriangleAlert } from "lucide-react";
 
 
 import type { LessonSession } from "../lesson-session-types";
@@ -29,12 +29,12 @@ export default function PatternSegment({ session }: { session: LessonSession }) 
               )}
 
               {lesson.pattern.linguist_note && (
-                <div className="p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 space-y-1.5 text-xs font-mono">
-                  <div className="flex items-center gap-1.5 uppercase tracking-wider text-[var(--main-color)] font-semibold">
-                    <Info className="w-3.5 h-3.5" /> sound shift rule
-                  </div>
+                <details className="p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 space-y-1.5 text-xs font-mono">
+                  <summary className="min-h-11 cursor-pointer uppercase tracking-wider text-[var(--main-color)] font-semibold">
+                    optional background
+                  </summary>
                   <p className="text-[var(--sub-color)] leading-relaxed">{lesson.pattern.linguist_note}</p>
-                </div>
+                </details>
               )}
 
               <div className="pt-4 border-t border-[var(--sub-color)]/15 flex items-center justify-between">

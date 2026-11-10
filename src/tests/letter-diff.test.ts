@@ -5,6 +5,7 @@ import {
   evaluateAnswerAccuracy,
   evaluateBestOf,
 } from "../lib/letter-diff";
+import { gradeLessonAnswer } from "../lib/lesson-grading";
 
 describe("Letter-by-Letter Diff", () => {
   it("marks exact matches as all correct", () => {
@@ -281,5 +282,31 @@ describe("Typographic single quotes", () => {
     expect(evaluateAnswerAccuracy("\u00ABbonjour\u00BB", '"bonjour"', { languageId: "fr" })).toEqual({
       accuracy: "exact",
     });
+  });
+});
+
+describe("Lesson answer acceptance", () => {
+  it("requires the grammatical form rather than accepting a bare stem or omitted article", () => {
+    expect(gradeLessonAnswer(["lern"], ["lernen"], { languageId: "de" }).result.accuracy).toBe("incorrect");
+    expect(gradeLessonAnswer(["Haus"], ["kein Haus"], { languageId: "de" }).result.accuracy).toBe("incorrect");
+  });
+
+  it("permits a first-pass typo but requires its correction during reinforcement", () => {
+    const options = { languageId: "de" };
+    expect(gradeLessonAnswer(["bringem"], ["bringen"], options).result.accuracy).toBe("almost");
+    expect(gradeLessonAnswer(["bringem"], ["bringen"], options, true).result.accuracy).toBe("incorrect");
+    expect(gradeLessonAnswer(["bringen"], ["bringen"], options, true).result.accuracy).toBe("exact");
+  });
+
+  it("prefers an exact authored alternative over a near match to the canonical answer", () => {
+    const graded = gradeLessonAnswer(["colour"], ["color", "colour"], { languageId: "en" });
+    expect(graded.result.accuracy).toBe("exact");
+    expect(graded.target).toBe("colour");
+    expect(gradeLessonAnswer(["Zeit habe ich keine"], ["Ich habe keine Zeit", "Zeit habe ich keine"], { languageId: "de" }).result.accuracy).toBe("exact");
+  });
+
+  it("honours deliberate spelling tolerance during reinforcement", () => {
+    expect(gradeLessonAnswer(["Kaese"], ["Käse"], { languageId: "de", umlautTolerance: true }, true).result.accuracy).toBe("exact");
+    expect(gradeLessonAnswer(["Kaese"], ["Käse"], { languageId: "de" }, true).result.accuracy).toBe("incorrect");
   });
 });

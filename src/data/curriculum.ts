@@ -1,5 +1,5 @@
 import type { LessonShell, TopicCluster, TrailBranch, TrailGate } from "@/lib/types";
-import { spineNodeIds, type CurriculumData } from "./curriculum-core";
+import { getNextPlayableLessonIdFrom, type CurriculumData } from "./curriculum-core";
 
 // ---------------------------------------------------------------------------
 // The Brücke Trail — 30 topics arranged as a linear spine of clusters.
@@ -872,18 +872,9 @@ export const GERMAN_CURRICULUM: CurriculumData = {
 };
 
 
-const isAuthoredNode = (nodeId: number) => AUTHORED_SHELLS.has(nodeId);
-
-/** Next authored spine lesson (core or story) after the given one (null = caught up). */
-export const getNextPlayableLessonId = (currentId: number): number | null => {
-  const spine = spineNodeIds(TOPICS);
-  const start = spine.indexOf(currentId);
-  if (start < 0) return null;
-  for (let i = start + 1; i < spine.length; i++) {
-    if (isAuthoredNode(spine[i])) return spine[i];
-  }
-  return null;
-};
+/** Next authored lesson, including the topic's side lessons. */
+export const getNextPlayableLessonId = (currentId: number): number | null =>
+  getNextPlayableLessonIdFrom(GERMAN_CURRICULUM, currentId);
 
 /** Flatten topics + branches into the full node list (order: topic by topic). */
 export const flattenTrailNodes = () => {

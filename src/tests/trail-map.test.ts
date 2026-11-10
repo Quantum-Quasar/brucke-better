@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { TOPICS, TRAIL_BRANCHES, TOTAL_TOPICS, flattenTrailNodes, getNextPlayableLessonId } from "../data/curriculum";
 import { spineNodeIds } from "../data/curriculum-core";
+import { getCurriculum } from "../data/curriculum-registry";
 import { LESSONS } from "../data/lessons";
 import {
   buildTrailEdgePairs,
@@ -56,18 +57,11 @@ describe("Curriculum structure", () => {
     }
   });
 
-  it("derives the next playable lesson along the authored spine", () => {
-    expect(getNextPlayableLessonId(1)).toBe(2);
-    expect(getNextPlayableLessonId(9)).toBe(10);
-    expect(getNextPlayableLessonId(10)).toBe(9001);
-    expect(getNextPlayableLessonId(9001)).toBe(11);
-    expect(getNextPlayableLessonId(11)).toBe(12);
-    expect(getNextPlayableLessonId(15)).toBe(16);
-    expect(getNextPlayableLessonId(20)).toBe(9002);
-    expect(getNextPlayableLessonId(24)).toBe(9003);
-    expect(getNextPlayableLessonId(27)).toBe(9004);
-    expect(getNextPlayableLessonId(30)).toBe(9005);
-    expect(getNextPlayableLessonId(9005)).toBeNull();
+  it("continues through sprigs and attached branches before advancing topics", () => {
+    expect(getNextPlayableLessonId(1)).toBe(101);
+    expect(getNextPlayableLessonId(101)).toBe(102);
+    expect(getNextPlayableLessonId(103)).toBe(5071);
+    expect(getNextPlayableLessonId(5071)).toBe(5072);
   });
 });
 
@@ -129,23 +123,45 @@ describe("Unlock & recommendation logic", () => {
     expect(available([1, 2])).not.toContain(5012);
   });
 
-  it("recommends the next authored spine core while one exists", () => {
-    expect(getTrailState([1, 2, 3], {}).recommendedId).toBe(4);
-    // reaching core 10 in real play requires the Shift Gate open (14★ in topics 1–7)
-    const reachable = [...Array.from({ length: 9 }, (_, i) => i + 1), 101, 102, 103, 201, 202, 301, 302];
-    expect(getTrailState(reachable, {}, undefined, undefined, [1]).recommendedId).toBe(10);
+  it("recommends missed side lessons before later spine lessons", () => {
+    expect(getTrailState([1, 2, 3], {}).recommendedId).toBe(101);
+    expect(getTrailState([1, 101], {}).recommendedId).toBe(102);
   });
 
-  it("falls back to the hollow frontier once the authored spine is done", () => {
-    const allAuthored = Array.from({ length: 10 }, (_, i) => i + 1);
-    // the Shift Gate is still closed in this artificial out-of-order state
-    expect(getTrailState(allAuthored, {}).recommendedId).toBe(702);
-    // with the Shift Gate open, the required story after core 10 is next
-    const shiftOpen = [...allAuthored, 101, 102, 103, 201, 202, 301, 302];
-    expect(getTrailState(shiftOpen, {}, undefined, undefined, [1]).recommendedId).toBe(9001);
-    // with both gates open and the story done, the frontier recommendation is core 11
-    const gatesOpen = [...shiftOpen, 9001, 801, 802];
-    expect(getTrailState(gatesOpen, {}, undefined, undefined, [1, 2]).recommendedId).toBe(11);
+  it("stops resurfacing a gap after three explicit bypasses without completing it", () => {
+    const completed = [1, 2, 3];
+    const initial = getTrailState(completed);
+    expect(initial.forwardId).toBe(301);
+    const twice = Object.fromEntries(initial.missedIds.map((id) => [id, 2]));
+    expect(getTrailState(completed, {}, undefined, undefined, [], { bypasses: twice }).recommendedId).toBe(101);
+    const three = Object.fromEntries(initial.missedIds.map((id) => [id, 3]));
+    const skipped = getTrailState(completed, {}, undefined, undefined, [], { bypasses: three });
+    expect(skipped.recommendedId).toBe(301);
+    expect(skipped.nodes.get(101)?.status).toBe("available");
+    expect(skipped.nodes.get(101)?.star).toBeUndefined();
+    expect(completed).toEqual([1, 2, 3]);
+  });
+
+  it.each(["de", "fr", "es", "nl"])("can recommend every authored lesson in %s without repeats or locked jumps", (language) => {
+    const curriculum = getCurriculum(language);
+    const data = { topics: curriculum.topics, branches: curriculum.trailBranches, gates: curriculum.trailGates, totalTopics: curriculum.totalTopics };
+    const remaining = new Set([
+      ...curriculum.topics.flatMap((topic) => [topic.core, ...topic.sprigs, ...(topic.stories ?? [])]),
+      ...curriculum.trailBranches.flatMap((branch) => branch.lessons),
+    ].filter((lesson) => lesson.authored).map((lesson) => lesson.id));
+    const completed: number[] = [];
+    const passed = curriculum.trailGates.map((gate) => gate.id);
+    while (remaining.size) {
+      const state = getTrailState(completed, {}, undefined, data, passed);
+      const id = state.recommendedId;
+      expect(id, `unreachable lessons: ${[...remaining].join(", ")}`).not.toBeNull();
+      if (id === null) break;
+      expect(state.nodes.get(id)?.status).toBe("available");
+      expect(remaining.delete(id), `repeated lesson ${id}`).toBe(true);
+      completed.push(id);
+    }
+    expect(remaining.size).toBe(0);
+    expect(getTrailState(completed, {}, undefined, data, passed).recommendedId).toBeNull();
   });
 
   it("never recommends a locked node", () => {
@@ -187,7 +203,6 @@ describe("Star gates", () => {
     expect(state.nodes.get(8)!.status).toBe("available");
     expect(state.nodes.get(8)!.gate).toBeUndefined();
     expect(state.litEdges.has("7-8")).toBe(true);
-    expect(state.recommendedId).toBe(8);
   });
 
   it("counts stars only inside its own stretch", () => {

@@ -66,6 +66,7 @@ const RESOLVED_FORMS: Record<string, string> = {
   gefunden: "finden", fand: "finden",
   gegessen: "essen",
   stehe: "aufstehen", steht: "aufstehen",
+  wachen: "aufwachen",
   genommen: "nehmen", gibst: "geben",
 };
 
@@ -120,8 +121,8 @@ export function findUnresolvedWordRefs(): WordRefMiss[] {
     }
     for (const ex of lesson.exercises) {
       if (ex.type === "transcribe") {
-        for (const t of germanTokens(ex.target_answer)) {
-          if (!resolves(t)) misses.push({ lesson: lesson.id, where: `transcribe ${ex.id} answer`, token: t });
+        for (const t of germanTokens([ex.target_answer, ...(ex.accepted_answers ?? [])].join(" "))) {
+          if (!resolves(t)) misses.push({ lesson: lesson.id, where: `transcribe ${ex.id} answers`, token: t });
         }
         for (const chip of ex.word_bank ?? []) {
           if (!resolves(chip)) misses.push({ lesson: lesson.id, where: `transcribe ${ex.id} bank`, token: chip });

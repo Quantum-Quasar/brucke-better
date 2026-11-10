@@ -11,7 +11,7 @@ import { Grid3x3, Check, AlertCircle } from "lucide-react";
 import { GermanCharBar } from "@/components/common/GermanCharBar";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
-import { evaluateAnswerAccuracy } from "@/lib/letter-diff";
+import { gradeLessonAnswer } from "@/lib/lesson-grading";
 import { getLanguageDefinition } from "@/data/languages";
 import { useAppStore } from "@/lib/store";
 import { soundEngine } from "@/lib/sound";
@@ -80,7 +80,7 @@ export const FamilyMatrixExercise: React.FC<FamilyMatrixExerciseProps> = ({
       umlautTolerance: Boolean(settings.lazyMode ?? tolerance.umlautTolerance),
       capitalizationTolerance: Boolean(settings.capitalizationTolerance ?? tolerance.capitalizationTolerance),
     };
-    const evaluation = evaluateAnswerAccuracy(answer, target, evalOptions);
+    const { result: evaluation } = gradeLessonAnswer([answer], [target], evalOptions, isRetry);
 
     if (evaluation.accuracy === "exact" || evaluation.accuracy === "almost") {
       setVerifiedAttemptText(answer);

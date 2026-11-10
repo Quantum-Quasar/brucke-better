@@ -117,10 +117,10 @@ export function LessonReader(props: LessonReaderProps) {
 
         {/* Right Margin Column: Desktop Side Notes */}
         <aside className="hidden lg:block lg:col-span-4 sticky top-24 space-y-4 font-mono">
-          <div className="p-5 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-3">
-            <span className="text-xs uppercase tracking-widest text-[var(--main-color)] flex items-center gap-1.5 font-semibold">
-              <BookOpen className="w-3.5 h-3.5" /> margin notes
-            </span>
+          <details className="p-5 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-3">
+            <summary className="min-h-11 cursor-pointer text-xs uppercase tracking-widest text-[var(--main-color)] font-semibold">
+              <BookOpen className="inline h-3.5 w-3.5" aria-hidden="true" /> optional background
+            </summary>
             <div className="space-y-2.5 text-[13px] text-[var(--sub-color)] leading-relaxed">
               {lesson.hook.footnotes?.map((fn) => (
                 <div key={fn.marker} className="p-3 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 space-y-1">
@@ -157,7 +157,7 @@ export function LessonReader(props: LessonReaderProps) {
                 </p>
               </div>
             </div>
-          </div>
+          </details>
         </aside>
       </div>
 

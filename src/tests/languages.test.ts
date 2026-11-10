@@ -28,7 +28,6 @@ import { loadSavedState } from "@/lib/store/persistence";
 import { STORAGE_KEY } from "@/lib/storage-keys";
 import type { LanguageProgress } from "@/lib/store/types";
 import { TOTAL_TOPICS } from "@/data/curriculum";
-import { spineNodeIds } from "@/data/curriculum-core";
 
 describe("language registry", () => {
   test("the root-chunk word counts stay pinned to the real compendia", () => {
@@ -116,59 +115,25 @@ describe("language content registry", () => {
 describe("next playable lesson across the trail", () => {
   const LANGS = ["de", "es", "fr", "nl"] as const;
 
-  test("core and story lessons advance along the authored spine, null only after the last", () => {
+  test("lesson continuation visits every authored lesson exactly once in each course", () => {
     for (const lang of LANGS) {
       const content = getLanguageContent(lang);
-      const spine = spineNodeIds(content.topics).filter((id) => {
-        const topic = content.topics.find(
-          (t) => t.core.id === id || (t.stories ?? []).some((s) => s.id === id)
-        );
-        const shell =
-          topic?.core.id === id
-            ? topic.core
-            : (topic?.stories ?? []).find((s) => s.id === id);
-        return Boolean(shell?.authored);
-      });
-      expect(spine.length).toBeGreaterThan(1);
-      for (let i = 0; i < spine.length - 1; i++) {
-        expect(getNextPlayableLessonIdFor(lang, spine[i]), `${lang} spine ${spine[i]}`).toBe(spine[i + 1]);
+      const remaining = new Set([
+        ...content.topics.flatMap((topic) => [topic.core, ...topic.sprigs, ...(topic.stories ?? [])]),
+        ...content.trailBranches.flatMap((branch) => branch.lessons),
+      ].filter((lesson) => lesson.authored).map((lesson) => lesson.id));
+      let current: number | null = content.topics[0].core.id;
+      while (current !== null) {
+        expect(remaining.delete(current), `${lang}: repeated or unknown lesson ${current}`).toBe(true);
+        current = getNextPlayableLessonIdFor(lang, current);
       }
-      expect(getNextPlayableLessonIdFor(lang, spine[spine.length - 1]), `${lang} last spine node`).toBeNull();
+      expect([...remaining], `${lang}: lessons omitted by continuation`).toEqual([]);
     }
   });
 
-  test("sprig lessons resolve to the first spine node after their owning core", () => {
-    for (const lang of LANGS) {
-      const content = getLanguageContent(lang);
-      for (const topic of content.topics) {
-        if (topic.id > content.totalTopics) continue;
-        const expected = getNextPlayableLessonIdFor(lang, topic.core.id);
-        for (const sprig of topic.sprigs) {
-          expect(getNextPlayableLessonIdFor(lang, sprig.id), `${lang} sprig ${sprig.id}`).toBe(expected);
-        }
-      }
-    }
-  });
-
-  test("branch lessons resolve to the first spine node after their attach topic", () => {
-    for (const lang of LANGS) {
-      const content = getLanguageContent(lang);
-      for (const branch of content.trailBranches) {
-        const expected = getNextPlayableLessonIdFor(lang, branch.attach);
-        for (const lesson of branch.lessons) {
-          expect(getNextPlayableLessonIdFor(lang, lesson.id), `${lang} branch ${lesson.id}`).toBe(expected);
-        }
-      }
-    }
-  });
-
-  test("the reported German regressions no longer dead-end before the last topic", () => {
-    expect(getNextPlayableLessonIdFor("de", 101)).toBe(2);
-    expect(getNextPlayableLessonIdFor("de", 1102)).toBe(12);
-    expect(getNextPlayableLessonIdFor("de", 2701)).toBe(9004);
-    expect(getNextPlayableLessonIdFor("de", 3003)).toBe(9005);
-    expect(getNextPlayableLessonIdFor("de", 5011)).toBe(3); // branch attached to topic 2
-    expect(getNextPlayableLessonIdFor("de", 5102)).toBe(9005); // branch attached to topic 30
+  test("unknown courses and unknown lesson ids have no continuation", () => {
+    expect(getNextPlayableLessonIdFor("it", 1)).toBeNull();
+    expect(getNextPlayableLessonIdFor("de", 999999)).toBeNull();
   });
 });
 

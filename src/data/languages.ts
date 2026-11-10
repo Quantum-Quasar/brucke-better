@@ -76,8 +76,8 @@ export interface LanguageDefinition {
 const GERMAN_ONBOARDING: LanguageOnboarding = {
   philosophy: {
     heading: "you don't start from zero",
-    body: "english and german are sibling languages born from the same ancestral branch. over 60% of core spoken english vocabulary has an unbroken germanic twin. you aren't memorizing random sounds — you are unlocking sound shifts you already know.",
-    demoTitle: "high german consonant shift demo:",
+    body: "start with familiar words like Hand and Finger, then build lernen — \"to learn\" — and use it in a sentence. sound patterns help you remember the german you practise.",
+    demoTitle: "try these familiar words:",
     demos: [
       {
         english: "hand",
@@ -120,7 +120,7 @@ const GERMAN_ONBOARDING: LanguageOnboarding = {
     showGenders: true,
   },
   ready: {
-    body: "start with lesson 1 on the trail to encounter your first ten german cognates. all progress is stored locally in your browser.",
+    body: "start lesson 1 to recognize familiar words, build a german verb and use it in a sentence. all progress is stored locally in your browser.",
   },
 };
 

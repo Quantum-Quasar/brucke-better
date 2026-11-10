@@ -39,7 +39,7 @@ const lesson: Lesson = {
   ],
   "hook": {
     "title": "You Don't Start from Zero",
-    "content": "English and German are sibling languages born from the same ancestral tribe in northern Europe. Before Latin, French, and the Norman Conquest reshaped English, English and German were virtually identical. Over 60% of core spoken English vocabulary has an unbroken Germanic twin.",
+    "content": "You already know a little German: Hand means \"hand,\" and Finger means \"finger.\" Say them aloud.\n\nNow try lernen — \"to learn.\" Build it from lern + en, then use it in a sentence. The familiar words are your starting point; the history can wait.",
     "footnotes": [
       {
         "marker": "1",
