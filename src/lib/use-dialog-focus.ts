@@ -47,9 +47,20 @@ function unlockPageScroll() {
   }
 }
 
+function isFocusableVisible(element: HTMLElement): boolean {
+  // display:none (or a hidden ancestor) yields no client rects; visibility:hidden
+  // still occupies space, so check it explicitly. Trapping focus on an invisible
+  // control strands the keyboard user on something they cannot see.
+  if (element.getClientRects().length === 0) return false;
+  return window.getComputedStyle(element).visibility !== "hidden";
+}
+
 function getFocusableElements(container: HTMLElement): HTMLElement[] {
   return Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter(
-    (element) => !element.hasAttribute("disabled") && element.getAttribute("aria-hidden") !== "true"
+    (element) =>
+      !element.hasAttribute("disabled") &&
+      element.getAttribute("aria-hidden") !== "true" &&
+      isFocusableVisible(element)
   );
 }
 

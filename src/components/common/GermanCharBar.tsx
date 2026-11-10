@@ -5,7 +5,11 @@ import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
 
 interface GermanCharBarProps {
-  onInsert: (char: string) => void;
+  /** Insert at the input's caret, replacing its selection even after focus moves
+   * to a character button. */
+  inputRef: React.RefObject<HTMLInputElement | null>;
+  value: string;
+  onChange: (value: string) => void;
   className?: string;
 }
 
@@ -14,9 +18,24 @@ interface GermanCharBarProps {
  * (Keeps its historical GermanCharBar name; characters come from the
  * language registry, so other languages get their own accents for free.)
  */
-export const GermanCharBar: React.FC<GermanCharBarProps> = ({ onInsert, className = "" }) => {
+export const GermanCharBar: React.FC<GermanCharBarProps> = ({ inputRef, value, onChange, className = "" }) => {
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
+
+  const insert = (char: string) => {
+    const el = inputRef.current;
+    const start = el?.selectionStart ?? value.length;
+    const end = el?.selectionEnd ?? start;
+    onChange(value.slice(0, start) + char + value.slice(end));
+    // The controlled input re-renders with the new value; put the caret just
+    // after the inserted character once that commit lands.
+    requestAnimationFrame(() => {
+      if (!el) return;
+      el.focus({ preventScroll: true });
+      const pos = start + char.length;
+      el.setSelectionRange(pos, pos);
+    });
+  };
 
   return (
     <div className={`flex flex-wrap items-center gap-1.5 p-1.5 rounded bg-[var(--sub-alt-color)]/50 border border-[var(--sub-color)]/20 ${className}`}>
@@ -28,9 +47,9 @@ export const GermanCharBar: React.FC<GermanCharBarProps> = ({ onInsert, classNam
           key={char}
           type="button"
           onMouseDown={(e) => e.preventDefault()}
-          onClick={() => onInsert(char)}
+          onClick={() => insert(char)}
           title={`Insert ${char}${digraph ? ` (or type "${digraph}" with lazy mode on)` : ""}`}
-          className="group relative flex h-11 min-w-11 flex-col items-center justify-center rounded bg-[var(--bg-color)] px-2 hover:bg-[var(--main-color)]/10 active:scale-95 border border-[var(--sub-color)]/30 hover:border-[var(--main-color)]/40 transition-colors cursor-pointer sm:h-9 sm:min-w-9"
+          className="group relative flex h-11 min-w-11 flex-col items-center justify-center rounded bg-[var(--bg-color)] px-2 hover:bg-[var(--main-color)]/10 active:scale-95 border border-[var(--sub-color)]/30 hover:border-[var(--main-color)]/40 transition-colors cursor-pointer"
         >
           <span className="text-sm font-mono font-medium text-[var(--main-color)]">{char}</span>
           <span className="text-[9px] font-mono text-[var(--sub-color)] leading-none hidden sm:block">

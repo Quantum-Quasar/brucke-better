@@ -18,13 +18,13 @@ Rather than relying on rote memorization or gamified streaks without substance, 
 
 ## Tech Stack & Architecture
 
-- **Runtime**: [Bun](https://bun.com) v1.4+
-- **Framework**: [Next.js](https://nextjs.org) 16.3.4 (App Router, Turbopack, 100% Static Site Generation)
+- **Runtime**: [Bun](https://bun.com) v1.4.4 (pinned in CI)
+- **Framework**: [Next.js](https://nextjs.org) 16.4.1 (App Router, Turbopack, 100% Static Site Generation)
 - **UI Library**: React 19.2 + TypeScript
 - **Styling**: Tailwind CSS v4 (native CSS tokens, dark mode default)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) 5 (dual `localStorage` + size-guarded cookie persistence)
 - **Icons**: Lucide React
-- **Testing**: Vitest / `bun run test` (45 test files, 449 automated tests)
+- **Testing**: Vitest / `bun run test` (48 test files, 481 automated tests)
 - **Audio Engine**: Zero-dependency browser-native Web Speech API (`window.speechSynthesis`) + a Web Audio sample engine that plays bundled `.wav` packs. Pronunciation prefers an exact locale voice, then another voice for the same language.
 
 ---
@@ -47,7 +47,7 @@ bun run parse-data
 
 ### Run Automated Tests
 
-Executes the full Vitest suite — 45 test files, 449 automated tests:
+Executes the full Vitest suite — 48 test files, 481 automated tests:
 
 ```bash
 bun run test
@@ -168,7 +168,7 @@ src/
 │   ├── store.ts, store/  # composed Zustand slices, validation and persistence
 │   ├── trail-map.ts      # Map graph, responsive layout engine, unlock/recommend logic
 │   └── types.ts          # Core domain TypeScript interfaces
-└── tests/                # 45 test files (Vitest)
+└── tests/                # 48 test files (Vitest)
 ```
 
 ---

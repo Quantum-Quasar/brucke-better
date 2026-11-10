@@ -40,6 +40,40 @@ import {
   type ShowCharBar,
 } from "@/data/settings";
 
+/** One option in a settings segmented control. aria-pressed conveys the selected
+ * state to assistive tech (color alone does not), and the 44px floor keeps the
+ * target tappable. */
+function SegButton({
+  selected,
+  onClick,
+  disabled = false,
+  children,
+}: {
+  selected: boolean;
+  onClick: () => void;
+  disabled?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={selected}
+      onClick={onClick}
+      disabled={disabled}
+      className={`min-h-[44px] px-3 py-1.5 rounded text-xs font-mono transition ${
+        disabled
+          ? "bg-[var(--sub-alt-color)] text-[var(--sub-color)] opacity-40 cursor-not-allowed"
+          : selected
+            ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold shadow-xs cursor-pointer"
+            : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--text-color)] cursor-pointer"
+      }`}
+    >
+      {children}
+      <span aria-hidden="true" className={`ml-1.5 ${selected ? "visible" : "invisible"}`}>✓</span>
+    </button>
+  );
+}
+
 const SECTIONS = [
   { id: "language", label: "language", icon: Languages },
   { id: "behavior", label: "behavior", icon: Zap },
@@ -306,6 +340,7 @@ export default function SettingsPage() {
                 <button
                   key={lang.id}
                   type="button"
+                  aria-pressed={lang.id === activeLanguageId}
                   onClick={() => {
                     setActiveLanguage(lang.id);
                     // Switching from Settings is a deliberate preference change,
@@ -313,7 +348,7 @@ export default function SettingsPage() {
                     // and keep the page in place; Guide can replay the intro.
                     completeOnboarding();
                   }}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-mono transition cursor-pointer border ${
+                  className={`min-h-11 flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-mono transition cursor-pointer border ${
                     lang.id === activeLanguageId
                       ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold border-[var(--main-color)] shadow-xs"
                       : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--text-color)] border-[var(--sub-color)]/20"
@@ -322,6 +357,7 @@ export default function SettingsPage() {
                 >
                   <span aria-hidden>{lang.flag}</span>
                   <span>{lang.nativeName}</span>
+                  <span aria-hidden="true" className={lang.id === activeLanguageId ? "visible" : "invisible"}>✓</span>
                   {lang.status === "coming-soon" && (
                     <span className="text-[9px] uppercase tracking-wider opacity-70">soon</span>
                   )}
@@ -348,18 +384,9 @@ export default function SettingsPage() {
             matchesSearch={matches(["quick restart", "esc", "restart", "behavior"])}
           >
             {(["off", "esc"] as QuickRestart[]).map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => updateSetting("quickRestart", mode)}
-                className={`px-3 py-1.5 rounded text-xs font-mono transition cursor-pointer ${
-                  settings.quickRestart === mode
-                    ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold shadow-xs"
-                    : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
-                }`}
-              >
+              <SegButton key={mode} selected={settings.quickRestart === mode} onClick={() => updateSetting("quickRestart", mode)}>
                 {mode}
-              </button>
+              </SegButton>
             ))}
           </SettingItem>
 
@@ -381,18 +408,9 @@ export default function SettingsPage() {
             ])}
           >
             {[false, true].map((val) => (
-              <button
-                key={String(val)}
-                type="button"
-                onClick={() => updateSetting("lazyMode", val)}
-                className={`px-3 py-1.5 rounded text-xs font-mono transition cursor-pointer ${
-                  settings.lazyMode === val
-                    ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold shadow-xs"
-                    : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
-                }`}
-              >
+              <SegButton key={String(val)} selected={settings.lazyMode === val} onClick={() => updateSetting("lazyMode", val)}>
                 {val ? "on" : "off"}
-              </button>
+              </SegButton>
             ))}
           </SettingItem>
 
@@ -415,21 +433,14 @@ export default function SettingsPage() {
                 </span>
               )}
               {[false, true].map((val) => (
-                <button
+                <SegButton
                   key={String(val)}
-                  type="button"
+                  selected={settings.capitalizationTolerance === val}
                   disabled={activeLanguageId !== "de"}
                   onClick={() => updateSetting("capitalizationTolerance", val)}
-                  className={`px-3 py-1.5 rounded text-xs font-mono transition ${
-                    activeLanguageId !== "de"
-                      ? "bg-[var(--sub-alt-color)] text-[var(--sub-color)] opacity-40 cursor-not-allowed"
-                      : settings.capitalizationTolerance === val
-                      ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold shadow-xs cursor-pointer"
-                      : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--text-color)] cursor-pointer"
-                  }`}
                 >
                   {val ? "on" : "off"}
-                </button>
+                </SegButton>
               ))}
             </div>
           </SettingItem>
@@ -443,18 +454,9 @@ export default function SettingsPage() {
             matchesSearch={matches(["posture", "cues", "pause", "whisper", "behavior", "reminders"])}
           >
             {[false, true].map((val) => (
-              <button
-                key={String(val)}
-                type="button"
-                onClick={() => updateSetting("showPostureCues", val)}
-                className={`px-3 py-1.5 rounded text-xs font-mono transition cursor-pointer ${
-                  settings.showPostureCues === val
-                    ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold shadow-xs"
-                    : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
-                }`}
-              >
+              <SegButton key={String(val)} selected={settings.showPostureCues === val} onClick={() => updateSetting("showPostureCues", val)}>
                 {val ? "on" : "off"}
-              </button>
+              </SegButton>
             ))}
           </SettingItem>
         </section>
@@ -475,18 +477,9 @@ export default function SettingsPage() {
             matchesSearch={matches(["stop on error", "error", "letter", "input"])}
           >
             {(["off", "letter"] as StopOnError[]).map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => updateSetting("stopOnError", mode)}
-                className={`px-3 py-1.5 rounded text-xs font-mono transition cursor-pointer ${
-                  settings.stopOnError === mode
-                    ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold shadow-xs"
-                    : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
-                }`}
-              >
+              <SegButton key={mode} selected={settings.stopOnError === mode} onClick={() => updateSetting("stopOnError", mode)}>
                 {mode}
-              </button>
+              </SegButton>
             ))}
           </SettingItem>
 
@@ -499,18 +492,9 @@ export default function SettingsPage() {
             matchesSearch={matches(["confidence mode", "backspace", "input", "strict"])}
           >
             {(["off", "on"] as ConfidenceMode[]).map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => updateSetting("confidenceMode", mode)}
-                className={`px-3 py-1.5 rounded text-xs font-mono transition cursor-pointer ${
-                  settings.confidenceMode === mode
-                    ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold shadow-xs"
-                    : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
-                }`}
-              >
+              <SegButton key={mode} selected={settings.confidenceMode === mode} onClick={() => updateSetting("confidenceMode", mode)}>
                 {mode}
-              </button>
+              </SegButton>
             ))}
           </SettingItem>
 
@@ -526,18 +510,9 @@ export default function SettingsPage() {
             ])}
           >
             {(["always", "on_focus", "off"] as ShowCharBar[]).map((mode) => (
-              <button
-                key={mode}
-                type="button"
-                onClick={() => updateSetting("showCharBar", mode)}
-                className={`px-3 py-1.5 rounded text-xs font-mono transition cursor-pointer ${
-                  settings.showCharBar === mode
-                    ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold shadow-xs"
-                    : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
-                }`}
-              >
+              <SegButton key={mode} selected={settings.showCharBar === mode} onClick={() => updateSetting("showCharBar", mode)}>
                 {mode}
-              </button>
+              </SegButton>
             ))}
           </SettingItem>
         </section>
@@ -630,21 +605,16 @@ export default function SettingsPage() {
           >
             <div className="flex items-center gap-2 flex-wrap">
               {SOUND_ERROR_OPTIONS.map((opt) => (
-                <button
+                <SegButton
                   key={opt.id}
-                  type="button"
+                  selected={settings.playSoundOnError === opt.id}
                   onClick={() => {
                     updateSetting("playSoundOnError", opt.id);
                     if (opt.id !== "off") handlePreviewError(opt.id);
                   }}
-                  className={`px-3 py-1.5 rounded text-xs font-mono transition cursor-pointer ${
-                    settings.playSoundOnError === opt.id
-                      ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold shadow-xs"
-                      : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
-                  }`}
                 >
                   {opt.name}
-                </button>
+                </SegButton>
               ))}
 
               {settings.playSoundOnError !== "off" && (
@@ -722,18 +692,9 @@ export default function SettingsPage() {
             matchesSearch={matches(["key tips", "hotkey badges", "shortcuts", "hide"])}
           >
             {[true, false].map((val) => (
-              <button
-                key={String(val)}
-                type="button"
-                onClick={() => updateSetting("showKeyTips", val)}
-                className={`px-3 py-1.5 rounded text-xs font-mono transition cursor-pointer ${
-                  settings.showKeyTips === val
-                    ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold shadow-xs"
-                    : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
-                }`}
-              >
+              <SegButton key={String(val)} selected={settings.showKeyTips === val} onClick={() => updateSetting("showKeyTips", val)}>
                 {val ? "show" : "hide"}
-              </button>
+              </SegButton>
             ))}
           </SettingItem>
 
@@ -746,18 +707,9 @@ export default function SettingsPage() {
             matchesSearch={matches(["caps lock warning", "caps lock", "hide"])}
           >
             {[true, false].map((val) => (
-              <button
-                key={String(val)}
-                type="button"
-                onClick={() => updateSetting("capsLockWarning", val)}
-                className={`px-3 py-1.5 rounded text-xs font-mono transition cursor-pointer ${
-                  settings.capsLockWarning === val
-                    ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold shadow-xs"
-                    : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
-                }`}
-              >
+              <SegButton key={String(val)} selected={settings.capsLockWarning === val} onClick={() => updateSetting("capsLockWarning", val)}>
                 {val ? "on" : "off"}
-              </button>
+              </SegButton>
             ))}
           </SettingItem>
 
@@ -770,18 +722,9 @@ export default function SettingsPage() {
             matchesSearch={matches(["mastery counter", "progress counter", "progress", "badge", "nav", "hide"])}
           >
             {[true, false].map((val) => (
-              <button
-                key={String(val)}
-                type="button"
-                onClick={() => updateSetting("showMasteryCounter", val)}
-                className={`px-3 py-1.5 rounded text-xs font-mono transition cursor-pointer ${
-                  settings.showMasteryCounter === val
-                    ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold shadow-xs"
-                    : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
-                }`}
-              >
+              <SegButton key={String(val)} selected={settings.showMasteryCounter === val} onClick={() => updateSetting("showMasteryCounter", val)}>
                 {val ? "show" : "hide"}
-              </button>
+              </SegButton>
             ))}
           </SettingItem>
 
@@ -794,18 +737,9 @@ export default function SettingsPage() {
             matchesSearch={matches(["contrast", "readability", "muted text", "accessibility", "hide"])}
           >
             {[true, false].map((val) => (
-              <button
-                key={String(val)}
-                type="button"
-                onClick={() => updateSetting("increasedContrast", val)}
-                className={`px-3 py-1.5 rounded text-xs font-mono transition cursor-pointer ${
-                  settings.increasedContrast === val
-                    ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold shadow-xs"
-                    : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
-                }`}
-              >
+              <SegButton key={String(val)} selected={settings.increasedContrast === val} onClick={() => updateSetting("increasedContrast", val)}>
                 {val ? "on" : "off"}
-              </button>
+              </SegButton>
             ))}
           </SettingItem>
         </section>

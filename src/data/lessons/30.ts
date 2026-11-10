@@ -68,7 +68,7 @@ const lesson: Lesson = {
       {
         "marker": "1",
         "title": "The Reading Passage",
-        "content": "Der Mann und die Frau wohnen in Berlin. Gestern hatten? — gestern machten sie? keep it Perfekt: Gestern haben sie eine Fahrt mit dem Zug gemacht. Der Zug war schnell. In der Stadt haben sie Brot und Wasser gekauft. Am Abend hat der Mann ein Buch gelesen, und die Frau hat? — die Kinder? die Frau hat das Licht angemacht? — fine: und die Frau hat gelacht. Um elf Uhr? — Um elf war die Nacht still, und das Haus war dunkel. Heute trinken sie Kaffee. Es gibt keinen besseren Morgen — there is no better morning."
+        "content": "Der Mann und die Frau wohnen in Berlin. Gestern haben sie eine Fahrt mit dem Zug gemacht. Der Zug war schnell. In der Stadt haben sie Brot und Wasser gekauft. Am Abend hat der Mann ein Buch gelesen, und die Frau hat gelacht. Um elf war die Nacht still, und das Haus war dunkel. Heute trinken sie Kaffee. Es gibt keinen besseren Morgen."
       }
     ]
   },

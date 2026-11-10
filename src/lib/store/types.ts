@@ -39,6 +39,13 @@ export type ProgressVersions = Record<VersionedField, Record<string, string>>;
 export interface ReviewSnapshot {
   card: SRSCard;
   mastery: MasteryState | null;
+  /**
+   * The card's progress version right after this session graded it. restoreSrsCard
+   * only undoes while the live card still carries this version; if another tab (or
+   * a later grade) has moved the card on, the snapshot is stale and is ignored so
+   * the newer scheduling is not clobbered. Optional for legacy callers.
+   */
+  version?: string;
 }
 
 export interface AppState {
@@ -154,7 +161,7 @@ export interface AppState {
    * overwrote. Pass `{ reread: true }` to deliberately re-read storage (a
    * cross-tab `storage` event, or a test that re-seeds storage).
    */
-  hydrateFromStorage: (options?: { reread?: boolean; snapshot?: string }) => void;
+  hydrateFromStorage: (options?: { reread?: boolean; snapshot?: string; source?: "broadcast" }) => void;
   importBackupState: (payload: unknown) => boolean;
 }
 

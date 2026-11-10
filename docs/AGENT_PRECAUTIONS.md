@@ -9,7 +9,7 @@
 
 **The audit tools (always applicable at the end of content work; CI runs the first four):**
 - `bun scripts/audit-word-refs.ts` — every word reference resolves (exits 1 on failure)
-- `bun scripts/audit-teasers.ts` — must report `title drift: 0 | teaser flags: 0`. It never sets a failing exit code, so read the output yourself; `⚠` means "look at this", not "broken"
+- `bun scripts/audit-teasers.ts` — must report `title drift: 0 | teaser flags: 0`; exits nonzero on drift or flagged pointers (review the heuristic's explanation).
 - `bun scripts/audit-wording.ts` — no prose copy-pasted between neighbouring lessons
 - `bun scripts/audit-vocab-balance.ts --strict` — words are taught before they are used; new-word bands and floors hold
 - `bun run trail` (`scripts/export-trail.ts`) — regenerates `TRAIL.md`; run it after any lesson/teaser change
@@ -24,7 +24,7 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 
 ### 1.1 §2 table format is machine-parsed and strict
 - **Applies when:** adding or editing any row in §2 (the vocabulary table).
-- **Action:** rows have 9 columns: `| # | **German** | cognate | der (m)/die (f)/das (n)/- | /IPA/ | \`shift_id\` | Phrase *("Translation.")* | Derivation | domain |`. The parser accepts 8 cells and silently defaults the missing `domain` to `general`, which empties the *By Domain* review deck for that word — always write the 9th column. The shift column may only contain the exact ids (`th_to_d`, `d_to_t`, `p_to_pf_f`, `t_to_s_ss_z`, `k_to_ch`, `v_to_b`, `y_gh_to_g_ch`, `latin_ieren`, `strong_verbs_ablaut`) or `` `Direct Cognate` ``. The context phrase MUST end with `*("...")*` — the parser regex-extracts the translation. The gender cell must start with `der`/`die`/`das` or be `-`.
+- **Action:** rows require exactly 9 nonempty columns: `| # | **German** | cognate | der (m)/die (f)/das (n)/- | /IPA/ | `shift_id` | Phrase *("Translation.")* | Derivation | domain |`. Missing cells, malformed translations, duplicate ids/numbers, unknown shift ids and missing sections fail parsing with source line diagnostics before either output is written. Shift ids must be exact comma-separated members (`th_to_d`, `d_to_t`, `p_to_pf_f`, `t_to_s_ss_z`, `k_to_ch`, `v_to_b`, `y_gh_to_g_ch`, `latin_ieren`, `strong_verbs_ablaut`) or `Direct Cognate`. Section 1's four labeled prose fields are parsed from the markdown; ids, symbols and display names stay stable.
 - **Known incident:** a row with the article inside the German word cell (`**das Gift** (trap)`) produced the id `das gift` and silently broke every lesson referencing `gift`.
 
 ### 1.2 Word ids are the German word lowercased — check for duplicates

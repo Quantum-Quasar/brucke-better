@@ -1558,7 +1558,7 @@
 
 **The Vowel Melody** — English never announces its irregular verbs with endings — it changes the VOWEL: sing, sang, sung. drink, drank, drunk.
 
-> 🔭 **Next:** sing/sang/sung Mirrors — map ten English irregulars onto their German ablauf pairs.
+> 🔭 **Next:** sing/sang/sung Mirrors — practise German Ablaut forms with English memory clues.
 
 - 🗝️ Ich habe das Buch gefunden. — *I have found the book.*
 - 🧭 Strong verbs change the root vowel — sing/sang ↔ singen/sang — and wear ge- + -en as participles.
@@ -1567,16 +1567,16 @@
 
 ### 🔸 1901 · sing/sang/sung Mirrors
 
-*Map ten English irregulars onto their German ablauf pairs*
+*Practise German Ablaut forms with familiar English clues*
 
 **Shifts:** `Ablaut`
 
-**Ten Mirrors on the Wall** — You have heard the melody in pairs. Today is the gallery: ten English irregular verbs hung beside their German twins, class by class.
+**Familiar Clues, German Forms** — Start with sing, sang, sung — then say singen, sang, gesungen. Try drink, drank, drunk beside trinken, trank, getrunken.
 
 > 🔭 **Next:** Ablaut Families I — the e→i and a→o classes drilled with geben, sprechen and fahren.
 
 - 🗝️ Wir haben gestern Deutsch gesprochen. — *We spoke German yesterday.*
-- 🧭 The irregular verbs are not lists — they are ten mirrors of one Germanic melody system.
+- 🧭 Practise each German verb as a set: infinitive, simple past and participle. An English connection is a clue, not a guarantee of matching vowels.
 
 **Table:** singen — *to sing* · trinken — *to drink* · geben — *to give* · sprechen — *to speak* · fahren — *to drive / fare* · schreiben — *to write* · finden — *to find* · nehmen — *to take* · kommen — *to come* · schlafen — *to sleep* · natürlich — *natural / of course* · gefährlich — *dangerous* · der Rucksack — *backpack, rucksack* · eigentlich — *actually* · die Verwandte — *relative* · der Hauptbahnhof — *main station*
 
@@ -2535,7 +2535,7 @@
 
 ### 🔸 2801 · fahren & its Dynasty
 
-*The family tree reading — with the ablauf forms fuhr and gefahren*
+*The family tree reading — with the Ablaut forms fuhr and gefahren*
 
 **Shifts:** `Ablaut`
 

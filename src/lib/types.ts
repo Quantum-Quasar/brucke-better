@@ -535,4 +535,12 @@ export interface CompendiumData {
   compounds: CompoundCalque[];
   falseFriends: FalseFriend[];
   dailyInsights: DailyInsight[];
+  /**
+   * Number of shift families in the full dictionary. Lesson payloads ship only
+   * the primary family in `shifts` (the one they render) and carry the total here
+   * so the atlas bridge can still say "explore all N families" without downloading
+   * every family's prose and word list. Absent on the full compendium, where
+   * Object.keys(shifts).length is the count.
+   */
+  shiftFamilyCount?: number;
 }

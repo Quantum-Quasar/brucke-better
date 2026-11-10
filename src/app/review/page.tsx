@@ -730,6 +730,13 @@ function ReviewHub({
     }
 
     recordReview(currentCard.word_id, grade);
+    // Remember the version this grade produced so a later "back" only undoes the
+    // card while it is still where this session left it (not clobbering a newer
+    // cross-tab grade).
+    const gradedSnapshot = preGradeSnapshots.current[currentCard.word_id];
+    if (gradedSnapshot) {
+      gradedSnapshot.version = useAppStore.getState().progressVersions.srsCards[currentCard.word_id];
+    }
     setSessionGrades((prev) => {
       const next = [...prev];
       next[currentIndex] = grade;
@@ -1596,7 +1603,7 @@ function ReviewHub({
                 className="w-full px-4 py-3 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 text-[var(--main-color)] text-center font-mono font-bold text-lg outline-none focus:border-[var(--main-color)] placeholder:text-[var(--sub-color)]/40 transition"
               />
               {(settings.showCharBar === "always" || settings.showCharBar === "on_focus") && (
-                <GermanCharBar onInsert={(c) => handleTypingInputChange(inputGuess + c)} />
+                <GermanCharBar inputRef={inputRef} value={inputGuess} onChange={handleTypingInputChange} />
               )}
               {currentFeedbackNote && (
                 <p role="alert" className="text-center text-xs font-mono text-[var(--main-color)]">

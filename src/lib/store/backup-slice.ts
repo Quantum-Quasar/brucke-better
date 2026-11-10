@@ -8,6 +8,51 @@ import { deleteCookie } from "./persistence";
 import { emptyVersions, sliceFromMirrors } from "./progress-state";
 import { isPlausibleStateObject, isDangerousKey, normalizeSettings, normalizeThemeId, normalizeFontId, normalizeLessonIdList, parseLessonId, normalizeLessonProgress, normalizeLessonStars, normalizeWordMastery, importSrsCards, normalizeWeeklyActivity, applyImportedSlice, normalizeLanguageSlice, normalizeTolerance, oneOf, VALID_REVIEW_MODES, emptyWeek } from "./schema";
 
+/** A progress field that carries meaningful (non-dangerous-key) data but
+ * normalizes to nothing is corrupt, not a legitimate empty snapshot. Importing it
+ * would replace real progress with an empty list and still report success, so
+ * detect it up front. Dangerous keys are excluded here — the sanitizer already
+ * drops them safely, so a hostile key alone is not "corrupt progress". */
+function isCorruptProgressField(field: string, value: unknown): boolean {
+  switch (field) {
+    case "completedLessons":
+      return Array.isArray(value) && value.length > 0 && normalizeLessonIdList(value, true).length === 0;
+    case "passedGateIds":
+      return Array.isArray(value) && value.length > 0 && normalizeLessonIdList(value).length === 0;
+    case "lessonProgress":
+    case "lessonStars":
+    case "wordMastery": {
+      if (!isPlausibleStateObject(value)) return false;
+      const meaningful = Object.keys(value).filter((key) => !isDangerousKey(key)).length;
+      const normalized =
+        field === "lessonProgress" ? normalizeLessonProgress(value)
+        : field === "lessonStars" ? normalizeLessonStars(value)
+        : normalizeWordMastery(value);
+      return meaningful > 0 && Object.keys(normalized).length === 0;
+    }
+    case "srsCards": {
+      if (Array.isArray(value)) {
+        const meaningful = value.filter(
+          (entry) => isPlausibleStateObject(entry) && !isDangerousKey(String(entry.id ?? entry.word_id ?? ""))
+        ).length;
+        return meaningful > 0 && Object.keys(importSrsCards(value, {})).length === 0;
+      }
+      if (isPlausibleStateObject(value)) {
+        const meaningful = Object.keys(value).filter((key) => !isDangerousKey(key)).length;
+        return meaningful > 0 && Object.keys(importSrsCards(value, {})).length === 0;
+      }
+      return false;
+    }
+    default:
+      return false;
+  }
+}
+
+const PROGRESS_FIELDS = ["completedLessons", "lessonProgress", "lessonStars", "passedGateIds", "wordMastery", "srsCards"];
+function hasCorruptProgress(slice: Record<string, unknown>): boolean {
+  return PROGRESS_FIELDS.some((field) => Object.prototype.hasOwnProperty.call(slice, field) && isCorruptProgressField(field, slice[field]));
+}
+
 export const createBackupSlice: StoreSlice<"resetProgress" | "importBackupState"> = (set, get) => ({
   resetProgress: () => {
     // Adopt saved preferences before a reset invoked ahead of the root effect.
@@ -85,6 +130,16 @@ export const createBackupSlice: StoreSlice<"resetProgress" | "importBackupState"
       "font",
     ];
     if (!RECOGNIZED_FIELDS.some((field) => Object.prototype.hasOwnProperty.call(payload, field))) return false;
+    // Reject a backup whose carried progress is entirely corrupt before anything
+    // is replaced — otherwise a junk list would wipe real progress, advance the
+    // reset marker for other tabs, and still report success.
+    if (hasCorruptProgress(payload)) return false;
+    if (isPlausibleStateObject(payload.progressByLanguage)) {
+      for (const [langId, rawSlice] of Object.entries(payload.progressByLanguage)) {
+        if (!isValidLanguageId(langId) || isDangerousKey(langId)) continue;
+        if (isPlausibleStateObject(rawSlice) && hasCorruptProgress(rawSlice)) return false;
+      }
+    }
     if (!persistenceRuntime.hasHydratedFromStorage && persistenceRuntime.bootSavedState && Object.keys(persistenceRuntime.bootSavedState).length > 0) get().hydrateFromStorage();
     set((s) => {
       const nextSettings = isPlausibleStateObject(payload.settings)

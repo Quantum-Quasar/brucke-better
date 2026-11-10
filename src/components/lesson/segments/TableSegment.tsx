@@ -10,7 +10,7 @@ import { importLineFor } from "@/data/sound-imports";
 import type { LessonSession } from "../lesson-session-types";
 
 export default function TableSegment({ session }: { session: LessonSession }) {
-  const { lesson, data, genderSystem, isReading, setCurrentSegment, soundImports, primaryShift, startPractice, openAtlasFamily } = session;
+  const { lesson, data, genderSystem, isReading, setCurrentSegment, soundImports, primaryShift, startPractice, resumingPractice, openAtlasFamily } = session;
   return (
             <div className="p-6 sm:p-8 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-6 shadow-md animate-in fade-in duration-200">
               <div className="flex items-center justify-between pb-2 border-b border-[var(--sub-color)]/15">
@@ -120,7 +120,15 @@ export default function TableSegment({ session }: { session: LessonSession }) {
                   onClick={startPractice}
                   className="inline-flex items-center gap-2 px-5 py-2.5 rounded bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] font-mono font-medium text-sm transition cursor-pointer active:scale-95"
                 >
-                  <span>{isReading ? `Start Questions (${lesson.exercises.length})` : `Start Exercises (${lesson.exercises.length} problems)`}</span>
+                  <span>
+                    {resumingPractice
+                      ? isReading
+                        ? "Resume Questions"
+                        : "Resume Exercises"
+                      : isReading
+                        ? `Start Questions (${lesson.exercises.length})`
+                        : `Start Exercises (${lesson.exercises.length} problems)`}
+                  </span>
                   <span className="keycap bg-[var(--bg-color)]/20 text-inherit border-none text-[10px]">Enter</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>

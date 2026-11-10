@@ -321,7 +321,7 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
               Check
             </button>
           )}
-          <GermanCharBar onInsert={(c) => setUserInput((p) => p + c)} />
+          <GermanCharBar inputRef={inputRef} value={userInput} onChange={setUserInput} />
         </div>
 
         {showSuccessSheet && (
@@ -469,7 +469,7 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
           disabled={status === "correct" || status === "almost"}
           className="w-full bg-[var(--bg-color)] border border-[var(--sub-color)]/40 rounded px-4 py-3 pr-4 text-lg font-mono focus:border-[var(--main-color)] outline-none disabled:opacity-50"
         />
-        <GermanCharBar onInsert={(c) => setUserInput((p) => p + c)} />
+        <GermanCharBar inputRef={inputRef} value={userInput} onChange={setUserInput} />
         {userInput.trim() && (
           <button
             onClick={handleVerify}

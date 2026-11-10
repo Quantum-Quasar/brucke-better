@@ -246,7 +246,7 @@ export const TOPICS: TopicCluster[] = [
     blurb: "The second cognate family: sing/sang/sung ↔ singen/sang/gesungen — vowel melody, not endings.",
     core: authoredCore(19, "Strong Verbs & Ancient Ablaut"),
     sprigs: [
-      { ...shell(sprigId(19, 1), "sing/sang/sung Mirrors", "Map 14 English irregulars onto German ablauf pairs; hear the vowel melody."), authored: true },
+      { ...shell(sprigId(19, 1), "sing/sang/sung Mirrors", "Practise German Ablaut forms with English memory clues."), authored: true },
       { ...shell(sprigId(19, 2), "Ablaut Families I: e→i, a→o", "Class drills: geben/gab, sprechen/sprach, fahren/fuhr with participle forms."), authored: true },
       { ...shell(sprigId(19, 3), "dachte & the Suppletive Irregulars", "think/thought↔denken/dachte, bring/brought↔bringen/brachte, go/went↔gehen/ging."), authored: true },
       { ...shell(sprigId(19, 4), "hatte & war: The Fortress Pasts", "haben and sein keep their simple pasts: hatte ↔ had, war ↔ was — the -te ending is English's own -ed, the storyteller's tense."), authored: true },
@@ -372,7 +372,7 @@ export const TOPICS: TopicCluster[] = [
     blurb: "One root, many words: fahren/Fahrt, ziehen/Zug — the way English builds stand/understand.",
     core: authoredCore(28, "Verb Families & Root Radiations"),
     sprigs: [
-      { ...shell(sprigId(28, 1), "fahren & its Dynasty", "fahren/Fahrt/abfahren family tree reading with ablauf forms fuhr, gefahren."), authored: true },
+      { ...shell(sprigId(28, 1), "fahren & its Dynasty", "fahren/Fahrt/abfahren family tree reading with Ablaut forms fuhr, gefahren."), authored: true },
       { ...shell(sprigId(28, 2), "ziehen & nehmen Dynasties", "Zug/umziehen/ausziehen; nehmen/nimmt/genommen; radiate each root into 6 derivatives."), authored: true },
     ],
   },

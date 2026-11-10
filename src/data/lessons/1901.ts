@@ -4,7 +4,7 @@ const lesson: Lesson = {
   "id": 1901,
   "slug": "sing-sang-sung-mirrors",
   "title": "sing/sang/sung Mirrors",
-  "subtitle": "Map ten English irregulars onto their German ablauf pairs",
+  "subtitle": "Practise German Ablaut forms with familiar English clues",
   "phase": 3,
   "shift_categories": [
     "strong_verbs_ablaut"
@@ -40,8 +40,8 @@ const lesson: Lesson = {
     "hauptbahnhof"
   ],
   "hook": {
-    "title": "Ten Mirrors on the Wall",
-    "content": "You have heard the melody in pairs. Today is the gallery: ten English irregular verbs hung beside their German twins, class by class. sing ↔ singen. drink ↔ trinken. find ↔ finden. give ↔ geben. speak ↔ sprechen. come ↔ kommen. schreiben's English kin is the scribe family (scribe, describe, script). drive ↔ treiben. fare ↔ fahren. sleep ↔ schlafen (sleep/slept ↔ schlafen/schlief — the vowels drift but the CLASS is identical). Stand in front of each pair and the recognition does the memorizing: the melody is not similar. It is the same.",
+    "title": "Familiar Clues, German Forms",
+    "content": "Start with sing, sang, sung — then say singen, sang, gesungen. Try drink, drank, drunk beside trinken, trank, getrunken. English can give you a foothold, but learn each German verb's own forms. Schreiben has a different kind of clue: scribe, describe and script help you remember its meaning. Describe is regular in English; the German forms are schreiben, schrieb, geschrieben.",
     "footnotes": [
       {
         "marker": "1",
@@ -52,15 +52,15 @@ const lesson: Lesson = {
   },
   "pattern": {
     "title": "The Gallery Walk",
-    "content": "Walk it: singen, sang, gesungen ↔ sing, sang, sung. trinken, trank, getrunken ↔ drink, drank, drunk. finden, fand, gefunden ↔ find, found. geben, gab, gegeben ↔ give, gave, given. kommen, kam, gekommen ↔ come, came (the vowel wandered, the class held). schreiben, schrieb, geschrieben ↔ describe, described (scribe family). fahren, fuhr, gefahren ↔ fare, fared. schlafen, schlief, geschlafen ↔ sleep, slept. Ten frames, one artist — the melody is the same artist in every language.",
+    "content": "Read each German set aloud: singen, sang, gesungen; trinken, trank, getrunken; finden, fand, gefunden; geben, gab, gegeben; sprechen, sprach, gesprochen; kommen, kam, gekommen. Then try fahren, fuhr, gefahren; schlafen, schlief, geschlafen; nehmen, nahm, genommen; schreiben, schrieb, geschrieben. Some English forms echo the vowel change; others only help with the meaning. Do not copy an English past-tense ending onto the German verb.",
     "footnotes": [],
-    "linguist_note": "schlafen/schlief ↔ sleep/slept is the cleanest proof that classes are inherited, not coincidence: the consonants match, the vowels follow the same class drift, and neither language arranged this on purpose."
+    "linguist_note": "Use English as a memory clue, not as a rule for predicting every German vowel. Say the infinitive, simple past and participle together."
   },
   "exercises": [
     {
       "id": "l1901_e1",
       "type": "matching_pairs",
-      "prompt": "Gallery wall one — match the melodies:",
+      "prompt": "Match the English clues to the German forms:",
       "matching_pairs": [
         {
           "id": "sg1",
@@ -84,8 +84,8 @@ const lesson: Lesson = {
         }
       ],
       "target_answer": "sprechen / sprach / gesprochen, kommen / kam / gekommen, schreiben / schrieb / geschrieben, schlafen / schlief",
-      "meaning": "the speak, come, scribe, sleep melodies",
-      "explanation": "Same classes, same vowels, same history — the gallery wall of shared inheritance."
+      "meaning": "German forms for speaking, coming, writing and sleeping",
+      "explanation": "The clues help you remember the German forms. Describe belongs to the scribe family, but is a regular English verb — not a shared vowel melody."
     },
     {
       "id": "l1901_e2",
@@ -152,12 +152,12 @@ const lesson: Lesson = {
     }
   ],
   "summary": {
-    "outcome": "Map ten English irregulars to their German ablauf twins by class.",
+    "outcome": "Recall German Ablaut forms using English clues where they help.",
     "use_example": {
       "german": "Wir haben gestern Deutsch gesprochen.",
       "english": "We spoke German yesterday."
     },
-    "takeaway": "The irregular verbs are not lists — they are ten mirrors of one Germanic melody system.",
+    "takeaway": "Practise each German verb as a set: infinitive, simple past and participle. An English connection is a clue, not a guarantee of matching vowels.",
     "curiosity_teaser": "Next: Ablaut Families I — the e→i and a→o classes drilled with geben, sprechen and fahren."
   },
   "twist": {

@@ -2,8 +2,8 @@ import type { AppState, LanguageProgress } from "./types";
 import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "../storage-keys";
 import { DEFAULT_LANGUAGE_ID, isValidLanguageId } from "@/data/languages";
 import { reportStorageWrite } from "../storage-health";
-import { sliceFromMirrors } from "./progress-state";
-import { isPlausibleStateObject, normalizeParsedState } from "./schema";
+import { sliceFromMirrors, mergeLanguageSlice } from "./progress-state";
+import { isPlausibleStateObject, normalizeParsedState, normalizeLanguageSlice, isDangerousKey } from "./schema";
 import { applyTheme, applyAppearanceSettings, DEFAULT_THEME } from "../theme-runtime";
 import { applyFont, DEFAULT_FONT } from "@/data/fonts";
 import { DEFAULT_SETTINGS } from "@/data/settings";
@@ -54,6 +54,22 @@ export function safeStorageGet(key: string): string | null {
   }
 }
 
+/** Union the per-language slices of a stale local snapshot and a newer fallback
+ * cookie so a language (or entry) only one of them holds survives. Each slice is
+ * normalized first; mergeLanguageSlice's per-key versions pick the newer value. */
+function mergeProgressByLanguage(localRaw: unknown, cookieRaw: unknown): Record<string, LanguageProgress> {
+  const localSlices = isPlausibleStateObject(localRaw) ? localRaw : {};
+  const cookieSlices = isPlausibleStateObject(cookieRaw) ? cookieRaw : {};
+  const merged: Record<string, LanguageProgress> = {};
+  for (const langId of new Set([...Object.keys(localSlices), ...Object.keys(cookieSlices)])) {
+    if (!isValidLanguageId(langId) || isDangerousKey(langId)) continue;
+    const localSlice = normalizeLanguageSlice(localSlices[langId]);
+    const cookieSlice = normalizeLanguageSlice(cookieSlices[langId]);
+    merged[langId] = mergeLanguageSlice(localSlice, cookieSlice, true);
+  }
+  return merged;
+}
+
 export function loadSavedState(): Partial<AppState> {
   if (typeof window === "undefined") return {};
 
@@ -81,9 +97,23 @@ export function loadSavedState(): Partial<AppState> {
     const localActor = typeof local.progressResetActor === "string" ? local.progressResetActor : "";
     const cookieActor = typeof cookie.progressResetActor === "string" ? cookie.progressResetActor : "";
     const cookieHasNewerReset = cookieResetAt > localResetAt || (cookieResetAt === localResetAt && cookieActor > localActor);
-    parsed = cookieSavedAt > localSavedAt && (cookieHasProgress || (cookieHasNewerReset && cookie.storageFailed === true))
-      ? { ...local, ...cookie, ...(cookieHasNewerReset && !cookieHasProgress ? { progressByLanguage: { [isValidLanguageId(cookie.activeLanguageId) ? cookie.activeLanguageId : DEFAULT_LANGUAGE_ID]: {} } } : {}) }
-      : { ...cookie, ...local };
+    const cookieIsNewer = cookieSavedAt > localSavedAt && (cookieHasProgress || (cookieHasNewerReset && cookie.storageFailed === true));
+    if (cookieIsNewer) {
+      parsed = { ...local, ...cookie };
+      if (cookieHasNewerReset && !cookieHasProgress) {
+        // A newer reset marker with no progress is a deletion: empty the slice.
+        parsed.progressByLanguage = { [isValidLanguageId(cookie.activeLanguageId) ? cookie.activeLanguageId : DEFAULT_LANGUAGE_ID]: {} };
+      } else if (cookieHasProgress && !cookieHasNewerReset) {
+        // The newer fallback cookie must not bury a language/entry that only the
+        // local snapshot still holds (another tab may have written it after this
+        // tab's last merge). Union per language; per-key versions decide winners.
+        parsed.progressByLanguage = mergeProgressByLanguage(local.progressByLanguage, cookie.progressByLanguage);
+      }
+      // else: cookie carries a newer reset *with* progress — it is the post-reset
+      // replacement, so letting it win wholesale (above) is correct.
+    } else {
+      parsed = { ...cookie, ...local };
+    }
   } else if (isPlausibleStateObject(local)) {
     parsed = local;
   } else if (isPlausibleStateObject(cookie)) {
@@ -99,6 +129,8 @@ let getCurrentState: (() => AppState) | undefined;
 // Strictly increasing per tab, so a cookie written after localStorage rejected
 // a write is unambiguously newer than the stale copy it could not replace.
 let lastSavedAt = 0;
+let progressChannel: BroadcastChannel | null = null;
+let receivingBroadcast = false;
 
 type IdleWindow = Window & {
   requestIdleCallback?: (callback: () => void, options?: { timeout?: number }) => number;
@@ -280,6 +312,11 @@ function writeState(state: AppState) {
       );
     }
   } catch {}
+  // Cookies emit no storage event. Share the full in-memory snapshot, including
+  // progress too large for the fallback cookie, without rebroadcasting merges.
+  if (!localOk && progressChannel && !receivingBroadcast) {
+    try { progressChannel.postMessage(serialized); } catch {}
+  }
 }
 
 export function initializePersistence(getState: () => AppState) {
@@ -296,6 +333,20 @@ export function initializePersistence(getState: () => AppState) {
 
   // The debounced write must never be the thing a tab close loses.
   if (typeof window.addEventListener === "function") {
+    if (typeof window.BroadcastChannel === "function") {
+      try {
+        progressChannel = new window.BroadcastChannel(STORAGE_KEY);
+        progressChannel.onmessage = (event: MessageEvent<unknown>) => {
+          if (typeof event.data !== "string" || !isPlausibleStateObject(parseStoredJson(event.data))) return;
+          receivingBroadcast = true;
+          try {
+            getState().hydrateFromStorage({ reread: true, snapshot: event.data, source: "broadcast" });
+          } finally {
+            receivingBroadcast = false;
+          }
+        };
+      } catch {}
+    }
     window.addEventListener("pagehide", flushSave);
     window.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden") flushSave();

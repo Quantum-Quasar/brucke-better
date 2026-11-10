@@ -183,7 +183,7 @@ const lesson: Lesson = {
       "english": "I have found the book."
     },
     "takeaway": "Strong verbs change the root vowel — sing/sang ↔ singen/sang — and wear ge- + -en as participles.",
-    "curiosity_teaser": "Next: sing/sang/sung Mirrors — map ten English irregulars onto their German ablauf pairs."
+    "curiosity_teaser": "Next: sing/sang/sung Mirrors — practise German Ablaut forms with English memory clues."
   },
   "twist": {
     "prompt": "Now ask it: you have found the book → HAVE you found the book? (The helper flips to position 1.)",

@@ -117,7 +117,7 @@ A short map of where things live; list the directories yourself for the full tre
 │   │                          #   trail-map.ts, review-decks.ts, review-modes.ts, word-entities-core.ts, audio.ts, sound.ts
 │   ├── data/                  # compendium.json (1226 words, 9 shifts, 32 compounds, 16 false friends, 28 insights),
 │   │                          #   lessons/<id>.ts (all 179 authored German lessons), ordered lessons.ts, curriculum.ts
-│   └── tests/                 # 45 test files (Vitest) — whole-curriculum integrity, timezone boundaries,
+│   └── tests/                 # 48 test files (Vitest) — whole-curriculum integrity, timezone boundaries,
 │                              #   persistence merging, security, docs-sync
 └── tests/e2e/                 # Playwright smoke suite
 ```
@@ -161,7 +161,7 @@ All commands run from the repository root:
 # 1. Run Data Compilation Pipeline
 bun run parse-data
 
-# 2. Run All Automated Test Suites (45 test files / 449 tests), then lint and typecheck
+# 2. Run All Automated Test Suites (48 test files / 481 tests), then lint and typecheck
 bun run test
 bun run lint
 bun run typecheck
@@ -199,5 +199,5 @@ When auditing the codebase, verify:
   - State changes in Zustand persist to `localStorage`.
   - Cookie backup stays within safe browser limits (lean payload ≤ 2048 URL-encoded bytes).
 - [ ] **Build & Tests**:
-  - `bun run test` (Vitest) passes with 0 failures across all 45 test files (449 tests).
+  - `bun run test` (Vitest) passes with 0 failures across all 48 test files (481 tests).
   - `bun run build` generates all static pages (6 static routes + 500 lesson payloads) without TypeScript or Turbopack errors.

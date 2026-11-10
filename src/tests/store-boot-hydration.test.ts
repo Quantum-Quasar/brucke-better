@@ -386,4 +386,33 @@ describe("boot hydration snapshot", () => {
     // this tab's fresher [1,2] must survive the other tab's [3]
     expect(store.useAppStore.getState().completedLessons).toEqual([1, 2, 3]);
   });
+
+  it("merges broadcast progress and preferences when storage rejects writes", async () => {
+    localStorage.clear();
+    document.cookie = "";
+    // Reload the module so its boot snapshot belongs to this storage scenario.
+    vi.resetModules();
+    const { useAppStore } = await import("../lib/store");
+    useAppStore.getState().hydrateFromStorage();
+    useAppStore.getState().markWordEncountered("haus");
+    const write = vi.spyOn(localStorage, "setItem").mockImplementation(() => { throw new Error("quota"); });
+    try {
+      useAppStore.getState().hydrateFromStorage({
+        reread: true,
+        source: "broadcast",
+        snapshot: JSON.stringify({
+          activeLanguageId: "de",
+          progressByLanguage: { de: { completedLessons: [2], wordMastery: { boot: "encountered" } } },
+          settings: { showKeyTips: false },
+          hasCompletedOnboarding: true,
+        }),
+      });
+      expect(useAppStore.getState().completedLessons).toEqual([2]);
+      expect(useAppStore.getState().wordMastery).toMatchObject({ haus: "encountered", boot: "encountered" });
+      expect(useAppStore.getState().settings.showKeyTips).toBe(false);
+      expect(useAppStore.getState().hasCompletedOnboarding).toBe(true);
+    } finally {
+      write.mockRestore();
+    }
+  });
 });

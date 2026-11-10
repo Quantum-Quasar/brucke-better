@@ -5,6 +5,7 @@ import { Sparkles, HeartHandshake, Zap, Compass as CompassIcon } from "lucide-re
 import { TwistCard } from "../TwistCard";
 
 import { RETRY_INTENT_LINE } from "@/lib/retry-variation";
+import { exerciseWordIds } from "@/lib/exercise-words";
 import { LazyLoadBoundary } from "@/components/common/LazyLoadBoundary";
 
 import type { LessonSession } from "../lesson-session-types";
@@ -12,7 +13,7 @@ import type { LessonSession } from "../lesson-session-types";
 const ExerciseWidget = React.lazy(() => import("../ExerciseWidgets").then((module) => ({ default: module.ExerciseWidget })));
 
 export default function PracticeSegment({ session }: { session: LessonSession }) {
-  const { lesson, isReading, setCurrentSegment, practiceIndex, setPracticeIndex, retryQueue, retryIndex, setRetryIndex, inRetryPhase, setInRetryPhase, setEverQueued, twistPhase, twistCompleted, failCounts, mercyRevealFor, setMercyRevealFor, showPostureCues, flagGuessed, detourFootnote, setDetourDismissed, showDetour, consciousnessLine, whisperCues, handleExerciseError, handleRetryError, handleTwistDone, drainCurrentRetry, handlePracticeSuccess, currentExercise } = session;
+  const { lesson, isReading, setCurrentSegment, practiceIndex, setPracticeIndex, retryQueue, retryIndex, inRetryPhase, setEverQueued, twistPhase, twistCompleted, failCounts, mercyRevealFor, setMercyRevealFor, showPostureCues, flagGuessed, detourFootnote, setDetourDismissed, showDetour, consciousnessLine, whisperCues, handleExerciseError, handleRetryError, handleTwistDone, drainCurrentRetry, handlePracticeSuccess, currentExercise } = session;
   return (
             <LazyLoadBoundary label="this exercise">
               <React.Suspense
@@ -172,7 +173,9 @@ export default function PracticeSegment({ session }: { session: LessonSession })
                 }
                 onQueueRetry={() => handleExerciseError(currentExercise)}
                 onPurpleForfeit={() => setEverQueued(true)}
-                onFlagGuessed={() => flagGuessed(lesson.word_ids)}
+                onFlagGuessed={() =>
+                  flagGuessed(exerciseWordIds(currentExercise, [...lesson.word_ids, ...(lesson.table_word_ids ?? [])]))
+                }
               />
 
               {/* TM-4c queue mercy: after a second miss on the same item, offer a guided re-learn */}
@@ -214,11 +217,10 @@ export default function PracticeSegment({ session }: { session: LessonSession })
               <div className="flex items-center justify-between px-1 pt-1">
                 <button
                   type="button"
-                  onClick={() => {
-                    setInRetryPhase(false);
-                    setRetryIndex(0);
-                    setCurrentSegment("table");
-                  }}
+                  // Keep the retry phase/index intact: this is a detour to consult
+                  // the table, and "resume exercises" must return to the exact
+                  // queue position, not restart or drop the reinforcement.
+                  onClick={() => setCurrentSegment("table")}
                   className="text-xs font-mono text-[var(--sub-color)] hover:text-[var(--main-color)] transition cursor-pointer"
                 >
                   ← Review Transformation Table

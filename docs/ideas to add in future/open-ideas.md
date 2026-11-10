@@ -28,13 +28,6 @@ understand, remember, use or keep wanting to learn German?
 - **External syllabus audit.** No mapping of the trail against a CEFR/Goethe checklist. Use courses
   such as Language Transfer, Nicos Weg or Menschen to audit *mechanism coverage and difficulty ramps*,
   never to copy their word lists or replace Brücke's organising principle.
-- **Known lesson defect (learner-facing, worth fixing first):** `l1901_e2` in `src/data/lessons.ts` asks
-  which English verb shares *schreiben*'s strong class but keys `describe / described`, marks
-  `write/wrote`, `ride/rode` and `drive/drove` wrong, and its explanation ("write/wrote is a different
-  class entirely") is false — *schreiben* and *write* are both class I (ei–ie–ie ↔ i–o–i). The
-  October audit proposed options `["write / wrote", "sing / sang", "drink / drank", "give / gave"]`
-  with target `write / wrote`; re-check the ablaut class before applying so the fix doesn't conflate
-  class with cognacy.
 - **Small known nits:** lesson 2's `t_to_s_ss_z` shift tag; plurals sit at topic 23 (moving them
   earlier was proposed); `GH→CH` and `Y→G` still share a topic though `V→B` has its own.
 - **Standalone posture primer.** The Thinking Method design called for a one-time four-card primer;

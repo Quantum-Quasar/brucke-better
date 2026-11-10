@@ -16,10 +16,10 @@ const MAX_ZOOM = 2.6;
 
 const STROKE: Record<string, string> = {
   word: "var(--main-color)",
-  phrase: "#b48ead",
-  compound: "#d08770",
-  falsefriend: "#bf616a",
-  insight: "#88c0d0",
+  phrase: "var(--text-color)",
+  compound: "var(--main-color)",
+  falsefriend: "var(--error-color)",
+  insight: "var(--caret-color)",
 };
 
 const KIND_LABEL: Record<string, string> = {
@@ -29,6 +29,17 @@ const KIND_LABEL: Record<string, string> = {
   falsefriend: "false friend",
   insight: "expression",
 };
+
+function NodeShape({ kind, x = 0, y = 0 }: { kind: MasterNode["kind"]; x?: number; y?: number }) {
+  const props = { fill: STROKE[kind], fillOpacity: 0.25, stroke: STROKE[kind], strokeWidth: 1.25 };
+  switch (kind) {
+    case "word": return <circle cx={x} cy={y} r={5} {...props} />;
+    case "phrase": return <path d={`M${x} ${y - 7}l7 7-7 7-7-7Z`} {...props} />;
+    case "compound": return <rect x={x - 6} y={y - 6} width={12} height={12} rx={2} {...props} />;
+    case "falsefriend": return <path d={`M${x} ${y - 7}l7 13h-14Z`} {...props} />;
+    case "insight": return <path d={`M${x} ${y - 7}v14m-7-7h14m-12-5l10 10m0-10-10 10`} {...props} />;
+  }
+}
 
 export const MasterConstellation: React.FC = () => {
   const [mounted, setMounted] = React.useState(false);
@@ -257,11 +268,20 @@ export const MasterConstellation: React.FC = () => {
                   return (
                     <g
                       key={node.id}
-                      className="cursor-pointer"
+                      className="cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--main-color)]"
+                      tabIndex={0}
+                      role="button"
+                      aria-label={node.sub ? `${node.label} — ${node.sub}` : node.label}
                       onClick={() => node.wordId && openWordDrawer(node.wordId)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                          event.preventDefault();
+                          if (node.wordId) openWordDrawer(node.wordId);
+                        }
+                      }}
                     >
                       {/* Invisible hit target: the visible dot is only ~8px. */}
-                      <circle cx={Math.round(node.x)} cy={Math.round(node.y)} r={16} fill="transparent" />
+                      <circle cx={Math.round(node.x)} cy={Math.round(node.y)} r={22 / zoom} fill="transparent" />
                       <circle
                         cx={Math.round(node.x)}
                         cy={Math.round(node.y)}
@@ -289,20 +309,19 @@ export const MasterConstellation: React.FC = () => {
                   <g
                     key={node.id}
                     aria-label={`${node.kind}: ${node.label}${node.sub ? ` — ${node.sub}` : ""}`}
-                    className="cursor-pointer"
+                    className="cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--main-color)]"
+                    tabIndex={0}
+                    role="button"
                     onClick={() => selectNode(node)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        selectNode(node);
+                      }
+                    }}
                   >
-                    <rect
-                      x={Math.round(node.x) - 6}
-                      y={Math.round(node.y) - 6}
-                      width={12}
-                      height={12}
-                      rx={3}
-                      fill={color}
-                      fillOpacity={0.25}
-                      stroke={color}
-                      strokeWidth={1.25}
-                    />
+                    <circle cx={Math.round(node.x)} cy={Math.round(node.y)} r={22 / zoom} fill="transparent" />
+                    <NodeShape kind={node.kind} x={Math.round(node.x)} y={Math.round(node.y)} />
                     {zoom >= LABEL_MIN_ZOOM && (
                       <text
                         x={Math.round(node.x) + (anchorEnd ? -10 : 10)}
@@ -335,11 +354,14 @@ export const MasterConstellation: React.FC = () => {
           {zoom < LABEL_MIN_ZOOM && (
             <span className="text-[10px] text-[var(--main-color)]"> · zoom in for labels</span>
           )}{" "}
-          <span className="text-[var(--main-color)] font-bold">{counts.word} words</span> ·{" "}
-          <span style={{ color: STROKE.phrase }}>{counts.phrase} phrases</span> ·{" "}
-          <span style={{ color: STROKE.compound }}>{counts.compound} compounds</span> ·{" "}
-          <span style={{ color: STROKE.falsefriend }}>{counts.falsefriend} false friends</span> ·{" "}
-          <span style={{ color: STROKE.insight }}>{counts.insight} expressions</span> ·{" "}
+          {(Object.keys(counts) as MasterNode["kind"][]).map((kind) => (
+            <React.Fragment key={kind}>
+              <span className="inline-flex items-center gap-1" style={{ color: STROKE[kind] }}>
+                <svg aria-hidden="true" width={16} height={16} viewBox="-8 -8 16 16"><NodeShape kind={kind} /></svg>
+                {counts[kind]} {kind === "falsefriend" ? "false friends" : kind === "insight" ? "expressions" : `${kind}s`}
+              </span>{" · "}
+            </React.Fragment>
+          ))}
           {graph.edges.length} links
         </div>
       </div>
@@ -391,7 +413,7 @@ export const MasterConstellation: React.FC = () => {
             <button
               type="button"
               onClick={() => selectNode(null)}
-              className="p-0.5 rounded text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
               aria-label="Close node details"
             >
               <X className="w-3.5 h-3.5" />

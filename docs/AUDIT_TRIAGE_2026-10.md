@@ -55,3 +55,55 @@ reinforces the German word.
   lesson prose but have no exercise line. Removing them risks the 650-word floor; adding pairs would break the 12-pair cap.
   Revisit only if a learner-facing reason appears. The "used-but-unlisted" words (regnen, fallen, wand) are already taught earlier.
 - Matching pairs duplicated between a core lesson and its side lesson (single-word recap pairs) — that is the recap design.
+
+## November 2026 — interrupted audit follow-through
+
+The exported session `Repo_audit_and_suggestions_2026-11-10_18-06.md` approved
+Tier 1–5 fixes, not the separate product recommendations. Its partial edits were
+preserved and completed.
+
+| Area | Resolution |
+|---|---|
+| Lesson/SRS integrity | Preserve the retry ledger on table detours; scope guesses to retrieved words and reconcile mastery; refuse undo over a newer card version. |
+| Durability | Reject malformed backup progress before replacement; merge fallback language maps; retain the existing storage-warning/export UI. BroadcastChannel now carries full snapshots when localStorage rejects writes, including progress omitted by the cookie's size cap. Received merges are not rebroadcast. |
+| Offline updates | Offer a user-controlled reload for waiting workers; touch cached assets on access for LRU eviction. This caches visited content, not an entire course. |
+| Dependencies/payloads | Upgrade vulnerable dependencies without switching hosting architecture. Lesson payloads carry the primary shift and a separate total-family count instead of every shift. |
+| Accessibility | Keyboard-activate graph nodes; use theme colors and distinct node/legend shapes; enlarge graph/character/settings targets; expose selected settings through pressed state and checkmarks; ignore invisible focus-trap targets. |
+| Character input | Insert at the saved caret/selection, including keyboard activation of character buttons; migrate the missed review caller. |
+| Content pipeline | Parse shift prose from markdown section 1. Require all sections, inventory counts, exact table widths, valid translations/shift ids and unique identifiers; stop before writing on malformed input. |
+| German clarity | Correct learner-facing Ablaut typos (keep the 1902 slug). Remove lesson 1901's false shared-melody claim without changing the valid scribe-family clue. Remove leaked drafting fragments from the capstone reading. Regenerate payloads and the trail. |
+| CI/docs | Pin Bun to 1.4.4; fail teaser audits on drift; guard each sibling course's published counts and the longer README's test counts. |
+
+### Findings that are not mechanical bug fixes
+
+- **Desktop Back:** kept the documented touch-only history sentinel. Desktop uses
+  Escape/close; a sentinel consumes browser history even after closing and cannot
+  be treated as a free, behavior-preserving fix. No silent navigation redesign.
+- **Zero-new lessons:** 26/179 (14.5%) is within the existing strict 25% bound.
+  Revision lessons intentionally consolidate known German; the audit separately
+  rejects unclassified zero-new lessons. No filler vocabulary added.
+- **Legacy recurrence:** the vocabulary audit still reports 152 legacy words below
+  two later lesson references. This is an unresolved curriculum-weaving backlog,
+  not repaired by adding ids or pinning the current count. The campaign's stricter
+  recurrence/exposure rules remain intact; SRS scheduling is separate from authored
+  contextual reuse. See the recurrence-plan item in `ideas to add in future/open-ideas.md`.
+- **Overlay measurements:** already requestAnimationFrame-throttled and avoid
+  unchanged state updates; no demonstrated observer-churn defect to fix.
+- **Deferred product choices:** static-export migration, beginner testing and
+  language-expansion policy remain deferred as requested.
+
+### Verification
+
+- Existing unit suites plus focused parser, hydration and docs regressions.
+- Chromium: reinforcement → table → resume retains the retry ledger; keyboard
+  character insertion replaces a selection and restores the caret; graph Enter
+  opens the word drawer; settings expose pressed state and 44px targets.
+- Two real Chromium tabs with localStorage writes blocked and an oversized
+  fallback: lesson segments synchronize in both directions despite a prefs-only
+  cookie; receiving tabs do not echo the incoming broadcast.
+- Dependency audit: no vulnerabilities across 301 packages.
+- All four content audits pass; teaser title drift and pointer flags are zero.
+- Production build succeeds with all six tab routes statically prerendered.
+  In Chromium, a newly installed worker displays the update prompt, the reload
+  activates that worker, and the visited Settings page reloads offline.
+

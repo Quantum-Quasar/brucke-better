@@ -364,7 +364,7 @@ export const SpokenTurnReplyExercise: React.FC<SpokenTurnReplyExerciseProps> = (
 
         {(settings.showCharBar === "always" ||
           (settings.showCharBar === "on_focus" && isInputFocused)) && (
-          <GermanCharBar onInsert={(char) => setUserInput((prev) => prev + char)} />
+          <GermanCharBar inputRef={inputRef} value={userInput} onChange={setUserInput} />
         )}
 
         <div className="flex flex-wrap gap-2 pt-1">

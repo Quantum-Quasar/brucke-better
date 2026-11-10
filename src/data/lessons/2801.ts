@@ -4,7 +4,7 @@ const lesson: Lesson = {
   "id": 2801,
   "slug": "fahren-and-its-dynasty",
   "title": "fahren & its Dynasty",
-  "subtitle": "The family tree reading — with the ablauf forms fuhr and gefahren",
+  "subtitle": "The family tree reading — with the Ablaut forms fuhr and gefahren",
   "phase": 3,
   "shift_categories": [
     "strong_verbs_ablaut"

@@ -2,6 +2,37 @@ import { describe, it, expect } from "vitest";
 import { compendium as data } from "../data/compendium";
 import { getWordEntity } from "./word-entity-fixtures";
 import { TOTAL_COMPENDIUM_WORDS } from "../lib/types";
+import fs from "node:fs";
+import { parseCompendium } from "../../scripts/parse-compendium";
+
+describe("Compendium parser rejects data loss", () => {
+  const source = fs.readFileSync(new URL("../../word_connections.md", import.meta.url), "utf8");
+
+  it.each([
+    ["missing section", "## 3. Complete", "## Missing. Complete", /missing section|out of order/],
+    ["short row", "| body |", "|", /expected 9 columns/],
+    ["extra cell", "| body |", "| body | extra |", /expected 9 columns/],
+    ["unknown shift", "`th_to_d`", "`not_a_shift`", /unknown or duplicate shift/],
+    ["invalid translation", 'Mein Arm tut weh. *("My arm hurts.")*', "Mein Arm tut weh.", /expected phrase/],
+    ["duplicate word", "**Hand**", "**Arm**", /duplicate id: arm/],
+    ["invalid day", "| Day 1 |", "| Day nope |", /invalid row number/],
+    ["missing shift field", "- **Phonetic Rule:** English \"th\"", "- **Missing Rule:** English \"th\"", /malformed shift definition/],
+  ])("rejects %s with source diagnostics", (_name, from, to, error) => {
+    expect(() => parseCompendium(source.replace(from, to))).toThrow(
+      new RegExp(`word_connections\\.md:\\d+: .*${error.source}`)
+    );
+  });
+
+  it("uses edited shift prose from the source while preserving IDs and word membership", () => {
+    const parsed = parseCompendium(source.replace(
+      '- **Phonetic Rule:** English "th" (/θ/ or /ð/) ➔ German "d" ([d])',
+      "- **Phonetic Rule:** A revised dental rule",
+    ));
+    expect(parsed.shifts.th_to_d.phonetic_rule).toBe("A revised dental rule");
+    expect(parsed.shifts.th_to_d.word_ids).toContain("denken");
+    expect(parsed.words.arm.context_translation).toBe("My arm hurts.");
+  });
+});
 
 describe("Brücke Compendium Data Integrity", () => {
   it("keeps word count at or above the UI total and internally consistent", () => {

@@ -34,7 +34,8 @@ export const createHydrationSlice: StoreSlice<"hydrateFromStorage"> = (set, get)
     const snapshot = options?.snapshot ? parseStoredJson(options.snapshot) : null;
     const snapshotState = isPlausibleStateObject(snapshot) ? normalizeParsedState(snapshot) : null;
     const saved = fromBoot ? persistenceRuntime.bootSavedState : snapshotState
-      ? { ...loadSavedState(), progressByLanguage: snapshotState.progressByLanguage, progressResetAt: snapshotState.progressResetAt, progressResetActor: snapshotState.progressResetActor }
+      ? options?.source === "broadcast" ? snapshotState
+        : { ...loadSavedState(), progressByLanguage: snapshotState.progressByLanguage, progressResetAt: snapshotState.progressResetAt, progressResetActor: snapshotState.progressResetActor }
       : loadSavedState();
     if (saved && Object.keys(saved).length > 0) {
       set((s) => {

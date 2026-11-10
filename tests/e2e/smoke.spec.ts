@@ -215,6 +215,16 @@ test.describe("browser smoke", () => {
       await page.reload();
       await page.goto("/trail/1");
       await expect(page.getByText(/reinforcement · problem 1 of 1/i)).toBeVisible();
+
+      await page.getByRole("button", { name: /review transformation table/i }).click();
+      await page.getByRole("button", { name: /resume exercises/i }).click();
+      await expect(page.getByText(/reinforcement · problem 1 of 1/i)).toBeVisible();
+      expect((await readAppState(page)).lessonProgress["1"]).toMatchObject({
+        everQueued: true,
+        retryExerciseIds: ["l1_e1"],
+        inRetryPhase: true,
+        retryIndex: 0,
+      });
     });
 
     test("review session: keyboard reveal + SM-2 grading persist to SRS storage", async ({ page }) => {

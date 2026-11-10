@@ -32,13 +32,13 @@ Per-language design notes, shared method and test constraints: [`courses.md`](./
 
 ## Tech Stack & Architecture
 
-- **Runtime**: [Bun](https://bun.com) v1.4+
-- **Framework**: [Next.js](https://nextjs.org) 16.3.4 (App Router, Turbopack, 100% Static Site Generation)
+- **Runtime**: [Bun](https://bun.com) v1.4.4 (pinned in CI)
+- **Framework**: [Next.js](https://nextjs.org) 16.4.1 (App Router, Turbopack, 100% Static Site Generation)
 - **UI Library**: React 19.2 + TypeScript
 - **Styling**: Tailwind CSS v4 (native CSS tokens, dark mode default)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) 5 (dual `localStorage` + size-guarded cookie persistence)
 - **Icons**: Lucide React
-- **Testing**: Vitest 5 (`bun run test` → `vitest run`) — 45 test files, 449 automated tests. There is no `bun test` script.
+- **Testing**: Vitest 5 (`bun run test` → `vitest run`) — 48 test files, 481 automated tests. There is no `bun test` script.
 - **Audio Engine**: Two independent zero-dependency browser-native paths: `window.speechSynthesis` for pronunciation (voice locale chosen per language, 0.92x, preferring an exact locale voice and then another voice for the same language), and a Web Audio **sample** engine (`src/lib/sound.ts`) that decodes bundled Monkeytype mechanical-keyboard `.wav` packs with a 24-entry buffer cache and negative URL caching.
 
 ---
@@ -61,7 +61,7 @@ bun run parse-data
 
 ### Run Automated Tests
 
-Executes the full Vitest suite — 45 test files, 449 automated tests:
+Executes the full Vitest suite — 48 test files, 481 automated tests:
 
 ```bash
 bun run test
@@ -202,7 +202,7 @@ src/
 │   ├── retry-variation.ts, listening.ts   # Retry surface rotation; 15-minute listening skip
 │   ├── types.ts          # Core domain TypeScript interfaces
 │   └── ...
-└── tests/                # 45 test files (Vitest)
+└── tests/                # 48 test files (Vitest)
 ```
 
 ---
@@ -211,8 +211,9 @@ src/
 
 - **No Third-Party Component Bloat**: The UI strictly avoids component libraries like Radix, Headless UI, or Framer Motion. Standard DOM and Tailwind CSS are used.
 - **Zero Cloud TTS Dependency**: Pronunciation uses the browser's native `window.speechSynthesis`, avoiding external API costs, latency, or asset downloads.
-- **Durable Local Storage**: Progress is preserved across sessions using `localStorage` with a size-guarded cookie fallback: the lean payload is only written if it URL-encodes to ≤ 2048 bytes, otherwise a minimal `{theme, font}` cookie is written instead (`src/lib/store.ts`).
+- **Durable Local Storage**: Progress is preserved using `localStorage` with a size-guarded cookie fallback: progress is included only when the payload URL-encodes to ≤ 2048 bytes. Otherwise the cookie retains preferences, onboarding/reset markers and `storageFailed`, and the warning offers a JSON backup (`src/lib/store/persistence.ts`). A cookie cannot preserve unlimited progress.
 - **Recovery and offline**: A reminder offers JSON backups after progress exists and weekly thereafter. Settings requests persistent storage. Installation uses the browser menu; production caches visited pages, lesson payloads and lazy chunks, not the entire course. Unopened or evicted content needs a connection. Neither installation nor persistent storage prevents manual deletion or device loss; there are no accounts or cloud sync.
+- **Cross-tab fallback**: When localStorage rejects writes, BroadcastChannel shares the full in-memory snapshot with other open tabs, including progress too large for the cookie. Versioned progress/reset merging still applies. Without BroadcastChannel, cookie-only writes cannot notify other tabs. This is not disk persistence: heed the storage warning and export a JSON backup.
 - **No Cargo-Cult Repetition**: `bun scripts/audit-wording.ts` blocks `explanation` strings, prose sentences and prompt formulas copy-pasted between neighbouring lessons, while an explicit allowlist protects the widget labels that are *meant* to stay identical.
 - **All Routes Static**: Every route in `/app` must pre-render via `generateStaticParams()` to guarantee instant navigation; dynamic segments set `dynamicParams = false` so unknown ids 404.
 - **Deferred Ideas Live in `docs/ideas to add in future/`**: specified-but-unimplemented work. These are write-ups, not commitments — nothing in them is wired into the app.

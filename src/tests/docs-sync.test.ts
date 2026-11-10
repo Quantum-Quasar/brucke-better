@@ -48,7 +48,7 @@ function countStaticRoutes(dir: string): number {
   }, 0);
 }
 const STATIC_ROUTE_COUNT = countStaticRoutes(path.join(ROOT, "src", "app"));
-const TEST_COUNT = 449; // update when adding tests
+const TEST_COUNT = 481; // update when adding tests
 const THEME_COUNT = Object.keys(THEMES).length;
 const FONT_COUNT = FONT_LIST.length;
 const TAUGHT_WORDS = 671; // update after running scripts/audit-vocab-balance.ts
@@ -113,6 +113,21 @@ describe("Documentation stays in sync with the data", () => {
     const docsReadme = readRootDoc(path.join("docs", "README.md"));
     expect(docsReadme).toContain(`${STATIC_ROUTE_COUNT} static routes`);
     expect(docsReadme).toContain(`${FR_LESSONS.length} lessons authored`);
+    for (const [name, lessons, course] of [
+      ["French", FR_LESSONS, frenchCompendium],
+      ["Spanish", ES_LESSONS, spanishCompendium],
+      ["Dutch", NL_LESSONS, dutchCompendium],
+    ] as const) {
+      const paragraph = docsReadme.split(`**${name} course`)[1]?.split("\n")[0] ?? "";
+      expect(paragraph, `${name} lesson count`).toContain(
+        name === "Dutch" ? `${lessons.length} Dutch lessons` : `${lessons.length} lessons authored`
+      );
+      expect(paragraph, `${name} word count`).toContain(`${Object.keys(course.words).length}-word compendium`);
+      if (name !== "Spanish") {
+        expect(paragraph).toContain(`${course.compounds.length} compound calques`);
+        expect(paragraph).toContain(`${course.falseFriends.length} false friends`);
+      }
+    }
     expect(docsReadme).toContain(`${NL_LESSONS.length} Dutch lessons`);
     expect(docsReadme).toContain(`${trailIds.size} unique ids`);
     expect(docsReadme).toContain(`${payloadCount} per-lesson payloads`);
@@ -150,8 +165,8 @@ describe("Documentation stays in sync with the data", () => {
     }
   });
 
-  it("root docs quote the current test-suite counts", () => {
-    for (const doc of ["README.md", "AUDIT_MANIFEST.md"]) {
+  it("maintained docs quote the current test-suite counts", () => {
+    for (const doc of ["README.md", "AUDIT_MANIFEST.md", "docs/README.md"]) {
       const text = readRootDoc(doc);
       expect(text, `${doc} must quote the current test-file count`).toContain(
         `${TEST_FILE_COUNT} test files`

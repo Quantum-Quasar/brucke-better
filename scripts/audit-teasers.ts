@@ -69,3 +69,4 @@ for (let i = 0; i < order.length; i++) {
 }
 
 console.log(`\n=== title drift: ${drift} | teaser flags: ${flagged} (heuristic — ⚠ means "read it, the pointer may skip a node") ===`);
+if (drift > 0 || flagged > 0) process.exitCode = 1;

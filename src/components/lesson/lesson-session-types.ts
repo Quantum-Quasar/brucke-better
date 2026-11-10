@@ -65,6 +65,8 @@ export interface LessonSession {
   nextLesson: LessonReaderProps["nextLesson"];
   markSegmentDone: (segment: LessonSegment, next: LessonSegment) => void;
   startPractice: () => void;
+  /** true when practice is mid-lesson and re-entering it resumes (not restarts) */
+  resumingPractice: boolean;
   stickyAction: { label: string; run: () => void } | null;
   currentExercise: ExerciseItem;
   closeLesson: () => void;

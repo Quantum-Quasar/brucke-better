@@ -211,7 +211,7 @@ export const FamilyMatrixExercise: React.FC<FamilyMatrixExerciseProps> = ({
           disabled={revealed}
           className="w-full bg-[var(--bg-color)] border border-[var(--sub-color)]/40 rounded px-4 py-3 text-lg font-mono focus:border-[var(--main-color)] outline-none disabled:opacity-50"
         />
-        <GermanCharBar onInsert={(c) => setUserInput((p) => p + c)} />
+        <GermanCharBar inputRef={inputRef} value={userInput} onChange={setUserInput} />
         {userInput.trim() && !revealed && (
           <button
             onClick={handleVerify}

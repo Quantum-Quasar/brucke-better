@@ -20,6 +20,12 @@ shift family, compound, trap, and insight. `compendium.json` is **generated** �
 edit the markdown, never the JSON. `scripts/append-words.mjs` is the batch helper
 for adding records to §2 of that markdown.
 
+The parser requires all five sections and their declared inventory counts, complete
+shift definitions, and exact table widths (9 / 7 / 6 / 5 columns for sections 2–5).
+Invalid rows, translations, ids or duplicates stop the build with a source line
+before either generated file is written. Shift prose comes from section 1, not a
+second hardcoded copy.
+
 > `bun run build` already chains `parse-data && export-data && next build`. You only
 > need `bun run parse-data` by itself when iterating on the compendium.
 
@@ -40,8 +46,8 @@ These read the codebase and report. `audit-word-refs`, `audit-teasers`, `audit-w
 `audit-vocab-balance --strict` run in CI (`.github/workflows/ci.yml`), and the word-reference
 logic is also enforced inside `bun run test` by `src/tests/word-refs.test.ts`. All four audit
 German data only; the sibling courses are guarded by their own `*-content.test.ts` suites.
-`audit-teasers` never sets a failing exit code — read its output (`title drift: 0 | teaser
-flags: 0`) rather than trusting the exit status.
+`audit-teasers` exits nonzero on title drift or flagged teaser pointers; the clean
+summary is `title drift: 0 | teaser flags: 0`.
 
 | Script | What it checks |
 | --- | --- |

@@ -20,7 +20,7 @@ Start here. Every file below is maintained; anything not listed is either genera
 | Running scripts or audits | [`../scripts/README.md`](../scripts/README.md) |
 | Deploying | [`DEPLOYMENT.md`](./DEPLOYMENT.md) |
 | Testing with real beginners | [`USER_TESTING.md`](./USER_TESTING.md) |
-| Triaging an audit | [`AUDIT_TRIAGE_2026-10.md`](./AUDIT_TRIAGE_2026-10.md) — what was fixed and what was deliberately *not* done, with reasons |
+| Triaging an audit | [`AUDIT_TRIAGE_2026-10.md`](./AUDIT_TRIAGE_2026-10.md) — October fixes and November continuation, including deliberate tradeoffs and unresolved curriculum recurrence |
 | Looking for what to build next | [`ideas to add in future/`](./ideas%20to%20add%20in%20future/) — start with `open-ideas.md` |
 | Writing a product description | [`../BRUCKE_DESCRIPTION.md`](../BRUCKE_DESCRIPTION.md) |
 

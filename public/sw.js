@@ -53,7 +53,12 @@ self.addEventListener("fetch", (event) => {
   event.respondWith((async () => {
     const cache = await caches.open(cacheName);
     const saved = await cache.match(request);
-    if (asset && saved) return saved;
+    if (asset && saved) {
+      // LRU touch: re-insert the hit at the newest end so frequently opened
+      // lessons/assets are not evicted ahead of stale ones under the size cap.
+      event.waitUntil(cache.put(request, saved.clone()).catch(() => {}));
+      return saved;
+    }
     try {
       const response = await fetch(request);
       event.waitUntil(remember(request, response.clone()).catch(() => {}));
@@ -72,6 +77,13 @@ self.addEventListener("fetch", (event) => {
 // Registration happens after hydration. Preserve the current document and the
 // assets already loaded before the worker took control, without fetching lessons.
 self.addEventListener("message", (event) => {
+  // The update prompt asks the waiting worker to activate; the page then reloads
+  // on controllerchange. Activation stays user-driven so an open lesson keeps its
+  // own build's chunks until the learner chooses to update.
+  if (event.data?.type === "SKIP_WAITING") {
+    self.skipWaiting();
+    return;
+  }
   if (event.data?.type !== "CACHE_VISIT" || !Array.isArray(event.data.urls)) return;
   event.waitUntil((async () => {
     for (const value of event.data.urls.slice(0, limit)) {

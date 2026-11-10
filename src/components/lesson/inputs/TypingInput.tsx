@@ -68,7 +68,7 @@ export default function TypingInput({ controller }: { controller: ClassicExercis
 
           {!isReverseCognate &&
             (settings.showCharBar === "always" || (settings.showCharBar === "on_focus" && isInputFocused)) && (
-              <GermanCharBar onInsert={(char) => handleInputChange(userInput + char)} />
+              <GermanCharBar inputRef={inputRef} value={userInput} onChange={handleInputChange} />
             )}
         </div>
   );

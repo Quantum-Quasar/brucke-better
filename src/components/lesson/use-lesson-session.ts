@@ -104,7 +104,7 @@ export const useLessonSession = ({
 
   const primaryShiftId = lesson.shift_categories && lesson.shift_categories[0];
   const primaryShift = primaryShiftId ? data.shifts[primaryShiftId] : null;
-  const familyCount = Object.keys(data.shifts).length;
+  const familyCount = data.shiftFamilyCount ?? Object.keys(data.shifts).length;
 
   const completeLesson = useAppStore((s) => s.completeLesson);
   const seedSrsCards = useAppStore((s) => s.seedSrsCards);
@@ -231,19 +231,7 @@ export const useLessonSession = ({
       } else if (currentSegment === "table") {
         if (e.key === "Enter" || e.key === " " || e.code === "Space") {
           e.preventDefault();
-          setPracticeIndex(0);
-          setRetryIndex(0);
-          setInRetryPhase(false);
-          setRetryQueue([]);
-          setEverQueued(false);
-          setTwistPhase(false);
-          setTwistCompleted(false);
-          setTwistMeetAgain(false);
-          setTwistResurfaced(false);
-          setFailCounts({});
-          setMercyRevealFor(null);
-          setRetryAttempts({});
-          markSegmentDone("table", "practice");
+          startPractice();
         } else if (e.key === "Backspace" || e.key === "ArrowLeft") {
           e.preventDefault();
           setCurrentSegment("pattern");
@@ -378,24 +366,42 @@ export const useLessonSession = ({
     setCurrentSegment(nextSeg);
   };
 
+  const practiceCompleted = completedSegments.includes("practice");
+  // Mid-lesson practice is in progress if any work has been started but the
+  // segment hasn't been completed. A detour to the table and back must resume
+  // it, not restart it.
+  const resumingPractice =
+    !practiceCompleted &&
+    (practiceIndex > 0 || inRetryPhase || retryQueue.length > 0 || everQueued || twistCompleted || twistPhase);
+
   const startPractice = () => {
-    setPracticeIndex(0);
-    setRetryIndex(0);
-    setInRetryPhase(false);
-    setRetryQueue([]);
-    setEverQueued(false);
-    setTwistPhase(false);
-    setTwistCompleted(false);
-    setTwistMeetAgain(false);
-    setTwistResurfaced(false);
-    setFailCounts({});
-    setMercyRevealFor(null);
-    setRetryAttempts({});
+    // Only a fresh start or a replay after completion resets the ledger. Wiping
+    // the retry queue on a mid-lesson table detour laundered a missed exercise
+    // into a flawless (purple) run and dropped the reinforcement the learner was
+    // promised.
+    if (!resumingPractice) {
+      setPracticeIndex(0);
+      setRetryIndex(0);
+      setInRetryPhase(false);
+      setRetryQueue([]);
+      setEverQueued(false);
+      setTwistPhase(false);
+      setTwistCompleted(false);
+      setTwistMeetAgain(false);
+      setTwistResurfaced(false);
+      setFailCounts({});
+      setMercyRevealFor(null);
+      setRetryAttempts({});
+    }
     markSegmentDone("table", "practice");
   };
 
   const stickyAction = (() => {
-    if (preview || twistPhase || inRetryPhase) return null;
+    if (preview) return null;
+    // During the twist/retry the exercise widget drives progress — but only on
+    // the practice segment. On the table (a mid-retry detour) the resume button
+    // must stay visible so the learner can get back to the queue.
+    if (currentSegment === "practice" && (twistPhase || inRetryPhase)) return null;
     if (currentSegment === "hook") {
       return { label: isReading ? "next: read the story" : "next: pattern", run: () => markSegmentDone("hook", "pattern") };
     }
@@ -403,7 +409,11 @@ export const useLessonSession = ({
       return { label: isReading ? "next: word bank" : "next: transformation table", run: () => markSegmentDone("pattern", "table") };
     }
     if (currentSegment === "table") {
-      return { label: isReading ? `start questions (${lesson.exercises.length})` : `start exercises (${lesson.exercises.length})`, run: startPractice };
+      const noun = isReading ? "questions" : "exercises";
+      return {
+        label: resumingPractice ? `resume ${noun}` : `start ${noun} (${lesson.exercises.length})`,
+        run: startPractice,
+      };
     }
     if (currentSegment === "summary") {
       return {
@@ -475,6 +485,7 @@ export const useLessonSession = ({
     nextLesson,
     markSegmentDone,
     startPractice,
+    resumingPractice,
     stickyAction,
     currentExercise,
     closeLesson,
