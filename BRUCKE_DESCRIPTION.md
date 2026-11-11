@@ -1,26 +1,28 @@
-# Brücke — learn German by deduction, not memorization
+# Brücke — learn German through familiar words
 
-**You already understand more German than you think.**
+**Start with something familiar. Build something you can use.**
 
-English speakers spend years grinding flashcards for words that are technically their own inheritance. *Wasser* is *water*. *Denken* is *think*. *Zwei* is *two*. These aren't coincidences you memorize your way around — they're the conclusions of sound laws. Around 500–800 AD, the consonants of High German shifted in predictable ways while English, sheltered across the North Sea, kept the older sounds. Nine rules — `t→ss`, `th→d`, `p→ff`, `k→ch`, and friends — describe the whole correspondence system. Learn the law once, and *hundreds* of words stop being flashcards and become derivations you can check by hand.
-
-**Brücke is the app that teaches the law, not the residue of it.**
+*Wasser* looks like *water*. *Handschuh* breaks into “hand” and “shoe.” Connections like these can make a word easier to remember, but they are a starting point, not a promise that every German word follows one conversion rule. Brücke pairs short explanations with examples, practice and spaced repetition.
 
 ## What it is
 
-Four surfaces, one engine:
+Four surfaces, one learning engine:
 
-- **The Trail** — a Baba Is You-style node map of 30 topic clusters and 179 authored lessons, gated by star quotas and checkpoint tests so you can't rush past weak ground. Every lesson is a five-card sequence: hook, pattern, transformation table, practice, and a retry queue that locks completion behind actual mastery.
-- **The Sound Shift Atlas** — a radial explorer of the shift families, where a deterministic aligner highlights exactly which letters prove each law: the *t* in *water* dims, the *ss* in *Wasser* lights up, with a `T → SS` pill between them.
-- **The Grammar Panorama** — an opt-in reference map of German *structure* (articles as pronouns, the verb bracket, adjective endings, the tense map), with no levels and no gating.
-- **The Review Hub** — SuperMemo SM-2 spaced repetition with nine decks (including a False Friends deck — yes, *Gift* means *poison* — and a sentence-patterns deck) and four styles, with the article hidden behind a `[ der / die / das ? ]` shield so recall of gender isn't spoiled before you attempt it.
+- **The Trail** — 30 topic clusters and 179 lessons, including extra practice and reading stories. Lessons introduce a useful pattern, show examples, then let you practise. Star quotas and checkpoint tests gate later stretches; missed answers return for correction or guided re-learning.
+- **The Sound Shift Atlas** — an optional visual reference for word families and sound correspondences, with highlighted letters and short practice drills. You do not need to study historical linguistics to take a lesson.
+- **The Grammar Panorama** — an optional reference map of German structure, including articles, the verb bracket, adjective endings and tense patterns. No levels or gating.
+- **The Review Hub** — SuperMemo SM-2 spaced repetition with **10 review deck types**: due, learned, shift family, domain, weakest words, recent lessons, compounds & traps, sentence patterns, article & gender, and everything. False friends belong to Compounds & Traps, not a separate deck. Four review styles are available overall; Article & Gender uses multiple choice only.
 
-Production drills run from lesson two onward: transcription, literal-gloss translation, dictation, and "twist" cards that introduce deliberate friction — because producing German early is what separates actually learning from just recognizing. The same engine also runs French, Spanish and Dutch courses.
+Start with **Continue lesson**, **Review learned words**, or **Practise difficult words**. Advanced practice filters are tucked under **More practice options**. The article drill practises the usual singular definite article for gendered nouns in German, Dutch, French and Spanish; it does not teach cases or articles in sentence context. Gender is hidden before recall so the answer is not given away.
 
-## Why it matters
+Lessons mix supported word-building, sentence production, translation and listening. Historical notes are optional. Explanations should be short and grounded in the meaning and example: keep a useful memory aid, or teach the word plainly when the connection is shaky. There is no requirement to prove every historical derivation or add citations before teaching a word.
 
-Most language apps reward streaks, not speech. Learners memorize thousands of disconnected pairs and re-forget most of them, then conclude they're bad at languages. Brücke flips the frame: the lesson isn't "here's a new word," it's "you already knew this — nobody told you the rule." That's a fundamentally different motivational surface, and it's the same insight quality teachers like Language Transfer have been quietly demonstrating for years, without a productized interactive version — until this.
+The same engine also runs French, Spanish and Dutch courses. The German compendium contains **1226 words**; the [canonical project guide](./docs/README.md) describes course coverage and implementation.
 
-Everything is sourced (a 1,226-word compendium where every derivation cites Wiktionary/etymonline), tested (449 automated tests including solvability and fair-content gates), and private (100% static, local-first, no accounts, no telemetry, JSON export). The whole curriculum runs in the browser with zero marginal infra cost.
+## Links, storage and privacy
 
-**The pitch in one line:** *Duolingo taught you streaks. Anki taught you forgetting curves. Brücke teaches you the one insight that makes German feel less like a foreign language and more like your own vocabulary wearing a different suit.*
+Lessons and atlas details open as client-rendered overlays with short shareable query URLs that include the learning language, such as `/?lesson=1&lang=de`. Opening, changing and closing a view replaces the current history entry; copying a link or reloading restores the selected view and language. Moving to another top-level tab creates normal navigation history. Legacy lesson and atlas paths still redirect; lessons are not server-rendered pages.
+
+The app uses **Next.js 16.4.1** (declared `^16.4.1`, locked in `bun.lock`) with static top-level tabs and browser-rendered lesson content. Progress is local-first, with JSON backup export/import. There are no accounts or telemetry; accounts, cross-device recovery and optional privacy-respecting tracking remain future ideas, not implemented features. Use `bun run test` for current automated test totals rather than a manually pinned marketing count.
+
+**The pitch in one line:** *Learn useful German by connecting familiar words, trying the pattern, and practising what needs another look.*

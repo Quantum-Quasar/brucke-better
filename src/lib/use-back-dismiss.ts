@@ -1,10 +1,9 @@
 "use client";
 
-// Make the browser/Android Back gesture close an in-page overlay instead of
-// leaving the site. Subviews deliberately do not change the URL, so without a
-// sentinel history entry the system Back button has nothing to pop. Opening a
-// dialog pushes a marker; Back pops it and closes the dialog; closing from the
-// UI pops the same marker. Nested dialogs each own one entry.
+// Touch-device Back dismisses transient dialogs using a history sentinel.
+// Shareable lesson and atlas subviews do not use this hook: they replace the
+// current URL without adding entries. Nested transient dialogs each own one
+// marker; Back pops it, while closing from the UI pops the same marker.
 //
 // The push and the pop are deferred by a few milliseconds. React StrictMode
 // runs effects twice in development: a synchronous push/back pair would fight

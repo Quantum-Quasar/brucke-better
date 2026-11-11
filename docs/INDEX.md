@@ -7,7 +7,7 @@ Start here. Every file below is maintained; anything not listed is either genera
 
 1. [`../AGENTS.md`](../AGENTS.md) — working agreements for AI agents (what not to open or commit, the content pipeline, commands).
 2. [`NORTH_STAR.md`](./NORTH_STAR.md) — what the app is for and the one test for every change. **Wins over every other doc.**
-3. [`../README.md`](../README.md) — what shipped, quick start, structure.
+3. [`README.md`](./README.md) — canonical project guide: shipped behavior, quick start, structure and source-checked content counts. The [root README](../README.md) is only a quick-start pointer.
 
 ## By task
 
@@ -23,9 +23,10 @@ Start here. Every file below is maintained; anything not listed is either genera
 | Looking for what to build next | [`ideas to add in future/`](./ideas%20to%20add%20in%20future/) — start with `open-ideas.md` (it also records what was deliberately left as is) |
 | Writing a product description | [`../BRUCKE_DESCRIPTION.md`](../BRUCKE_DESCRIPTION.md) |
 
-`docs/README.md` is the longer feature-by-feature README (count-pinned by `src/tests/docs-sync.test.ts`
-together with the root `README.md` and `AUDIT_MANIFEST.md`). Counts quoted there must be updated in
-both READMEs when data changes — see `AGENTS.md`.
+[`README.md`](./README.md) is the single substantive README.
+`src/tests/docs-sync.test.ts` checks documented data counts, the runtime review deck
+taxonomy and the locked Next.js version, including [`../BRUCKE_DESCRIPTION.md`](../BRUCKE_DESCRIPTION.md).
+Use `bun run test` for current suite totals rather than maintaining a second test counter in prose.
 
 ## Generated — do not hand-edit
 

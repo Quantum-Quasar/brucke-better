@@ -30,8 +30,7 @@ const nextConfig = {
     optimizePackageImports: ["lucide-react"],
   },
   async redirects() {
-    // Lessons and atlas details are in-page views now. Old deep links land on
-    // the parent tab with a query the client restores, then cleans the URL.
+    // Keep legacy links working; the client retains a shareable query URL.
     return [
       {
         source: "/trail/:lang/:id",

@@ -43,6 +43,21 @@ understand, remember, use or keep wanting to learn German?
 - **Typing challenges and ranks** — speed-typing competitions on top of the typing mechanics.
 - **Marketing and outreach** — distribution, not code.
 - **Full UI translation** and a native-speaker pass on non-German courses (human-dependent).
+- **Optional accounts and cross-device recovery — deferred evaluation only.** Consider whether an
+  opt-in way to recover progress or continue on another device would help learners. This is not
+  implemented or a commitment: it introduces no current accounts, sync, recovery service, or
+  changes to existing backup behavior.
+
+## Beginner learning evaluation — deferred ideas only
+
+- **Test with real beginners.** Consider observing whether a beginner can start, finish, understand
+  and remember an early lesson before deciding what to simplify. This records a future evaluation
+  idea, not a testing rollout or a current product change.
+- **Optional, privacy-respecting tracking.** Only if useful for that evaluation, consider opt-in,
+  minimal measurements such as lessons started/finished, retry depth, time to first keystroke and
+  the point where a learner stops. Any proposal should avoid third-party SDKs and user, device or
+  session identifiers; evaluate whether anonymous aggregate measurements or observation alone
+  suffice. No telemetry is added or enabled by this idea, and no current tracking behavior changes.
 
 ## Settled — do not re-litigate without a learner-facing symptom
 
@@ -54,8 +69,9 @@ learner problem, not with a preference.
   `zeit`/`morgen`/`garten` @5132, `bad` @5212): removing them would breach the taught-word floor,
   and adding exercise pairs would breach the 12-pair matching cap. Keep until a learner-facing
   reason appears.
-- **Desktop browser Back** keeps the documented touch-only history sentinel. A sentinel consumes a
-  history entry even after the overlay closes, so desktop uses Escape/close.
+- **Lesson and atlas history** uses shareable query URLs with replacement, not extra history
+  entries, on desktop and touch devices. Browser Back follows actual tab history; close/Escape
+  dismisses the current view. Transient dialogs retain their touch-only Back sentinel.
 - **26/179 lessons introduce no new word** (14.5%). Revision lessons intentionally consolidate
   known German and stay inside the strict 25% bound; unclassified zero-new lessons are still
   rejected.

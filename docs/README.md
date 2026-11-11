@@ -1,18 +1,20 @@
-# Brücke (Bridge) — Etymological German Learning Platform
+# Brücke — learn German through familiar words
 
-> **German language acquisition through historical sound shifts, living English cognates, and multi-modal spaced repetition.**
+> **Short lessons, useful patterns, and spaced repetition for English speakers.**
 
-The longer, feature-by-feature twin of the root [`README.md`](../README.md). Start at
-[`INDEX.md`](./INDEX.md) to find the right doc for a task. Counts quoted here are pinned by
-`src/tests/docs-sync.test.ts` — when data changes, update **both** READMEs.
+This is the canonical project README. The root [`README.md`](../README.md) is a
+quick-start pointer; [`INDEX.md`](./INDEX.md) maps task-specific documentation.
+`src/tests/docs-sync.test.ts` checks documented facts against runtime data and package metadata.
 
 ---
 
 ## Overview
 
-**Brücke** is a self-contained web application designed to help English speakers learn German rapidly by decoding the underlying linguistic mechanics that connect both languages.
+**Brücke** helps English speakers learn to understand and produce German, using familiar English words as a starting point.
 
-Rather than relying on rote memorization or gamified streaks without substance, Brücke leverages the **Second High German Consonant Shift (500–800 AD)** to reveal that English speakers already understand hundreds of German words.
+Sound correspondences, compounds and sentence patterns are memory aids, not a requirement to study historical linguistics. Start with usable words, try the exercises, and revisit difficult words in review. Keep explanations short and grounded in the actual meaning and example; if a connection is shaky, drop it or teach the word plainly rather than demanding a research pass.
+
+The German compendium contains **1226 words**. Use the lesson examples and pronunciation, then practise recall; the atlas and historical notes are optional reference material.
 
 **French course (open trail).** The same engine teaches French through the Norman doublets — 1066 left English and French sharing thousands of cognates, and the French trail decodes them the same way: 30 topics (123 lessons authored), 9 conversion-bridge families (`-ion`, `-ation→-er`, `-ité`, `-ance`, `-é`, `-ment`, `-eur`, `-able`, doublets), a 306-word compendium with 16 compound calques and 16 false friends, and its own trail/atlas/review layers. Authored as typed modules in `src/data/french/` (not parsed from `word_connections.md`).
 
@@ -23,7 +25,7 @@ Rather than relying on rote memorization or gamified streaks without substance, 
 Per-language design notes, shared method and test constraints: [`courses.md`](./courses.md).
 
 - **Docs index**: [`INDEX.md`](./INDEX.md).
-- **North Star**: [`NORTH_STAR.md`](./NORTH_STAR.md) — Brücke teaches German; etymology is the hook, not the subject. Read before changing content.
+- **North Star**: [`NORTH_STAR.md`](./NORTH_STAR.md) — Brücke teaches German; word connections support learning rather than becoming the subject.
 - **Architecture**: [`ARCHITECTURE.md`](./ARCHITECTURE.md) — how the app is put together and which constraints are load-bearing.
 - **Audit Manifest**: [`AUDIT_MANIFEST.md`](../AUDIT_MANIFEST.md) — data schemas, performance notes and the auditor checklist.
 - **Grammar Panorama**: [`german-panorama.md`](./german-panorama.md) — every German structure mapped to the lesson ids that teach it, with a `taught` / `inferred` / `partial` column. The repo artifact companion to `/panorama`; `inferred` rows are the honest backlog.
@@ -33,12 +35,12 @@ Per-language design notes, shared method and test constraints: [`courses.md`](./
 ## Tech Stack & Architecture
 
 - **Runtime**: [Bun](https://bun.com) v1.4.4 (pinned in CI)
-- **Framework**: [Next.js](https://nextjs.org) 16.4.1 (App Router, Turbopack, 100% Static Site Generation)
+- **Framework**: [Next.js 16.4.1](https://nextjs.org) (declared `^16.4.1` in `package.json`, resolved in `bun.lock`; App Router and Turbopack). Top-level tabs are statically pre-rendered; lesson content is loaded and rendered in the browser.
 - **UI Library**: React 19.2 + TypeScript
 - **Styling**: Tailwind CSS v4 (native CSS tokens, dark mode default)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) 5 (dual `localStorage` + size-guarded cookie persistence)
 - **Icons**: Lucide React
-- **Testing**: Vitest 5 (`bun run test` → `vitest run`) — 49 test files, 494 automated tests. There is no `bun test` script.
+- **Testing**: Vitest 5 (`bun run test` → `vitest run`). The runner reports current file and test totals; these are not maintained by hand. There is no `bun test` script.
 - **Audio Engine**: Two independent zero-dependency browser-native paths: `window.speechSynthesis` for pronunciation (voice locale chosen per language, 0.92x, preferring an exact locale voice and then another voice for the same language), and a Web Audio **sample** engine (`src/lib/sound.ts`) that decodes bundled Monkeytype mechanical-keyboard `.wav` packs with a 24-entry buffer cache and negative URL caching.
 
 ---
@@ -61,7 +63,7 @@ bun run parse-data
 
 ### Run Automated Tests
 
-Executes the full Vitest suite — 49 test files, 494 automated tests:
+Executes the full Vitest suite and reports its current totals:
 
 ```bash
 bun run test
@@ -75,7 +77,7 @@ bun run test:e2e
 
 ### Production Build
 
-Pre-renders the six top-level tab routes to static HTML (`● SSG`) — 6 static routes: `/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`. Lessons and atlas details are in-page client views, so they never add a URL or browser-history entry: 188 unique ids (179 German plus 9 French/Spanish-only ids; Dutch reuses the shared lesson-id space) load from 500 per-lesson payloads, and the four atlases expose 37 atlas families. `bun run build` runs `parse-data`, then `export-data` (per-language payloads under `public/data/<lang>/`), then `next build`. Legacy `/trail/...`, `/atlas/<family>` and `/atlas/master` URLs 307-redirect into the matching in-page state.
+Pre-renders the six top-level tab routes to static HTML (`● SSG`) — 6 static routes: `/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`. Lessons and atlas details are client-rendered overlays: 188 unique ids (179 German plus 9 French/Spanish-only ids; Dutch reuses the shared lesson-id space) load from 500 per-lesson payloads, and the four atlases expose 37 atlas families. Opening, changing or closing an overlay replaces the current history entry; short shareable query URLs explicitly include the learning language (`/?lesson=1&lang=de`, `/atlas?family=th_to_d&lang=de`, `/atlas?master=1&lang=de`). Copied links and reloads restore the selected view and language. Cross-tab opens push one normal tab entry; Back traverses actual top-level tab history and Forward restores the overlay in its URL. Lesson content is not server-rendered. `bun run build` runs `parse-data`, then `export-data` (per-language payloads under `public/data/<lang>/`), then `next build`. Legacy `/trail/...`, `/atlas/<family>` and `/atlas/master` URLs redirect into the matching in-page state.
 
 ```bash
 bun run build
@@ -110,15 +112,16 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
 
 2. **Sound Shift Atlas (`/atlas`)** (family detail and the master web open in-page):
    - Radial spatial spoke visualization for the consonant shift families ($TH \rightarrow D$, $P \rightarrow FF/PF$, $T \rightarrow SS/S/Z$, etc.).
-   - Philological background, literature sources, and 5-question branch practice drills.
+   - Short pattern explanations, word examples and 5-question branch practice drills. Historical background is optional; remembering and using the word comes first.
 
 3. **Grammar Panorama (`/panorama`)**: the second atlas — consultable diagrams of German *structure* instead of sound. Opt-in reference layer: no levels, no progress, no gating.
 
 4. **Multi-Modal Review Hub (`/review`)**:
    - Algorithmic spaced repetition powered by SuperMemo SM-2.
    - Beginner actions are **Continue lesson**, **Review learned words**, and **Practise difficult words**, followed by Due Today. **More practice options** contains family/domain filters, recent lessons, compounds/traps, sentence patterns, article drills and everything.
+   - There are **10 review deck types**: due, learned, shift family, domain, weakest words, recent lessons, compounds & traps, sentence patterns, article & gender, and everything (`DECK_CAPABILITIES` in `src/lib/review-decks.ts`). These are content pools, not review styles; False Friends is part of Compounds & Traps, not a separate deck.
    - The article drill covers the usual singular definite article for gendered nouns in German, Dutch, French and Spanish; a fixed-width blank marks the missing article. It does not practise cases or articles in sentence context.
-   - 4 selectable review styles: *Quick Flip*, *Multiple Choice (MCQ)*, *Tile Builder*, and *Derivation Typing*.
+   - 4 review styles are available overall: *Quick Flip*, *Multiple Choice (MCQ)*, *Tile Builder*, and *Derivation Typing*. Article & Gender uses MCQ only; other decks support all four.
    - Typing and tiles share grading: exact → Good, spelling near-miss → Hard with a correction, grammatical omission → Again. Authored `accepted_answers` support valid complete alternatives in free-production exercises.
    - Anti-spoiler gender shields: front card prompts with `[ der / die / das ? ]` instead of leaking the article before recall.
    - Desktop keyboard navigation (`1`–`4`, `Space`, `Enter`, `Backspace`, `←`/`→` back and forward between cards, `[R]` audio replay, `Esc`).
@@ -207,7 +210,7 @@ src/
 │   ├── retry-variation.ts, listening.ts   # Retry surface rotation; 15-minute listening skip
 │   ├── types.ts          # Core domain TypeScript interfaces
 │   └── ...
-└── tests/                # 49 test files (Vitest)
+└── tests/                # Vitest unit and integration suites
 ```
 
 ---
@@ -219,6 +222,5 @@ src/
 - **Durable Local Storage**: Progress is preserved using `localStorage` with a size-guarded cookie fallback: progress is included only when the payload URL-encodes to ≤ 2048 bytes. Otherwise the cookie retains preferences, onboarding/reset markers and `storageFailed`, and the warning offers a JSON backup (`src/lib/store/persistence.ts`). A cookie cannot preserve unlimited progress.
 - **Recovery and offline**: A reminder offers JSON backups after progress exists and weekly thereafter. Settings requests persistent storage. Installation uses the browser menu; production caches visited pages, lesson payloads and lazy chunks, not the entire course. Unopened or evicted content needs a connection. Neither installation nor persistent storage prevents manual deletion or device loss; there are no accounts or cloud sync.
 - **Cross-tab fallback**: When localStorage rejects writes, BroadcastChannel shares the full in-memory snapshot with other open tabs, including progress too large for the cookie. Versioned progress/reset merging still applies. Without BroadcastChannel, cookie-only writes cannot notify other tabs. This is not disk persistence: heed the storage warning and export a JSON backup.
-- **No Cargo-Cult Repetition**: `bun scripts/audit-wording.ts` blocks `explanation` strings, prose sentences and prompt formulas copy-pasted between neighbouring lessons, while an explicit allowlist protects the widget labels that are *meant* to stay identical.
-- **All Routes Static**: Every route in `/app` must pre-render via `generateStaticParams()` to guarantee instant navigation; dynamic segments set `dynamicParams = false` so unknown ids 404.
+- **Static tabs, client-rendered lessons**: Top-level tabs pre-render at build time. Lessons and atlas details load into overlays with language-explicit query URLs; legacy path redirects remain supported. This does not provide server-rendered lesson pages.
 - **Deferred Ideas Live in `docs/ideas to add in future/`**: specified-but-unimplemented work. These are write-ups, not commitments — nothing in them is wired into the app.

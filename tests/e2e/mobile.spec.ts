@@ -98,13 +98,23 @@ test.describe("mobile shell", () => {
     expect(result.paddingBottom).toBeGreaterThanOrEqual(result.ctaHeight + 40);
   });
 
-  test("the system Back gesture closes the lesson overlay", async ({ page }) => {
-    await openLesson(page);
-    await page.waitForTimeout(600);
-    await page.evaluate(() => window.history.back());
-    await expect(page.locator('[role="dialog"][aria-label^="Lesson"]')).toBeHidden({
-      timeout: 5000,
-    });
+  test("lesson URLs keep mobile history clean and Back follows tab history", async ({ page }) => {
+    await page.goto("/review");
+    await waitForApp(page);
+    const trail = page.getByRole("navigation", { name: /main navigation/i }).getByRole("link", { name: /^trail$/i });
+    await trail.focus();
+    await trail.press("Enter");
+    await page.waitForURL((url) => url.pathname === "/");
+    const before = await page.evaluate(() => history.length);
+    await page.locator("[data-next-lesson-start]").click();
+    await expect(page.getByRole("button", { name: /back to trail/i })).toBeVisible();
+    await expect(page).toHaveURL(/\/\?lesson=1&lang=de$/);
+    expect(await page.evaluate(() => history.length)).toBe(before);
+    await page.goBack();
+    await expect(page).toHaveURL(/\/review$/);
+    await expect(page.locator('[role="dialog"][aria-label^="Lesson"]')).toBeHidden();
+    await page.goForward();
+    await expect(page.getByRole("button", { name: /back to trail/i })).toBeVisible();
   });
 
   test("form controls avoid iOS focus zoom and the dock is tappable", async ({ page }) => {

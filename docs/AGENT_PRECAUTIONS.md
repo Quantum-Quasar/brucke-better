@@ -5,6 +5,8 @@
 > grouped by area, and each states the **condition** under which it applies. If your task
 > doesn't trigger any condition, proceed normally. If it triggers one, follow the action.
 
+**[`NORTH_STAR.md`](./NORTH_STAR.md) takes precedence.** Teach usable German. Connections are fun, simple grounding for understanding the language, not exact historical claims; do not run an etymology research or verification pass.
+
 **Validation baseline (always applicable):** `bun run parse-data && bun run test && bun run lint && bun run typecheck` must be green before you start and after every batch. Full `bun run build` (`parse-data && export-data && next build`) at phase boundaries. CI runs exactly these, plus the four audits below — never declare done without all of them.
 
 **The audit tools (always applicable at the end of content work; CI runs the first four):**
@@ -45,24 +47,19 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 
 ---
 
-## 2. Etymology — applies when you add words or write cognate hooks
+## 2. Connections — applies when you add words or write hooks
 
-### 2.1 The no-invention rule
-- **Applies when:** writing any derivation, etymology hook, or "philosophy" claim about a word pair.
-- **Action:** verify against en.wiktionary.org (German entry, Etymology section) and cite `[wiktionary]` in the derivation cell. If unverifiable: drop the word, or keep it with `[UNVERIFIED — check]` and list it in your report. LLM-generated etymology is plausible-sounding nonsense more often than almost anything else — this rule is the brand.
+### 2.1 Keep connections simple and honest
+- **Applies when:** writing any derivation, word-pair hook, or explanation.
+- **Action:** use connections to help learners understand and remember German, not to teach exact word histories. Do not invent or knowingly retain false claims. If a connection is shaky, cut it or replace it with plain teaching. Say less; do not research it, add citations, or create a list of claims awaiting verification.
 
-### 2.2 Known etymology traps (do not repeat these mistakes)
-- **Applies when:** writing hooks for these specific pairs.
-- **Action / facts:**
-  - **Vater/father is NOT the V→B family.** It is `*fadēr` with Verner's-law voicing; German V=[f] corresponds to English f. An external analysis claimed "V→B shift!" — that is wrong.
-  - **heute is NOT cognate with today** as a compound (English's twin *hēodæġ* died out). Present it as "on this day" — honest, not a twin claim.
-  - **von** has a disputed etymology — keep it as a vocab hint, never a compendium claim.
-  - **treffen ↔ drape** (pre-existing row 101) is thin — flagged for human verification; do not build new content on it without a second source.
-  - **bald ↔ bold** (`*balþaz`) is standard but semantically surprising — spot-check before reusing the hook.
+### 2.2 Do not force a connection
+- **Applies when:** a useful word does not fit a sound pattern or needs historical caveats.
+- **Action:** teach its meaning and use directly, or introduce it through `vocab_hints` where appropriate. Do not force Vater/father into a V→B explanation or make a questionable pair into a hook. Useful German needs no elaborate historical justification.
 
-### 2.3 Research subagents report; they never edit
-- **Applies when:** fanning out research to subagents.
-- **Action:** subagents return per-word records (verdict, reconstruction, one-line derivation, IPA, gender, source quote). The main agent writes all file changes. Never let a subagent edit files, and never parallelize writes to shared files (`lessons.ts` is one).
+### 2.3 Keep review learner-facing
+- **Applies when:** deciding what content work to investigate or delegate.
+- **Action:** focus on wrong German, unclear teaching, untaught vocabulary and exercises that cannot be completed or grade correct answers as wrong. Do not commission etymology research, source collection or verification reports. Language correctness and fair answer grading still matter.
 
 ---
 
@@ -151,11 +148,11 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 
 ### 6.2 Report honestly
 - **Applies when:** writing your final summary.
-- **Action:** list (1) content added with ids, (2) words with sources, (3) structural changes, (4) every `[UNVERIFIED]` item and every dropped candidate, (5) validation results, (6) what you deliberately did not do and why. "Done and verified" is only claimed when it is.
+- **Action:** list (1) content added with ids, (2) words added, (3) structural changes, (4) learner-facing issues needing human review, (5) validation results, (6) what you deliberately did not do and why. Do not require etymology sources, verification flags or a ledger of rejected connections. "Done and verified" is only claimed when it is.
 
 ### 6.3 Subagents are for reading and research, not writing
 - **Applies when:** the task is big enough to parallelize.
-- **Action:** fan out verification/analysis to subagents, but file writes stay with the main agent. Lesson aggregates are ordered and single-writer.
+- **Action:** fan out learner-facing analysis to subagents, but file writes stay with the main agent. Lesson aggregates are ordered and single-writer. Do not delegate etymology research or verification.
 
 ---
 

@@ -9,7 +9,7 @@
 | Role | Path | Description |
 |---|---|---|
 | **Primary Codebase (Working Dir)** | `.` (project root) | Complete Next.js 16 + React 19 + TypeScript + Bun application. All source code, tests, and build scripts live here. |
-| **Documentation** | `docs/` | Maintained docs, indexed in [`docs/INDEX.md`](docs/INDEX.md). Architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Sibling courses: [`docs/courses.md`](docs/courses.md). |
+| **Documentation** | `docs/` | Canonical project guide: [`docs/README.md`](docs/README.md). Task index: [`docs/INDEX.md`](docs/INDEX.md). Architecture: [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md). Sibling courses: [`docs/courses.md`](docs/courses.md). |
 | **Content source of truth** | `word_connections.md` | Hand-maintained German compendium; parsed into `src/data/compendium.json` + `insights.json` (generated). |
 
 The app teaches German and also ships French, Spanish and Dutch courses on the same engine (typed modules in `src/data/<lang>/`). The rest of this manifest describes the German course unless it says otherwise.
@@ -18,15 +18,15 @@ The app teaches German and also ships French, Spanish and Dutch courses on the s
 
 ## 2. Executive Product Concept: What Brücke Does
 
-**Brücke** ("Bridge") is an etymological, sound-shift-based German learning platform for English speakers. 
+**Brücke** ("Bridge") helps English speakers learn German through short lessons, familiar-word connections and recall practice.
 
 ### Core Pedagogical Premise
-English and German are sibling West Germanic languages sharing over 60% of core vocabulary. High German underwent the **Second (High German) Consonant Shift** between 500–800 AD, altering specific consonants in predictable patterns (e.g. $TH \rightarrow D$, $P \rightarrow FF/PF$, $T \rightarrow SS/S/Z$, $K \rightarrow CH$). Rather than forcing brute-force vocabulary memorization, Brücke teaches English speakers to **reverse-engineer German words from the English words they already speak every day**.
+Use a familiar word or a clear pattern to make new German easier to remember, then practise understanding and producing it. Connections such as *water → Wasser* are teaching aids, not universal word-conversion rules. Keep explanations short and grounded in meaning and examples. If a historical connection is shaky, cut it or teach the word plainly; historical derivation verification is not a lesson-writing requirement.
 
 ### Core Philosophy: The "Pony-tail" Lean Architecture
 - **Zero Heavy Framework Bloat**: No Radix UI, Headless UI, Framer Motion, Axios, or Lodash. Standard web platform APIs, Tailwind CSS v4, and minimal custom primitives.
 - **100% Client-Side Fast + SSG**: All app routes build to pre-rendered static HTML (`● SSG`). Zero server execution latency at runtime.
-- **Offline Durability**: Local state persists across sessions via dual-storage: primary `localStorage` with a fallback cookie backup.
+- **Local-first storage**: Progress persists primarily in `localStorage`, with a size-guarded cookie fallback and manual JSON backup. This is not an account or cross-device recovery service.
 
 ---
 
@@ -58,7 +58,7 @@ English and German are sibling West Germanic languages sharing over 60% of core 
 
 ### Pillar 3: Spaced Repetition Review Hub (`/review`)
 - **Algorithm**: Unified SuperMemo SM-2 interval scheduler (`src/lib/srs.ts`) tracking repetitions, ease factors, lapses, intervals, and due dates.
-- **10 Deck Types** (`src/lib/review-decks.ts`); beginner actions lead, advanced filters are disclosed on demand:
+- **10 review deck types** (`DECK_CAPABILITIES` in `src/lib/review-decks.ts`); beginner actions lead, advanced filters are disclosed on demand:
   1. **Due Today**: Spaced repetition queue filtered by algorithmic due date.
   2. **By Shift Family**: Filterable practice by individual consonant shift.
   3. **By Domain**: Words grouped by the `domain` column of the compendium.
@@ -66,16 +66,16 @@ English and German are sibling West Germanic languages sharing over 60% of core 
   5. **Recent Lessons**: Words from the most recently completed lessons.
   6. **Compounds & Traps**: 48 specialized cards covering 32 compound calques (*Handschuh*, *Kühlschrank*, *Flugzeug*) and 16 false friend traps (*Gift*, *bald*, *bekommen*).
   7. **Sentence Patterns**: Lesson example sentences as review items.
-  8. **Article & Gender Drill**: The singular definite article for gendered nouns, with a fixed-width blank.
+  8. **Article & Gender Drill**: The usual singular definite article for gendered nouns in German, Dutch, French and Spanish, with a fixed-width blank. It does not teach cases or articles in sentence context.
   9. **Everything**: The full pool.
   10. **Learned Words**: Up to 20 encountered/mastered words, independent of advanced new-word filters.
-- **4 Selectable Review Styles**:
+- **4 review styles overall** (Article & Gender uses MCQ only; other decks support all four):
   - `flashcard` (Quick Flip): Recall in mind $\rightarrow$ Space/Enter reveals $\rightarrow$ 1–4 SM-2 grade.
   - `mcq` (Multiple Choice): Pick target word from 4 options (hotkeys 1–4).
   - `tiles` (Tile Builder): Assemble morphemes into words (mouse click or desktop keyboard typing + Backspace).
   - `typing` (Derivation Typing): Type full derivation with on-screen umlaut bar.
 - **Active Recall Shield**: Front card hides gender article badges, displaying neutral placeholder `Gender: [ der / die / das ? ]` to avoid leaking answers before recall. Full color badge and pronunciation reveal on card flip.
-- **Review Style Prompt**: Deck launch opens a four-style selector before the session; styles can also be changed mid-session via the header dropdown.
+- **Review Style Prompt**: Multi-style decks open a selector before the session and allow style changes in-session. The article drill goes straight to MCQ.
 
 ---
 
@@ -106,7 +106,7 @@ A short map of where things live; list the directories yourself for the full tre
 
 ```
 .
-├── package.json               # Next 16.3.4, React 19.2.8, Tailwind v4, Zustand 5, Vitest 5, Bun
+├── package.json               # Next.js 16.4.1 (declared ^16.4.1; bun.lock resolves 16.4.1), React 19.2.8, Tailwind v4, Zustand 5, Vitest 5, Bun
 ├── next.config.mjs            # Redirects for legacy /trail and /atlas URLs; cache headers
 ├── word_connections.md        # German content source of truth (parsed into src/data/*.json)
 ├── scripts/                   # Build + audit tooling — see scripts/README.md
@@ -119,12 +119,12 @@ A short map of where things live; list the directories yourself for the full tre
 │   │                          #   trail-map.ts, review-decks.ts, review-modes.ts, word-entities-core.ts, audio.ts, sound.ts
 │   ├── data/                  # compendium.json (1226 words, 9 shifts, 32 compounds, 16 false friends, 28 insights),
 │   │                          #   lessons/<id>.ts (all 179 authored German lessons), ordered lessons.ts, curriculum.ts
-│   └── tests/                 # 49 test files (Vitest) — whole-curriculum integrity, timezone boundaries,
+│   └── tests/                 # Vitest — whole-curriculum integrity, timezone boundaries,
 │                              #   persistence merging, security, docs-sync
 └── tests/e2e/                 # Playwright smoke suite
 ```
 
-In-page views: lessons and atlas details are rendered by `AppShell.tsx` (`LessonView`, `ConstellationDetailClient`); there are no `/trail/[id]` or `/atlas/[family]` pages.
+In-page views: lessons and atlas details are rendered by `AppShell.tsx` (`LessonView`, `ConstellationDetailClient`); there are no `/trail/[id]` or `/atlas/[family]` pages. Language-explicit query URLs restore these client-rendered views when copied or reloaded.
 
 ---
 
@@ -142,10 +142,10 @@ In-page views: lessons and atlas details are rendered by `AppShell.tsx` (`Lesson
 ## 7. Performance & Resource Optimization Highlights
 
 1. **100% Pre-rendered Static Site Generation (SSG)**:
-   - The app ships 6 static routes (`/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`). Lessons (188 unique lessons across 500 per-lesson payloads) and atlas families (37 atlas families across the four atlases) are client-side overlays, so opening them adds no route, no server render and no browser-history entry. Legacy `/trail/...` and `/atlas/...` links 307-redirect into the matching in-page state.
-   - All app routes build to static HTML. Navigation between lessons and atlas families is instantaneous with zero runtime server latency.
+   - The app ships 6 static routes (`/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`). Lessons (188 unique lessons across 500 per-lesson payloads) and atlas families (37 atlas families across the four atlases) are client-rendered overlays, not server-rendered lesson pages.
+   - Opening, changing or closing an overlay replaces the current history entry with a short query URL, including the learning language (for example `/?lesson=1&lang=de`, `/atlas?family=th_to_d&lang=de`, `/atlas?master=1&lang=de`). Copied links and reloads restore that state. Cross-tab opens push one normal tab entry; Back traverses actual top-level tab history and Forward restores the overlay in its URL. Legacy `/trail/...` and `/atlas/...` links still redirect to matching views.
 2. **Shift Alignment Memoization**:
-   - `alignShiftPair` in `src/lib/shift-annotator.ts` uses an in-memory `Map` cache. Redundant letter parsing is eliminated; test suite executes in < 200ms.
+   - `alignShiftPair` in `src/lib/shift-annotator.ts` uses an in-memory `Map` cache to avoid redundant letter alignment work.
 3. **Storage I/O Deduplication & Cookie Guard**:
    - `saveState` in `src/lib/store/persistence.ts` checks `lastSerialized` to prevent redundant writes to `localStorage` and `document.cookie`.
    - Cookie storage is size-gated (lean payload written only if it URL-encodes to ≤ 2048 bytes) with a minimal fallback to prevent cookie truncation and HTTP request header bloat.
@@ -163,7 +163,7 @@ All commands run from the repository root:
 # 1. Run Data Compilation Pipeline
 bun run parse-data
 
-# 2. Run All Automated Test Suites (49 test files / 494 tests), then lint and typecheck
+# 2. Run the full Vitest suite (the runner reports live totals), then lint and typecheck
 bun run test
 bun run lint
 bun run typecheck
@@ -177,7 +177,7 @@ bun run dev
 # 5. Run the content integrity audits (all must stay green)
 bun scripts/audit-word-refs.ts    # every word/table_word/transcribe/dictation/family_matrix/variant_english/twist/literal_gloss reference resolves
 bun scripts/audit-teasers.ts      # title + curiosity_teaser chain drift (must be 0)
-bun scripts/audit-wording.ts      # no copy-pasted prose or prompt formulas between neighbouring lessons
+bun scripts/audit-wording.ts      # adjacent-lesson wording report; not a mandate to prove historical derivations
 bun scripts/audit-vocab-balance.ts --strict
 
 # 6. Browser smoke suite (Playwright; starts its own dev server on :3111)
@@ -201,5 +201,5 @@ When auditing the codebase, verify:
   - State changes in Zustand persist to `localStorage`.
   - Cookie backup stays within safe browser limits (lean payload ≤ 2048 URL-encoded bytes).
 - [ ] **Build & Tests**:
-  - `bun run test` (Vitest) passes with 0 failures across all 49 test files (494 tests).
+  - `bun run test` (Vitest) passes with 0 failures; use its report for current test and file totals.
   - `bun run build` generates all static pages (6 static routes + 500 lesson payloads) without TypeScript or Turbopack errors.

@@ -3,26 +3,26 @@
 > Copy everything from `## MISSION` down into your coding agent (same workspace as the app).
 > Run it in batches and review between batches. **German course only** — French, Spanish and Dutch
 > are authored as typed modules in `src/data/<lang>/`; see [`courses.md`](./courses.md).
-> Read [`NORTH_STAR.md`](./NORTH_STAR.md) and [`AGENT_PRECAUTIONS.md`](./AGENT_PRECAUTIONS.md) first;
-> where this file and the North Star disagree about how much etymology work to do, the North Star wins.
+> Read [`NORTH_STAR.md`](./NORTH_STAR.md) and [`AGENT_PRECAUTIONS.md`](./AGENT_PRECAUTIONS.md) first.
+> **The North Star takes precedence:** teach usable German; connections support learning, not etymology precision.
 
 ---
 
 ## MISSION
 
-You are the content author for **Brücke** (this repository), a web app that teaches German to English speakers through **historical sound shifts and living etymological cognates** — never through rote memorization. The German curriculum is complete: 30 topic cores, their sprigs (extra practice), support branches, and five required reading stories on the spine. Current totals live in `src/data/word-counts.ts` (`COURSE_COUNTS.de`) — do not hardcode them in your own notes; they drift.
+You are the content author for **Brücke** (this repository), a web app that teaches German to English speakers. Simple, playful connections to English help learners understand and remember German; they are grounding, not a course in exact word histories. The German curriculum is complete: 30 topic cores, their sprigs (extra practice), support branches, and five required reading stories on the spine. Current totals live in `src/data/word-counts.ts` (`COURSE_COUNTS.de`) — do not hardcode them in your own notes; they drift.
 
-Your job is **maintenance and expansion, not first-fill**: correct defects in existing lessons, deepen thin ones, grow the word-connections database that powers the app, and — when material deserves a place — add a sprig or branch lesson (see EXPANSION PERMISSIONS).
+Your job is **maintenance and expansion, not first-fill**: correct learner-facing defects, make thin lessons clearer and more useful, and add words or side lessons only when they help learners understand, remember or use German (see EXPANSION PERMISSIONS).
 
 Work in batches of 3–5 lessons (or review items), validate mechanically after every batch, and stop for human review at each batch boundary. Never author more than 5 lessons before running the validation suite.
 
 ## THE PRODUCT PHILOSOPHY (read this twice)
 
-Brücke's core claim to the learner: *"You already understand more German than you think — English and German are siblings, and 500–800 AD sound shifts explain the differences."* Every lesson must deliver an **aha-moment of connection**, not a vocabulary list. A Brücke lesson never says "memorize that German 't' is English 'ss'"; it says *"Water becomes Wasser, better becomes besser — English kept the ancient 't', High German hissed it into 'ss'. Once you hear it, you hear it everywhere."*
+Brücke's promise to the learner: *"You already understand more German than you think."* Use a familiar English word, a clear pattern or a useful example to make German feel approachable. An aha-moment is welcome; a lesson must still teach usable German without needing a historical explanation.
 
-- Every word taught should **teach a connection** (a sound shift, a shared root, a calque, or a documented borrowing). A word with no interesting connection does not belong in a table — it may appear as a `vocab_hints` entry instead.
-- Every etymological claim must be **true and verifiable**. The app's credibility rests on it. See the verification protocol below. (The practical reading, per the North Star: *don't state anything false — and if in doubt, say less.*)
-- Grammar is taught as "the historical English you lost": German verb endings are Shakespeare's *thou -st*, the accusative is the *him-case*, subordinate-clause word order is Old English's habit. Find the English inside the German.
+- Choose useful vocabulary for the lesson. A simple connection can help, but a word does not need an interesting word history to belong in teaching or a table.
+- Do not invent or knowingly retain false historical claims. If a connection is shaky, cut it or replace it with plain teaching; say less rather than researching, citing or hedging it.
+- Teach grammar through short explanations and natural examples. English comparisons are optional aids, not a requirement to explain grammar through language history.
 
 ## WHERE THINGS LIVE (file map)
 
@@ -33,7 +33,7 @@ Brücke's core claim to the learner: *"You already understand more German than y
 | `src/data/curriculum.ts` | The 30-topic trail: cores, sprigs, branches (`TRAIL_BRANCHES`), star gates (`TRAIL_GATES`) | Read constantly. New shells you add must be `authored: true`. |
 | `word_connections.md` (repo root) | **Source of truth** for every word, shift family, compound, false friend and insight: §1 shift laws, §2 vocabulary table, §3 compound calques, §4 false friends, §5 daily insights | **Grow this first**, then `bun run parse-data`. |
 | `scripts/parse-compendium.ts` | Compiles the markdown → `src/data/compendium.json` + `src/data/insights.json` (generated; never hand-edit) | Read fully before your first edit. |
-| `scripts/append-words.mjs` | Batch-appends verified records to §2 | Preferred way to add many words. |
+| `scripts/append-words.mjs` | Batch-appends word records to §2 | Preferred way to add many words. |
 | `src/lib/types.ts` | All types (`Lesson`, `ExerciseItem`, `ExerciseType`) and `TOTAL_COMPENDIUM_WORDS` (hardcoded) | Update the constant when the word count changes. |
 | `src/data/word-counts.ts` | Cheap per-language counts for the nav chrome | Update `de` entries with the word count; pinned by `src/tests/languages.test.ts`. |
 | `src/tests/compendium.test.ts` | Pins 9 shifts / 32 compounds / 16 false friends / 28 insights and `wordList.length >= TOTAL_COMPENDIUM_WORDS` | Bump the pinned counts in the same batch when you add §3/§4/§5 rows. |
@@ -63,32 +63,31 @@ Hard failures if violated. The build and tests enforce most of them.
 
 More authored side lessons in a stretch only make its gate easier, so adding content is always safe for gates. In priority order:
 
-**(a)** correctness fixes — wrong German, unfinishable exercises, untaught words, wrong or unsourced etymologies, broken `word_ids`; **(b)** thin lessons — short patterns, fewer than 4 `table_word_ids`, stale `curiosity_teaser`s; **(c)** new sprigs/branch lessons; **(d)** compendium growth (§3/§4/§5), which needs no lesson. Start with the earliest topics (1–5): that is where a beginner meets any error first.
+**(a)** learner-facing correctness fixes — wrong German, unfinishable exercises, untaught words, misleading explanations, broken `word_ids`; **(b)** thin lessons — unclear patterns, insufficient useful examples, stale `curiosity_teaser`s; **(c)** new sprigs/branch lessons; **(d)** compendium growth (§3/§4/§5) that serves learning. A shaky connection is a reason to cut it or teach plainly, not to start etymology research. Start with the earliest topics (1–5): that is where a beginner meets any error first.
 
 ## THE AUTHORING WORKFLOW (per lesson)
 
 1. **Read the shell** in `curriculum.ts`: the sprig/branch `plan` line is the brief; the cluster `blurb` is the topic's promise. (A core's `plan` is a placeholder — the lesson itself is its brief.)
-2. **Select vocabulary:** 5–8 table words that the plan calls for, carry the topic's connection pattern, and are high-frequency. Grammar lessons need fewer (3–6) but rich example sentences.
-3. **Verify etymologies** (protocol below). Drop any word whose connection you cannot verify.
+2. **Select vocabulary:** 5–8 useful, high-frequency table words that the plan calls for. Grammar lessons need fewer (3–6) but rich example sentences. Do not force a historical connection.
+3. **Keep the explanation simple:** use a helpful connection when it is straightforward; cut shaky connections or replace them with plain German teaching. Do not run an etymology research or verification pass.
 4. **Grow `word_connections.md`** for each new word (§2; compounds → §3; false friends → §4; insights → §5). Bump the pinned counts in `compendium.test.ts` if you touched §3/§4/§5.
 5. **`bun run parse-data`** and confirm the new words compile.
 6. **Author the lesson** in `src/data/lessons/<id>.ts` per the schema and voice guide; add its import/ordered entry to `lessons.ts` and its shell to `curriculum.ts` if new.
 7. **Validate** (see Definition of Done).
 8. **Every 5 lessons:** stop and write a batch summary.
 
-## ETYMOLOGY VERIFICATION PROTOCOL (the no-invention rule)
+## CONNECTIONS THAT SERVE LEARNING
 
-LLM-generated etymology is plausible-sounding nonsense more often than almost anything else. Brücke's brand is **trust**.
+The North Star governs every derivation, compound note and lesson hook: connections are fun, simple grounding for understanding the language, not exact historical claims.
 
-- Every §2 derivation, §3 lore line and lesson etymology claim must be verified against at least one of: **en.wiktionary.org** (the German entry's Etymology section), **etymonline.com** (English side), **Kluge** / **Pfeifer** (German side), or a reference already cited in `word_connections.md` §1.
-- With web access, actually check and note the source in the derivation cell: `… Proto-Germanic *dagaz. [wiktionary]`.
-- If you cannot verify a connection, **do not present it as fact**: drop the word or add `[UNVERIFIED — check]` and list it in your batch summary under "needs human check".
-- Sound-shift claims must respect the laws in §1. If the direction is wrong (e.g. a Latin loan that entered German directly), classify it honestly (`Direct Cognate`, `latin_ieren`, borrowing).
-- IPA: standard dictionary IPA; if unsure, mark it for review rather than inventing it.
+- Do not invent or knowingly retain false claims. If a connection is shaky or needs a caveat, remove it or replace it with a brief explanation of the word's meaning or use.
+- No etymology research or verification pass, mandatory citations, source quotas, or lists of claims awaiting verification. Say less instead.
+- Use sound patterns as helpful recognition aids, not universal rules. Do not force a word into a pattern or add root reconstructions and loan-chain detail to justify it.
+- Keep German meanings, spelling, grammar, pronunciation and answer grading correct. IPA should represent standard pronunciation; if unsure, flag the pronunciation for review rather than inventing it.
 
 ## SOURCING STRATEGY
 
-- **Frequency first:** draw table words from the top ~1,500 German words (any public frequency list). A rare word is acceptable only when its connection is spectacular.
+- **Frequency first:** draw table words from the top ~1,500 German words (any public frequency list). Use a rarer word only when the learner needs it for the lesson's practical goal, not for an elaborate connection.
 - **Traditional coursewares** (Goethe A1/A2 wordlists, DW *Nicos Weg*, *Menschen*/*Schritte*/*Netzwerk* tables of contents) are scope checklists, not copy sources: ask "will a learner who finished this topic be missing something they need this week?" Never copy their sentences or exercise formats.
 - **Compounds (§3), false friends (§4) and insights (§5)** grow opportunistically, with the same table format, and the pinned counts in `compendium.test.ts` bumped in the same batch.
 
@@ -96,10 +95,10 @@ LLM-generated etymology is plausible-sounding nonsense more often than almost an
 
 Before writing, read `src/data/lessons/1.ts` and `src/data/lessons/4.ts` completely — they are the register standard.
 
-- **Second person, confident, playful.** Never academic, never cutesy. Footnotes carry the scholarly depth so the main text stays punchy.
-- **The hook** opens with a paradox or a secret the learner half-knows. 3–6 sentences, 1–2 footnotes, ends by pointing at what the pattern unlocks.
-- **The pattern** states the rule as a transformation with 4–6 worked examples in flowing prose, with living-English evidence (e.g. *midwife* = "with-woman"). `linguist_note` holds technical detail and is honest about exceptions.
-- **The transformation table** lists 4–8 `table_word_ids` whose pairs demonstrate the rule.
+- **Second person, confident, playful.** Never academic, never cutesy. Prefer short, clear teaching over scholarly footnotes.
+- **The hook** opens with a familiar connection or useful situation. Keep it brief and point at what the learner will be able to do; footnotes are not required.
+- **The pattern** gives a clear explanation with 4–6 worked examples in flowing prose. Use English comparisons only when they make the German easier. Do not add technical history or fill `linguist_note` just to justify a connection.
+- **The transformation table** lists 4–8 `table_word_ids` that support the lesson's pattern or practical vocabulary.
 - **The 5 exercises** escalate: recognize → match → select the rule → produce → assemble a sentence. Each `explanation` teaches even on review. Wrong answers feed the retry queue and a flawless run earns a purple star, so exercises must be exactly solvable from the lesson's own content.
 - **The summary** states the outcome as an ability, one usable German sentence, the takeaway rule, and a `curiosity_teaser` that points at the **actual next node in trail order**.
 - **Example sentences:** short, natural, adult, built from taught words (constraint 8).
@@ -131,9 +130,9 @@ The authoritative definition is `Lesson` in `src/lib/types.ts`; if this block an
 
 - **Add sprigs to a cluster** (budget: core + up to 7 sprigs, enforced by `trail-map.test.ts`): add the shell to `curriculum.ts` with the next free sprig id, a real title, a `plan`, and `authored: true`.
 - **Add branches** (support clusters of 1–3 lessons, ids `5000 + n*10`, `attach` = a topic core, entry in `TRAIL_BRANCHES`) only for genuinely separate support material. A branch never reconnects to the spine.
-- **Restructure a lesson's internals** if the material demands it (vary the exercise mix, add footnotes, split one shell's content across two lessons). You may NOT change the 5-segment player, the `Lesson` type, or the id scheme.
+- **Restructure a lesson's internals** if the learning goal demands it (vary the exercise mix, simplify explanations, split one shell's content across two lessons). You may NOT change the 5-segment player, the `Lesson` type, or the id scheme.
 - **Do not** renumber ids, move topics on the spine, or change gate thresholds. If you think a threshold is wrong, say so in the batch summary.
-- A gem that fits nowhere: add it to `word_connections.md` anyway (it feeds the Atlas and Review Hub) and propose a lesson in the summary.
+- Useful vocabulary that fits no lesson can go in `word_connections.md` for the Atlas and Review Hub. Do not grow the compendium just to collect word-history curiosities.
 
 ## VALIDATION & DEFINITION OF DONE
 
@@ -146,6 +145,6 @@ bun scripts/audit-word-refs.ts && bun scripts/audit-vocab-balance.ts --strict
 
 After every batch (and before reporting): add `bun scripts/audit-teasers.ts`, `bun scripts/audit-wording.ts`, `bun run trail`, and `bun run build`.
 
-A lesson is **done** when: the parser accepts its words; the commands above are green (including `compendium.test.ts`'s pinned counts and its `>= TOTAL_COMPENDIUM_WORDS` floor); every `word_ids`/`table_word_ids` entry resolves; every etymology carries a source or an explicit `[UNVERIFIED]` flag; the teaser points at the next node; `curriculum.ts` carries the shell with `authored: true` and matching titles; and the batch summary lists (1) lessons authored with ids, (2) words added with sources, (3) structure changes, (4) items flagged for human review.
+A lesson is **done** when: the parser accepts its words; the commands above are green (including `compendium.test.ts`'s pinned counts and its `>= TOTAL_COMPENDIUM_WORDS` floor); every `word_ids`/`table_word_ids` entry resolves; explanations are simple and help learners use German, with shaky connections cut or replaced by plain teaching; the teaser points at the next node; `curriculum.ts` carries the shell with `authored: true` and matching titles; and the batch summary lists (1) lessons authored with ids, (2) words added, (3) structure changes, (4) learner-facing issues needing human review. No etymology sourcing or verification checklist is required.
 
 **Start with:** `src/data/lessons/1.ts`, `4.ts`, `9.ts` fully, `src/data/curriculum.ts`, `scripts/parse-compendium.ts`, and §1 plus the first 30 rows of §2 of `word_connections.md`.

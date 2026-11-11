@@ -1,16 +1,17 @@
 # North Star — read this before you change anything
 
-Brücke exists to **teach German to English speakers**. Etymology and cognates are a
-*memory hook and a motivator* ("you already know this word"), not the subject of the app.
-Nobody is here to learn linguistics. A learner who finishes a lesson should be able to
-read, build, say and remember some German — and want to do the next lesson.
+Brücke exists to **teach German to English speakers**. Connections to English are fun,
+simple grounding for understanding and remembering the language, not exact historical
+claims or the subject of the app. Nobody is here to learn linguistics. A learner who
+finishes a lesson should be able to read, build, say and remember some German — and want
+to do the next lesson.
 
 ## The one test
 
 > Does this change help a learner understand, remember, use, or keep wanting to learn German?
 
 If the honest answer is "no, it only makes an etymology claim more precise, deeper,
-better sourced or more carefully hedged" — **don't do it.** Log it and move on.
+better sourced or more carefully hedged" — **don't do it.**
 
 ## What counts as a good change
 
@@ -34,13 +35,14 @@ better sourced or more carefully hedged" — **don't do it.** Log it and move on
 Audits are useful; unlimited audits slowly turn the app into an etymology reference.
 
 1. Before implementing any suggestion, label it: **blocks the learner / wrong German /
-   clarity** (do it) or **etymology precision** (log it, don't do it).
-2. Don't start another corpus-wide etymology verification pass. Audit the *learner's*
-   experience instead: can I finish every exercise, is every word taught first, is it
-   clear and encouraging?
-3. If a rule in an older doc (for example "every etymological claim must be verifiable" in
-   `content-agent-prompt.md`) pushes you toward more etymology work, this page wins. The practical reading of that rule is: *don't state anything false — and if
-   in doubt, say less.*
+   clarity** (do it) or **etymology precision** (leave it alone).
+2. Don't start an etymology research or verification pass, for individual connections or
+   the whole corpus. Audit the *learner's* experience instead: can I finish every exercise,
+   is every word taught first, is it clear and encouraging?
+3. This page takes precedence over other author instructions. Keep connections simple;
+   do not invent or knowingly retain false claims. If a connection is shaky, cut it or
+   replace it with plain teaching. **If in doubt, say less** — not more research,
+   citations, caveats, or a list of claims awaiting verification.
 
 ## Guard rails that already exist (keep them green)
 

@@ -6,15 +6,15 @@
 
 ## Why this exists at all
 
-Brücke has extremely thorough **etymology** auditing (`audit-word-refs.ts`,
-`audit-teasers.ts`, `AUDIT_MANIFEST.md`, the no-invention protocol) and, as far as I can
-find, **no naturalness pass**. Those are different failure modes:
+Brücke's content audits check word references, teaser pointers, vocabulary reuse and
+exercise solvability. They do not establish whether a German sentence sounds natural.
+A naturalness error is learner-facing: a sentence no speaker would say, or a correct
+sentence used where it means something else.
 
-- An etymology error makes the app *wrong* about a word's history.
-- A naturalness error makes the app *wrong about German* — a sentence no speaker would
-  say, or a correct sentence used in a context where it means something else.
+This proposal concerns usable German, not etymology. Under [`../NORTH_STAR.md`](../NORTH_STAR.md),
+connections stay simple; shaky ones are cut or replaced with plain teaching, not researched.
 
-§4.3 is entirely about the second kind, and it is blunt about why it is hard: "working
+§4.3 is about naturalness, and it is blunt about why it is hard: "working
 with native speakers can be tricky, frustrating and treacherous, and expecting it to be
 so from the outset will help us stay patient."
 
@@ -82,9 +82,9 @@ who does not.
 
 Honest assessment of the three options:
 
-**A. Do nothing (recommended).** The etymology discipline already catches false claims;
-German errors are caught by the same tests that catch learner-facing defects (grading,
-solvability, docs sync). A naturalness pass adds real value but only if done properly.
+**A. Leave this deferred.** Existing tests protect grading, solvability and content structure;
+they do not prove naturalness. A human naturalness review could add value, but only with
+the right process. Deferral does not mean that learner-reported German errors should wait.
 
 **B. A checker-facing checklist app.** Export the 1,400 sentences grouped by structure
 (one grid per law — negation, dative, Perfekt, relative clauses, subjunctive) with the

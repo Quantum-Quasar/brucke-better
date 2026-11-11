@@ -7,7 +7,6 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
-import { useBackDismiss } from "@/lib/use-back-dismiss";
 
 interface SubviewOverlayProps {
   label: string;
@@ -25,8 +24,6 @@ export function SubviewOverlay({
 }: SubviewOverlayProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const [top, setTop] = useState(56);
-
-  useBackDismiss(true, onClose);
 
   useDialogFocus({
     open: true,

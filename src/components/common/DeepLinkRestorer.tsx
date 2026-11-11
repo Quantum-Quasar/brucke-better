@@ -1,11 +1,7 @@
 "use client";
 
-// Legacy /trail/... and /atlas/... URLs are redirected to the parent tab with
-// query parameters. Restore the matching in-page view once progress has
-// hydrated, then replace the URL with the clean tab path so nothing extra
-// lands in the browser history.
-
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { useAppStore } from "@/lib/store";
 import { useViewStore } from "@/lib/view-store";
 import { getFamilyOwnerLanguageIds } from "@/lib/atlas-families";
@@ -13,61 +9,80 @@ import { isValidLanguageId } from "@/data/languages";
 
 export function DeepLinkRestorer() {
   const storeHydrated = useAppStore((s) => s.storeHydrated);
-  const handled = useRef(false);
+  const pathname = usePathname();
 
   useEffect(() => {
-    if (!storeHydrated || handled.current) return;
+    if (!storeHydrated) return;
 
-    // Clean the query synchronously. router.replace is a transition that can
-    // commit after the subview's history sentinel is pushed, overwriting it
-    // and breaking Back; replaceState keeps routing state intact because the
-    // pathname is already the destination.
-    const cleanUrl = (path: string) => {
+    const syncUrl = () => {
+      const url = new URL(window.location.href);
+      if (url.pathname !== "/" && url.pathname !== "/atlas") return;
+      const view = useViewStore.getState().subView;
+      // A cross-tab open waits for the router to reach its destination.
+      if (view && (view.kind === "lesson" ? url.pathname !== "/" : url.pathname !== "/atlas")) return;
+      for (const key of ["lesson", "family", "master", "lang"]) url.searchParams.delete(key);
+      if (view?.kind === "lesson") {
+        url.searchParams.set("lesson", String(view.lessonId));
+        url.searchParams.set("lang", view.languageId);
+      } else if (view) {
+        if (view.kind === "atlasFamily") url.searchParams.set("family", view.familyId);
+        else url.searchParams.set("master", "1");
+        url.searchParams.set("lang", useAppStore.getState().activeLanguageId);
+      }
+      if (url.href === window.location.href) return;
       try {
-        window.history.replaceState(window.history.state, "", path);
+        // Preserve Next's routing state and unrelated query parameters/hash.
+        window.history.replaceState(window.history.state, "", url);
       } catch {
-        // history can be unavailable in sandboxed frames; the view still opens
+        // Sandboxed frames may forbid history writes; the overlay remains usable.
       }
     };
 
-    const params = new URLSearchParams(window.location.search);
-    const rawLesson = params.get("lesson");
-    const rawFamily = params.get("family");
-    const isMaster = params.get("master") === "1";
-    if (rawLesson === null && rawFamily === null && !isMaster) return;
-
-    handled.current = true;
-    const app = useAppStore.getState();
-    const view = useViewStore.getState();
-
-    if (rawLesson !== null) {
-      const lessonId = /^\d+$/.test(rawLesson) ? Number.parseInt(rawLesson, 10) : Number.NaN;
-      if (Number.isInteger(lessonId) && lessonId > 0) {
-        const rawLanguage = params.get("lang");
-        const languageId =
-          rawLanguage && isValidLanguageId(rawLanguage) ? rawLanguage : app.activeLanguageId;
-        if (languageId !== app.activeLanguageId) {
-          app.setActiveLanguage(languageId);
-          app.completeOnboarding();
-        }
-        cleanUrl("/");
-        view.openLesson(languageId, lessonId);
-      } else {
-        view.showNotice("That lesson link isn't valid.");
-        cleanUrl("/");
+    const restoreUrl = () => {
+      const url = new URL(window.location.href);
+      const app = useAppStore.getState();
+      const view = useViewStore.getState();
+      const rawLesson = url.pathname === "/" ? url.searchParams.get("lesson") : null;
+      const rawFamily = url.pathname === "/atlas" ? url.searchParams.get("family") : null;
+      const isMaster = url.pathname === "/atlas" && url.searchParams.get("master") === "1";
+      if (rawLesson === null && rawFamily === null && !isMaster) {
+        view.closeSubview();
+        return;
       }
-      return;
-    }
+      const lessonId = rawLesson !== null && /^\d+$/.test(rawLesson) ? Number(rawLesson) : NaN;
+      if (rawLesson !== null && (!Number.isSafeInteger(lessonId) || lessonId <= 0)) {
+        view.closeSubview();
+        view.showNotice("That lesson link isn't valid.");
+        syncUrl();
+        return;
+      }
+      const languageId = url.searchParams.get("lang");
+      if (languageId && isValidLanguageId(languageId) && languageId !== app.activeLanguageId) {
+        app.setActiveLanguage(languageId);
+      }
+      app.completeOnboarding();
+      if (rawLesson !== null) {
+        view.openLesson(useAppStore.getState().activeLanguageId, lessonId);
+      } else if (rawFamily !== null) {
+        view.closeSubview();
+        view.openAtlasFamily(rawFamily, getFamilyOwnerLanguageIds(rawFamily));
+      } else {
+        view.openAtlasMaster();
+      }
+      syncUrl();
+    };
 
-    if (rawFamily !== null) {
-      cleanUrl("/atlas");
-      if (rawFamily) view.openAtlasFamily(rawFamily, getFamilyOwnerLanguageIds(rawFamily));
-      return;
-    }
-
-    cleanUrl("/atlas");
-    view.openAtlasMaster();
-  }, [storeHydrated]);
+    // Restore before subscribing: a copied URL takes precedence over stale UI state.
+    restoreUrl();
+    const unsubscribe = useViewStore.subscribe((state, previous) => {
+      if (state.subView !== previous.subView) syncUrl();
+    });
+    window.addEventListener("popstate", restoreUrl);
+    return () => {
+      unsubscribe();
+      window.removeEventListener("popstate", restoreUrl);
+    };
+  }, [storeHydrated, pathname]);
 
   return null;
 }

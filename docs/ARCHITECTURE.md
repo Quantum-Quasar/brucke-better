@@ -31,10 +31,16 @@ cache); `ShiftPair.tsx` renders the highlighted result.
   `generateStaticParams()` with `dynamicParams = false`. The six top-level routes are
   `/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about` (the bottom dock has the
   matching six tabs).
-- **Lessons and atlas details are in-page views, not routes.** They are loaded
-  dynamically by `AppShell.tsx` (`LessonView`, `ConstellationDetailClient`), so opening
-  one adds no URL or history entry. Legacy `/trail`, `/trail/:id`, `/trail/:lang/:id`,
-  `/atlas/:family` and `/atlas/master` are redirects defined in `next.config.mjs`.
+- **Lessons and atlas details are shareable in-page views, not server routes.** They are
+  loaded dynamically by `AppShell.tsx` (`LessonView`, `ConstellationDetailClient`).
+  Opening, changing or closing a view replaces the current URL without adding history:
+  `/?lesson=1&lang=de`, `/atlas?family=th_to_d&lang=de`, `/atlas?master=1&lang=de`.
+  Reloads and copied links restore the view and course. Browser Back/Forward follows
+  actual tab history, restoring the destination's view; lesson overlays do not push
+  touch-device sentinels. Crossing tabs still pushes one normal entry.
+  Legacy `/trail`, `/trail/:id`, `/trail/:lang/:id`, `/atlas/:family` and `/atlas/master`
+  remain redirects in `next.config.mjs`. Lesson content remains client-rendered,
+  not separately indexed server HTML.
 - **Per-language data is fetched, not bundled.** `bun run export-data`
   (`scripts/export-client-data.ts`, run by `dev` and `build`) writes each language's
   compendium, a compact lesson index and one payload per lesson to `public/data/<lang>/`,

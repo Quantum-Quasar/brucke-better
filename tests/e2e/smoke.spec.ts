@@ -333,15 +333,15 @@ test.describe("browser smoke", () => {
       await seedAppState(page);
       await page.goto("/atlas/th_to_d");
       await expect(page.getByText(/Dental Shift/i).first()).toBeVisible();
-      await expect(page).toHaveURL(/\/atlas\/?$/);
+      await expect(page).toHaveURL(/\/atlas\?family=th_to_d&lang=de$/);
 
       await page.goto("/trail/999999");
       await expect(page.getByText(/Lesson 999999 Coming Soon/i)).toBeVisible();
-      await expect(page).toHaveURL(/\/$/);
+      await expect(page).toHaveURL(/\/\?lesson=999999&lang=de$/);
 
       await page.goto("/atlas/not_a_family");
       await expect(page.getByText(/No authored course defines this shift family/i)).toBeVisible();
-      await expect(page).toHaveURL(/\/atlas\/?$/);
+      await expect(page).toHaveURL(/\/atlas\?family=not_a_family&lang=de$/);
 
       await page.goto("/trail/not-a-number");
       await expect(page.getByText(/That lesson link isn't valid/i)).toBeVisible();
@@ -356,12 +356,15 @@ test("language-scoped lesson URL opens the named course in-page", async ({ page 
   await expect(page.locator("header")).toContainText(/french through english/i, {
     timeout: 15_000,
   });
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL(/\/\?lesson=1&lang=fr$/);
+  await page.reload();
+  await expect(page.getByRole("button", { name: /next: pattern/i })).toBeVisible();
+  await expect(page.locator("header")).toContainText(/french through english/i);
 });
 
 test("opening and closing a lesson adds no browser-history entries", async ({ page }) => {
   await seedAppState(page);
-  await page.goto("/");
+  await page.goto("/?ref=shared#trail");
   await page.waitForFunction(() => document.documentElement.dataset.appReady === "true");
   const before = await page.evaluate(() => history.length);
 
@@ -370,12 +373,30 @@ test("opening and closing a lesson adds no browser-history entries", async ({ pa
   await start.click();
   await expect(page.getByRole("button", { name: /back to trail/i })).toBeVisible();
 
-  // Desktop keeps the clean-history guarantee; the touch sentinel is covered
-  // by the mobile suite's "system Back closes the lesson overlay" test.
+  await expect(page).toHaveURL(/\/\?ref=shared&lesson=1&lang=de#trail$/);
   expect(await page.evaluate(() => history.length)).toBe(before);
   await page.getByRole("button", { name: /back to trail/i }).click();
   await expect(start).toBeVisible();
+  await expect(page).toHaveURL(/\/\?ref=shared#trail$/);
   expect(await page.evaluate(() => history.length)).toBe(before);
+});
+
+test("Back and Forward restore the lesson URL without a lesson history entry", async ({ page }) => {
+  await seedAppState(page);
+  await page.goto("/review");
+  const before = await page.evaluate(() => history.length);
+  await page.getByRole("navigation", { name: /main navigation/i }).getByRole("link", { name: /^trail$/i }).click();
+  await expect(page.locator("[data-next-lesson-start]")).toBeVisible();
+  await page.locator("[data-next-lesson-start]").click();
+  await expect(page).toHaveURL(/\/\?lesson=1&lang=de$/);
+  expect(await page.evaluate(() => history.length)).toBe(before + 1);
+
+  await page.goBack();
+  await expect(page).toHaveURL(/\/review$/);
+  await expect(page.getByRole("dialog", { name: /^Lesson/ })).toHaveCount(0);
+  await page.goForward();
+  await expect(page).toHaveURL(/\/\?lesson=1&lang=de$/);
+  await expect(page.getByRole("button", { name: /back to trail/i })).toBeVisible();
 });
 
 test("tab switches add one history entry and Back returns", async ({ page }) => {
