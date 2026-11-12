@@ -10,14 +10,14 @@
 // analysis: let the learner come in "at the moment their memory is jogged").
 
 import React, { useState, useEffect, useRef } from "react";
-import { Check, AlertCircle, Sparkles, Lightbulb, Quote } from "lucide-react";
-import { GermanCharBar } from "@/components/common/GermanCharBar";
+import { Sparkles, Lightbulb, Quote } from "lucide-react";
+import { ProductionAnswerInput } from "./inputs/ProductionAnswerInput";
+import { ProductionAnswerActions } from "./ProductionAnswerActions";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
 import { arrangeTilesDeterministically } from "./exercise-tiles";
-import { gradeLessonAnswer } from "@/lib/lesson-grading";
-import { diagnoseAttempt, affirmationFor } from "@/lib/shift-diagnosis";
-import { DIAGNOSIS_BY_LANGUAGE, GERMAN_DIAGNOSIS } from "@/data/shift-diagnosis-table";
+import { gradeExerciseAttempt } from "@/lib/exercise-grading";
+import { affirmationFor } from "@/lib/shift-diagnosis";
 import { getLanguageDefinition } from "@/data/languages";
 import { useAppStore } from "@/lib/store";
 import { soundEngine } from "@/lib/sound";
@@ -34,13 +34,6 @@ interface TranscribeExerciseProps {
   /** using the cue ladder forfeits the purple star for the run */
   onPurpleForfeit?: () => void;
 }
-
-const tokensOf = (s: string) =>
-  s
-    .toLowerCase()
-    .replace(/[.,!?;:]+/g, " ")
-    .split(/\s+/)
-    .filter(Boolean);
 
 export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
   exercise,
@@ -64,8 +57,6 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
   const [showSuccessSheet, setShowSuccessSheet] = useState(false);
   const [failedAttemptText, setFailedAttemptText] = useState("");
   const [failedDiagnosis, setFailedDiagnosis] = useState<ExerciseDiagnosis | undefined>(undefined);
-  const [isCapsLock, setIsCapsLock] = useState(false);
-  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const tolerance = useAppStore((s) => s.tolerance);
@@ -117,27 +108,6 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
     setCuesRevealed((n) => n + 1);
   };
 
-  const diagnoseFailure = (attempt: string): ExerciseDiagnosis | undefined => {
-    if (exercise.diagnosis) return exercise.diagnosis;
-    const diagTable = DIAGNOSIS_BY_LANGUAGE[activeLanguageId] ?? GERMAN_DIAGNOSIS;
-    const attemptTokens = tokensOf(attempt);
-    const targetTokens = tokensOf(target);
-    const sameMultiset =
-      attemptTokens.length === targetTokens.length &&
-      [...attemptTokens].sort().join(" ") === [...targetTokens].sort().join(" ");
-    if (sameMultiset && attempt.trim() !== target) {
-      return diagTable.word_order;
-    }
-    const targetSet = new Set(targetTokens);
-    const bankSet = new Set(wordBank.map((w) => w.toLowerCase()));
-    const distractorUsed = attemptTokens.some(
-      (t) => bankSet.has(t) && !targetSet.has(t)
-    );
-    if (distractorUsed) {
-      return diagTable.wrong_word;
-    }
-    return diagnoseAttempt(target, attempt, exercise.shift_hint) ?? undefined;
-  };
 
   const handleVerify = () => {
     inputRef.current?.blur();
@@ -152,7 +122,7 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
       umlautTolerance: Boolean(settings.lazyMode ?? tolerance.umlautTolerance),
       capitalizationTolerance: Boolean(settings.capitalizationTolerance ?? tolerance.capitalizationTolerance),
     };
-    const graded = gradeLessonAnswer([answerToCheck], [target, ...(exercise.accepted_answers ?? [])], evalOptions, isRetry);
+    const graded = gradeExerciseAttempt(exercise, [answerToCheck], { ...evalOptions, languageId: activeLanguageId }, isRetry, wordBank);
     const evaluation = graded.result;
     setAcceptedTarget(graded.target);
 
@@ -173,24 +143,16 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
       setVerifiedAttemptText(answerToCheck);
       setAlmostWarningNote(evaluation.warningNote);
       setShowSuccessSheet(true);
-      if ((evaluation.reason === "typo" || evaluation.reason === "sharp-s") || (evaluation.reason === "umlaut" && !evalOptions.umlautTolerance)) {
-        onQueueRetry?.();
-      }
+      if (graded.queueRetry) onQueueRetry?.();
       return;
     }
 
     setStatus("incorrect");
     void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
-    onError(
-      evaluation.reason === "umlaut"
-        ? "umlaut"
-        : evaluation.reason === "case"
-        ? "capitalization"
-        : "spelling"
-    );
+    onError(graded.errorType);
     onQueueRetry?.();
     setFailedAttemptText(answerToCheck);
-    setFailedDiagnosis(diagnoseFailure(answerToCheck));
+    setFailedDiagnosis(graded.diagnosis);
     // a failed attempt brings the next rung of the ladder (never retroactively graded)
     if (cuesRevealed < cues.length) setCuesRevealed((n) => n + 1);
     setShowErrorSheet(true);
@@ -200,9 +162,7 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
   // the morpheme_tiles / syntax_builder key plumbing).
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.getModifierState) {
-        setIsCapsLock(e.getModifierState("CapsLock"));
-      }
+      if (e.isComposing || e.ctrlKey || e.metaKey || e.altKey) return;
       if (settings.quickRestart === "esc" && e.key === "Escape") {
         e.preventDefault();
         resetCurrentExercise();
@@ -272,6 +232,7 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
           <button
             type="button"
             onClick={() => setShowIdeaParts((v) => !v)}
+            aria-expanded={showIdeaParts}
             className="w-full flex items-center justify-between text-[11px] uppercase tracking-wider text-[var(--main-color)] font-bold"
           >
             <span>break the thought up first</span>
@@ -316,7 +277,7 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
       {(cuesRevealed > 0 || (cues.length > 0 && status === "idle")) && (
         <div className="space-y-2">
           {cuesRevealed > 0 && (
-            <ol className="space-y-1.5">
+            <ol className="space-y-1.5" aria-live="polite">
               {cues.slice(0, cuesRevealed).map((cue, i) => (
                 <li key={i} className="flex items-start gap-2 text-xs text-[var(--text-color)] leading-relaxed">
                   <span className="text-[var(--main-color)] font-bold shrink-0">{i + 1}.</span>
@@ -341,52 +302,22 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
 
       {/* Free-text production input with insertable vocabulary chips */}
       <div className="space-y-3">
-        {settings.capsLockWarning && isCapsLock && (
-          <div className="flex items-center gap-1.5 text-xs text-[var(--error-color)] font-mono animate-pulse">
-            <AlertCircle className="w-3.5 h-3.5" />
-            <span>caps lock is on</span>
-          </div>
-        )}
-        <input
-          ref={inputRef}
-          type="text"
+        <ProductionAnswerInput
+          inputRef={inputRef}
           value={userInput}
-          onFocus={() => setIsInputFocused(true)}
-          onBlur={() => setIsInputFocused(false)}
-          aria-label={exercise.prompt || `Build the ${language.name} sentence`}
-          lang={language.id}
-          spellCheck={false}
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
-          onChange={(e) => {
-            setUserInput(e.target.value);
-            if (status !== "idle") setStatus("idle");
+          onChange={(value) => {
+            setUserInput(value);
+            setStatus("idle");
             setFeedbackNote(null);
           }}
-          onKeyDown={(e) => {
-            if (e.getModifierState) {
-              setIsCapsLock(e.getModifierState("CapsLock"));
-            }
-            if (settings.quickRestart === "esc" && e.key === "Escape") {
-              e.preventDefault();
-              resetCurrentExercise();
-              return;
-            }
-            if (e.key === "Enter") {
-              e.preventDefault();
-              e.stopPropagation();
-              handleVerify();
-            }
-          }}
-          readOnly={status === "correct" || status === "almost"}
+          onVerify={handleVerify}
+          onReset={resetCurrentExercise}
+          label={exercise.prompt || `Build the ${language.name} sentence`}
+          languageId={language.id}
           placeholder={`build the ${language.name.toLowerCase()} sentence...`}
-          className="w-full px-4 py-3 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 text-[var(--main-color)] text-lg font-bold font-mono outline-none focus:border-[var(--main-color)] transition placeholder:text-[var(--sub-color)]/40"
+          readOnly={status === "correct" || status === "almost"}
+          settings={settings}
         />
-
-        {(settings.showCharBar === "always" || (settings.showCharBar === "on_focus" && isInputFocused)) && (
-          <GermanCharBar inputRef={inputRef} value={userInput} onChange={setUserInput} />
-        )}
 
         <div className="flex flex-wrap gap-2 pt-1">
           {wordBank.map((word, i) => (
@@ -407,43 +338,13 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
       </div>
 
       {/* Footer Actions & Notifications */}
-      <div className="pt-3 border-t border-[var(--sub-color)]/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div aria-live="polite" role="status">
-          {feedbackNote && (
-            <p
-              className={`text-xs font-mono flex items-center gap-1.5 ${
-                status === "correct"
-                  ? "text-[var(--main-color)]"
-                  : status === "almost"
-                  ? "text-[var(--sub-color)]"
-                  : status === "incorrect"
-                  ? "text-[var(--error-color)]"
-                  : "text-[var(--sub-color)]"
-              }`}
-            >
-              {status === "correct" ? (
-                <Check className="w-4 h-4 text-[var(--main-color)]" />
-              ) : status === "almost" ? (
-                <Sparkles className="w-4 h-4 text-[var(--sub-color)]" />
-              ) : (
-                <AlertCircle className="w-4 h-4 text-[var(--error-color)]" />
-              )}
-              <span>{feedbackNote}</span>
-            </p>
-          )}
-        </div>
-
-        {status !== "correct" && status !== "almost" && (
-          <button
-            type="button"
-            onClick={handleVerify}
-            className="px-5 py-2 rounded-lg bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] font-mono font-bold text-xs transition cursor-pointer ml-auto flex items-center gap-1.5"
-          >
-            <span>verify</span>
-            {settings.showKeyTips && <span className="keycap text-[10px]">enter</span>}
-          </button>
-        )}
-      </div>
+      <ProductionAnswerActions
+        status={status}
+        feedback={feedbackNote}
+        onVerify={handleVerify}
+        action="verify"
+        showKeyTips={settings.showKeyTips}
+      />
 
       {showErrorSheet && (
         <ErrorFeedbackSheet

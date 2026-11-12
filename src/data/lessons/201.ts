@@ -79,7 +79,7 @@ const lesson: Lesson = {
     {
       "id": "l201_e2",
       "type": "matching_pairs",
-      "prompt": "Match the desire modals with their English twins:",
+      "prompt": "Match the desire modals with their English twins. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "wm1",
@@ -110,10 +110,25 @@ const lesson: Lesson = {
           "id": "wm6",
           "english": "I want the sausage",
           "german": "ich will die Wurst"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können lernen",
+          "english": "We can learn"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir sollen lernen",
+          "english": "We ought to learn"
+        },
+        {
+          "id": "recall3",
+          "german": "Wir mögen Deutsch",
+          "english": "We like German"
         }
       ],
-      "target_answer": "ich will, du sollst, ich mag, wir müssen, ich habe Lust auf Kuchen, ich will die Wurst",
-      "meaning": "I want, you shall, I like, we must, I feel like cake, I want the sausage",
+      "target_answer": "ich will, du sollst, ich mag, wir müssen, ich habe Lust auf Kuchen, ich will die Wurst, Wir können lernen, Wir sollen lernen, Wir mögen Deutsch",
+      "meaning": "I want; you shall; I like; we must; I feel like cake; I want the sausage; We can learn; We ought to learn; We like German",
       "explanation": "wollen ↔ will, sollen ↔ shall, mögen ↔ may — and die Lust is the desire noun hiding inside English 'lust'."
     },
     {

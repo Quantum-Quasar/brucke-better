@@ -61,7 +61,7 @@ const lesson: Lesson = {
     {
       "id": "l2001_e1",
       "type": "matching_pairs",
-      "prompt": "Match each English fossil with its living German form:",
+      "prompt": "Match each English fossil with its living German form. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "md1",
@@ -92,10 +92,30 @@ const lesson: Lesson = {
           "id": "md6",
           "english": "courage (mood's twin)",
           "german": "der Mut"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir dürfen helfen",
+          "english": "We may help"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können wünschen",
+          "english": "We can wish"
+        },
+        {
+          "id": "recall3",
+          "german": "ein Wunsch",
+          "english": "a wish"
+        },
+        {
+          "id": "recall4",
+          "german": "bei mir",
+          "english": "at my place"
         }
       ],
-      "target_answer": "Es scheint mir, Gib es mir, Gib es ihm, Ich gebe es dir, das Glück, der Mut",
-      "meaning": "it seems to me, give it me, give it him, I give it thee, luck, courage",
+      "target_answer": "Es scheint mir (it seems TO ME), Gib es mir, Gib es ihm, Ich gebe es dir, das Glück, der Mut, Wir dürfen helfen, Wir können wünschen, ein Wunsch, bei mir",
+      "meaning": "methinks (it seems to me); give it me; give it him; I give it thee; luck; courage (mood's twin); We may help; We can wish; a wish; at my place",
       "explanation": "Every English dative fossil has a working German relative — the case never died on the continent. Glück and Mut are plain nouns; the dative sits on the person they reach: Ich wünsche dir Glück."
     },
     {

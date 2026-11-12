@@ -64,7 +64,7 @@ const lesson: Lesson = {
     {
       "id": "l401_e1",
       "type": "matching_pairs",
-      "prompt": "Match the words through the TH → D lens — the culture set, plus three everyday arrivals:",
+      "prompt": "Match the words through the TH → D lens — the culture set, plus three everyday arrivals. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "db1",
@@ -100,10 +100,35 @@ const lesson: Lesson = {
           "id": "db7",
           "english": "gut (archaic: tharm)",
           "german": "Darm"
+        },
+        {
+          "id": "recall1",
+          "german": "der Pflug",
+          "english": "the plough"
+        },
+        {
+          "id": "recall2",
+          "german": "eine Pfeife",
+          "english": "a pipe"
+        },
+        {
+          "id": "recall3",
+          "german": "scharf und stumpf",
+          "english": "sharp and blunt"
+        },
+        {
+          "id": "recall4",
+          "german": "greifen und treffen",
+          "english": "to grasp and to meet"
+        },
+        {
+          "id": "spaced1",
+          "german": "Wir können einsteigen",
+          "english": "We can get in"
         }
       ],
-      "target_answer": "Donner, Bad, du, danken, Mund, Monat, Darm",
-      "meaning": "thunder, bath, thou, to thank, mouth, month, gut",
+      "target_answer": "Donner, Bad, du, danken, Mund, Monat, Darm, der Pflug, eine Pfeife, scharf und stumpf, greifen und treffen, Wir können einsteigen",
+      "meaning": "thunder; bath; thou; to thank; mouth; month; gut (archaic: tharm); the plough; a pipe; sharp and blunt; to grasp and to meet; We can get in",
       "shift_hint": "TH → D",
       "explanation": "Every German d here answers to an English th — including the god of thunder himself. Darm is the old tharm: English moved to 'gut', German kept the hardened th."
     },

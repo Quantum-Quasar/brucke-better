@@ -80,7 +80,7 @@ const lesson: Lesson = {
     {
       "id": "l202_e2",
       "type": "matching_pairs",
-      "prompt": "Match each bracket sentence with its English meaning:",
+      "prompt": "Match each bracket sentence with its English meaning. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "bw1",
@@ -121,10 +121,20 @@ const lesson: Lesson = {
           "id": "bw8",
           "english": "I want a beer",
           "german": "Ich will ein Bier"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir sollen kommen",
+          "english": "We ought to come"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir mögen Bier",
+          "english": "We like beer"
         }
       ],
-      "target_answer": "Ich kann morgen wandern, Wir wollen heute singen, Ich muss lernen, Du kannst folgen, Du musst aussteigen, Wir wollen fernsehen, ich habe Lust auf Wurst, Ich will ein Bier",
-      "meaning": "I can hike tomorrow, we want to sing today, I have to learn, you can follow, you must get off, we want to watch TV, I feel like sausage, I want a beer",
+      "target_answer": "Ich kann morgen wandern, Wir wollen heute singen, Ich muss lernen, Du kannst folgen, Du musst aussteigen, Wir wollen fernsehen, ich habe Lust auf Wurst, Ich will ein Bier, Wir sollen kommen, Wir mögen Bier",
+      "meaning": "I can hike tomorrow; We want to sing today; I have to learn; You can follow; You must get off; We want to watch TV; I feel like sausage; I want a beer; We ought to come; We like beer",
       "explanation": "Modal in position 2, contents inside, bare infinitive at the end — the same frame every time, even for new verbs like aussteigen and fernsehen."
     },
     {

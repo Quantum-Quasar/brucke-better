@@ -80,7 +80,7 @@ const lesson: Lesson = {
     {
       "id": "l5332_e1",
       "type": "matching_pairs",
-      "prompt": "Reading check — match each story sentence with its English meaning:",
+      "prompt": "Reading check — match each story sentence with its English meaning. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "m1",
@@ -111,10 +111,40 @@ const lesson: Lesson = {
           "id": "m6",
           "english": "At one they went home.",
           "german": "Um eins sind sie nach Hause gegangen."
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können reiten",
+          "english": "We can ride a horse"
+        },
+        {
+          "id": "recall2",
+          "german": "Liebe und Freude",
+          "english": "love and joy"
+        },
+        {
+          "id": "recall3",
+          "german": "Wir sind wütend und stolz",
+          "english": "We are angry and proud"
+        },
+        {
+          "id": "recall4",
+          "german": "richtig und falsch",
+          "english": "right and wrong"
+        },
+        {
+          "id": "recall5",
+          "german": "Das Zimmer ist sauber und leer",
+          "english": "The room is clean and empty"
+        },
+        {
+          "id": "recall6",
+          "german": "die Sonne ist hell",
+          "english": "the sun is bright"
         }
       ],
-      "target_answer": "Am Samstag war das Wetter schön., Anna ist um acht Uhr aufgestanden., Um zehn Uhr haben sie sich im Park getroffen., Lisa hat ihren Hund Max mitgebracht., Sie haben eine Bank gefunden und sich hingesetzt., Um eins sind sie nach Hause gegangen.",
-      "meaning": "the Saturday timeline: morning, ten o'clock, the bench, one o'clock",
+      "target_answer": "Am Samstag war das Wetter schön., Anna ist um acht Uhr aufgestanden., Um zehn Uhr haben sie sich im Park getroffen., Lisa hat ihren Hund Max mitgebracht., Sie haben eine Bank gefunden und sich hingesetzt., Um eins sind sie nach Hause gegangen., Wir können reiten, Liebe und Freude, Wir sind wütend und stolz, richtig und falsch, Das Zimmer ist sauber und leer, die Sonne ist hell",
+      "meaning": "On Saturday the weather was beautiful.; Anna got up at eight.; At ten they met in the park.; Lisa brought her dog Max.; They found a bench and sat down.; At one they went home.; We can ride a horse; love and joy; We are angry and proud; right and wrong; The room is clean and empty; the sun is bright",
       "explanation": "The time phrases order the story. If you can line up the clock, the participles have a place to sit."
     },
     {

@@ -63,7 +63,7 @@ const lesson: Lesson = {
     {
       "id": "l24_e1",
       "type": "matching_pairs",
-      "prompt": "Match the twin comparisons:",
+      "prompt": "Match the twin comparisons. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "cs1",
@@ -84,25 +84,35 @@ const lesson: Lesson = {
           "id": "cs4",
           "english": "high → higher",
           "german": "hoch → höher"
+        },
+        {
+          "id": "recall1",
+          "german": "das Spiel",
+          "english": "the game"
+        },
+        {
+          "id": "recall2",
+          "german": "eine Stunde",
+          "english": "an hour"
         }
       ],
-      "target_answer": "gut → besser, alt → älter, kalt → kälter, hoch → höher",
-      "meaning": "the twin comparatives",
+      "target_answer": "gut → besser, alt → älter, kalt → kälter, hoch → höher, das Spiel, eine Stunde",
+      "meaning": "good → better; old → elder; cold → colder; high → higher; the game; an hour",
       "explanation": "Suppletion (gut/besser) and umlaut (älter, kälter, höher) — both systems shared, one fossilized in English."
     },
     {
       "id": "l24_e2",
       "type": "shift_select",
-      "prompt": "Complete the twin suppletion: 'Das Wasser ist _____.' (better):",
+      "prompt": "Ignore word length and find the pair with a different sound clue.",
       "options": [
-        "besser",
-        "am besten",
-        "guter",
-        "mehrer"
+        "dream → Traum",
+        "word → Wort",
+        "good → gut",
+        "thin → dünn"
       ],
-      "target_answer": "besser",
-      "meaning": "Das Wasser ist besser = The water is better",
-      "explanation": "gut → besser is good → better: the same inherited comparative, shifted per the laws. The shelf supplies the bases: die Maus, der Vogel, die Kuh — klein oder groß, every noun can enter a comparison."
+      "target_answer": "thin → dünn",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Dream, word and good use D → T. Thin → dünn uses TH → D."
     },
     {
       "id": "l24_e3",

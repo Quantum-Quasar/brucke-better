@@ -82,7 +82,7 @@ const lesson: Lesson = {
     {
       "id": "l30_e1",
       "type": "matching_pairs",
-      "prompt": "Reading check — match each story sentence with its English meaning:",
+      "prompt": "Reading check — match each story sentence with its English meaning. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "cp1",
@@ -133,25 +133,35 @@ const lesson: Lesson = {
           "id": "cp10",
           "english": "They look out of the window",
           "german": "Sie schauen aus dem Fenster"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir sind fertig und satt",
+          "english": "We are finished and full"
+        },
+        {
+          "id": "recall2",
+          "german": "eine Gabe",
+          "english": "a gift"
         }
       ],
-      "target_answer": "Gestern haben sie eine Fahrt mit dem Zug gemacht, Der Zug war schnell, In der Stadt haben sie Brot und Wasser gekauft, Um elf war die Nacht still, Es ging ihm übel, Die Kinder ziehen sich aus, Der Markt ist am Fluss, Das Bild hängt an der Wand, Sie wollte gewinnen, Sie schauen aus dem Fenster",
-      "meaning": "the story beats of the passage",
+      "target_answer": "Gestern haben sie eine Fahrt mit dem Zug gemacht, Der Zug war schnell, In der Stadt haben sie Brot und Wasser gekauft, Um elf war die Nacht still, Es ging ihm übel, Die Kinder ziehen sich aus, Der Markt ist am Fluss, Das Bild hängt an der Wand, Sie wollte gewinnen, Sie schauen aus dem Fenster, Wir sind fertig und satt, eine Gabe",
+      "meaning": "Yesterday they took a trip by train; The train was fast; In the city they bought bread and water; At eleven the night was still; To him it went badly; The children get undressed; The market is at the river; The picture hangs on the wall; She wanted to win; They look out of the window; We are finished and full; a gift",
       "explanation": "Perfekt brackets, sein-pasts, and dative time — every construction from the trail, in one story."
     },
     {
       "id": "l30_e2",
       "type": "shift_select",
-      "prompt": "Trap watch: in the story's world, someone asks for 'Rat'. What do they get?",
+      "prompt": "Final connection mix: which pair works differently from the rest?",
       "options": [
-        "Advice — der Rat means counsel",
-        "A wheel",
-        "A gift",
-        "A rodent"
+        "eat → essen",
+        "live → leben",
+        "water → Wasser",
+        "two → zwei"
       ],
-      "target_answer": "Advice — der Rat means counsel",
-      "meaning": "der Rat = advice (not rat)",
-      "explanation": "The false-friend deck strikes: der Rat is advice. The rodent is die Ratte. The bait 'a gift' is die Gabe — the giving that es gibt names."
+      "target_answer": "live → leben",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Water, two and eat use T → S/SS/Z. Live → leben uses V → B."
     },
     {
       "id": "l30_e3",

@@ -2300,40 +2300,30 @@ export const THEME_LIST: ThemeMeta[] = Object.entries(THEMES).map(([id, t]) => (
 }));
 
 export const POPULAR_THEMES: string[] = [
+  "alduin",
   "serika_dark",
-  "carbon",
   "nord",
   "dracula",
   "gruvbox_dark",
   "catppuccin",
-  "monokai",
-  "matrix",
   "botanical",
+  "dark",
   "milkshake",
-  "8008",
-  "solarized_dark",
-  "retro",
-  "taro",
+  "serika",
+  "nord_light",
   "modern_ink",
-  "bingsu",
-  "cafe",
-  "arch",
-  "moonlight",
-  "shadow",
-  "laser",
-  "alduin",
 ];
 
 export type ThemeFilterTab = "popular" | "all" | "dark" | "light";
 
 /** Single source of truth for theme filtering, shared by the dropdown, the grid modal, and tests. */
-export function filterThemes(query: string, tab: ThemeFilterTab): ThemeMeta[] {
+export function filterThemes(query: string, tab: ThemeFilterTab, selectedTheme?: string): ThemeMeta[] {
   // When searching, search across all themes regardless of selected tab
   if (query.trim()) {
     const q = query.toLowerCase().trim();
     return THEME_LIST.filter((t) => t.name.toLowerCase().includes(q) || t.id.toLowerCase().includes(q));
   }
-  if (tab === "popular") return THEME_LIST.filter((t) => POPULAR_THEMES.includes(t.id));
+  if (tab === "popular") return THEME_LIST.filter((t) => POPULAR_THEMES.includes(t.id) || t.id === selectedTheme);
   if (tab === "dark") return THEME_LIST.filter((t) => t.isDark);
   if (tab === "light") return THEME_LIST.filter((t) => !t.isDark);
   return THEME_LIST;

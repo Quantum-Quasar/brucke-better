@@ -61,7 +61,7 @@ const lesson: Lesson = {
     {
       "id": "l1601_e1",
       "type": "matching_pairs",
-      "prompt": "The ledger — match each ver- verb with its English for-twin:",
+      "prompt": "The ledger — match each ver- verb with its English for-twin. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "vf1",
@@ -87,10 +87,20 @@ const lesson: Lesson = {
           "id": "vf5",
           "english": "to earn / deserve",
           "german": "verdienen"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können das bekommen",
+          "english": "We can receive that"
+        },
+        {
+          "id": "recall1b",
+          "german": "Wir können das verkaufen",
+          "english": "We can sell that"
         }
       ],
-      "target_answer": "vergessen, verboten, versuchen, verlieren, verdienen",
-      "meaning": "forget, forbidden, to try, to lose, to earn/deserve",
+      "target_answer": "vergessen, verboten, versuchen, verlieren, verdienen, Wir können das bekommen, Wir können das verkaufen",
+      "meaning": "forget; forbidden; to try (seek-out); forlorn / lost; to earn / deserve; We can receive that; We can sell that",
       "explanation": "One prefix, one story: ver- is for-, and the jobs split between loss, error, and transformation — verdienen is the transformation job (earn/deserve), where English's for- never survived to make 'for-earn'."
     },
     {

@@ -6,6 +6,7 @@
 import type { CompendiumData, MasteryState, ReviewMode, SRSCard, WordEntity } from "./types";
 import { shuffleArray } from "./review-modes";
 import { getAtlasFamilies, getAtlasFamily } from "./atlas-families";
+import { compareFrequencyRanks } from "./frequency";
 
 /** Sentinel select value meaning "every atlas family". */
 export const ALL_FAMILIES_ID = "all";
@@ -180,10 +181,11 @@ export function getRecentLessonWordIds(
   return ids;
 }
 
-/** Most overdue first, then lowest ease (hardest) first. */
-export function sortDueCards(cards: SRSCard[]): SRSCard[] {
+/** Most overdue first, then hardest; frequency only breaks equal urgency ties. */
+export function sortDueCards(cards: SRSCard[], words: Readonly<Record<string, Pick<WordEntity, "frequencyRank">>> = {}): SRSCard[] {
   return [...cards].sort(
-    (a, b) => a.due_date.localeCompare(b.due_date) || a.ease_factor - b.ease_factor
+    (a, b) => a.due_date.localeCompare(b.due_date) || a.ease_factor - b.ease_factor ||
+      compareFrequencyRanks(words[a.word_id] ?? {}, words[b.word_id] ?? {})
   );
 }
 

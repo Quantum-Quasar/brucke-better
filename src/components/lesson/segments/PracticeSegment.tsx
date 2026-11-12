@@ -13,7 +13,7 @@ import type { LessonSession } from "../lesson-session-types";
 const ExerciseWidget = React.lazy(() => import("../ExerciseWidgets").then((module) => ({ default: module.ExerciseWidget })));
 
 export default function PracticeSegment({ session }: { session: LessonSession }) {
-  const { lesson, isReading, setCurrentSegment, practiceIndex, setPracticeIndex, retryQueue, retryIndex, inRetryPhase, setEverQueued, twistPhase, twistCompleted, failCounts, mercyRevealFor, setMercyRevealFor, showPostureCues, flagGuessed, detourFootnote, setDetourDismissed, showDetour, consciousnessLine, whisperCues, handleExerciseError, handleRetryError, handleTwistDone, drainCurrentRetry, handlePracticeSuccess, currentExercise } = session;
+  const { lesson, isReading, setCurrentSegment, practiceIndex, setPracticeIndex, retryQueue, retryIndex, inRetryPhase, setEverQueued, twistPhase, twistCompleted, failCounts, mercyRevealFor, setMercyRevealFor, showPostureCues, flagGuessed, detourFootnote, setDetourDismissed, showDetour, consciousnessLine, whisperCues, handleExerciseError, queueExerciseRetry, handleRetryError, handleTwistDone, drainCurrentRetry, handlePracticeSuccess, currentExercise } = session;
   return (
             <LazyLoadBoundary label="this exercise">
               <React.Suspense
@@ -171,7 +171,7 @@ export default function PracticeSegment({ session }: { session: LessonSession })
                 onError={() =>
                   inRetryPhase ? handleRetryError(currentExercise) : handleExerciseError(currentExercise)
                 }
-                onQueueRetry={() => handleExerciseError(currentExercise)}
+                onQueueRetry={() => queueExerciseRetry(currentExercise)}
                 onPurpleForfeit={() => setEverQueued(true)}
                 onFlagGuessed={() =>
                   flagGuessed(exerciseWordIds(currentExercise, [...lesson.word_ids, ...(lesson.table_word_ids ?? [])]))

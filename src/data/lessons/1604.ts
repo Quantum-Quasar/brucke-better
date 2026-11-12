@@ -57,7 +57,7 @@ const lesson: Lesson = {
     {
       "id": "l1604_e1",
       "type": "matching_pairs",
-      "prompt": "The routine chain — match each verb phrase with its reading (the last one in dictionary dress):",
+      "prompt": "The routine chain — match each verb phrase with its reading (the last one in dictionary dress). Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "dr1",
@@ -83,10 +83,30 @@ const lesson: Lesson = {
           "id": "dr5",
           "english": "get undressed (dictionary form)",
           "german": "sich ausziehen"
+        },
+        {
+          "id": "recall1",
+          "german": "Ich muss mich waschen",
+          "english": "I must wash myself"
+        },
+        {
+          "id": "recall1b",
+          "german": "Wir können uns freuen",
+          "english": "We can be glad"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können fühlen",
+          "english": "We can feel"
+        },
+        {
+          "id": "recall3",
+          "german": "Wir können uns anziehen",
+          "english": "We can get dressed"
         }
       ],
-      "target_answer": "Ich ziehe mich an, Ich wache auf, Ich stehe auf, Ich schlafe ein, sich ausziehen",
-      "meaning": "I get dressed, I wake up, I get up, I fall asleep, to get undressed",
+      "target_answer": "Ich ziehe mich an, Ich wache auf, Ich stehe auf, Ich schlafe ein, sich ausziehen, Ich muss mich waschen, Wir können uns freuen, Wir können fühlen, Wir können uns anziehen",
+      "meaning": "get dressed; wake up; get up; fall asleep; get undressed (dictionary form); I must wash myself; We can be glad; We can feel; We can get dressed",
       "explanation": "The chain runs an → auf → ein — and ausziehen closes the day, an's twin in reverse. The schedule around it: die Kurse beginnen um neun, wir bezahlen den Kaffee — factory verbs, no mirror. Three separable prefixes and one reflexive — the morning round mixes both systems you own."
     },
     {

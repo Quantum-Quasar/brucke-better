@@ -69,7 +69,7 @@ const lesson: Lesson = {
     {
       "id": "l101_e1",
       "type": "matching_pairs",
-      "prompt": "Match each English word with its identical German twin:",
+      "prompt": "Match each English word with its identical German twin. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "ht1",
@@ -90,10 +90,25 @@ const lesson: Lesson = {
           "id": "ht4",
           "english": "butter",
           "german": "Butter"
+        },
+        {
+          "id": "recall1",
+          "german": "der Arm",
+          "english": "the arm"
+        },
+        {
+          "id": "recall2",
+          "german": "der Finger",
+          "english": "the finger"
+        },
+        {
+          "id": "recall3",
+          "german": "ein Ring",
+          "english": "a ring"
         }
       ],
-      "target_answer": "Haus, Brot, Glas, Butter",
-      "meaning": "house, bread, glass, butter",
+      "target_answer": "Haus, Brot, Glas, Butter, der Arm, der Finger, ein Ring",
+      "meaning": "house; bread; glass; butter; the arm; the finger; a ring",
       "explanation": "Zero-shift twins: no consonant of these words sat in a shifted position, so the spellings survived side by side."
     },
     {

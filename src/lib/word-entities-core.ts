@@ -5,6 +5,7 @@
 import { displayArticle } from "@/lib/gender";
 import { COMPOUND_IPA, FALSE_FRIEND_IPA } from "@/data/phonetics";
 import type { CompendiumData, WordEntity } from "@/lib/types";
+import { compoundFrequencyForm, frequencyRankFor } from "@/lib/frequency";
 
 export interface WordEntityMaps {
   wordLesson: Record<string, number>;
@@ -27,7 +28,7 @@ export interface LessonEntitySource {
   };
 }
 
-export type WordEntityCompendium = Pick<CompendiumData, "words" | "compounds" | "falseFriends">;
+export type WordEntityCompendium = Pick<CompendiumData, "words" | "compounds" | "falseFriends" | "frequencyRanks">;
 
 const ARTICLE_OPTIONS_BY_LANG: Record<string, string[]> = {
   de: ["der", "die", "das", "den"],
@@ -61,7 +62,13 @@ export function buildWordEntityMaps(
     }
   }
 
-  const entities: Record<string, WordEntity> = { ...data.words };
+  const entities: Record<string, WordEntity> = {};
+  for (const [id, word] of Object.entries(data.words)) {
+    const rank = data.frequencyRanks
+      ? frequencyRankFor(word.target_word, data.frequencyRanks)
+      : word.frequencyRank ?? null;
+    entities[id] = word.frequencyRank === rank ? word : { ...word, frequencyRank: rank };
+  }
   const sentences: WordEntity[] = [];
   const articles: WordEntity[] = [];
   const articleOptions = ARTICLE_OPTIONS_BY_LANG[languageId] ?? ARTICLE_OPTIONS_BY_LANG.de;
@@ -90,6 +97,7 @@ export function buildWordEntityMaps(
       supportedModes: ["mcq"],
       customMcqOptions: opts,
       promptLabel: "article & gender mcq",
+      frequencyRank: null,
     };
     entities[id] = articleEntity;
     articles.push(articleEntity);
@@ -100,7 +108,7 @@ export function buildWordEntityMaps(
 
   data.compounds.forEach((compound) => {
     const id = `compound_${compound.id}`;
-    const cleanWord = compound.compound.replace(/^(der|die|das|le|la|el)\s+/i, "");
+    const cleanWord = compoundFrequencyForm(compound.compound);
     entities[id] = {
       id,
       target_word: cleanWord,
@@ -114,6 +122,7 @@ export function buildWordEntityMaps(
       context_translation:
         compound.example_translation ?? `${compound.english_counterpart} (${compound.literal_morphemes})`,
       etymology_derivation: compound.lore,
+      frequencyRank: frequencyRankFor(cleanWord, data.frequencyRanks),
     };
   });
 
@@ -133,6 +142,7 @@ export function buildWordEntityMaps(
         ? `${falseFriend.example_translation} (NOT English "${falseFriend.looks_like}")`
         : `NOT English "${falseFriend.looks_like}"!`,
       etymology_derivation: falseFriend.trap_note,
+      frequencyRank: frequencyRankFor(falseFriend.german_word, data.frequencyRanks),
     };
   });
 
@@ -157,6 +167,7 @@ export function buildWordEntityMaps(
       etymology_derivation: lesson.summary?.takeaway ?? "",
       supportedModes: ["flashcard", "mcq", "tiles", "typing"],
       promptLabel: "sentence structure",
+      frequencyRank: null,
     };
     entities[id] = sentenceEntity;
     sentences.push(sentenceEntity);

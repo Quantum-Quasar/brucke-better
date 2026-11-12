@@ -1,8 +1,31 @@
 import type { StoreSlice } from "./types";
 import { saveState } from "./persistence";
 import { createInitialCard, gradeCard, isMastered } from "../srs";
+import { failedSentenceCard, gradeSentenceCard, isSentenceProcess, sentenceCardId } from "../sentence-review";
 
-export const createReviewSlice: StoreSlice<"recordReview" | "restoreSrsCard" | "flagGuessed"> = (set, get) => ({
+export const createReviewSlice: StoreSlice<"recordReview" | "restoreSrsCard" | "flagGuessed" | "recordSentenceFailure" | "recordSentenceReview"> = (set, get) => ({
+  recordSentenceFailure: (lessonId, exercise, languageId) => {
+    if (!Number.isInteger(lessonId) || lessonId < 1 || !isSentenceProcess(exercise)) return;
+    if (!exercise.id || exercise.id.length > 200) return;
+    set((s) => {
+      if (s.activeLanguageId !== languageId) return s;
+      const id = sentenceCardId(lessonId, exercise.id);
+      const card = failedSentenceCard(lessonId, exercise, s.sentenceCards[id]);
+      const next = { ...s, sentenceCards: { ...s.sentenceCards, [id]: card } };
+      saveState(next);
+      return next;
+    });
+  },
+  recordSentenceReview: (cardId, grade, languageId) => {
+    if (![1, 3, 4, 5].includes(grade)) return;
+    set((s) => {
+      const current = s.sentenceCards[cardId];
+      if (s.activeLanguageId !== languageId || !current) return s;
+      const next = { ...s, sentenceCards: { ...s.sentenceCards, [cardId]: gradeSentenceCard(current, grade) } };
+      saveState(next);
+      return next;
+    });
+  },
   recordReview: (wordId, grade) => {
     const id = wordId.trim();
     set((s) => {

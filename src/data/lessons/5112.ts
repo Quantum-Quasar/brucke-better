@@ -55,7 +55,7 @@ const lesson: Lesson = {
     {
       "id": "l5112_e1",
       "type": "matching_pairs",
-      "prompt": "The two ifs — match each sentence with its reading:",
+      "prompt": "The two ifs — match each sentence with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "ob1",
@@ -81,10 +81,15 @@ const lesson: Lesson = {
           "id": "ob5",
           "english": "I don't know whether my friend is coming",
           "german": "Ich weiß nicht, ob mein Freund kommt"
+        },
+        {
+          "id": "recall1",
+          "german": "Es wird regnen",
+          "english": "It will rain"
         }
       ],
-      "target_answer": "Ich weiß nicht, ob er kommt, Wenn es regnet, lese ich, ob sie Zeit hat, Wenn ich Zeit hätte, Ich weiß nicht, ob mein Freund kommt",
-      "meaning": "ob for open questions, wenn for conditions",
+      "target_answer": "Ich weiß nicht, ob er kommt, Wenn es regnet, lese ich, ob sie Zeit hat, Wenn ich Zeit hätte, Ich weiß nicht, ob mein Freund kommt, Es wird regnen",
+      "meaning": "I don't know whether he is coming; if it rains, I read; whether she has time; if I had time (would-world); I don't know whether my friend is coming; It will rain",
       "explanation": "ob reports an open yes/no; wenn builds a condition. English splits the same jobs between whether/if and if."
     },
     {

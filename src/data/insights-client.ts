@@ -1,15 +1,13 @@
 "use client";
 
-// Browser-side daily insights. German is bundled; French/Spanish load on demand.
+// Browser-side daily insights, loaded separately from the primary trail action.
 
 import { useAsyncResource } from "@/lib/async-resource";
-import germanInsights from "./insights.json";
 import type { DailyInsight } from "@/lib/types";
 
-const GERMAN = germanInsights as DailyInsight[];
 const NONE: DailyInsight[] = [];
 
-const loaded = new Map<string, DailyInsight[]>([["de", GERMAN]]);
+const loaded = new Map<string, DailyInsight[]>();
 
 function peekInsights(languageId: string): DailyInsight[] | null {
   return loaded.get(languageId) ?? null;
@@ -19,7 +17,9 @@ function loadInsights(languageId: string): Promise<DailyInsight[]> {
   const ready = loaded.get(languageId);
   if (ready) return Promise.resolve(ready);
   const source =
-    languageId === "fr"
+    languageId === "de"
+      ? import("./insights.json").then((m) => m.default as DailyInsight[])
+      : languageId === "fr"
       ? import("./french/insights-fr").then((m) => m.FRENCH_INSIGHTS)
       : languageId === "es"
         ? import("./spanish/insights-es").then((m) => m.SPANISH_INSIGHTS)

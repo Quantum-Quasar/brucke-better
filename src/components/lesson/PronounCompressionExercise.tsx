@@ -7,21 +7,18 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Check,
-  AlertCircle,
-  Sparkles,
   Minimize2,
   Maximize2,
   ArrowRight,
   RotateCcw,
 } from "lucide-react";
-import { GermanCharBar } from "@/components/common/GermanCharBar";
+import { ProductionAnswerInput } from "./inputs/ProductionAnswerInput";
+import { ProductionAnswerActions } from "./ProductionAnswerActions";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
 import { arrangeTilesDeterministically } from "./exercise-tiles";
-import { gradeLessonAnswer } from "@/lib/lesson-grading";
-import { diagnoseAttempt, affirmationFor } from "@/lib/shift-diagnosis";
-import { DIAGNOSIS_BY_LANGUAGE, GERMAN_DIAGNOSIS } from "@/data/shift-diagnosis-table";
+import { gradeExerciseAttempt } from "@/lib/exercise-grading";
+import { affirmationFor } from "@/lib/shift-diagnosis";
 import { getLanguageDefinition } from "@/data/languages";
 import { useAppStore } from "@/lib/store";
 import { soundEngine } from "@/lib/sound";
@@ -37,13 +34,6 @@ interface PronounCompressionExerciseProps {
   onPurpleForfeit?: () => void;
 }
 
-const tokensOf = (s: string) =>
-  s
-    .toLowerCase()
-    .replace(/[.,!?;:]+/g, " ")
-    .split(/\s+/)
-    .filter(Boolean);
-
 export const PronounCompressionExercise: React.FC<PronounCompressionExerciseProps> = ({
   exercise,
   isRetry = false,
@@ -58,14 +48,13 @@ export const PronounCompressionExercise: React.FC<PronounCompressionExerciseProp
   const [status, setStatus] = useState<"idle" | "correct" | "almost" | "incorrect">("idle");
   const [sheetVariant, setSheetVariant] = useState<"exact" | "almost">("exact");
   const [verifiedAttemptText, setVerifiedAttemptText] = useState("");
+  const [acceptedTarget, setAcceptedTarget] = useState(exercise.target_answer);
   const [almostWarningNote, setAlmostWarningNote] = useState<string | undefined>(undefined);
   const [feedbackNote, setFeedbackNote] = useState<string | null>(null);
   const [showErrorSheet, setShowErrorSheet] = useState(false);
   const [showSuccessSheet, setShowSuccessSheet] = useState(false);
   const [failedAttemptText, setFailedAttemptText] = useState("");
   const [failedDiagnosis, setFailedDiagnosis] = useState<ExerciseDiagnosis | undefined>(undefined);
-  const [isCapsLock, setIsCapsLock] = useState(false);
-  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const tolerance = useAppStore((s) => s.tolerance);
@@ -167,6 +156,7 @@ export const PronounCompressionExercise: React.FC<PronounCompressionExerciseProp
           </span>
           {isFoldPreviewOpen && (
             <>
+              <span className="sr-only">replaced by</span>
               <ArrowRight className="w-3 h-3 opacity-70" />
               <span className="text-[var(--text-color)] underline decoration-[var(--main-color)] decoration-2">
                 {seg.part.pronoun}
@@ -178,25 +168,6 @@ export const PronounCompressionExercise: React.FC<PronounCompressionExerciseProp
     });
   };
 
-  const diagnoseFailure = (attempt: string): ExerciseDiagnosis | undefined => {
-    if (exercise.diagnosis) return exercise.diagnosis;
-    const diagTable = DIAGNOSIS_BY_LANGUAGE[activeLanguageId] ?? GERMAN_DIAGNOSIS;
-    const attemptTokens = tokensOf(attempt);
-    const targetTokens = tokensOf(target);
-    const sameMultiset =
-      attemptTokens.length === targetTokens.length &&
-      [...attemptTokens].sort().join(" ") === [...targetTokens].sort().join(" ");
-    if (sameMultiset && attempt.trim() !== target) {
-      return diagTable.word_order;
-    }
-    const targetSet = new Set(targetTokens);
-    const bankSet = new Set(wordBank.map((w) => w.toLowerCase()));
-    const distractorUsed = attemptTokens.some((t) => bankSet.has(t) && !targetSet.has(t));
-    if (distractorUsed) {
-      return diagTable.wrong_word;
-    }
-    return diagnoseAttempt(target, attempt, exercise.shift_hint) ?? undefined;
-  };
 
   const handleVerify = () => {
     inputRef.current?.blur();
@@ -212,7 +183,9 @@ export const PronounCompressionExercise: React.FC<PronounCompressionExerciseProp
         settings.capitalizationTolerance ?? tolerance.capitalizationTolerance
       ),
     };
-    const { result: evaluation } = gradeLessonAnswer([answerToCheck], [target], evalOptions, isRetry);
+    const graded = gradeExerciseAttempt(exercise, [answerToCheck], { ...evalOptions, languageId: activeLanguageId }, isRetry, wordBank);
+    const evaluation = graded.result;
+    setAcceptedTarget(graded.target);
 
     if (evaluation.accuracy === "exact") {
       setStatus("correct");
@@ -231,28 +204,16 @@ export const PronounCompressionExercise: React.FC<PronounCompressionExerciseProp
       setVerifiedAttemptText(answerToCheck);
       setAlmostWarningNote(evaluation.warningNote);
       setShowSuccessSheet(true);
-      if (
-        evaluation.reason === "typo" ||
-        evaluation.reason === "sharp-s" ||
-        (evaluation.reason === "umlaut" && !evalOptions.umlautTolerance)
-      ) {
-        onQueueRetry?.();
-      }
+      if (graded.queueRetry) onQueueRetry?.();
       return;
     }
 
     setStatus("incorrect");
     void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
-    onError(
-      evaluation.reason === "umlaut"
-        ? "umlaut"
-        : evaluation.reason === "case"
-        ? "capitalization"
-        : "spelling"
-    );
+    onError(graded.errorType);
     onQueueRetry?.();
     setFailedAttemptText(answerToCheck);
-    setFailedDiagnosis(diagnoseFailure(answerToCheck));
+    setFailedDiagnosis(graded.diagnosis);
     setIsFoldPreviewOpen(true);
     setShowErrorSheet(true);
   };
@@ -290,6 +251,7 @@ export const PronounCompressionExercise: React.FC<PronounCompressionExerciseProp
             <button
               type="button"
               onClick={toggleFoldPreview}
+              aria-expanded={isFoldPreviewOpen}
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[var(--sub-alt-color)] border border-[var(--main-color)]/30 text-[11px] text-[var(--main-color)] hover:bg-[var(--main-color)]/10 transition cursor-pointer"
             >
               {isFoldPreviewOpen ? (
@@ -353,54 +315,22 @@ export const PronounCompressionExercise: React.FC<PronounCompressionExerciseProp
           )}
         </div>
 
-        {settings.capsLockWarning && isCapsLock && (
-          <div className="flex items-center gap-1.5 text-xs text-[var(--error-color)] font-mono animate-pulse">
-            <AlertCircle className="w-3.5 h-3.5" />
-            <span>caps lock is on</span>
-          </div>
-        )}
-
-        <input
-          ref={inputRef}
-          type="text"
+        <ProductionAnswerInput
+          inputRef={inputRef}
           value={userInput}
-          onFocus={() => setIsInputFocused(true)}
-          onBlur={() => setIsInputFocused(false)}
-          aria-label={exercise.prompt || `Compressed ${language.name} clause`}
-          lang={language.id}
-          spellCheck={false}
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
-          onChange={(e) => {
-            setUserInput(e.target.value);
-            if (status !== "idle") setStatus("idle");
+          onChange={(value) => {
+            setUserInput(value);
+            setStatus("idle");
             setFeedbackNote(null);
           }}
-          onKeyDown={(e) => {
-            if (e.getModifierState) {
-              setIsCapsLock(e.getModifierState("CapsLock"));
-            }
-            if (settings.quickRestart === "esc" && e.key === "Escape") {
-              e.preventDefault();
-              resetCurrentExercise();
-              return;
-            }
-            if (e.key === "Enter") {
-              e.preventDefault();
-              e.stopPropagation();
-              handleVerify();
-            }
-          }}
-          readOnly={status === "correct" || status === "almost"}
+          onVerify={handleVerify}
+          onReset={resetCurrentExercise}
+          label={exercise.prompt || `Compressed ${language.name} clause`}
+          languageId={language.id}
           placeholder={`fold into ${language.name.toLowerCase()}...`}
-          className="w-full px-4 py-3 rounded-xl bg-[var(--bg-color)] border border-[var(--main-color)]/35 text-[var(--main-color)] text-lg font-bold font-mono outline-none focus:border-[var(--main-color)] transition placeholder:text-[var(--sub-color)]/40"
+          readOnly={status === "correct" || status === "almost"}
+          settings={settings}
         />
-
-        {(settings.showCharBar === "always" ||
-          (settings.showCharBar === "on_focus" && isInputFocused)) && (
-          <GermanCharBar inputRef={inputRef} value={userInput} onChange={setUserInput} />
-        )}
 
         <div className="flex flex-wrap gap-2 pt-1">
           {wordBank.map((word, idx) => (
@@ -418,40 +348,7 @@ export const PronounCompressionExercise: React.FC<PronounCompressionExerciseProp
       </div>
 
       {/* Footer */}
-      <div className="pt-3 border-t border-[var(--sub-color)]/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div aria-live="polite" role="status">
-          {feedbackNote && (
-            <p
-              className={`text-xs font-mono flex items-center gap-1.5 ${
-                status === "correct"
-                  ? "text-[var(--main-color)]"
-                  : status === "almost"
-                  ? "text-[var(--sub-color)]"
-                  : "text-[var(--error-color)]"
-              }`}
-            >
-              {status === "correct" ? (
-                <Check className="w-4 h-4 text-[var(--main-color)]" />
-              ) : status === "almost" ? (
-                <Sparkles className="w-4 h-4 text-[var(--sub-color)]" />
-              ) : (
-                <AlertCircle className="w-4 h-4 text-[var(--error-color)]" />
-              )}
-              <span>{feedbackNote}</span>
-            </p>
-          )}
-        </div>
-
-        {status !== "correct" && status !== "almost" && (
-          <button
-            type="button"
-            onClick={handleVerify}
-            className="px-5 py-2 rounded-lg bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] font-mono font-bold text-xs transition cursor-pointer ml-auto flex items-center gap-1.5"
-          >
-            <span>fold &amp; check</span>
-          </button>
-        )}
-      </div>
+      <ProductionAnswerActions status={status} feedback={feedbackNote} onVerify={handleVerify} action="fold & check" />
 
       {showErrorSheet && (
         <ErrorFeedbackSheet
@@ -478,7 +375,7 @@ export const PronounCompressionExercise: React.FC<PronounCompressionExerciseProp
       {showSuccessSheet && (
         <SuccessFeedbackSheet
           onFlagGuessed={!isRetry ? onFlagGuessed : undefined}
-          targetAnswer={target}
+          targetAnswer={acceptedTarget}
           meaning={exercise.meaning}
           explanation={exercise.explanation}
           vocabHints={exercise.vocab_hints}

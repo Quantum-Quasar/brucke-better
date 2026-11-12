@@ -66,7 +66,7 @@ const lesson: Lesson = {
     {
       "id": "l2903_e1",
       "type": "matching_pairs",
-      "prompt": "The feeling fridge — match each expression with its literal reading:",
+      "prompt": "The feeling fridge — match each expression with its literal reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "mk1",
@@ -92,10 +92,40 @@ const lesson: Lesson = {
           "id": "mk5",
           "english": "It is unwell to me (I feel sick)",
           "german": "Mir ist übel"
+        },
+        {
+          "id": "recall1",
+          "german": "Die Leute sind hier",
+          "english": "The people are here"
+        },
+        {
+          "id": "recall1b",
+          "german": "ein Mensch mit Hoffnung",
+          "english": "a person with hope"
+        },
+        {
+          "id": "recall2",
+          "german": "Das Wetter ist schlecht",
+          "english": "The weather is bad"
+        },
+        {
+          "id": "recall2b",
+          "german": "Ich bin fertig",
+          "english": "I am finished"
+        },
+        {
+          "id": "recall3",
+          "german": "lustig und langweilig",
+          "english": "funny and boring"
+        },
+        {
+          "id": "recall4",
+          "german": "Wir können tun",
+          "english": "We can do"
         }
       ],
-      "target_answer": "Mir ist kalt, Mir ist langweilig, Es tut mir leid, Das tut mir weh, Mir ist übel",
-      "meaning": "it is cold to me, it is boring to me, it does me sorrow, it does me pain, I feel sick",
+      "target_answer": "Mir ist kalt, Mir ist langweilig, Es tut mir leid, Das tut mir weh, Mir ist übel, Die Leute sind hier, ein Mensch mit Hoffnung, Das Wetter ist schlecht, Ich bin fertig, lustig und langweilig, Wir können tun",
+      "meaning": "It is cold to me (I'm cold); It is boring to me (I'm bored); It does me sorrow (I'm sorry); It does me pain (that hurts); It is unwell to me (I feel sick); The people are here; a person with hope; The weather is bad; I am finished; funny and boring; We can do",
       "explanation": "Feelings arrive at the dative — you are the receiver, never the performer. übel is the oldest of the lot: evil, unwell."
     },
     {

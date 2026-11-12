@@ -63,7 +63,7 @@ const lesson: Lesson = {
     {
       "id": "l1903_e1",
       "type": "matching_pairs",
-      "prompt": "Match the mixed verbs with their English twins:",
+      "prompt": "Match the mixed verbs with their English twins. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "sv1",
@@ -89,10 +89,25 @@ const lesson: Lesson = {
           "id": "sv5",
           "english": "slay / slew / slain",
           "german": "schlagen / schlug / geschlagen"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können das schreiben",
+          "english": "We can write that"
+        },
+        {
+          "id": "recall1b",
+          "german": "Wir können springen",
+          "english": "We can jump"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können treten",
+          "english": "We can kick"
         }
       ],
-      "target_answer": "denken / dachte, bringen / brachte, gehen / ging, danken / dankte",
-      "meaning": "the think, bring, go, thank pasts",
+      "target_answer": "denken / dachte, bringen / brachte, gehen / ging, danken / dankte, schlagen / schlug / geschlagen, Wir können das schreiben, Wir können springen, Wir können treten",
+      "meaning": "think / thought; bring / brought; go / went; thank / thanked; slay / slew / slain; We can write that; We can jump; We can kick",
       "explanation": "The mixed verbs — vowel change plus a dental -t- — exist identically in both languages."
     },
     {

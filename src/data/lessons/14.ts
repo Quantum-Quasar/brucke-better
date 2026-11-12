@@ -143,16 +143,16 @@ const lesson: Lesson = {
     {
       "id": "l14_e3",
       "type": "shift_select",
-      "prompt": "Fronting 'Gleich' (right away) in a statement: 'Gleich _____ ich.'",
+      "prompt": "Which pair changes a different sound from the three others?",
       "options": [
-        "ich komme",
-        "komme",
-        "kommen",
-        "kommst"
+        "dream → Traum",
+        "thank → danken",
+        "good → gut",
+        "cold → kalt"
       ],
-      "target_answer": "komme",
-      "meaning": "Gleich komme ich — the verb holds position 2",
-      "explanation": "When an adverb takes position 1, the verb stays glued to position 2 and the subject slides to third."
+      "target_answer": "thank → danken",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Good, cold and dream use D → T. Thank → danken uses TH → D."
     },
     {
       "id": "l14_e4d",

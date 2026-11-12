@@ -109,7 +109,7 @@ describe("Documentation stays in sync with authoritative sources", () => {
 
   it("the canonical README quotes current theme and font counts", () => {
     const readme = readRootDoc("docs/README.md");
-    expect(readme).toContain(`${Object.keys(THEMES).length} Monkeytype color themes`);
-    expect(readme).toContain(`${FONT_LIST.length} selectable fonts`);
+    expect(readme).toMatch(new RegExp(`\\*\\*${Object.keys(THEMES).length}\\b[^*\\n]*\\bthemes\\*\\*`));
+    expect(readme).toMatch(new RegExp(`\\*\\*${FONT_LIST.length}\\b[^*\\n]*\\bfonts\\*\\*`));
   });
 });

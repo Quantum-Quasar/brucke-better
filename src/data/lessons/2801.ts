@@ -56,7 +56,7 @@ const lesson: Lesson = {
     {
       "id": "l2801_e1",
       "type": "matching_pairs",
-      "prompt": "The dynasty in Perfekt — match each form with its meaning:",
+      "prompt": "The dynasty in Perfekt — match each form with its meaning. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "fd1",
@@ -77,10 +77,20 @@ const lesson: Lesson = {
           "id": "fd4",
           "english": "I drove the car",
           "german": "Ich habe das Auto gefahren"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können den Stuhl ziehen",
+          "english": "We can pull the chair"
+        },
+        {
+          "id": "recall1b",
+          "german": "Wir können aus dem Fenster schauen",
+          "english": "We can look out of the window"
         }
       ],
-      "target_answer": "Ich bin nach Berlin gefahren, Der Zug ist abgefahren, Die Fahrt war kurz, Ich habe das Auto gefahren",
-      "meaning": "the fahren dynasty in action",
+      "target_answer": "Ich bin nach Berlin gefahren, Der Zug ist abgefahren, Die Fahrt war kurz, Ich habe das Auto gefahren, Wir können den Stuhl ziehen, Wir können aus dem Fenster schauen",
+      "meaning": "I traveled (to Berlin); The train departed; The journey was short; I drove the car; We can pull the chair; We can look out of the window",
       "explanation": "Motion → sein; object → haben; the prefix rides the participle: ab-ge-fahren."
     },
     {

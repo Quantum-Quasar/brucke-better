@@ -59,7 +59,7 @@ const lesson: Lesson = {
     {
       "id": "l5072_e1",
       "type": "matching_pairs",
-      "prompt": "Match each German letter with its name:",
+      "prompt": "Match each German letter with its name. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "ab1",
@@ -85,10 +85,20 @@ const lesson: Lesson = {
           "id": "ab5",
           "english": "Eszett",
           "german": "ß"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können heißen",
+          "english": "We can be called"
+        },
+        {
+          "id": "recall2",
+          "german": "der Buchstabe",
+          "english": "the letter of the alphabet"
         }
       ],
-      "target_answer": "W, V, J, Z, ß",
-      "meaning": "veh, fow, yot, tsett, Eszett",
+      "target_answer": "W, V, J, Z, ß, Wir können heißen, der Buchstabe",
+      "meaning": "veh; fow; yot; tsett; Eszett; We can be called; the letter of the alphabet",
       "explanation": "V = fow because German V sounds like [f] — the letter name is the V→B family's origin story said out loud."
     },
     {

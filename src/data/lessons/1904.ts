@@ -62,7 +62,7 @@ const lesson: Lesson = {
     {
       "id": "l1904_e1",
       "type": "matching_pairs",
-      "prompt": "The fortress wall — match each English past with its German twin:",
+      "prompt": "The fortress wall — match each English past with its German twin. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "fp1",
@@ -93,10 +93,30 @@ const lesson: Lesson = {
           "id": "fp6",
           "english": "we were healthy",
           "german": "wir waren gesund"
+        },
+        {
+          "id": "recall1",
+          "german": "Ich will nicht schlagen",
+          "english": "I do not want to hit"
+        },
+        {
+          "id": "recall1b",
+          "german": "Ich will nicht stehlen",
+          "english": "I do not want to steal"
+        },
+        {
+          "id": "recall2",
+          "german": "Ich kann nicht treten",
+          "english": "I cannot kick"
+        },
+        {
+          "id": "recall3",
+          "german": "stark und schwach",
+          "english": "strong and weak"
         }
       ],
-      "target_answer": "ich hatte, ich war, du hattest, wir waren, ich war jung, wir waren gesund",
-      "meaning": "I had, I was, thou hadst, we were, I was young, we were healthy",
+      "target_answer": "ich hatte, ich war, du hattest, wir waren, ich war jung, wir waren gesund, Ich will nicht schlagen, Ich will nicht stehlen, Ich kann nicht treten, stark und schwach",
+      "meaning": "I had; I was; thou hadst; we were; I was young; we were healthy; I do not want to hit; I do not want to steal; I cannot kick; strong and weak",
       "explanation": "hatte ↔ had (one dental suffix, -te ↔ -ed) and war ↔ was — the fortress pasts of haben and sein, carrying the storyteller's adjectives: jung, gesund, stark, schwach."
     },
     {

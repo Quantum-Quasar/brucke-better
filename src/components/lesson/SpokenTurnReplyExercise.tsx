@@ -7,22 +7,19 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import {
-  Check,
-  AlertCircle,
-  Sparkles,
   Volume2,
   MessageCircle,
   CornerDownRight,
   Lightbulb,
 } from "lucide-react";
-import { GermanCharBar } from "@/components/common/GermanCharBar";
+import { ProductionAnswerInput } from "./inputs/ProductionAnswerInput";
+import { ProductionAnswerActions } from "./ProductionAnswerActions";
 import { VoiceStatusBanner } from "@/components/common/VoiceStatusBanner";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
 import { arrangeTilesDeterministically } from "./exercise-tiles";
-import { gradeLessonAnswer } from "@/lib/lesson-grading";
-import { diagnoseAttempt, affirmationFor } from "@/lib/shift-diagnosis";
-import { DIAGNOSIS_BY_LANGUAGE, GERMAN_DIAGNOSIS } from "@/data/shift-diagnosis-table";
+import { gradeExerciseAttempt } from "@/lib/exercise-grading";
+import { affirmationFor } from "@/lib/shift-diagnosis";
 import { getLanguageDefinition } from "@/data/languages";
 import { playTargetAudio } from "@/lib/audio";
 import { isListeningSkipped } from "@/lib/listening";
@@ -40,13 +37,6 @@ interface SpokenTurnReplyExerciseProps {
   onPurpleForfeit?: () => void;
 }
 
-const tokensOf = (s: string) =>
-  s
-    .toLowerCase()
-    .replace(/[.,!?;:]+/g, " ")
-    .split(/\s+/)
-    .filter(Boolean);
-
 export const SpokenTurnReplyExercise: React.FC<SpokenTurnReplyExerciseProps> = ({
   exercise,
   isRetry = false,
@@ -62,14 +52,13 @@ export const SpokenTurnReplyExercise: React.FC<SpokenTurnReplyExerciseProps> = (
   const [status, setStatus] = useState<"idle" | "correct" | "almost" | "incorrect">("idle");
   const [sheetVariant, setSheetVariant] = useState<"exact" | "almost">("exact");
   const [verifiedAttemptText, setVerifiedAttemptText] = useState("");
+  const [acceptedTarget, setAcceptedTarget] = useState(exercise.target_answer);
   const [almostWarningNote, setAlmostWarningNote] = useState<string | undefined>(undefined);
   const [feedbackNote, setFeedbackNote] = useState<string | null>(null);
   const [showErrorSheet, setShowErrorSheet] = useState(false);
   const [showSuccessSheet, setShowSuccessSheet] = useState(false);
   const [failedAttemptText, setFailedAttemptText] = useState("");
   const [failedDiagnosis, setFailedDiagnosis] = useState<ExerciseDiagnosis | undefined>(undefined);
-  const [isCapsLock, setIsCapsLock] = useState(false);
-  const [isInputFocused, setIsInputFocused] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   const tolerance = useAppStore((s) => s.tolerance);
@@ -131,25 +120,6 @@ export const SpokenTurnReplyExercise: React.FC<SpokenTurnReplyExerciseProps> = (
     setCuesRevealed((n) => n + 1);
   };
 
-  const diagnoseFailure = (attempt: string): ExerciseDiagnosis | undefined => {
-    if (exercise.diagnosis) return exercise.diagnosis;
-    const diagTable = DIAGNOSIS_BY_LANGUAGE[activeLanguageId] ?? GERMAN_DIAGNOSIS;
-    const attemptTokens = tokensOf(attempt);
-    const targetTokens = tokensOf(target);
-    const sameMultiset =
-      attemptTokens.length === targetTokens.length &&
-      [...attemptTokens].sort().join(" ") === [...targetTokens].sort().join(" ");
-    if (sameMultiset && attempt.trim() !== target) {
-      return diagTable.word_order;
-    }
-    const targetSet = new Set(targetTokens);
-    const bankSet = new Set(wordBank.map((w) => w.toLowerCase()));
-    const distractorUsed = attemptTokens.some((t) => bankSet.has(t) && !targetSet.has(t));
-    if (distractorUsed) {
-      return diagTable.wrong_word;
-    }
-    return diagnoseAttempt(target, attempt, exercise.shift_hint) ?? undefined;
-  };
 
   const handleVerify = () => {
     inputRef.current?.blur();
@@ -165,7 +135,9 @@ export const SpokenTurnReplyExercise: React.FC<SpokenTurnReplyExerciseProps> = (
         settings.capitalizationTolerance ?? tolerance.capitalizationTolerance
       ),
     };
-    const { result: evaluation } = gradeLessonAnswer([answerToCheck], [target], evalOptions, isRetry);
+    const graded = gradeExerciseAttempt(exercise, [answerToCheck], { ...evalOptions, languageId: activeLanguageId }, isRetry, wordBank);
+    const evaluation = graded.result;
+    setAcceptedTarget(graded.target);
 
     if (evaluation.accuracy === "exact") {
       setStatus("correct");
@@ -184,28 +156,16 @@ export const SpokenTurnReplyExercise: React.FC<SpokenTurnReplyExerciseProps> = (
       setVerifiedAttemptText(answerToCheck);
       setAlmostWarningNote(evaluation.warningNote);
       setShowSuccessSheet(true);
-      if (
-        evaluation.reason === "typo" ||
-        evaluation.reason === "sharp-s" ||
-        (evaluation.reason === "umlaut" && !evalOptions.umlautTolerance)
-      ) {
-        onQueueRetry?.();
-      }
+      if (graded.queueRetry) onQueueRetry?.();
       return;
     }
 
     setStatus("incorrect");
     void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
-    onError(
-      evaluation.reason === "umlaut"
-        ? "umlaut"
-        : evaluation.reason === "case"
-        ? "capitalization"
-        : "spelling"
-    );
+    onError(graded.errorType);
     onQueueRetry?.();
     setFailedAttemptText(answerToCheck);
-    setFailedDiagnosis(diagnoseFailure(answerToCheck));
+    setFailedDiagnosis(graded.diagnosis);
     if (cuesRevealed < cues.length) setCuesRevealed((n) => n + 1);
     setShowErrorSheet(true);
   };
@@ -291,7 +251,7 @@ export const SpokenTurnReplyExercise: React.FC<SpokenTurnReplyExerciseProps> = (
       {(cuesRevealed > 0 || (cues.length > 0 && status === "idle")) && (
         <div className="space-y-2">
           {cuesRevealed > 0 && (
-            <ul className="space-y-1.5">
+            <ul className="space-y-1.5" aria-live="polite">
               {cues.slice(0, cuesRevealed).map((cue, i) => (
                 <li
                   key={i}
@@ -319,53 +279,22 @@ export const SpokenTurnReplyExercise: React.FC<SpokenTurnReplyExerciseProps> = (
 
       {/* Input & Word Bank */}
       <div className="space-y-3">
-        {settings.capsLockWarning && isCapsLock && (
-          <div className="flex items-center gap-1.5 text-xs text-[var(--error-color)] font-mono animate-pulse">
-            <AlertCircle className="w-3.5 h-3.5" />
-            <span>caps lock is on</span>
-          </div>
-        )}
-        <input
-          ref={inputRef}
-          type="text"
+        <ProductionAnswerInput
+          inputRef={inputRef}
           value={userInput}
-          onFocus={() => setIsInputFocused(true)}
-          onBlur={() => setIsInputFocused(false)}
-          aria-label={exercise.prompt || `Your ${language.name} reply`}
-          lang={language.id}
-          spellCheck={false}
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
-          onChange={(e) => {
-            setUserInput(e.target.value);
-            if (status !== "idle") setStatus("idle");
+          onChange={(value) => {
+            setUserInput(value);
+            setStatus("idle");
             setFeedbackNote(null);
           }}
-          onKeyDown={(e) => {
-            if (e.getModifierState) {
-              setIsCapsLock(e.getModifierState("CapsLock"));
-            }
-            if (settings.quickRestart === "esc" && e.key === "Escape") {
-              e.preventDefault();
-              resetCurrentExercise();
-              return;
-            }
-            if (e.key === "Enter") {
-              e.preventDefault();
-              e.stopPropagation();
-              handleVerify();
-            }
-          }}
-          readOnly={status === "correct" || status === "almost"}
+          onVerify={handleVerify}
+          onReset={resetCurrentExercise}
+          label={exercise.prompt || `Your ${language.name} reply`}
+          languageId={language.id}
           placeholder={`answer in ${language.name.toLowerCase()}...`}
-          className="w-full px-4 py-3 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 text-[var(--main-color)] text-lg font-bold font-mono outline-none focus:border-[var(--main-color)] transition placeholder:text-[var(--sub-color)]/40"
+          readOnly={status === "correct" || status === "almost"}
+          settings={settings}
         />
-
-        {(settings.showCharBar === "always" ||
-          (settings.showCharBar === "on_focus" && isInputFocused)) && (
-          <GermanCharBar inputRef={inputRef} value={userInput} onChange={setUserInput} />
-        )}
 
         <div className="flex flex-wrap gap-2 pt-1">
           {wordBank.map((word, i) => (
@@ -383,40 +312,7 @@ export const SpokenTurnReplyExercise: React.FC<SpokenTurnReplyExerciseProps> = (
       </div>
 
       {/* Footer */}
-      <div className="pt-3 border-t border-[var(--sub-color)]/15 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div aria-live="polite" role="status">
-          {feedbackNote && (
-            <p
-              className={`text-xs font-mono flex items-center gap-1.5 ${
-                status === "correct"
-                  ? "text-[var(--main-color)]"
-                  : status === "almost"
-                  ? "text-[var(--sub-color)]"
-                  : "text-[var(--error-color)]"
-              }`}
-            >
-              {status === "correct" ? (
-                <Check className="w-4 h-4 text-[var(--main-color)]" />
-              ) : status === "almost" ? (
-                <Sparkles className="w-4 h-4 text-[var(--sub-color)]" />
-              ) : (
-                <AlertCircle className="w-4 h-4 text-[var(--error-color)]" />
-              )}
-              <span>{feedbackNote}</span>
-            </p>
-          )}
-        </div>
-
-        {status !== "correct" && status !== "almost" && (
-          <button
-            type="button"
-            onClick={handleVerify}
-            className="px-5 py-2 rounded-lg bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] font-mono font-bold text-xs transition cursor-pointer ml-auto flex items-center gap-1.5"
-          >
-            <span>reply</span>
-          </button>
-        )}
-      </div>
+      <ProductionAnswerActions status={status} feedback={feedbackNote} onVerify={handleVerify} action="reply" />
 
       {showErrorSheet && (
         <ErrorFeedbackSheet
@@ -443,7 +339,7 @@ export const SpokenTurnReplyExercise: React.FC<SpokenTurnReplyExerciseProps> = (
       {showSuccessSheet && (
         <SuccessFeedbackSheet
           onFlagGuessed={!isRetry ? onFlagGuessed : undefined}
-          targetAnswer={target}
+          targetAnswer={acceptedTarget}
           meaning={exercise.meaning}
           explanation={exercise.explanation}
           vocabHints={exercise.vocab_hints}

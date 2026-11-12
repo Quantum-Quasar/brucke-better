@@ -3,11 +3,11 @@
 import React, { useMemo, useRef, useState } from "react";
 import { Search, X, Check, Type, Sparkles } from "lucide-react";
 import { useAppStore } from "@/lib/store";
-import { FONT_LIST, filterFonts, ensureFontLoaded, type FontMeta } from "@/data/fonts";
+import { FONT_LIST, ensureFontLoaded, type FontMeta } from "@/data/fonts";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
 
-type FontFilterTab = "all" | "mono" | "sans" | "display";
+import { RECOMMENDED_FONTS, filterPickerFonts, type FontPickerTab } from "@/components/common/font-picker";
 
 const SAMPLE_TEXT = "Wasser · université · nación";
 
@@ -18,7 +18,7 @@ export const FontSelectorModal: React.FC = () => {
   const setFont = useAppStore((s) => s.setFont);
 
   const [query, setQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<FontFilterTab>("all");
+  const [activeTab, setActiveTab] = useState<FontPickerTab>("recommended");
   const [previewedIds, setPreviewedIds] = useState<Set<string>>(() => new Set([currentFont]));
   const [loadAllPreviews, setLoadAllPreviews] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -33,7 +33,10 @@ export const FontSelectorModal: React.FC = () => {
     onEscape: closeFontSelector,
   });
 
-  const filteredFonts = useMemo(() => filterFonts(query, activeTab), [activeTab, query]);
+  const filteredFonts = useMemo(
+    () => filterPickerFonts(query, activeTab, currentFont),
+    [activeTab, currentFont, query],
+  );
 
   if (!isOpen) return null;
 
@@ -112,18 +115,23 @@ export const FontSelectorModal: React.FC = () => {
 
           <div className="flex items-center justify-between gap-2 flex-wrap">
             <div className="flex items-center gap-1.5 overflow-x-auto text-xs font-mono">
-              {(["all", "mono", "sans", "display"] as FontFilterTab[]).map((tab) => (
+              {(["recommended", "all", "mono", "sans", "display"] as FontPickerTab[]).map((tab) => (
                 <button
                   key={tab}
                   type="button"
                   onClick={() => setActiveTab(tab)}
+                  aria-pressed={activeTab === tab}
                   className={`px-3 py-1 rounded transition cursor-pointer ${
                     activeTab === tab
                       ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
                       : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
                   }`}
                 >
-                  {tab} ({tab === "all" ? FONT_LIST.length : FONT_LIST.filter((f) => f.category === tab).length})
+                  {tab === "recommended"
+                    ? `Recommended (${RECOMMENDED_FONTS.length})`
+                    : tab === "all"
+                      ? `More fonts (${FONT_LIST.length})`
+                      : `${tab} (${FONT_LIST.filter((f) => f.category === tab).length})`}
                 </button>
               ))}
             </div>
@@ -155,6 +163,7 @@ export const FontSelectorModal: React.FC = () => {
                   ensureFontLoaded(font.id);
                   setFont(font.id);
                 }}
+                aria-pressed={isSelected}
                 className={`p-3 rounded text-left transition border cursor-pointer ${
                   isSelected
                     ? "border-[var(--main-color)] bg-[var(--sub-alt-color)] shadow-sm"

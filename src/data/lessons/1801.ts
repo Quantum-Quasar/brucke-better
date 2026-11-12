@@ -89,7 +89,7 @@ const lesson: Lesson = {
     {
       "id": "l1801_e3",
       "type": "matching_pairs",
-      "prompt": "Match each infinitive with its participle (the last one breaks the -t pattern — a preview):",
+      "prompt": "Match each infinitive with its participle (the last one breaks the -t pattern — a preview). Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "gy1",
@@ -115,10 +115,30 @@ const lesson: Lesson = {
           "id": "gy5",
           "english": "tragen → ?",
           "german": "getragen"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können genug sagen",
+          "english": "We can say enough"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können morgen ankommen",
+          "english": "We can arrive tomorrow"
+        },
+        {
+          "id": "recall2b",
+          "german": "Wir können das Haus buchen",
+          "english": "We can book the house"
+        },
+        {
+          "id": "recall3",
+          "german": "Wir können das Kleid kaufen und tragen",
+          "english": "We can buy and wear the dress"
         }
       ],
-      "target_answer": "gesagt, gekauft, gemacht, gewandert, getragen",
-      "meaning": "said, bought, made, hiked, carried/worn",
+      "target_answer": "gesagt, gekauft, gemacht, gewandert, getragen, Wir können genug sagen, Wir können morgen ankommen, Wir können das Haus buchen, Wir können das Kleid kaufen und tragen",
+      "meaning": "sagen → ?; kaufen → ?; machen → ?; wandern → ?; tragen → ?; We can say enough; We can arrive tomorrow; We can book the house; We can buy and wear the dress",
       "explanation": "ge- + stem + -t for the first four — even the motion verb gewandert, which just switches its auxiliary to sein. getragen sneaks in -en instead of -t: the strong verbs are coming (next lesson)."
     },
     {

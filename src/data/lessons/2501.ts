@@ -57,7 +57,7 @@ const lesson: Lesson = {
     {
       "id": "l2501_e1",
       "type": "matching_pairs",
-      "prompt": "The dynasty — match each family member with its English twin:",
+      "prompt": "The dynasty — match each family member with its English twin. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "gv1",
@@ -78,10 +78,35 @@ const lesson: Lesson = {
           "id": "gv4",
           "english": "there is",
           "german": "es gibt"
+        },
+        {
+          "id": "recall1",
+          "german": "Mein Glas ist voll",
+          "english": "My glass is full"
+        },
+        {
+          "id": "recall1b",
+          "german": "Der Apfel ist gelb",
+          "english": "The apple is yellow"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können glauben und hoffen",
+          "english": "We can believe and hope"
+        },
+        {
+          "id": "recall3",
+          "german": "das Kalb",
+          "english": "the calf"
+        },
+        {
+          "id": "spaced1",
+          "german": "Silber und Gold",
+          "english": "silver and gold"
         }
       ],
-      "target_answer": "geben, vergeben, die Gabe, es gibt",
-      "meaning": "to give, to forgive, the gift, there is",
+      "target_answer": "geben, vergeben, die Gabe, es gibt, Mein Glas ist voll, Der Apfel ist gelb, Wir können glauben und hoffen, das Kalb, Silber und Gold",
+      "meaning": "to give; to forgive; the gift (talent); there is; My glass is full; The apple is yellow; We can believe and hope; the calf; silver and gold",
       "explanation": "One root radiates through both languages: give, forgive, gift, 'it gives'."
     },
     {

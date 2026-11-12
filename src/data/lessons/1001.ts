@@ -70,7 +70,7 @@ const lesson: Lesson = {
     {
       "id": "l1001_e1",
       "type": "matching_pairs",
-      "prompt": "Match each phrase with its partner — masculine articles pay the -n toll as objects, and the last two are wir-forms for free:",
+      "prompt": "Match each phrase with its partner — masculine articles pay the -n toll as objects, and the last two are wir-forms for free. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "cg1",
@@ -111,10 +111,15 @@ const lesson: Lesson = {
           "id": "cg8",
           "english": "we stand",
           "german": "wir stehen"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können laufen",
+          "english": "We can run"
         }
       ],
-      "target_answer": "den Kaffee, einen Traum, den Tag, einen Tisch, den Stuhl, den Löffel, wir küssen, wir stehen",
-      "meaning": "the coffee, a dream, the day, a table, the chair, the spoon (as objects), we kiss, we stand",
+      "target_answer": "den Kaffee (object), einen Traum (object), den Tag (object), einen Tisch (object), den Stuhl (object), den Löffel (object), wir küssen, wir stehen, Wir können laufen",
+      "meaning": "der Kaffee (subject); ein Traum (subject); der Tag (subject); ein Tisch (subject); der Stuhl (subject); der Löffel (subject); we kiss; we stand; We can run",
       "explanation": "Masculine objects pay the -n toll: der → den, ein → einen. The two wir-forms ride free — no object, no toll."
     },
     {

@@ -22,8 +22,8 @@ describe("portable progress backups", () => {
       settings: { ...initial.settings, lazyMode: true },
       tolerance: { ...initial.tolerance, umlautTolerance: true, umlautDismissals: 2 },
       progressByLanguage: {
-        de: { completedLessons: [1], currentLessonId: 1, lessonProgress: {}, lessonStars: {}, passedGateIds: [], wordMastery: {}, srsCards: {}, weeklyActivity: [false, false, false, false, false, false, false] },
-        fr: { completedLessons: [1, 2, 3], currentLessonId: 4, lessonProgress: {}, lessonStars: { 1: "purple" as const }, passedGateIds: [1], wordMastery: {}, srsCards: {}, weeklyActivity: [true, false, false, false, false, false, false] },
+        de: { completedLessons: [1], currentLessonId: 1, lessonProgress: {}, lessonStars: {}, passedGateIds: [], wordMastery: {}, srsCards: {}, sentenceCards: {}, weeklyActivity: [false, false, false, false, false, false, false] },
+        fr: { completedLessons: [1, 2, 3], currentLessonId: 4, lessonProgress: {}, lessonStars: { 1: "purple" as const }, passedGateIds: [1], wordMastery: {}, srsCards: {}, sentenceCards: {}, weeklyActivity: [true, false, false, false, false, false, false] },
       },
     };
     const backup = JSON.parse(JSON.stringify(createProgressBackup(state, new Date("2026-11-06T12:00:00Z"))));

@@ -62,7 +62,7 @@ const lesson: Lesson = {
     {
       "id": "l5242_e1",
       "type": "matching_pairs",
-      "prompt": "The second row — match each sentence with its reading:",
+      "prompt": "The second row — match each sentence with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "fc1",
@@ -98,10 +98,25 @@ const lesson: Lesson = {
           "id": "fc7",
           "english": "Black and white are colors too",
           "german": "Schwarz und Weiß sind Farben"
+        },
+        {
+          "id": "recall1",
+          "german": "der Keks mit Schokolade",
+          "english": "the biscuit with chocolate"
+        },
+        {
+          "id": "recall2",
+          "german": "die Torte",
+          "english": "the cake"
+        },
+        {
+          "id": "recall3",
+          "german": "das ist blau",
+          "english": "that is blue"
         }
       ],
-      "target_answer": "Mein Auto ist grau, Die Katze ist braun, Die Blume ist rosa, Die Mütze ist lila, Die Blume ist rot, Die Farbe der Mütze, Schwarz und Weiß sind Farben",
-      "meaning": "gray, brown, pink, purple, red, the color",
+      "target_answer": "Mein Auto ist grau, Die Katze ist braun, Die Blume ist rosa, Die Mütze ist lila, Die Blume ist rot, Die Farbe der Mütze, Schwarz und Weiß sind Farben, der Keks mit Schokolade, die Torte, das ist blau",
+      "meaning": "My car is gray; The cat is brown; The flower is pink; The cap is purple; The flower is red; The color of the cap; Black and white are colors too; the biscuit with chocolate; the cake; that is blue",
       "explanation": "The same Blume wears rot from Farben I and rosa from Farben II — old row and new row in one sentence. And die Farbe is the head noun: the color OF the cap, genitive der."
     },
     {

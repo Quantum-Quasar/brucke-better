@@ -72,7 +72,7 @@ const lesson: Lesson = {
     {
       "id": "l1301_e1",
       "type": "matching_pairs",
-      "prompt": "The full set — match each W-word with its twin:",
+      "prompt": "The full set — match each W-word with its twin. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "ws1",
@@ -113,10 +113,30 @@ const lesson: Lesson = {
           "id": "ws8",
           "english": "who never comes",
           "german": "wer kommt nie"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir sind leise",
+          "english": "We are quiet"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir wollen das wissen",
+          "english": "We want to know that"
+        },
+        {
+          "id": "recall2b",
+          "german": "Wir kennen das Tier",
+          "english": "We know the animal"
+        },
+        {
+          "id": "spaced1",
+          "german": "meine Tasse",
+          "english": "my cup"
         }
       ],
-      "target_answer": "was, wann, warum, wohin, wo ist der Hund, wer kennt das Tier, wie kurz, wer kommt nie",
-      "meaning": "what, when, why, whither, where is the dog, who knows the animal, how short, who never comes",
+      "target_answer": "was, wann, warum, wohin, wo ist der Hund, wer kennt das Tier, wie kurz, wer kommt nie, Wir sind leise, Wir wollen das wissen, Wir kennen das Tier, meine Tasse",
+      "meaning": "what; when; why / wherefore; whither (where to); where is the dog; who knows the animal; how short; who never comes; We are quiet; We want to know that; We know the animal; my cup",
       "explanation": "One ancient family: English wh-, German w-, one dropped h between them — and the W-words take any verb or noun you own along: kennen (to know a thing or person) included."
     },
     {

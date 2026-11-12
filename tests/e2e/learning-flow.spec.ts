@@ -1,4 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
+import type { LessonPayload } from "../../src/lib/types";
 
 const STORAGE_KEY = "brucke_app_state_v1";
 
@@ -143,4 +144,39 @@ test("tile review cannot grade a missing infinitive ending as Good", async ({ pa
   await page.keyboard.press("Space");
   await expect.poll(async () => (await progress(page)).srsCards.lernen.lapses).toBe(1);
   expect((await progress(page)).srsCards.lernen.repetitions).toBe(0);
+});
+
+test("one failed sentence attempt persists once and its replay never awards lesson or word progress", async ({ page }) => {
+  const response = await page.request.get("/data/de/lessons/1.json");
+  expect(response.ok()).toBe(true);
+  const payload = await response.json() as LessonPayload;
+  const exercise = payload.lesson.exercises.find((item) => item.id === "l1_e5")!;
+  const id = `1:${exercise.id}`;
+  await seed(page, { lessonProgress: practice(1) });
+  await page.goto("/?lesson=1&lang=de");
+  const initial = page.locator('[data-exercise-type="syntax_builder"]');
+  await initial.getByRole("button", { name: exercise.target_answer.split(" ")[0], exact: true }).click();
+  await initial.getByRole("button", { name: "verify", exact: true }).click();
+  await expect(page.getByRole("dialog", { name: "sound shift breakdown", exact: true })).toBeVisible();
+  await expect.poll(async () => (await progress(page)).sentenceCards?.[id]?.lapses).toBe(1);
+  await page.reload();
+  await expect.poll(async () => (await progress(page)).sentenceCards?.[id]?.lapses).toBe(1);
+  const before = await progress(page);
+
+  await page.goto("/review");
+  await page.getByRole("button", { name: "review sentence processes", exact: true }).click();
+  const replay = page.getByRole("region", { name: "Sentence process review" }).locator('[data-exercise-type="syntax_builder"]');
+  for (const word of exercise.target_answer.split(/\s+/)) {
+    await replay.getByRole("button", { name: word.replace(/[.,!?;:]+$/, ""), exact: true }).click();
+  }
+  await replay.getByRole("button", { name: "verify", exact: true }).click();
+  await page.getByRole("dialog", { name: "correct", exact: true }).getByRole("button", { name: /^continue/i }).click();
+  await expect.poll(async () => (await progress(page)).sentenceCards[id].repetitions).toBe(1);
+  const after = await progress(page);
+  expect(after.sentenceCards[id].lapses).toBe(1);
+  expect(after.sentenceCards[id].due_date > before.sentenceCards[id].due_date).toBe(true);
+  expect(after.completedLessons).toEqual(before.completedLessons);
+  expect(after.lessonStars).toEqual(before.lessonStars);
+  expect(after.wordMastery).toEqual(before.wordMastery);
+  expect(after.srsCards).toEqual(before.srsCards);
 });

@@ -63,7 +63,7 @@ const lesson: Lesson = {
     {
       "id": "l29_e1",
       "type": "matching_pairs",
-      "prompt": "The being twins — match each form with its English cognate:",
+      "prompt": "The being twins — match each form with its English cognate. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "sm1",
@@ -104,25 +104,30 @@ const lesson: Lesson = {
           "id": "sm8",
           "english": "I am hungry",
           "german": "ich habe Hunger"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir müssen wieder holen",
+          "english": "We must fetch again"
         }
       ],
-      "target_answer": "ist, war, gewesen, bin, ich bin krank, ich bin satt, ich bin glücklich, ich habe Hunger",
-      "meaning": "is, was, been, am, I am sick, I am full, I am happy, I am hungry",
+      "target_answer": "ist, war, gewesen, bin, ich bin krank, ich bin satt, ich bin glücklich, ich habe Hunger, Wir müssen wieder holen",
+      "meaning": "is; was; been; am / be; I am sick; I am full; I am happy; I am hungry; We must fetch again",
       "explanation": "Three ancient roots (*es-, *wes-, *bʰu-) shared by both languages — the paradigm is a fossil bed, and the feelings ride it: krank, satt, glücklich, Hunger."
     },
     {
       "id": "l29_e2",
       "type": "shift_select",
-      "prompt": "Unfreeze the idiom: 'Wie geht's?' literally asks what?",
+      "prompt": "Recall across families and choose the pair with the different clue.",
       "options": [
-        "How goes it?",
-        "How do you do (formally)?",
-        "Where are you going?",
-        "What is new?"
+        "light → Licht",
+        "right → recht",
+        "hope → hoffen",
+        "night → Nacht"
       ],
-      "target_answer": "How goes it?",
-      "meaning": "Wie geht's = 'How goes it (to you)?'",
-      "explanation": "gehen + the dative: geht ES DIR? — 'does it go TO YOU?' English said 'How goes it?' until recently — and im Urlaub (on vacation), am Meer (at the sea), it still opens every conversation. holen fits too: sich Luft holen — to fetch fresh air — und holt sie wieder, fetches it again."
+      "target_answer": "hope → hoffen",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Night, light and right use GH → CH. Hope → hoffen uses P → FF."
     },
     {
       "id": "l29_e3",

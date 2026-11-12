@@ -32,6 +32,7 @@ export const createProgressSlice: StoreSlice<"setActiveLanguage" | "markWordExpl
         passedGateIds: incoming?.passedGateIds || [],
         wordMastery: incoming?.wordMastery || {},
         srsCards: incoming?.srsCards || {},
+        sentenceCards: incoming?.sentenceCards || {},
         weeklyActivity: incoming?.weeklyActivity || [false, false, false, false, false, false, false],
         lastActivityWeek: incoming?.lastActivityWeek,
         activeWordDrawerId: null,

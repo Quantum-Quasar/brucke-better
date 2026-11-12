@@ -76,7 +76,7 @@ const lesson: Lesson = {
     {
       "id": "l2701_e2",
       "type": "matching_pairs",
-      "prompt": "Match each camera move with its preposition:",
+      "prompt": "Match each camera move with its preposition. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "um1",
@@ -112,10 +112,25 @@ const lesson: Lesson = {
           "id": "um7",
           "english": "through the forest",
           "german": "durch den Wald"
+        },
+        {
+          "id": "recall1",
+          "german": "der Strand",
+          "english": "the beach"
+        },
+        {
+          "id": "recall2",
+          "german": "mein Nachbar",
+          "english": "my neighbour"
+        },
+        {
+          "id": "recall3",
+          "german": "Entschuldigung bitte",
+          "english": "excuse me please"
         }
       ],
-      "target_answer": "durch den Park, aus dem Haus, vor dem Haus, zum Haus, unter der Brücke, in den Hafen, durch den Wald",
-      "meaning": "through the park, out of the house, in front of the house, to the house, under the bridge, into the harbor, through the forest",
+      "target_answer": "durch den Park, aus dem Haus, vor dem Haus, zum Haus, unter der Brücke, in den Hafen, durch den Wald, der Strand, mein Nachbar, Entschuldigung bitte",
+      "meaning": "through (the park); out of (the house); in front of (the house); to (the house); under the bridge; into the harbor; through the forest; the beach; my neighbour; excuse me please",
       "explanation": "Each preposition is a camera move — and the case (or contraction) reports whether anything moved: der Brücke hovers, den Hafen crosses."
     },
     {

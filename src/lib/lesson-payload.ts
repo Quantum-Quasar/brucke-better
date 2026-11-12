@@ -9,7 +9,8 @@ import type { CompendiumData, Lesson, LessonPayload, WordEntity } from "@/lib/ty
  */
 export function trimCompendium(
   compendium: CompendiumData,
-  lesson: Lesson | null
+  lesson: Lesson | null,
+  entities: Readonly<Record<string, WordEntity>>
 ): LessonPayload["compendium"] {
   const shiftFamilyCount = Object.keys(compendium.shifts).length;
   if (!lesson) {
@@ -25,7 +26,7 @@ export function trimCompendium(
   const words: Record<string, WordEntity> = {};
   for (const rawId of new Set([...lesson.word_ids, ...(lesson.table_word_ids ?? [])])) {
     const key = rawId.toLowerCase();
-    const word = compendium.words[key];
+    const word = entities[key];
     if (word) words[key] = word;
   }
   // The lesson renders only its primary shift family (TableSegment/SummarySegment

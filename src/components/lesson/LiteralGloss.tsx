@@ -170,6 +170,7 @@ export const LiteralGloss: React.FC<LiteralGlossProps> = ({
             type="button"
             onClick={() => handleOptionSelect(opt)}
             disabled={status !== "idle"}
+            aria-pressed={selectedOption === opt}
             className="flex items-center justify-between p-3 rounded-lg bg-[var(--bg-color)] hover:border-[var(--main-color)] border border-[var(--sub-color)]/20 text-xs font-mono text-[var(--text-color)] transition text-left group cursor-pointer disabled:opacity-60"
           >
             <span className={`group-hover:text-[var(--main-color)] font-bold ${selectedOption === opt ? "text-[var(--main-color)]" : ""}`}>
@@ -184,7 +185,7 @@ export const LiteralGloss: React.FC<LiteralGlossProps> = ({
 
       {/* Footer Notifications */}
       {feedbackNote && (
-        <div className="pt-3 border-t border-[var(--sub-color)]/15">
+        <div role="status" aria-live="polite" className="pt-3 border-t border-[var(--sub-color)]/15">
           <p
             className={`text-xs font-mono flex items-center gap-1.5 ${
               status === "correct"

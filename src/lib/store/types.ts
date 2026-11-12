@@ -1,5 +1,5 @@
 import type { StateCreator } from "zustand";
-import type { LessonProgress, LessonStar, MasteryState, ReviewMode, SRSCard } from "../types";
+import type { ExerciseItem, LessonProgress, LessonStar, MasteryState, ReviewMode, SentenceCard, SRSCard } from "../types";
 import type { ReviewGrade } from "../srs";
 import type { CustomizationSettings } from "@/data/settings";
 
@@ -24,12 +24,13 @@ export interface LanguageProgress {
   passedGateIds: number[];
   wordMastery: Record<string, MasteryState>;
   srsCards: Record<string, SRSCard>;
+  sentenceCards: Record<string, SentenceCard>;
   weeklyActivity: boolean[]; // 7 days Mon-Sun
   lastActivityWeek?: string;
   progressVersions?: ProgressVersions;
 }
 
-export type VersionedField = "lessonProgress" | "wordMastery" | "srsCards";
+export type VersionedField = "lessonProgress" | "wordMastery" | "srsCards" | "sentenceCards";
 export type ProgressVersions = Record<VersionedField, Record<string, string>>;
 /**
  * What "back" in a review session restores: the card's SM-2 state and its
@@ -64,6 +65,7 @@ export interface AppState {
   passedGateIds: number[];
   wordMastery: Record<string, MasteryState>;
   srsCards: Record<string, SRSCard>;
+  sentenceCards: Record<string, SentenceCard>;
   weeklyActivity: boolean[]; // 7 days Mon-Sun
   lastActivityWeek?: string;
   /**
@@ -119,6 +121,8 @@ export interface AppState {
   passGate: (gateId: number) => void;
   setLessonProgress: (lessonId: number, progress: LessonProgress) => void;
   recordReview: (wordId: string, grade: ReviewGrade) => void;
+  recordSentenceFailure: (lessonId: number, exercise: ExerciseItem, languageId: string) => void;
+  recordSentenceReview: (cardId: string, grade: ReviewGrade, languageId: string) => void;
   /**
    * Undoes a grade this review session applied, restoring the card to the state
    * it had before the session touched it, along with the word's mastery entry.

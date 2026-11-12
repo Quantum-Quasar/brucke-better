@@ -79,7 +79,7 @@ const lesson: Lesson = {
     {
       "id": "l5361_e1",
       "type": "matching_pairs",
-      "prompt": "Reading check — match each story sentence with its English meaning:",
+      "prompt": "Reading check — match each story sentence with its English meaning. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "m1",
@@ -110,10 +110,15 @@ const lesson: Lesson = {
           "id": "m6",
           "english": "Mia is glad and smiles.",
           "german": "Mia ist froh und lächelt."
+        },
+        {
+          "id": "recall1",
+          "german": "mein Brief",
+          "english": "my letter"
         }
       ],
-      "target_answer": "Mia ist auf dem Markt., Sie trägt einen roten Schal., Plötzlich ist der Schal weg., Ein Junge hat einen roten Schal in der Hand., Ist das dein Schal?, Mia ist froh und lächelt.",
-      "meaning": "the story beats: the market, the red scarf, the search, the boy, the thank-you",
+      "target_answer": "Mia ist auf dem Markt., Sie trägt einen roten Schal., Plötzlich ist der Schal weg., Ein Junge hat einen roten Schal in der Hand., Ist das dein Schal?, Mia ist froh und lächelt., mein Brief",
+      "meaning": "Mia is at the market.; She is wearing a red scarf.; Suddenly the scarf is gone.; A boy has a red scarf in his hand.; Is that your scarf?; Mia is glad and smiles.; my letter",
       "explanation": "Six sentences carry the whole scene. The scarf is the object everyone is looking for."
     },
     {

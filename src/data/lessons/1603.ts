@@ -56,7 +56,7 @@ const lesson: Lesson = {
     {
       "id": "l1603_e1",
       "type": "matching_pairs",
-      "prompt": "The mirror table — match each reflexive sentence with its reading:",
+      "prompt": "The mirror table — match each reflexive sentence with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "rf1",
@@ -82,10 +82,45 @@ const lesson: Lesson = {
           "id": "rf5",
           "english": "to rejoice / be glad",
           "german": "sich freuen"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können uns erinnern",
+          "english": "We can remember"
+        },
+        {
+          "id": "recall1b",
+          "german": "Wir können das erklären",
+          "english": "We can explain that"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können gut verdienen",
+          "english": "We can earn well"
+        },
+        {
+          "id": "recall2b",
+          "german": "Wir können das bezahlen",
+          "english": "We can pay for that"
+        },
+        {
+          "id": "recall3",
+          "german": "Wir können beginnen",
+          "english": "We can begin"
+        },
+        {
+          "id": "recall4",
+          "german": "Das ist verboten",
+          "english": "That is forbidden"
+        },
+        {
+          "id": "recall5",
+          "german": "Wir können uns waschen",
+          "english": "We can wash ourselves"
         }
       ],
-      "target_answer": "ich wasche mich, du wäschst dich, er wäscht sich, wir fühlen uns gut, sich freuen",
-      "meaning": "I wash myself, you wash yourself, he washes himself, we feel good, to rejoice",
+      "target_answer": "ich wasche mich, du wäschst dich, er wäscht sich, wir fühlen uns gut, sich freuen, Wir können uns erinnern, Wir können das erklären, Wir können gut verdienen, Wir können das bezahlen, Wir können beginnen, Das ist verboten, Wir können uns waschen",
+      "meaning": "I wash myself; you wash yourself; he washes himself; we feel good; to rejoice / be glad; We can remember; We can explain that; We can earn well; We can pay for that; We can begin; That is forbidden; We can wash ourselves",
       "explanation": "The reflexive is the ordinary accusative pronoun — except third person, where everyone shares sich. The factory verbs next door (verdienen, bezahlen, beginnen) carry no mirror: they act on the world, not the self."
     },
     {

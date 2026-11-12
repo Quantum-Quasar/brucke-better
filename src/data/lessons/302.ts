@@ -64,7 +64,7 @@ const lesson: Lesson = {
     {
       "id": "l302_e1",
       "type": "matching_pairs",
-      "prompt": "Pass the customs check — match each German f-word to its English p-twin:",
+      "prompt": "Pass the customs check — match each German f-word to its English p-twin. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "pd1",
@@ -95,10 +95,20 @@ const lesson: Lesson = {
           "id": "pd6",
           "english": "peach",
           "german": "Pfirsich"
+        },
+        {
+          "id": "recall1",
+          "german": "Der Pfeffer ist scharf",
+          "english": "The pepper is hot (spicy)"
+        },
+        {
+          "id": "recall2",
+          "german": "der Affe",
+          "english": "the ape"
         }
       ],
-      "target_answer": "hoffen, helfen, scharf, greifen, Pflanze, Pfirsich",
-      "meaning": "to hope, to help, sharp, to grip, plant, peach",
+      "target_answer": "hoffen, helfen, scharf, greifen, Pflanze, Pfirsich, Der Pfeffer ist scharf, der Affe",
+      "meaning": "hope; help; sharp; grip; plant; peach; The pepper is hot (spicy); the ape",
       "shift_hint": "P → F/FF",
       "explanation": "Swapping f for p exposes the English twin hiding in each German word — and Pflanze does the double shift: p → pf up front, t → z at the back."
     },

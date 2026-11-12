@@ -85,6 +85,7 @@ export const SuccessFeedbackSheet: React.FC<SuccessFeedbackSheetProps> = ({
   // flag the guess, not be swallowed and advanced past by this window shortcut.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || e.isComposing) return;
       if (e.key !== "Enter" && e.key !== " " && e.code !== "Space") return;
       const target = e.target;
       if (

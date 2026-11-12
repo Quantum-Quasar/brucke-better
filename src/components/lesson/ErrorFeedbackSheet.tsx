@@ -57,6 +57,7 @@ export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || e.isComposing) return;
       if (e.key !== "Enter" && e.key !== " " && e.code !== "Space") return;
       // a focused control keeps its native activation (continue, play-audio)
       const target = e.target;

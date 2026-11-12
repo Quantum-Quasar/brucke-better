@@ -55,7 +55,7 @@ const lesson: Lesson = {
     {
       "id": "l2002_e1",
       "type": "matching_pairs",
-      "prompt": "Circuit round one — match the receiver sentences:",
+      "prompt": "Circuit round one — match the receiver sentences. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "pg1",
@@ -76,10 +76,25 @@ const lesson: Lesson = {
           "id": "pg4",
           "english": "I like that (it pleases me)",
           "german": "Das gefällt mir"
+        },
+        {
+          "id": "recall1",
+          "german": "Glück und Mut",
+          "english": "luck and courage"
+        },
+        {
+          "id": "recall2",
+          "german": "mein Wunsch",
+          "english": "my wish"
+        },
+        {
+          "id": "recall3",
+          "german": "Wir können gefallen",
+          "english": "We can please"
         }
       ],
-      "target_answer": "Gib mir das Buch, Ich danke dir, Wir helfen ihm, Das gefällt mir",
-      "meaning": "give me the book, I thank you, we help him, I like that",
+      "target_answer": "Gib mir das Buch, Ich danke dir, Wir helfen ihm, Das gefällt mir, Glück und Mut, mein Wunsch, Wir können gefallen",
+      "meaning": "Give me the book; I thank you (thee); We help him; I like that (it pleases me); luck and courage; my wish; We can please",
       "explanation": "Every receiver takes the dative: mir, dir, ihm — the giving case in action."
     },
     {

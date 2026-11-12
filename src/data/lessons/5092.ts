@@ -57,7 +57,7 @@ const lesson: Lesson = {
     {
       "id": "l5092_e1",
       "type": "matching_pairs",
-      "prompt": "Match the extended clan:",
+      "prompt": "Match the extended clan. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "ec1",
@@ -83,10 +83,35 @@ const lesson: Lesson = {
           "id": "ec5",
           "english": "grandchild (twin: ankle)",
           "german": "der Enkel"
+        },
+        {
+          "id": "recall1",
+          "german": "mein Vater und meine Mutter",
+          "english": "my father and my mother"
+        },
+        {
+          "id": "recall2",
+          "german": "mein Sohn und meine Schwester",
+          "english": "my son and my sister"
+        },
+        {
+          "id": "recall3",
+          "german": "meine Eltern",
+          "english": "my parents"
+        },
+        {
+          "id": "recall4",
+          "german": "mein Opa",
+          "english": "my grandpa"
+        },
+        {
+          "id": "recall5",
+          "german": "meine Geschwister",
+          "english": "my siblings"
         }
       ],
-      "target_answer": "der Großvater, die Großmutter, der Onkel, die Tante, der Enkel",
-      "meaning": "grandfather, grandmother, uncle, aunt, grandchild",
+      "target_answer": "der Großvater, die Großmutter, der Onkel, die Tante, der Enkel, mein Vater und meine Mutter, mein Sohn und meine Schwester, meine Eltern, mein Opa, meine Geschwister",
+      "meaning": "grandfather (big-father); grandmother (big-mother); uncle (French loan like English uncle); aunt (French loan like English aunt); grandchild (twin: ankle); my father and my mother; my son and my sister; my parents; my grandpa; my siblings",
       "explanation": "Compounds (Groß+vater), shared French loans (Onkel, Tante) and one fossil (Enkel ↔ ankle) — the clan in five words."
     },
     {

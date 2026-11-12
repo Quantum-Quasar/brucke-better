@@ -1,4 +1,4 @@
-import type { LessonProgress, LessonSegment, LessonStar, MasteryState, ReviewMode, SRSCard } from "../types";
+import type { LessonProgress, LessonSegment, LessonStar, MasteryState, ReviewMode, SentenceCard, SRSCard } from "../types";
 import type { AppState, LanguageProgress, ToleranceSettings, VersionedField } from "./types";
 import { emptyVersions } from "./progress-state";
 import { DEFAULT_THEME } from "../theme-runtime";
@@ -6,6 +6,7 @@ import { DEFAULT_FONT } from "@/data/fonts";
 import { type CustomizationSettings, DEFAULT_SETTINGS } from "@/data/settings";
 import { DEFAULT_LANGUAGE_ID, getLanguageDefinition, isValidLanguageId } from "@/data/languages";
 
+import { localDateKey } from "../srs";
 /** Structural guard for persisted-state and backup payloads: any non-null,
  * non-array object qualifies. Field-level validation and defaults are applied
  * afterwards (normalizeParsedState), so a partial payload is repaired —
@@ -178,6 +179,27 @@ function normalizeSrsCards(raw: unknown): Record<string, SRSCard> {
   return cards;
 }
 
+export function normalizeSentenceCards(raw: unknown): Record<string, SentenceCard> {
+  const cards: Record<string, SentenceCard> = {};
+  if (!isPlausibleStateObject(raw)) return cards;
+  for (const [id, value] of Object.entries(raw)) {
+    if (!isPlausibleStateObject(value) || isDangerousKey(id)) continue;
+    const lessonId = parseLessonId(value.lessonId);
+    const exerciseId = value.exerciseId;
+    if (!lessonId || typeof exerciseId !== "string" || !exerciseId || exerciseId.length > 200 || isDangerousKey(exerciseId)) continue;
+    if (id !== `${lessonId}:${exerciseId}` || value.id !== id) continue;
+    const schedule = sanitizeImportedSrsCard(value, id);
+    if (!schedule) continue;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(schedule.due_date)) continue;
+    const dueDate = new Date(`${schedule.due_date}T12:00:00`);
+    if (!Number.isFinite(dueDate.getTime()) || localDateKey(dueDate) !== schedule.due_date) continue;
+    if (schedule.last_reviewed !== null && !Number.isFinite(Date.parse(schedule.last_reviewed))) continue;
+    const { word_id: _wordId, guessed: _guessed, ...fields } = schedule;
+    cards[id] = { ...fields, id, lessonId, exerciseId };
+  }
+  return cards;
+}
+
 /** Backup-shaped SRS import: keyed by the backup's own key (or array `id`), so
  * a card's `word_id` stays metadata instead of silently moving the map key. */
 export function importSrsCards(raw: unknown, base: Record<string, SRSCard>): Record<string, SRSCard> {
@@ -267,6 +289,7 @@ export function normalizeLanguageSlice(raw: unknown): LanguageProgress {
     passedGateIds: normalizeLessonIdList(slice.passedGateIds),
     wordMastery: normalizeWordMastery(slice.wordMastery),
     srsCards: normalizeSrsCards(slice.srsCards),
+    sentenceCards: normalizeSentenceCards(slice.sentenceCards),
     weeklyActivity: normalizeWeeklyActivity(slice.weeklyActivity) ?? emptyWeek(),
     lastActivityWeek: normalizeWeekKey(slice.lastActivityWeek),
     progressVersions: versions,
@@ -299,6 +322,7 @@ export function applyImportedSlice(base: LanguageProgress | undefined, rawSlice:
   if ("passedGateIds" in rawSlice) patch.passedGateIds = normalizeLessonIdList(rawSlice.passedGateIds);
   if ("wordMastery" in rawSlice) patch.wordMastery = normalizeWordMastery(rawSlice.wordMastery);
   if ("srsCards" in rawSlice) patch.srsCards = importSrsCards(rawSlice.srsCards, {});
+  if ("sentenceCards" in rawSlice) patch.sentenceCards = normalizeSentenceCards(rawSlice.sentenceCards);
   if ("weeklyActivity" in rawSlice) {
     const week = normalizeWeeklyActivity(rawSlice.weeklyActivity);
     if (week) patch.weeklyActivity = week;
@@ -321,6 +345,7 @@ export function normalizeParsedState(parsed: Record<string, any>): Partial<AppSt
     passedGateIds: normalizeLessonIdList(parsed.passedGateIds),
     wordMastery: normalizeWordMastery(parsed.wordMastery),
     srsCards: normalizeSrsCards(parsed.srsCards),
+    sentenceCards: normalizeSentenceCards(parsed.sentenceCards),
     weeklyActivity: normalizeWeeklyActivity(parsed.weeklyActivity) ?? emptyWeek(),
     lastActivityWeek: normalizeWeekKey(parsed.lastActivityWeek),
   };
@@ -331,6 +356,7 @@ export function normalizeParsedState(parsed: Record<string, any>): Partial<AppSt
   parsed.passedGateIds = topLevelProgress.passedGateIds;
   parsed.wordMastery = topLevelProgress.wordMastery;
   parsed.srsCards = topLevelProgress.srsCards;
+  parsed.sentenceCards = topLevelProgress.sentenceCards;
   parsed.weeklyActivity = topLevelProgress.weeklyActivity;
   parsed.lastActivityWeek = topLevelProgress.lastActivityWeek;
 
@@ -385,6 +411,7 @@ export function normalizeParsedState(parsed: Record<string, any>): Partial<AppSt
   parsed.passedGateIds = activeSlice.passedGateIds;
   parsed.wordMastery = activeSlice.wordMastery;
   parsed.srsCards = activeSlice.srsCards;
+  parsed.sentenceCards = activeSlice.sentenceCards;
   parsed.weeklyActivity = activeSlice.weeklyActivity;
   parsed.lastActivityWeek = activeSlice.lastActivityWeek;
   parsed.progressResetAt =

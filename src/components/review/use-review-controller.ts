@@ -5,63 +5,27 @@ import { clozeSentence } from "@/lib/sentence";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
 import { useAppStore } from "@/lib/store";
 import { useAppNavigation } from "@/lib/app-navigation";
-import { clearReviewSession, readReviewSession, writeReviewSession } from "@/lib/review-session";
+import { readReviewSession } from "@/lib/review-session";
 import { getDueCards, localDateKey, type ReviewGrade } from "@/lib/srs";
-import { DECK_CAPABILITIES, ALL_FAMILIES_ID, getAtlasFamilyWordIds, resolveCardReviewMode, filterByLearned, getRecentLessonWordIds, prepareSession, rankWeakestCards, sortDueCards, type LearnedFilter, type SessionSize, type ReviewDeckType } from "@/lib/review-decks";
+import { DECK_CAPABILITIES, ALL_FAMILIES_ID, getAtlasFamilyWordIds, resolveCardReviewMode, filterByLearned, getRecentLessonWordIds, rankWeakestCards, sortDueCards, type LearnedFilter, type SessionSize, type ReviewDeckType } from "@/lib/review-decks";
 import { generateMCQOptions, generateWordTiles } from "@/lib/review-modes";
 import { getAtlasFamilies, getAtlasFamily } from "@/lib/atlas-families";
 import { playTargetAudio } from "@/lib/audio";
-import { gradeLessonAnswer } from "@/lib/lesson-grading";
-import { soundEngine } from "@/lib/sound";
 import { getLanguageDefinition, type LanguageDefinition } from "@/data/languages";
 import { buildWordEntityMaps } from "@/lib/word-entities-core";
 import type { CompendiumData, LessonIndexEntry, MasteryState, ReviewMode, ShiftFamily, SRSCard, WordEntity } from "@/lib/types";
 import type { ReviewSnapshot } from "@/lib/store/types";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
 import type { CustomizationSettings } from "@/data/settings";
+import { useReviewAnswers } from "./use-review-answers";
+import { createReviewGrading, EMPTY_SESSION_STATS, blankSessionGrades, type ReviewSessionStats, type SessionGrades } from "./review-grading";
+import { useReviewLifecycle } from "./use-review-lifecycle";
+import { orderReviewDeck } from "./review-deck-ordering";
 type DeckType = ReviewDeckType;
 
 /** Sentinel select value meaning "every family" / "every domain". */
 const ALL_ID = ALL_FAMILIES_ID;
 
-interface ReviewSessionStats {
-  reviewed: number;
-  correct: number;
-  again: number;
-  hard: number;
-  easy: number;
-}
-
-const EMPTY_SESSION_STATS: ReviewSessionStats = {
-  reviewed: 0,
-  correct: 0,
-  again: 0,
-  hard: 0,
-  easy: 0,
-};
-
-/**
- * Per-card log of the grades applied during this session, indexed by deck
- * position (null = not graded this session). SM-2 grading only moves a card in
- * one direction, so "back" restores the card's pre-session snapshot instead of
- * trying to invert the schedule math.
- */
-type SessionGrades = (ReviewGrade | null)[];
-
-/** A session log with every card ungraded. */
-const blankSessionGrades = (length: number): SessionGrades => Array.from({ length }, () => null);
-
-/** Session stats with one grade subtracted — the mirror of the increment in
- * handleGrade, used when a card is re-graded instead of graded for the first time. */
-function undoGradeInStats(stats: ReviewSessionStats, grade: ReviewGrade): ReviewSessionStats {
-  return {
-    reviewed: Math.max(0, stats.reviewed - 1),
-    correct: Math.max(0, stats.correct - (grade >= 3 ? 1 : 0)),
-    again: Math.max(0, stats.again - (grade === 1 ? 1 : 0)),
-    hard: Math.max(0, stats.hard - (grade === 3 ? 1 : 0)),
-    easy: Math.max(0, stats.easy - (grade === 5 ? 1 : 0)),
-  };
-}
 
 export interface ReviewHubProps {
   activeLanguageId: string;
@@ -146,14 +110,6 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
 
   useBackDismiss(isModeSelectorOpen, () => setIsModeSelectorOpen(false));
 
-  const hasActiveReviewSession = activeDeck !== null;
-  useEffect(() => {
-    if (!hasActiveReviewSession) return;
-    document.documentElement.dataset.reviewSession = "true";
-    return () => {
-      delete document.documentElement.dataset.reviewSession;
-    };
-  }, [hasActiveReviewSession]);
   const modeDialogRef = useRef<HTMLDivElement>(null);
 
   const closeModeSelector = () => {
@@ -170,26 +126,9 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
     setMounted(true);
   }, []);
 
-  // Mode-Specific Interactive State
-  const [inputGuess, setInputGuess] = useState("");
-  const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [selectedTiles, setSelectedTiles] = useState<string[]>([]);
-  const [availableTiles, setAvailableTiles] = useState<string[]>([]);
-  const [currentAutoGrade, setCurrentAutoGrade] = useState<ReviewGrade | null>(null);
-  const [currentFeedbackNote, setCurrentFeedbackNote] = useState<string | null>(null);
 
-  const inputRef = useRef<HTMLInputElement>(null);
   const sessionRef = useRef<HTMLDivElement>(null);
 
-  // Starting a deck replaced the setup screen below the fold: scroll the card
-  // into view so the prompt, not the gender explainer, is what the learner sees.
-  useEffect(() => {
-    if (!activeDeck) return;
-    const id = window.requestAnimationFrame(() => {
-      sessionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-    return () => window.cancelAnimationFrame(id);
-  }, [activeDeck]);
 
   const srsCards = useAppStore((s) => s.srsCards);
   const wordMastery = useAppStore((s) => s.wordMastery);
@@ -197,7 +136,6 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
   const restoreSrsCard = useAppStore((s) => s.restoreSrsCard);
 
   const completedLessons = useAppStore((s) => s.completedLessons);
-  const dueCards = useMemo(() => sortDueCards(getDueCards(srsCards)), [srsCards]);
   const hasAnyCards = Object.keys(srsCards).length > 0;
 
   // Language-aware chrome: French uses conversion bridges, Spanish sound
@@ -248,48 +186,11 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
     setReviewMode(preferredReviewMode);
   }, [preferredReviewMode, activeDeck]);
 
-  // Persist the in-progress session so a tab switch does not throw it away.
-  useEffect(() => {
-    if (!activeDeck) {
-      clearReviewSession(activeLanguageId);
-      return;
-    }
-    writeReviewSession(activeLanguageId, {
-      progressResetAt,
-      progressResetActor,
-      activeDeck,
-      selectedShiftId,
-      selectedDomainId,
-      learnedFilter,
-      sessionSize,
-      shuffleSession,
-      sessionCards,
-      sessionEpoch,
-      currentIndex,
-      isRevealed,
-      sessionStats,
-      sessionGrades,
-      preGradeSnapshots: preGradeSnapshots.current,
-      reviewMode,
-    });
-  }, [
-    activeLanguageId,
-    progressResetAt,
-    progressResetActor,
-    activeDeck,
-    selectedShiftId,
-    selectedDomainId,
-    learnedFilter,
-    sessionSize,
-    shuffleSession,
-    sessionCards,
-    sessionEpoch,
-    currentIndex,
-    isRevealed,
-    sessionStats,
-    sessionGrades,
-    reviewMode,
-  ]);
+  useReviewLifecycle(activeLanguageId, {
+    progressResetAt, progressResetActor, activeDeck, selectedShiftId, selectedDomainId,
+    learnedFilter, sessionSize, shuffleSession, sessionCards, sessionEpoch, currentIndex,
+    isRevealed, sessionStats, sessionGrades, preGradeSnapshots: preGradeSnapshots.current, reviewMode,
+  }, sessionRef);
 
   // Shared map keeps core words, compound calques, and false friends on the same detail path.
   const wordEntityMaps = useMemo(
@@ -297,6 +198,7 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
     [activeLanguageId, data, lessons]
   );
   const allWordsMap: Record<string, WordEntity> = wordEntityMaps.entities;
+  const dueCards = useMemo(() => sortDueCards(getDueCards(srsCards), allWordsMap), [srsCards, allWordsMap]);
 
   const compoundCards: SRSCard[] = useMemo(() => {
     const fallback = (): SRSCard => ({
@@ -519,30 +421,14 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
     setCompletedDeck(null);
     preGradeSnapshots.current = {};
 
-    const begin = (cards: SRSCard[]) => {
-      setSessionCards(cards);
-      setSessionGrades(blankSessionGrades(cards.length));
-    };
-    // Queue-driven decks (due / weakest / compounds / recent) keep their own
-    // order; open-ended scoped decks are shuffled and capped to the chosen size.
-    const scoped = (ids: string[]) =>
-      begin(prepareSession(ids.map(blankCard), sessionSize, shuffleSession));
-
-    if (customCards) return begin(customCards);
-
-    if (deck === "due") begin(dueCards);
-    else if (deck === "weakest") begin(weakestCards);
-    else if (deck === "learned") begin(prepareSession(learnedCards, 20, true));
-    else if (deck === "shift") scoped(shiftWordIds(selectedShiftId));
-    else if (deck === "recent") begin(recentWordIds.map(blankCard));
-    else if (deck === "compounds") begin(prepareSession(scopedCompoundCards, 0, shuffleSession));
-    else if (deck === "sentences") begin(prepareSession(sentenceCards, sessionSize, shuffleSession));
-    else if (deck === "articles") begin(prepareSession(articleCards, sessionSize, shuffleSession));
-    else if (deck === "domain") scoped(domainWordIds(selectedDomainId));
-    else if (deck === "everything") {
-      const ids = scopeIds(data.wordList.map((w) => w.id));
-      begin(prepareSession([...ids.map(blankCard), ...scopedCompoundCards, ...sentenceCards, ...articleCards], sessionSize, shuffleSession));
-    }
+    const cards = orderReviewDeck(deck, {
+      dueCards, weakestCards, learnedCards, recentWordIds, scopedCompoundCards,
+      sentenceCards, articleCards, blankCard, sessionSize, shuffleSession,
+      shiftIds: () => shiftWordIds(selectedShiftId), domainIds: () => domainWordIds(selectedDomainId),
+      everythingIds: () => scopeIds(data.wordList.map((word) => word.id)),
+    }, customCards);
+    setSessionCards(cards);
+    setSessionGrades(blankSessionGrades(cards.length));
   };
 
   // Deck start is immediate: the current style (or the deck's only supported
@@ -599,85 +485,22 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
     if (!currentWord) return { tiles: [], targetChunks: [], targetAnswer: "" };
     return generateWordTiles(currentWord, data.wordList);
   }, [currentWord, data]);
+  const {
+    inputGuess, setInputGuess, selectedOption, setSelectedOption, selectedTiles, setSelectedTiles,
+    availableTiles, setAvailableTiles, currentAutoGrade, setCurrentAutoGrade, currentFeedbackNote,
+    setCurrentFeedbackNote, inputRef, handleSelectMCQ, handlePickTile, handleUnpickTile,
+    handleResetTiles, handleCheckTiles, handleCheckTyping, handleTypingInputChange,
+  } = useReviewAnswers({ currentWord, currentCardId: currentCard?.word_id, currentIndex,
+    sessionEpoch, tileData, isRevealed, setIsRevealed, settings, activeDeck, effectiveReviewMode });
 
-  // Reset interactive state per card
-  useEffect(() => {
-    setIsRevealed(false);
-    setInputGuess("");
-    setSelectedOption(null);
-    setSelectedTiles([]);
-    setCurrentAutoGrade(null);
-    setCurrentFeedbackNote(null);
-    if (tileData) {
-      setAvailableTiles(tileData.tiles);
-    }
-  }, [currentCard?.word_id, currentIndex, tileData, sessionEpoch]);
+  const { handleGrade, goBack, goForward, canGoBack, canGoForward } = createReviewGrading({
+    currentCard, isRevealed, settings, currentIndex, sessionStats, wordMastery, sessionCards,
+    activeDeck, sessionGrades, srsCards, preGradeSnapshots, blankCard, restoreSrsCard, recordReview,
+    setSessionGrades, setSessionStats, setIsRevealed, setInputGuess, setSelectedOption,
+    setSelectedTiles, setCurrentAutoGrade, setCurrentFeedbackNote, setCurrentIndex,
+    setCompletedDeck, setSessionComplete, setActiveDeck,
+  });
 
-  // SM-2 Review Grade Handler
-  const handleGrade = (grade: ReviewGrade) => {
-    if (!currentCard || !isRevealed) return;
-
-    if (grade === 1) {
-      void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
-    } else {
-      void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
-    }
-
-    // A card this session already graded has moved away from its pre-session
-    // state; undo that first so the new grade schedules from where the session
-    // started rather than compounding on top of the previous one.
-    const previousGrade = sessionGrades[currentIndex] ?? null;
-    if (previousGrade === null && !(currentCard.word_id in preGradeSnapshots.current)) {
-      // first grade this session: remember where the card — and the word's
-      // mastery entry — started, so "back" can restore them
-      preGradeSnapshots.current[currentCard.word_id] = {
-        card: srsCards[currentCard.word_id] ?? blankCard(currentCard.word_id),
-        mastery: wordMastery[currentCard.word_id] ?? null,
-      };
-    }
-
-    const stats: ReviewSessionStats = previousGrade === null ? { ...sessionStats } : undoGradeInStats(sessionStats, previousGrade);
-    if (previousGrade !== null) {
-      const snapshot = preGradeSnapshots.current[currentCard.word_id];
-      if (snapshot) restoreSrsCard(currentCard.word_id, snapshot);
-    }
-
-    recordReview(currentCard.word_id, grade);
-    // Remember the version this grade produced so a later "back" only undoes the
-    // card while it is still where this session left it (not clobbering a newer
-    // cross-tab grade).
-    const gradedSnapshot = preGradeSnapshots.current[currentCard.word_id];
-    if (gradedSnapshot) {
-      gradedSnapshot.version = useAppStore.getState().progressVersions.srsCards[currentCard.word_id];
-    }
-    setSessionGrades((prev) => {
-      const next = [...prev];
-      next[currentIndex] = grade;
-      return next;
-    });
-
-    stats.reviewed += 1;
-    stats.correct += grade >= 3 ? 1 : 0;
-    stats.again += grade === 1 ? 1 : 0;
-    stats.hard += grade === 3 ? 1 : 0;
-    stats.easy += grade === 5 ? 1 : 0;
-    setSessionStats(stats);
-
-    setIsRevealed(false);
-    setInputGuess("");
-    setSelectedOption(null);
-    setSelectedTiles([]);
-    setCurrentAutoGrade(null);
-    setCurrentFeedbackNote(null);
-
-    if (currentIndex + 1 < sessionCards.length) {
-      setCurrentIndex((i) => i + 1);
-    } else {
-      setCompletedDeck(activeDeck);
-      setSessionComplete(true);
-      setActiveDeck(null); // Finish session
-    }
-  };
 
   const exitDeck = () => {
     setActiveDeck(null);
@@ -694,170 +517,8 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
     setSessionEpoch((epoch) => epoch + 1);
   };
 
-  /**
-   * Step back to the previous card in this session. The card's SM-2 state is
-   * restored to what it was before the session graded it, so the learner sees
-   * the word un-revealed and can answer again — the re-grade then lands as the
-   * card's only graded step this session, not one stacked on the earlier one.
-   * The session stats drop the previous grade so a re-graded card is counted once.
-   */
-  const goBack = () => {
-    if (currentIndex <= 0 || sessionCards.length === 0) return;
-    void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
 
-    // Leaving the current card: undo the grade it may have received this session.
-    const leavingGrade = sessionGrades[currentIndex] ?? null;
-    if (leavingGrade !== null) {
-      const leaving = sessionCards[currentIndex];
-      const snapshot = preGradeSnapshots.current[leaving.word_id];
-      if (snapshot) restoreSrsCard(leaving.word_id, snapshot);
-      setSessionGrades((prev) => {
-        const next = [...prev];
-        next[currentIndex] = null;
-        return next;
-      });
-      setSessionStats((prev) => undoGradeInStats(prev, leavingGrade));
-    }
 
-    setCurrentIndex((i) => Math.max(0, i - 1));
-  };
-
-  /** Step forward again after going back (same behaviour as advancing). */
-  const goForward = () => {
-    if (currentIndex + 1 >= sessionCards.length) return;
-    void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
-    setCurrentIndex((i) => Math.min(sessionCards.length - 1, i + 1));
-  };
-
-  const canGoBack = activeDeck !== null && currentIndex > 0;
-  const canGoForward = activeDeck !== null && currentIndex < sessionCards.length - 1;
-
-  // MCQ Selection Handler
-  const handleSelectMCQ = (option: string) => {
-    if (isRevealed || !currentWord) return;
-    setSelectedOption(option);
-    const isCorrect = option.toLowerCase() === currentWord.target_word.toLowerCase();
-    if (isCorrect) {
-      void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
-    } else {
-      void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
-    }
-    setCurrentAutoGrade(isCorrect ? 4 : 1);
-    setCurrentFeedbackNote(null);
-    setIsRevealed(true);
-  };
-
-  // Tile Selection Handlers
-  const handlePickTile = (tile: string, index: number) => {
-    if (isRevealed) return;
-    void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
-    const nextAvailable = [...availableTiles];
-    nextAvailable.splice(index, 1);
-    setAvailableTiles(nextAvailable);
-    setSelectedTiles((prev) => [...prev, tile]);
-  };
-
-  const handleUnpickTile = (tile: string, index: number) => {
-    if (isRevealed) return;
-    void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
-    const nextSelected = [...selectedTiles];
-    nextSelected.splice(index, 1);
-    setSelectedTiles(nextSelected);
-    setAvailableTiles((prev) => [...prev, tile]);
-  };
-
-  const handleResetTiles = () => {
-    if (isRevealed || !tileData) return;
-    void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
-    setSelectedTiles([]);
-    setAvailableTiles(tileData.tiles);
-  };
-
-  const handleCheckTiles = () => {
-    if (isRevealed || !currentWord) return;
-    const isSentenceCard = currentWord.id.startsWith("sentence_") || currentWord.target_word.includes(" ");
-    const assembled = isSentenceCard ? selectedTiles.join(" ") : selectedTiles.join("");
-    const { result: evalResult } = gradeLessonAnswer([assembled], [currentWord.target_word], {
-      umlautTolerance: Boolean(settings.lazyMode),
-      capitalizationTolerance: Boolean(settings.capitalizationTolerance),
-    });
-    const isCorrect = evalResult.accuracy === "exact" || evalResult.accuracy === "almost";
-    if (isCorrect) {
-      void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
-    } else {
-      void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
-    }
-    setCurrentAutoGrade(evalResult.accuracy === "exact" ? 4 : evalResult.accuracy === "almost" ? 3 : 1);
-    setCurrentFeedbackNote(evalResult.accuracy === "almost" ? evalResult.warningNote ?? "Almost right — review the standard spelling." : null);
-    setIsRevealed(true);
-  };
-
-  const handleCheckTyping = () => {
-    if (isRevealed || !currentWord) return;
-    const guess = inputGuess.trim();
-    if (!guess) {
-      setCurrentFeedbackNote("Type an answer before checking.");
-      return;
-    }
-
-    const evalOptions = {
-      umlautTolerance: Boolean(settings.lazyMode),
-      capitalizationTolerance: Boolean(settings.capitalizationTolerance),
-    };
-    const { result: evaluation } = gradeLessonAnswer([guess], [currentWord.target_word], evalOptions);
-    if (evaluation.accuracy === "exact") {
-      void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
-      setCurrentAutoGrade(4);
-      setCurrentFeedbackNote(null);
-    } else if (evaluation.accuracy === "almost") {
-      // A near miss should be corrected, not punished like a completely wrong answer.
-      void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
-      setCurrentAutoGrade(3);
-      setCurrentFeedbackNote(evaluation.warningNote || "Almost right — review the standard spelling.");
-    } else {
-      void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
-      setCurrentAutoGrade(1);
-      setCurrentFeedbackNote(null);
-    }
-    setIsRevealed(true);
-  };
-
-  const handleTypingInputChange = (val: string) => {
-    if (val.length > inputGuess.length) {
-      if (settings.stopOnError === "letter" && currentWord) {
-        const nextCharIndex = inputGuess.length;
-        const expectedTarget = currentWord.target_word;
-        if (nextCharIndex < expectedTarget.length) {
-          const valChar = val[nextCharIndex].toLowerCase();
-          const targetChar = expectedTarget[nextCharIndex].toLowerCase();
-          const normalizeChar = (c: string) =>
-            c.replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").replace(/ß/g, "s");
-          const isMatch =
-            valChar === targetChar ||
-            (settings.lazyMode && normalizeChar(valChar) === normalizeChar(targetChar));
-          if (!isMatch) {
-            void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
-            return;
-          }
-        }
-      }
-      void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
-    } else if (val.length < inputGuess.length) {
-      void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
-    }
-    setInputGuess(val);
-    setCurrentFeedbackNote(null);
-  };
-
-  // Auto-focus input when in typing mode unrevealed
-  useEffect(() => {
-    if (activeDeck && !isRevealed && effectiveReviewMode === "typing") {
-      const timer = setTimeout(() => {
-        inputRef.current?.focus();
-      }, 50);
-      return () => clearTimeout(timer);
-    }
-  }, [activeDeck, currentIndex, isRevealed, effectiveReviewMode]);
 
   // Global review keyboard controls:
   // - In Modal: 1-4 chooses style, Esc cancels

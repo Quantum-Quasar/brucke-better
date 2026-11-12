@@ -63,7 +63,7 @@ const lesson: Lesson = {
     {
       "id": "l402_e1",
       "type": "matching_pairs",
-      "prompt": "Separate the true TH→D words — match each to its English twin:",
+      "prompt": "Separate the true TH→D words — match each to its English twin. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "td1",
@@ -84,10 +84,25 @@ const lesson: Lesson = {
           "id": "td4",
           "english": "thirst",
           "german": "Durst"
+        },
+        {
+          "id": "recall1",
+          "german": "Das ist stumpf",
+          "english": "That is blunt"
+        },
+        {
+          "id": "recall1b",
+          "german": "Das ist dick",
+          "english": "That is thick"
+        },
+        {
+          "id": "context1",
+          "german": "der Darm",
+          "english": "the intestine"
         }
       ],
-      "target_answer": "dünn, Dorn, Daumen, Durst",
-      "meaning": "thin, thorn, thumb, thirst",
+      "target_answer": "dünn, Dorn, Daumen, Durst, Das ist stumpf, Das ist dick, der Darm",
+      "meaning": "thin; thorn; thumb; thirst; That is blunt; That is thick; the intestine",
       "shift_hint": "TH → D",
       "explanation": "Swap the d for th and the English word appears — these are hardened dental fricatives."
     },

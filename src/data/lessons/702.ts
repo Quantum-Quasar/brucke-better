@@ -69,7 +69,7 @@ const lesson: Lesson = {
     {
       "id": "l702_e1",
       "type": "matching_pairs",
-      "prompt": "The gauntlet, round one — match at speed (the last one runs a different shift — spot it):",
+      "prompt": "The gauntlet, round one — match at speed (the last one runs a different shift — spot it). Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "gd1",
@@ -95,10 +95,45 @@ const lesson: Lesson = {
           "id": "gd5",
           "english": "bone",
           "german": "Knochen"
+        },
+        {
+          "id": "recall1",
+          "german": "das Dach",
+          "english": "the roof"
+        },
+        {
+          "id": "recall2",
+          "german": "Dampf im Haus",
+          "english": "steam in the house"
+        },
+        {
+          "id": "recall2b",
+          "german": "ein Tropfen Wasser",
+          "english": "a drop of water"
+        },
+        {
+          "id": "recall3",
+          "german": "tot und kalt",
+          "english": "dead and cold"
+        },
+        {
+          "id": "recall4",
+          "german": "der Tod",
+          "english": "death"
+        },
+        {
+          "id": "recall5",
+          "german": "tausend und zwei",
+          "english": "a thousand and two"
+        },
+        {
+          "id": "recall6",
+          "german": "der Teufel",
+          "english": "the devil"
         }
       ],
-      "target_answer": "Wort, Traum, Garten, Tisch, Knochen",
-      "meaning": "word, dream, garden, table/dish",
+      "target_answer": "Wort, Traum, Garten, Tisch, Knochen, das Dach, Dampf im Haus, ein Tropfen Wasser, tot und kalt, der Tod, tausend und zwei, der Teufel",
+      "meaning": "word; dream; yard / garden; dish / table; bone; the roof; steam in the house; a drop of water; dead and cold; death; a thousand and two; the devil",
       "shift_hint": "D → T (mixed)",
       "explanation": "Final, initial, and medial d all hardened to t — and Tisch took the Latin discus detour."
     },

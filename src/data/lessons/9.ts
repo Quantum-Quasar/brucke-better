@@ -84,7 +84,7 @@ const lesson: Lesson = {
     {
       "id": "l9_e2",
       "type": "matching_pairs",
-      "prompt": "Match each thought with its German form — the ending carries the person:",
+      "prompt": "Match each thought with its German form — the ending carries the person. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "cj1",
@@ -115,25 +115,50 @@ const lesson: Lesson = {
           "id": "cj6",
           "english": "thou makest",
           "german": "du machst"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir müssen korrigieren",
+          "english": "We must correct"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können reduzieren",
+          "english": "We can reduce"
+        },
+        {
+          "id": "recall3",
+          "german": "Wir können aktivieren",
+          "english": "We can activate"
+        },
+        {
+          "id": "recall4",
+          "german": "Wir können fotografieren",
+          "english": "We can take photographs"
+        },
+        {
+          "id": "recall5",
+          "german": "Wir müssen argumentieren",
+          "english": "We must argue"
         }
       ],
-      "target_answer": "du stehst, er zeigt, du küsst, wir küssen, wir stehen, du machst",
-      "meaning": "you stand, he shows, you kiss, we kiss, we stand, you make",
+      "target_answer": "du stehst, er zeigt, du küsst, wir küssen, wir stehen, du machst, Wir müssen korrigieren, Wir können reduzieren, Wir können aktivieren, Wir können fotografieren, Wir müssen argumentieren",
+      "meaning": "thou standest; he shows; thou kissest; we kiss; we stand; thou makest; We must correct; We can reduce; We can activate; We can take photographs; We must argue",
       "explanation": "The person lives in the ending: du takes the Shakespearean -st, er the archaic -t, wir the full dictionary -en — stehen, zeigen and küssen just wear them."
     },
     {
       "id": "l9_e3",
       "type": "shift_select",
-      "prompt": "In 'Wir spazieren und wir fotografieren', why do both verbs end in -en?",
+      "prompt": "Choose the pair that does not follow the other three connections.",
       "options": [
-        "Because wir takes the dictionary -en — the full ending returns for we",
-        "Because both verbs are questions",
-        "Because they are Latin loans and keep their own rules",
-        "Because -en marks the past tense"
+        "garden → Garten",
+        "word → Wort",
+        "think → denken",
+        "drink → trinken"
       ],
-      "target_answer": "Because wir takes the dictionary -en — the full ending returns for we",
-      "meaning": "the wir-form is the dictionary form at work",
-      "explanation": "Strip nothing: with wir the verb IS its dictionary self — spazieren, fotografieren, lernen, kommen. The ending you add for ich is the only one that ever shrinks."
+      "target_answer": "think → denken",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Drink, garden and word use D → T. Think → denken uses TH → D."
     },
     {
       "id": "l9_e4",

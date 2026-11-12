@@ -65,7 +65,7 @@ const lesson: Lesson = {
     {
       "id": "l601_e1",
       "type": "matching_pairs",
-      "prompt": "Match the household words through the K → CH lens:",
+      "prompt": "Match the household words through the K → CH lens. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "kb1",
@@ -101,10 +101,20 @@ const lesson: Lesson = {
           "id": "kb7",
           "english": "cook (the person)",
           "german": "Koch"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können brechen",
+          "english": "We can break"
+        },
+        {
+          "id": "recall2",
+          "german": "Der Apfel ist weich und reif",
+          "english": "The apple is soft and ripe"
         }
       ],
-      "target_answer": "Milch, Buch, suchen, sprechen, Knochen, riechen, Koch",
-      "meaning": "milk, book, to seek, to speak, bone, to smell, cook",
+      "target_answer": "Milch, Buch, suchen, sprechen, Knochen, riechen, Koch, Wir können brechen, Der Apfel ist weich und reif",
+      "meaning": "milk; book; to seek; to speak; bone (twin: knuckle); to smell; cook (the person); We can break; The apple is soft and ripe",
       "shift_hint": "K → CH",
       "explanation": "English softened the k in beseech and speech; German softened it in every one of these words — the cook's own title, Koch, wears the shift on its face."
     },

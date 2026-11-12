@@ -66,7 +66,7 @@ const lesson: Lesson = {
     {
       "id": "l18_e1",
       "type": "matching_pairs",
-      "prompt": "Match each participle with its English twin:",
+      "prompt": "Match each participle with its English twin. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "pf1",
@@ -97,25 +97,50 @@ const lesson: Lesson = {
           "id": "pf6",
           "english": "booked",
           "german": "gebucht"
+        },
+        {
+          "id": "recall1",
+          "german": "am Wochenende",
+          "english": "at the weekend"
+        },
+        {
+          "id": "recall2",
+          "german": "halb so gut",
+          "english": "half as good"
+        },
+        {
+          "id": "recall3",
+          "german": "genug Zeit",
+          "english": "enough time"
+        },
+        {
+          "id": "recall4",
+          "german": "Wir können ankommen",
+          "english": "We can arrive"
+        },
+        {
+          "id": "recall5",
+          "german": "Wir können buchen",
+          "english": "We can book"
         }
       ],
-      "target_answer": "gemacht, gesagt, gekommen, gegangen, angekommen, gebucht",
-      "meaning": "made, said, come, gone, arrived, booked",
+      "target_answer": "gemacht, gesagt, gekommen, gegangen, angekommen, gebucht, am Wochenende, halb so gut, genug Zeit, Wir können ankommen, Wir können buchen",
+      "meaning": "made; said; come; gone; arrived; booked; at the weekend; half as good; enough time; We can arrive; We can book",
       "explanation": "Weak participles wear ge- + -t; strong ones change the vowel and wear ge- + -en — the same split English shows in made vs come. Separable verbs stack the prefix back on top: an + gekommen."
     },
     {
       "id": "l18_e2",
       "type": "shift_select",
-      "prompt": "Which form closes the Perfekt bracket: 'Ich habe es _____' (I have made/done it)?",
+      "prompt": "Which word pair would you place in a different connection group?",
       "options": [
-        "machen",
-        "gemacht",
-        "machte",
-        "mache"
+        "cook → kochen",
+        "daughter → Tochter",
+        "book → Buch",
+        "milk → Milch"
       ],
-      "target_answer": "gemacht",
-      "meaning": "Ich habe es gemacht — the ge- participle closes the bracket",
-      "explanation": "ge- + stem + -t builds the weak participle: gemacht, gesagt. (It is the same ge- English once wore as y- in yclept.) The calendar loves the bracket too: im Sommer, im Winter, am Wochenende — every calendar word opens a Perfekt story."
+      "target_answer": "daughter → Tochter",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Book, milk and cook use K → CH. Daughter → Tochter also has a D → T clue."
     },
     {
       "id": "l18_e3",

@@ -65,7 +65,7 @@ const lesson: Lesson = {
     {
       "id": "l5191_e1",
       "type": "matching_pairs",
-      "prompt": "The wardrobe and its frames — match each sentence with its reading:",
+      "prompt": "The wardrobe and its frames — match each sentence with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "wd1",
@@ -106,10 +106,15 @@ const lesson: Lesson = {
           "id": "wd8",
           "english": "One second, please",
           "german": "Eine Sekunde, bitte"
+        },
+        {
+          "id": "recall1",
+          "german": "das Theater",
+          "english": "the theatre"
         }
       ],
-      "target_answer": "Der Schuh ist zu klein, Die Hose ist neu, Das Hemd ist weiß, Der Mantel ist warm, Die Jacke ist schön, Später kaufe ich einen Mantel, Einen Moment, bitte, der Mantel ist schön, Eine Sekunde, bitte",
-      "meaning": "shoe, trousers, shirt, coat, jacket — and later I buy",
+      "target_answer": "Der Schuh ist zu klein, Die Hose ist neu, Das Hemd ist weiß, Der Mantel ist warm, Die Jacke ist schön, Später kaufe ich einen Mantel, Einen Moment, bitte, der Mantel ist schön, Eine Sekunde, bitte, das Theater",
+      "meaning": "The shoe is too small; The trousers are new; The shirt is white; The coat is warm; The jacket is beautiful; Later I buy a coat; One moment, please — the coat is beautiful; One second, please; the theatre",
       "explanation": "Five garments, three genders: der Schuh and der Mantel, die Hose and die Jacke, das Hemd. Note die Hose takes a SINGULAR verb — Die Hose ist neu, never sind."
     },
     {

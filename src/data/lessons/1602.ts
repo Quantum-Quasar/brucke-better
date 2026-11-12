@@ -59,7 +59,7 @@ const lesson: Lesson = {
     {
       "id": "l1602_e1",
       "type": "matching_pairs",
-      "prompt": "The factory floor — match each verb with its product:",
+      "prompt": "The factory floor — match each verb with its product. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "bf1",
@@ -85,10 +85,20 @@ const lesson: Lesson = {
           "id": "bf5",
           "english": "to pay",
           "german": "bezahlen"
+        },
+        {
+          "id": "spaced1",
+          "german": "Ich kann das vergessen",
+          "english": "I can forget that"
+        },
+        {
+          "id": "spaced1b",
+          "german": "Ich kann das verlieren",
+          "english": "I can lose that"
         }
       ],
-      "target_answer": "besuchen, erkennen, erinnern, erklären, bezahlen",
-      "meaning": "to visit, to recognize, to remember, to explain, to pay",
+      "target_answer": "besuchen, erkennen, erinnern, erklären, bezahlen, Ich kann das vergessen, Ich kann das verlieren",
+      "meaning": "to visit; to recognize; to remember; to explain (make clear); to pay; I can forget that; I can lose that",
       "explanation": "be- converts, er- achieves — and each product is ge--free in the participle: besucht, erkannt, erinnert, erklärt, bezahlt."
     },
     {

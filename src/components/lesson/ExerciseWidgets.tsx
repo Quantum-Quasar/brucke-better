@@ -36,7 +36,7 @@ const SpokenTurnReplyExercise = dynamic(
 
 const ClassicExercise = dynamic(() => import("./ClassicExercise"), { loading: ExerciseLoading });
 
-export const ExerciseWidget: React.FC<ExerciseWidgetProps> = ({
+const ExerciseContent: React.FC<ExerciseWidgetProps> = ({
   exercise,
   onSuccess,
   onError,
@@ -147,3 +147,9 @@ export const ExerciseWidget: React.FC<ExerciseWidgetProps> = ({
     />
   );
 };
+
+export const ExerciseWidget: React.FC<ExerciseWidgetProps> = (props) => (
+  <div role="group" aria-label={props.exercise.prompt} data-exercise-type={props.exercise.type}>
+    <ExerciseContent {...props} />
+  </div>
+);

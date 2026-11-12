@@ -66,7 +66,7 @@ const lesson: Lesson = {
     {
       "id": "l502_e1",
       "type": "matching_pairs",
-      "prompt": "Match the English t-words with their sharp-s German twins:",
+      "prompt": "Match the English t-words with their sharp-s German twins. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "es1",
@@ -97,10 +97,25 @@ const lesson: Lesson = {
           "id": "es6",
           "english": "tongue",
           "german": "Zunge"
+        },
+        {
+          "id": "recall1",
+          "german": "der Zwilling",
+          "english": "the twin"
+        },
+        {
+          "id": "recall2",
+          "german": "der Zwerg",
+          "english": "the dwarf"
+        },
+        {
+          "id": "recall3",
+          "german": "zweimal kommen",
+          "english": "to come twice"
         }
       ],
-      "target_answer": "groß, heiß, Fuß, Straße, süß, Zunge",
-      "meaning": "great/big, hot, foot, street, sweet, tongue",
+      "target_answer": "groß, heiß, Fuß, Straße, süß, Zunge, der Zwilling, der Zwerg, zweimal kommen",
+      "meaning": "great; hot; foot; street; sweet; tongue; the twin; the dwarf; to come twice",
       "shift_hint": "T → ß",
       "explanation": "Each ß marks where an ancient t hissed into a sharp s after a long vowel — and Zunge shows the sibling outcome: t → z, the /ts/ costume."
     },

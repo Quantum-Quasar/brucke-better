@@ -67,7 +67,7 @@ const lesson: Lesson = {
     {
       "id": "l2602_e1",
       "type": "matching_pairs",
-      "prompt": "The showdown — match each word with its shift story:",
+      "prompt": "The showdown — match each word with its shift story. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "ss1",
@@ -88,10 +88,40 @@ const lesson: Lesson = {
           "id": "ss4",
           "english": "eight (gh→ch only)",
           "german": "acht"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können lachen",
+          "english": "We can laugh"
+        },
+        {
+          "id": "recall2",
+          "german": "der Knecht",
+          "english": "the farmhand"
+        },
+        {
+          "id": "recall3",
+          "german": "die Fracht",
+          "english": "the cargo"
+        },
+        {
+          "id": "recall4",
+          "german": "hell und dunkel",
+          "english": "bright and dark"
+        },
+        {
+          "id": "recall5",
+          "german": "Mond und Stern",
+          "english": "moon and star"
+        },
+        {
+          "id": "recall6",
+          "german": "um Mitternacht",
+          "english": "at midnight"
         }
       ],
-      "target_answer": "Tochter, dachte, Nacht, acht",
-      "meaning": "the four showdown entries",
+      "target_answer": "Tochter, dachte, Nacht, acht, Wir können lachen, der Knecht, die Fracht, hell und dunkel, Mond und Stern, um Mitternacht",
+      "meaning": "daughter (D→T + gh→ch); thought (TH→D + gh→ch); night (gh→ch only); eight (gh→ch only); We can laugh; the farmhand; the cargo; bright and dark; moon and star; at midnight",
       "explanation": "Same ch ending — the English front (d, th, or nothing) tells you which laws fired."
     },
     {

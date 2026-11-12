@@ -58,7 +58,7 @@ const lesson: Lesson = {
     {
       "id": "l2101_e1",
       "type": "matching_pairs",
-      "prompt": "Gallery wall one — match the compound with its literal gloss:",
+      "prompt": "Gallery wall one — match the compound with its literal gloss. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "cd1",
@@ -94,10 +94,30 @@ const lesson: Lesson = {
           "id": "cd7",
           "english": "home-woe",
           "german": "das Heimweh"
+        },
+        {
+          "id": "recall1",
+          "german": "die Hauptstadt",
+          "english": "the capital city"
+        },
+        {
+          "id": "recall2",
+          "german": "mein Rucksack und meine Postkarte",
+          "english": "my backpack and my postcard"
+        },
+        {
+          "id": "recall3",
+          "german": "Das Wetter ist nass und kalt",
+          "english": "The weather is wet and cold"
+        },
+        {
+          "id": "recall4",
+          "german": "das Land",
+          "english": "the land"
         }
       ],
-      "target_answer": "der Kühlschrank, das Krankenhaus, die Glühbirne, der Kindergarten, der Fußball, der Regenbogen, das Heimweh",
-      "meaning": "refrigerator, hospital, lightbulb, kindergarten, football, rainbow, homesickness",
+      "target_answer": "der Kühlschrank, das Krankenhaus, die Glühbirne, der Kindergarten, der Fußball, der Regenbogen, das Heimweh, die Hauptstadt, mein Rucksack und meine Postkarte, Das Wetter ist nass und kalt, das Land",
+      "meaning": "cool-cabinet; sick-people-house; glowing-pear; children-garden; foot-ball (the game); rain-bow; home-woe; the capital city; my backpack and my postcard; The weather is wet and cold; the land",
       "explanation": "Read the parts, get the meaning free — and note the head word donating each gender. Fußball, Regenbogen and Heimweh are English's own compounds seen in the German mirror."
     },
     {

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import type { Lesson, ExerciseItem, LessonProgress } from "@/lib/types";
+import React, { useState, useRef } from "react";
+import type { ExerciseItem } from "@/lib/types";
 import type { LessonSegment } from "./ProgressBar5";
 import { useAppStore } from "@/lib/store";
 import { useAppNavigation } from "@/lib/app-navigation";
@@ -12,13 +12,9 @@ import { consciousnessLineFor } from "@/data/consciousness";
 import { getSoundImportsForLanguage, type SoundImport } from "@/data/sound-imports";
 import { getLanguageDefinition } from "@/data/languages";
 import type { LessonReaderProps, LessonSession } from "./lesson-session-types";
+import { restoreRetries, useLessonProgress } from "./use-lesson-progress";
+import { useLessonKeyboard } from "./use-lesson-keyboard";
 
-function restoreRetries(lesson: Lesson, progress?: LessonProgress): ExerciseItem[] {
-  const exercises = new Map(lesson.exercises.map((exercise) => [exercise.id, exercise]));
-  return (progress?.retryExerciseIds ?? [])
-    .map((id) => exercises.get(id))
-    .filter((exercise): exercise is ExerciseItem => exercise !== undefined);
-}
 
 
 export const useLessonSession = ({
@@ -108,159 +104,28 @@ export const useLessonSession = ({
 
   const completeLesson = useAppStore((s) => s.completeLesson);
   const seedSrsCards = useAppStore((s) => s.seedSrsCards);
-  const setLessonProgress = useAppStore((s) => s.setLessonProgress);
+  useLessonProgress({
+    lesson, preview, languageId, storeLanguageId, currentSegment, practiceIndex,
+    completedSegments, everQueued, retryQueue, inRetryPhase, retryIndex,
+    setCurrentSegment, setPracticeIndex, setCompletedSegments, setEverQueued,
+    setRetryQueue, setInRetryPhase, setRetryIndex, setIsLessonFinished,
+  });
 
-  const storeHydrated = useAppStore((s) => s.storeHydrated);
-  const hydrateEpoch = useAppStore((s) => s.hydrateEpoch);
-  // Epoch of the hydration this component last adopted from. `-1` means the
-  // first pass has not seen a hydrated store yet.
-  const adoptedEpochRef = useRef(-1);
 
-  useEffect(() => {
-    // The store starts from defaults and applies localStorage only after mount,
-    // and child effects run before the root layout's hydration effect (Strict
-    // Mode even re-runs them after it). So on a reload this effect first sees
-    // the initial "hook" position. Before persisting that over the saved state,
-    // adopt the position the store just restored; only then write. The epoch
-    // also makes an open lesson adopt a cross-tab save instead of overwriting it.
-    if (preview || (languageId && storeLanguageId !== languageId)) return;
-    if (!storeHydrated) return;
-    if (adoptedEpochRef.current !== hydrateEpoch) {
-      const isRehydration = adoptedEpochRef.current !== -1;
-      adoptedEpochRef.current = hydrateEpoch;
-      const persisted = useAppStore.getState().lessonProgress[lesson.id];
-      if (persisted) {
-        const restoredQueue = restoreRetries(lesson, persisted);
-        const restoredRetryPhase = Boolean(persisted.inRetryPhase && restoredQueue.length);
-        const restoredRetryIndex = Math.min(persisted.retryIndex ?? 0, Math.max(0, restoredQueue.length - 1));
-        const samePosition =
-          persisted.segment === currentSegment &&
-          persisted.practiceIndex === practiceIndex &&
-          persisted.completedSegments.join("|") === completedSegments.join("|") &&
-          (persisted.everQueued ?? false) === everQueued &&
-          restoredRetryPhase === inRetryPhase &&
-          restoredRetryIndex === retryIndex &&
-          restoredQueue.length === retryQueue.length &&
-          restoredQueue.every((exercise, index) => exercise.id === retryQueue[index].id);
-        if (!samePosition) {
-          setCurrentSegment(persisted.segment);
-          setPracticeIndex(persisted.practiceIndex);
-          setCompletedSegments(persisted.completedSegments);
-          setEverQueued(persisted.everQueued ?? false);
-          setRetryQueue(restoredQueue);
-          setInRetryPhase(restoredRetryPhase);
-          setRetryIndex(restoredRetryIndex);
-          return;
-        }
-      } else if (isRehydration) {
-        // Another tab reset/imported progress and this lesson's entry is gone:
-        // restart it rather than immediately writing the stale local position back.
-        setCurrentSegment("hook");
-        setPracticeIndex(0);
-        setCompletedSegments([]);
-        setEverQueued(false);
-        setRetryQueue([]);
-        setInRetryPhase(false);
-        setRetryIndex(0);
-        setIsLessonFinished(false);
-        return;
-      }
-    }
-    setLessonProgress(lesson.id, {
-      segment: currentSegment,
-      practiceIndex,
-      completedSegments,
-      everQueued,
-      retryExerciseIds: retryQueue.map((exercise) => exercise.id),
-      inRetryPhase,
-      retryIndex,
-    });
-  }, [
-    lesson,
-    currentSegment,
-    practiceIndex,
-    completedSegments,
-    everQueued,
-    retryQueue,
-    inRetryPhase,
-    retryIndex,
-    storeHydrated,
-    hydrateEpoch,
-    setLessonProgress,
-    preview,
-    languageId,
-    storeLanguageId,
-  ]);
-
-  // Global keyboard navigation across lesson reading segments (Hook, Pattern, Table, Summary)
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const active = document.activeElement as HTMLElement | null;
-      const isInput =
-        active instanceof HTMLInputElement ||
-        active instanceof HTMLTextAreaElement ||
-        Boolean(active?.isContentEditable);
-
-      if (isInput) return;
-
-      // A focused button/link keeps its native Enter/Space activation. Without
-      // this guard the summary shortcut called preventDefault() on the focused
-      // "mark lesson finished" button and navigated to the next lesson instead.
-      const isActivationKey = e.key === "Enter" || e.key === " " || e.code === "Space";
-      const isInteractive =
-        active instanceof HTMLButtonElement ||
-        active instanceof HTMLAnchorElement ||
-        active instanceof HTMLSelectElement ||
-        active?.tagName === "SUMMARY" ||
-        active?.getAttribute("role") === "button" ||
-        active?.getAttribute("role") === "link";
-      if (isInteractive && isActivationKey) return;
-
-      if (currentSegment === "hook") {
-        if (e.key === "Enter" || e.key === " " || e.code === "Space") {
-          e.preventDefault();
-          markSegmentDone("hook", "pattern");
-        }
-      } else if (currentSegment === "pattern") {
-        if (e.key === "Enter" || e.key === " " || e.code === "Space") {
-          e.preventDefault();
-          markSegmentDone("pattern", "table");
-        } else if (e.key === "Backspace" || e.key === "ArrowLeft") {
-          e.preventDefault();
-          setCurrentSegment("hook");
-        }
-      } else if (currentSegment === "table") {
-        if (e.key === "Enter" || e.key === " " || e.code === "Space") {
-          e.preventDefault();
-          startPractice();
-        } else if (e.key === "Backspace" || e.key === "ArrowLeft") {
-          e.preventDefault();
-          setCurrentSegment("pattern");
-        }
-      } else if (currentSegment === "summary") {
-        if (!preview && (retryQueue.length === 0 || isLessonFinished)) {
-          if (e.key === "Enter" || e.key === " " || e.code === "Space") {
-            e.preventDefault();
-            handleCompleteAll();
-            goToNextLesson();
-          }
-        }
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [currentSegment, retryQueue.length, isLessonFinished, lesson.id, nextLessonId, goToNextLesson, preview]);
 
   // Opening a lesson must not seed the review queue. Cards are created when the
   // lesson is actually finished (handleCompleteAll), so Review stays honest.
 
-  const handleExerciseError = (exercise: ExerciseItem) => {
+  const queueExerciseRetry = (exercise: ExerciseItem) => {
     setEverQueued(true);
     setRetryQueue((prev) => {
       if (prev.some((e) => e.id === exercise.id)) return prev;
       return [...prev, exercise];
     });
+  };
+
+  const handleExerciseError = (exercise: ExerciseItem) => {
+    if (!preview) useAppStore.getState().recordSentenceFailure(lesson.id, exercise, activeLanguageId);
   };
 
   // TM-4c: count misses per item during reinforcement so "Walk me through it" can appear
@@ -433,6 +298,10 @@ export const useLessonSession = ({
     const queued = retryQueue[retryIndex] as ExerciseItem;
     return retryVariant(queued, queued ? retryAttempts[queued.id] ?? 0 : 0);
   }, [inRetryPhase, retryQueue, retryIndex, retryAttempts, practiceIndex, lesson.exercises]);
+  useLessonKeyboard({
+    currentSegment, retryQueue, isLessonFinished, goToNextLesson, preview,
+    markSegmentDone, startPractice, handleCompleteAll, setCurrentSegment,
+  });
 
   return {
     lesson,
@@ -477,6 +346,7 @@ export const useLessonSession = ({
     primaryShift,
     familyCount,
     handleExerciseError,
+    queueExerciseRetry,
     handleRetryError,
     handleTwistDone,
     handleResurfaceTwist,

@@ -57,7 +57,7 @@ const lesson: Lesson = {
     {
       "id": "l1702_e1",
       "type": "matching_pairs",
-      "prompt": "Match the weekdays with their godly twins:",
+      "prompt": "Match the weekdays with their godly twins. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "dy1",
@@ -78,10 +78,30 @@ const lesson: Lesson = {
           "id": "dy4",
           "english": "Thursday (thunder-day)",
           "german": "Donnerstag"
+        },
+        {
+          "id": "recall1",
+          "german": "hundert und zwei",
+          "english": "a hundred and two"
+        },
+        {
+          "id": "recall2",
+          "german": "eine Minute",
+          "english": "a minute"
+        },
+        {
+          "id": "recall3",
+          "german": "Wir können zählen",
+          "english": "We can count"
+        },
+        {
+          "id": "recall4",
+          "german": "am Dienstag",
+          "english": "on Tuesday"
         }
       ],
-      "target_answer": "Montag, Freitag, Sonntag, Donnerstag",
-      "meaning": "Monday, Friday, Sunday, Thursday",
+      "target_answer": "Montag, Freitag, Sonntag, Donnerstag, hundert und zwei, eine Minute, Wir können zählen, am Dienstag",
+      "meaning": "Monday (moon-day); Friday (goddess-day); Sunday (sun-day); Thursday (thunder-day); a hundred and two; a minute; We can count; on Tuesday",
       "explanation": "Same gods, same order, one shift: the languages split the naming but kept the calendar."
     },
     {

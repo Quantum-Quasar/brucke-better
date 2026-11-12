@@ -63,16 +63,16 @@ const lesson: Lesson = {
     {
       "id": "l22_e1",
       "type": "shift_select",
-      "prompt": "Suffix law check: 'die Warnung' — what gender does -ung demand?",
+      "prompt": "Look past noun endings: which pair has a different connection?",
       "options": [
-        "masculine",
-        "depends on the verb",
-        "feminine — all -ung nouns are die",
-        "neuter"
+        "what → was",
+        "speak → sprechen",
+        "two → zwei",
+        "better → besser"
       ],
-      "target_answer": "feminine — all -ung nouns are die",
-      "meaning": "-ung → die, no exceptions",
-      "explanation": "die Warnung, die Zeitung, die Wahrnehmung — the -ung factory stamps feminine. Not every noun obeys a suffix: der Berg wears der with no suffix at all — sometimes the gender is pure ancestry."
+      "target_answer": "speak → sprechen",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Two, better and what use T → S/SS/Z. Speak → sprechen uses K → CH."
     },
     {
       "id": "l22_e2",
@@ -100,7 +100,7 @@ const lesson: Lesson = {
     {
       "id": "l22_e4",
       "type": "matching_pairs",
-      "prompt": "Match each suffix with its gender law:",
+      "prompt": "Match each suffix with its gender law. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "gh1",
@@ -121,10 +121,40 @@ const lesson: Lesson = {
           "id": "gh4",
           "english": "plain -e (mostly)",
           "german": "feminine — die Straße, die Briefmarke"
+        },
+        {
+          "id": "recall1",
+          "german": "ein Zahn",
+          "english": "a tooth"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können feiern und singen",
+          "english": "We can celebrate and sing"
+        },
+        {
+          "id": "recall3",
+          "german": "das Flugzeug",
+          "english": "the aeroplane"
+        },
+        {
+          "id": "recall4",
+          "german": "die Wahrnehmung",
+          "english": "perception"
+        },
+        {
+          "id": "recall5",
+          "german": "der Begriff",
+          "english": "the concept"
+        },
+        {
+          "id": "spaced1",
+          "german": "mein Heimweh",
+          "english": "my homesickness"
         }
       ],
-      "target_answer": "feminine — die Zeitung, neuter — das Mädchen, masculine — der Staubsauger, feminine — die Straße, die Zeit",
-      "meaning": "the four most useful suffix laws",
+      "target_answer": "feminine — die Zeitung, neuter — das Mädchen, masculine — der Staubsauger, feminine — die Straße, die Briefmarke, ein Zahn, Wir können feiern und singen, das Flugzeug, die Wahrnehmung, der Begriff, mein Heimweh",
+      "meaning": "-ung; -chen; -er agent nouns; plain -e (mostly); a tooth; We can celebrate and sing; the aeroplane; perception; the concept; my homesickness",
       "explanation": "Four laws cover thousands of nouns — guess first, verify later."
     },
     {

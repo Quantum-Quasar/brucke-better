@@ -80,7 +80,7 @@ const lesson: Lesson = {
     {
       "id": "l5251_e1",
       "type": "matching_pairs",
-      "prompt": "Out of town — match each sentence with its reading:",
+      "prompt": "Out of town — match each sentence with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "rt1",
@@ -136,10 +136,15 @@ const lesson: Lesson = {
           "id": "rt11",
           "english": "Along the river is the village",
           "german": "Den Fluss entlang ist das Dorf"
+        },
+        {
+          "id": "recall1",
+          "german": "Die Bluse ist rosa und lila",
+          "english": "The blouse is pink and purple"
         }
       ],
-      "target_answer": "Ich fahre mit dem Fahrrad, Mein Koffer ist zu schwer, Ich suche den Weg auf der Karte, Die Haltestelle ist gleich hier, Das Dorf ist klein und alt, Der Zug fährt sehr früh, Das Dorf ist drüben, wir nehmen einen Umweg, Die Wohnung gegenüber ist klein, Die Kirche ist links, das Haus rechts, Die Straße geht quer durch das Dorf, Den Fluss entlang ist das Dorf",
-      "meaning": "bike, suitcase, map, bus stop, village, early train",
+      "target_answer": "Ich fahre mit dem Fahrrad, Mein Koffer ist zu schwer, Ich suche den Weg auf der Karte, Die Haltestelle ist gleich hier, Das Dorf ist klein und alt, Der Zug fährt sehr früh, Das Dorf ist drüben, wir nehmen einen Umweg, Die Wohnung gegenüber ist klein, Die Kirche ist links, das Haus rechts, Die Straße geht quer durch das Dorf, Den Fluss entlang ist das Dorf, Die Bluse ist rosa und lila",
+      "meaning": "I go by bike; My suitcase is too heavy; I am looking for the way on the map; The bus stop is right here; The village is small and old; The train leaves very early; The village is over there — we take a detour; The flat opposite is small; The church is on the left, the house on the right; The street crosses through the village; Along the river is the village; The blouse is pink and purple",
       "explanation": "Six travel frames, no new verbs: fahre carries das Fahrrad, sucht reads die Karte, and fährt is the same fahren in the Zug. Too heavy is zu schwer — zu doubling as 'too', exactly like English."
     },
     {

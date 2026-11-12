@@ -68,7 +68,7 @@ const lesson: Lesson = {
     {
       "id": "l5322_e1",
       "type": "matching_pairs",
-      "prompt": "Reading check — match each story sentence with its English meaning:",
+      "prompt": "Reading check — match each story sentence with its English meaning. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "m1",
@@ -99,10 +99,30 @@ const lesson: Lesson = {
           "id": "m6",
           "english": "Anna is tired but very glad.",
           "german": "Anna ist müde, aber sehr froh."
+        },
+        {
+          "id": "recall1",
+          "german": "der Tourist am Flughafen",
+          "english": "the tourist at the airport"
+        },
+        {
+          "id": "recall2",
+          "german": "England ist ein Land",
+          "english": "England is a country"
+        },
+        {
+          "id": "recall3",
+          "german": "Der Bäcker hilft dem Schüler",
+          "english": "The baker helps the school pupil"
+        },
+        {
+          "id": "recall4",
+          "german": "der Arbeiter",
+          "english": "the worker"
         }
       ],
-      "target_answer": "Das Wetter ist schön., Die Sonne scheint., Der Hund sitzt allein unter einem Baum., Anna folgt ihm., Der alte Mann sitzt auf einer Bank., Anna ist müde, aber sehr froh.",
-      "meaning": "the story beats: the sunny day, the lost dog, the old man, the happy ending",
+      "target_answer": "Das Wetter ist schön., Die Sonne scheint., Der Hund sitzt allein unter einem Baum., Anna folgt ihm., Der alte Mann sitzt auf einer Bank., Anna ist müde, aber sehr froh., der Tourist am Flughafen, England ist ein Land, Der Bäcker hilft dem Schüler, der Arbeiter",
+      "meaning": "The weather is beautiful.; The sun is shining.; The dog sits alone under a tree.; Anna follows him.; The old man sits on a bench.; Anna is tired but very glad.; the tourist at the airport; England is a country; The baker helps the school pupil; the worker",
       "explanation": "The weather opens the story, the dog moves it, and the old man resolves it. Six beats, one small adventure."
     },
     {

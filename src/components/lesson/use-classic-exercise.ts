@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { gradeLessonAnswer } from "@/lib/lesson-grading";
-import { matchingPairForKey } from "@/lib/matching";
-import { diagnoseAttempt } from "@/lib/shift-diagnosis";
+import { classicAnswerReadings, gradeExerciseAttempt } from "@/lib/exercise-grading";
+import { useClassicKeyboard } from "./use-classic-keyboard";
 import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
 import { soundEngine } from "@/lib/sound";
@@ -119,156 +118,6 @@ export const useClassicExercise = ({
     resetCurrentExercise();
   }, [exercise.id]);
 
-  // Keyboard shortcut listener for all exercise types:
-  // - Enter: verify current answer
-  // - Shift select: 1-4
-  // - Morpheme tiles: 1-9 to pick, Backspace to unpick
-  // - Syntax builder: 1-9 to pick, Backspace to unpick
-  // - Matching pairs: 1-N for English, then 1-N for German, Escape to deselect
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.getModifierState) {
-        setIsCapsLock(e.getModifierState("CapsLock"));
-      }
-
-      // Quick restart hotkey (esc)
-      if (settings.quickRestart === "esc" && e.key === "Escape") {
-        e.preventDefault();
-        resetCurrentExercise();
-        return;
-      }
-
-      // Don't intercept when feedback modal sheets are up (they handle their own Enter/Space)
-      if (showErrorSheet || showSuccessSheet) return;
-
-      const isInput = document.activeElement === inputRef.current;
-
-      // 1. Enter key: verify
-      if (e.key === "Enter") {
-        const active = document.activeElement;
-        // a focused option/tile/anchor owns its own Enter (native activation) —
-        // otherwise shift_select and matching_pairs are unanswerable by keyboard
-        if (
-          active instanceof HTMLElement &&
-          (active.tagName === "BUTTON" ||
-            active.tagName === "A" ||
-            active.getAttribute("role") === "button")
-        ) {
-          return;
-        }
-        e.preventDefault();
-        handleVerify();
-        return;
-      }
-
-      // If user is actively typing in the derivation text input
-      if (isInput) {
-        // Confidence mode: blocks Backspace key
-        if (settings.confidenceMode === "on" && e.key === "Backspace") {
-          e.preventDefault();
-          return;
-        }
-        return;
-      }
-
-      // 2. Multiple choice shift select (1-9)
-      if (exercise.type === "shift_select" && displayOptions.length > 0 && status === "idle") {
-        const num = parseInt(e.key, 10);
-        if (!isNaN(num) && num >= 1 && num <= displayOptions.length) {
-          e.preventDefault();
-          handleShiftOptionSelect(displayOptions[num - 1]);
-          return;
-        }
-      }
-
-      // 3. Morpheme tiles (1-9 to pick, Backspace to undo)
-      if (exercise.type === "morpheme_tiles" && sanitizedTileOptions.length > 0 && status === "idle") {
-        if (e.key === "Backspace") {
-          e.preventDefault();
-          if (selectedIndices.length > 0) {
-            unpickTilePosition(selectedIndices.length - 1);
-          }
-          return;
-        }
-        const num = parseInt(e.key, 10);
-        if (!isNaN(num) && num >= 1 && num <= sanitizedTileOptions.length) {
-          e.preventDefault();
-          const targetIdx = num - 1;
-          if (!selectedIndices.includes(targetIdx)) {
-            pickTileIndex(targetIdx);
-          }
-          return;
-        }
-      }
-
-      // 4. Satzklammer Syntax builder (1-9 to pick, Backspace to undo)
-      if (exercise.type === "syntax_builder" && sanitizedWordBank.length > 0 && status === "idle") {
-        if (e.key === "Backspace") {
-          e.preventDefault();
-          if (selectedIndices.length > 0) {
-            unpickTilePosition(selectedIndices.length - 1);
-          }
-          return;
-        }
-        const num = parseInt(e.key, 10);
-        if (!isNaN(num) && num >= 1 && num <= sanitizedWordBank.length) {
-          e.preventDefault();
-          const targetIdx = num - 1;
-          if (!selectedIndices.includes(targetIdx)) {
-            pickTileIndex(targetIdx);
-          }
-          return;
-        }
-      }
-
-      // 5. Cognate matching cards:
-      // Keys are fixed to card positions for the whole exercise, so matching
-      // pairs never renumber the cards that are left.
-      // If no English pair selected yet: 1-N selects an English card
-      // If English pair selected: 1-N selects a German card; Escape cancels
-      if (exercise.type === "matching_pairs" && exercise.matching_pairs && status === "idle") {
-        if (e.key === "Escape") {
-          e.preventDefault();
-          setSelectedEnglish(null);
-          return;
-        }
-        const num = parseInt(e.key, 10);
-        if (!isNaN(num) && num >= 1) {
-          if (!selectedEnglish) {
-            const chosen = matchingPairForKey(exercise.matching_pairs, matchedPairs, num);
-            if (chosen) {
-              e.preventDefault();
-              setSelectedEnglish(chosen.english);
-              return;
-            }
-          } else {
-            const chosen = matchingPairForKey(displayGermanPairs, matchedPairs, num);
-            if (chosen) {
-              e.preventDefault();
-              handleSelectGerman(chosen.german, chosen.id, chosen.english);
-              return;
-            }
-          }
-        }
-      }
-    };
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [
-    userInput,
-    selectedIndices,
-    matchedPairs,
-    selectedEnglish,
-    displayGermanPairs,
-    displayOptions,
-    sanitizedTileOptions,
-    sanitizedWordBank,
-    status,
-    showErrorSheet,
-    showSuccessSheet,
-    exercise,
-    settings,
-  ]);
 
   const handleInputChange = (val: string) => {
     if (val.length > userInput.length) {
@@ -306,32 +155,12 @@ export const useClassicExercise = ({
 
   const handleVerify = () => {
     inputRef.current?.blur();
-    let answerToCheck = userInput.trim();
-    // Other equally valid readings of the same tile selection (see below)
-    let alternateReadings: string[] = [];
-
-    // 1. Morpheme tiles or Syntax builder
+    if (exercise.type === "matching_pairs") return;
+    const readings = classicAnswerReadings(
+      exercise.type, exercise.target_answer, userInput, selectedIndices, sanitizedTileOptions, sanitizedWordBank,
+    );
+    let answerToCheck = readings[0];
     const expected = exercise.target_answer.trim();
-    if (exercise.type === "morpheme_tiles") {
-      const options = sanitizedTileOptions;
-      const selectedTiles = selectedIndices.map((i) => options[i] || "");
-      const cleanTiles = selectedTiles.map((t) => t.replace(/^-/, ""));
-      const joinedDirect = cleanTiles.join("").trim();
-      const joinedSpace = selectedTiles.join(" ").trim();
-      answerToCheck = expected.includes(" ") ? joinedSpace : joinedDirect;
-      if (expected.includes(" ") && cleanTiles.length > 2) {
-        // "das" + "Wass" + "er": a leading article/pronoun tile followed by word
-        // pieces that glue together into one word
-        alternateReadings = [`${cleanTiles[0]} ${cleanTiles.slice(1).join("")}`.trim()];
-      }
-    } else if (exercise.type === "syntax_builder") {
-      const options = sanitizedWordBank;
-      const selectedTiles = selectedIndices.map((i) => options[i] || "");
-      answerToCheck = selectedTiles.join(" ").trim();
-    } else if (exercise.type === "matching_pairs") {
-      // Handled interactively on match
-      return;
-    }
 
     // EMPTY INPUT GUARD: Don't fail the user if nothing has been entered!
     if (!answerToCheck) {
@@ -343,9 +172,9 @@ export const useClassicExercise = ({
     const evalOptions = {
       umlautTolerance: Boolean(settings.lazyMode ?? tolerance.umlautTolerance),
       capitalizationTolerance: Boolean(settings.capitalizationTolerance ?? tolerance.capitalizationTolerance),
-      languageId: isReverseCognate ? "en" : undefined,
+      languageId: isReverseCognate ? "en" : activeLanguageId,
     };
-    const graded = gradeLessonAnswer([answerToCheck, ...alternateReadings], [expected], evalOptions, isRetry);
+    const graded = gradeExerciseAttempt(exercise, readings, evalOptions, isRetry);
     const evaluation = graded.result;
     answerToCheck = graded.answer;
 
@@ -367,39 +196,24 @@ export const useClassicExercise = ({
       setAlmostWarningNote(evaluation.warningNote);
       setShowSuccessSheet(true);
 
-      // If the spelling was wrong (typo or missing umlaut without tolerance), queue for repeat at the end
-      if ((evaluation.reason === "typo" || evaluation.reason === "sharp-s") || (evaluation.reason === "umlaut" && !evalOptions.umlautTolerance)) {
-        onQueueRetry?.();
-      }
+      if (graded.queueRetry) onQueueRetry?.();
       return;
     }
 
     // Otherwise standard error (obviously wrong)
     setStatus("incorrect");
     void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
-    onError(
-      evaluation.reason === "umlaut"
-        ? "umlaut"
-        : evaluation.reason === "case"
-        ? "capitalization"
-        : "spelling"
-    );
+    onError(graded.errorType);
     onQueueRetry?.();
     setFailedAttemptText(answerToCheck);
-    // TM-3: authored diagnosis wins; computed diagnosis names the violated shift law
-    // (only for target-language derivation, never for English reverse_cognate answers)
-    setFailedDiagnosis(
-      exercise.diagnosis ??
-        (exercise.type === "derive"
-          ? diagnoseAttempt(expected, answerToCheck, exercise.shift_hint) ?? undefined
-          : undefined)
-    );
+    setFailedDiagnosis(graded.diagnosis);
     setShowErrorSheet(true);
   };
 
   const handleShiftOptionSelect = (option: string) => {
     void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
-    if (option === exercise.target_answer) {
+    const graded = gradeExerciseAttempt(exercise, [option], { languageId: activeLanguageId }, isRetry);
+    if (graded.result.accuracy === "exact") {
       setStatus("correct");
       setFeedbackNote("Spot On! Perfect.");
       setSheetVariant("exact");
@@ -412,7 +226,7 @@ export const useClassicExercise = ({
       onError("spelling");
       onQueueRetry?.();
       setFailedAttemptText(option);
-      setFailedDiagnosis(exercise.diagnosis);
+      setFailedDiagnosis(graded.diagnosis);
       setShowErrorSheet(true);
     }
   };
@@ -475,7 +289,7 @@ export const useClassicExercise = ({
     }
   };
 
-  return {
+  const controller: ClassicExerciseController = {
     exercise,
     onSuccess,
     onFlagGuessed,
@@ -521,5 +335,7 @@ export const useClassicExercise = ({
     handleSelectEnglish,
     handleSelectGerman
   };
+  useClassicKeyboard(controller, () => setSelectedEnglish(null));
+  return controller;
 };
 

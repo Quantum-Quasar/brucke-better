@@ -76,7 +76,7 @@ const lesson: Lesson = {
     {
       "id": "l1703_e2",
       "type": "matching_pairs",
-      "prompt": "Match each time phrase with its English meaning — the clock and the calendar:",
+      "prompt": "Match each time phrase with its English meaning — the clock and the calendar. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "ck1",
@@ -112,10 +112,25 @@ const lesson: Lesson = {
           "id": "ck7",
           "english": "in the winter",
           "german": "im Winter"
+        },
+        {
+          "id": "recall1",
+          "german": "eine Minute zählen",
+          "english": "to count a minute"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir kommen am Dienstag und am Sonntag",
+          "english": "We are coming on Tuesday and on Sunday"
+        },
+        {
+          "id": "recall3",
+          "german": "halb und halb",
+          "english": "half and half"
         }
       ],
-      "target_answer": "Es ist drei Uhr, Viertel nach zwölf, Viertel vor acht, Morgen um acht, am Wochenende, im Sommer, im Winter",
-      "meaning": "it is three o'clock, quarter past twelve, quarter to eight, tomorrow at eight, on the weekend, in the summer, in the winter",
+      "target_answer": "Es ist drei Uhr, Viertel nach zwölf, Viertel vor acht, Morgen um acht, am Wochenende, im Sommer, im Winter, eine Minute zählen, Wir kommen am Dienstag und am Sonntag, halb und halb",
+      "meaning": "It is three o'clock; quarter past twelve; quarter to eight; tomorrow at eight; on the weekend; in the summer; in the winter; to count a minute; We are coming on Tuesday and on Sunday; half and half",
       "explanation": "The clock phrases carry the shift twins; the calendar phrases borrow the clock's own little words: am = an dem, im = in dem — contractions, not new words. nach = after (moving forward), vor = before (approaching), um = at. The colloquial clock is prepositions."
     },
     {

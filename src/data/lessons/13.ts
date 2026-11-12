@@ -93,16 +93,16 @@ const lesson: Lesson = {
     {
       "id": "l13_e2",
       "type": "shift_select",
-      "prompt": "The classic trap: which German word asks WHO?",
+      "prompt": "Take the pair that belongs to a different connection family.",
       "options": [
-        "wie",
-        "wer",
-        "wo",
-        "wann"
+        "seek → suchen",
+        "week → Woche",
+        "good → gut",
+        "speak → sprechen"
       ],
-      "target_answer": "wer",
-      "meaning": "wer = who (wo = where)",
-      "explanation": "wer ↔ who and wo ↔ where — the words swapped sound-shapes, not meanings. Trust the twins, not the looks."
+      "target_answer": "good → gut",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Speak, seek and week use K → CH. Good → gut uses D → T."
     },
     {
       "id": "l13_e3",

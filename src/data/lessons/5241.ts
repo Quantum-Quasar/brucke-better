@@ -72,7 +72,7 @@ const lesson: Lesson = {
     {
       "id": "l5241_e1",
       "type": "matching_pairs",
-      "prompt": "The first row of colors — match each sentence with its reading:",
+      "prompt": "The first row of colors — match each sentence with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "cl1",
@@ -118,10 +118,20 @@ const lesson: Lesson = {
           "id": "cl9",
           "english": "The curtain is blue, the flowers on the balcony are colorful",
           "german": "Der Vorhang ist blau, die Blumen auf dem Balkon sind bunt"
+        },
+        {
+          "id": "recall1",
+          "german": "Die Kartoffel ist gelb",
+          "english": "The potato is yellow"
+        },
+        {
+          "id": "recall1b",
+          "german": "Die Gurke ist grün",
+          "english": "The cucumber is green"
         }
       ],
-      "target_answer": "Die Blume ist rot, Der Himmel ist blau, Der Wald ist grün, Die Katze ist schwarz, Der Vogel ist bunt, Null Blumen im Dezember — der Berg ist weiß, Der Schal ist bunt, Der Teppich ist grün, der Schrank ist schwarz, Der Vorhang ist blau, die Blumen auf dem Balkon sind bunt",
-      "meaning": "red flower, blue sky, green forest, black cat, colorful bird, white mountain in December",
+      "target_answer": "Die Blume ist rot, Der Himmel ist blau, Der Wald ist grün, Die Katze ist schwarz, Der Vogel ist bunt, Null Blumen im Dezember — der Berg ist weiß, Der Schal ist bunt, Der Teppich ist grün, der Schrank ist schwarz, Der Vorhang ist blau, die Blumen auf dem Balkon sind bunt, Die Kartoffel ist gelb, Die Gurke ist grün",
+      "meaning": "The flower is red; The sky is blue; The forest is green; The cat is black; The bird is colorful; Zero flowers in December — the mountain is white; The scarf is colorful; The rug is green, the wardrobe is black; The curtain is blue, the flowers on the balcony are colorful; The potato is yellow; The cucumber is green",
       "explanation": "The color stands after sein and never takes an ending: rot, blau, grün, schwarz, bunt. And the December count is null — zero flowers — because the mountain took over in weiß, the twin of white."
     },
     {

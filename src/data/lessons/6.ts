@@ -87,7 +87,7 @@ const lesson: Lesson = {
     {
       "id": "l6_e2",
       "type": "matching_pairs",
-      "prompt": "Match the English K words to their German CH cognates:",
+      "prompt": "Match the English K words to their German CH cognates. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "k1",
@@ -108,28 +108,31 @@ const lesson: Lesson = {
           "id": "k4",
           "english": "milk",
           "german": "Milch"
+        },
+        {
+          "id": "recall1",
+          "german": "das Salz",
+          "english": "the salt"
         }
       ],
-      "target_answer": "suchen, sprechen, Buch, Milch",
-      "meaning": "to seek, to speak, book, milk",
+      "target_answer": "suchen, sprechen, Buch, Milch, das Salz",
+      "meaning": "seek / beseech; speak / speech; book; milk; the salt",
       "shift_hint": "K → CH",
-      "affirmation": "Four k-words melted on sight — the throat-sound is becoming a reflex.",
       "explanation": "Medial and final English K regularly shifts to German CH ([x] after back vowels, [ç] after front vowels and consonants)."
     },
     {
       "id": "l6_e3",
       "type": "shift_select",
-      "prompt": "Why does 'Buch' use the Ach-Laut ([x]), while 'Küche' uses the Ich-Laut ([ç])?",
+      "prompt": "One of these familiar pairs works differently. Which one?",
       "options": [
-        "The sounds are completely interchangeable in German",
-        "Küche begins with a K",
-        "Ach-Laut follows back vowels (u); Ich-Laut follows front vowels (ü)",
-        "Buch is neuter and Küche is feminine"
+        "sleep → schlafen",
+        "water → Wasser",
+        "hope → hoffen",
+        "help → helfen"
       ],
-      "target_answer": "Ach-Laut follows back vowels (u); Ich-Laut follows front vowels (ü)",
-      "meaning": "Phonetic distribution of Ach-Laut [x] vs Ich-Laut [ç]",
-      "affirmation": "You split the two ch-sounds by vowel depth — that is native-level hearing.",
-      "explanation": "German CH is conditioned by tongue position: back vowels (a, o, u) trigger the velar Ach-Laut [x], while front vowels (e, i, ä, ö, ü) trigger the palatal Ich-Laut [ç]."
+      "target_answer": "water → Wasser",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Hope, help and sleep use P → F/FF. Water → Wasser uses T → SS."
     },
     {
       "id": "l6_e4",

@@ -75,6 +75,12 @@ Browser smoke suite (Playwright) — onboarding, segment progression, SRS persis
 bun run test:e2e
 ```
 
+Production product checks (build first): `bun run build && bun run test:product`.
+They cover keyboard-only Lesson 1 completion, accessible controls/error feedback
+for all exercise types, and cold mobile 4G/4× CPU budgets for homepage readiness
+and the real Lesson 1 payload. Browser tests also cover failed-process persistence
+and replay without awarding lesson or word progress.
+
 ### Production Build
 
 Pre-renders the six top-level tab routes to static HTML (`● SSG`) — 6 static routes: `/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`. Lessons and atlas details are client-rendered overlays: 188 unique ids (179 German plus 9 French/Spanish-only ids; Dutch reuses the shared lesson-id space) load from 500 per-lesson payloads, and the four atlases expose 37 atlas families. Opening, changing or closing an overlay replaces the current history entry; short shareable query URLs explicitly include the learning language (`/?lesson=1&lang=de`, `/atlas?family=th_to_d&lang=de`, `/atlas?master=1&lang=de`). Copied links and reloads restore the selected view and language. Cross-tab opens push one normal tab entry; Back traverses actual top-level tab history and Forward restores the overlay in its URL. Lesson content is not server-rendered. `bun run build` runs `parse-data`, then `export-data` (per-language payloads under `public/data/<lang>/`), then `next build`. Legacy `/trail/...`, `/atlas/<family>` and `/atlas/master` URLs redirect into the matching in-page state.
@@ -104,6 +110,8 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
    - From the unfocused trail, **Tab** focuses the next-lesson bar and **Enter** starts it. Further Tab presses work normally; existing gates remain in force.
    - The first lesson leads with usable German. Historical notes, margin notes and linguistic background are collapsed optional disclosures.
    - Custom DOM+SVG renderer (no game libraries) with `content-visibility` windowing per topic cluster.
+   - Every German core from Topic 5 includes mixed-pattern recognition using previously taught words, without naming the answer's pattern in the prompt.
+   - Taught German vocabulary has assessed retrieval in at least two distinct trail lessons. Declarations, hints, banks and duplicate surfaces do not count; `bun scripts/audit-recurrence.ts --strict` reports the encounter map by lesson and exercise type. This is a minimum practice floor, not a promise of retention.
    - 5-part card-by-card lesson wizard (Hook, Pattern, Transformation Table, Bite-Sized Practice, Summary & Retries) in the in-page lesson reader.
    - Scaffolded exercises across 13 types (`ExerciseType` in `src/lib/types.ts`): morpheme tiles, matching pairs, shift select, syntax builder, derivation typing, reverse-cognate typing, **transcribe** production drills (thought + lexicon + cue ladder), **literal gloss** direct translations, **dictation** listening drills (played audio, capped replays, a 15-minute listening skip), **family grid** prefix × base matrices, **variant English** "every honest rendering" drills, **pronoun compression**, and **spoken turn reply**.
    - Every authored lesson (cores, sprigs, and branches) ends with an ungraded, skippable **Twist** card (deliberate friction, outside the 5-exercise contract) and may whisper up to two **posture cues** per lesson; onboarding is three steps and closes with a short posture summary.
@@ -119,12 +127,14 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
 4. **Multi-Modal Review Hub (`/review`)**:
    - Algorithmic spaced repetition powered by SuperMemo SM-2.
    - Beginner actions are **Continue lesson**, **Review learned words**, and **Practise difficult words**, followed by Due Today. **More practice options** contains family/domain filters, recent lessons, compounds/traps, sentence patterns, article drills and everything.
-   - There are **10 review deck types**: due, learned, shift family, domain, weakest words, recent lessons, compounds & traps, sentence patterns, article & gender, and everything (`DECK_CAPABILITIES` in `src/lib/review-decks.ts`). These are content pools, not review styles; False Friends is part of Compounds & Traps, not a separate deck.
+   - There are **10 review deck types** for vocabulary and example-sentence entities: due, learned, shift family, domain, weakest words, recent lessons, compounds & traps, sentence patterns, article & gender, and everything (`DECK_CAPABILITIES` in `src/lib/review-decks.ts`). Failed sentence processes use a separate replay queue, not another word deck or review style.
    - The article drill covers the usual singular definite article for gendered nouns in German, Dutch, French and Spanish; a fixed-width blank marks the missing article. It does not practise cases or articles in sentence context.
    - 4 review styles are available overall: *Quick Flip*, *Multiple Choice (MCQ)*, *Tile Builder*, and *Derivation Typing*. Article & Gender uses MCQ only; other decks support all four.
    - Typing and tiles share grading: exact → Good, spelling near-miss → Hard with a correction, grammatical omission → Again. Authored `accepted_answers` support valid complete alternatives in free-production exercises.
    - Anti-spoiler gender shields: front card prompts with `[ der / die / das ? ]` instead of leaking the article before recall.
    - Desktop keyboard navigation (`1`–`4`, `Space`, `Enter`, `Backspace`, `←`/`→` back and forward between cards, `[R]` audio replay, `Esc`).
+   - **Sentence process review** schedules incorrectly answered sentence exercises, not just their words. Cards are language-scoped, durable and replayed through the existing widgets, up to 15 per session. Correct-only work creates no card; replay changes neither stars nor word mastery. [Scheduling, recovery and conservative variation rules](./SENTENCE_REVIEW.md).
+   - Corpus-backed `frequencyRank` metadata covers exact vocabulary forms across all four languages. Due date and learning difficulty retain priority; frequency only breaks ties. The word drawer explains subtitle-corpus limits and unranked forms. [Source and CC BY-SA attribution](../public/data/frequency-provenance.json).
 
 5. **3-Color Grammatical Gender System**:
    - `der` (Masculine): Azure Blue
@@ -146,9 +156,9 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
 
 The whole surface is themeable and typable, and the app never leaves the browser to do it.
 
-- **187 Monkeytype color themes** (`src/data/themes.ts`): each theme supplies `bg`, `subAlt`, `text`, `sub`, `main`, `caret` and `error` as CSS custom properties, plus an `isDark` flag that drives the `.dark`/`.light` class on `<html>`. `alduin` is the default.
+- **187 Monkeytype color themes** (`src/data/themes.ts`): the picker starts with 12 curated dark, light and high-contrast choices; **Show all** and search retain the complete collection. A saved non-curated selection stays visible. Each theme supplies CSS tokens and an `isDark` flag; `alduin` remains the default.
 - **WCAG contrast auditing is enforced, not aspirational**: `src/tests/themes.test.ts` walks all 187 themes and asserts `text` ≥ 4.5:1 and `sub` ≥ 4.2:1 against both `bg` and `subAlt`, and `main` ≥ 2.5:1. `scripts/contrast-audit.ts` is the one-off fixer that nudged failing colors' lightness while preserving hue and saturation, and regenerated `POPULAR_THEMES` from the passing set.
-- **43 selectable fonts** (`src/data/fonts.ts`): monospace, sans and display families declared as real `@font-face` rules in `src/app/fonts.css` against self-hosted `.woff2` files in `public/webfonts/`, each verified to exist and be non-empty (`src/tests/assets-and-routes.test.ts`). `Lexend Deca` is the default.
+- **43 selectable self-hosted fonts** (`src/data/fonts.ts`): six recommended choices first, then **More fonts** or global search. Saved non-curated choices remain available. Only the default faces are declared initially; other faces load when selected or previewed. `Lexend Deca` remains the default.
 - **`/settings`**, organised into six sections (behavior, input, sound, theme, visibility, danger zone) with a `/`-to-focus search box:
   - *behavior* — quick restart (`off` / `esc`), lazy mode (accepts `ae`/`oe`/`ue`/`ss` for `ä`/`ö`/`ü`/`ß` on US keyboards), capitalization tolerance for lowercase German nouns.
   - *input* — stop-on-error (`off` / `letter`), confidence mode, German character bar visibility (`always` / `on_focus` / `off`).
@@ -156,7 +166,7 @@ The whole surface is themeable and typable, and the app never leaves the browser
   - *theme* — theme and font pickers, plus an increased-contrast toggle that strengthens muted text and error colors without discarding the selected theme (`src/lib/appearance.ts`).
   - *visibility* — key tips, caps-lock warning, and the `mastered / total` counter badge in the top nav.
   - *danger zone* — JSON backup export/import, reset settings, reset learning progress.
-- **JSON backup import/export** (`src/app/settings/page.tsx`): export writes a versioned `brucke_backup_YYYY-MM-DD.json` containing settings, completed lessons, per-lesson progress and stars, word mastery, SRS cards, weekly activity, review mode, onboarding flags, theme and font. Import validates the payload and hands it to `importBackupState`, which reports success or a missing-data failure.
+- **JSON backup import/export** (`src/components/settings/`): backups include settings, per-language learning progress, word SRS and sentence-process cards. Imports validate the payload and remain compatible with older backups. The settings page composes separate behavior, input, sound, theme, visibility and danger-zone components.
 - **Mechanical-keyboard sound engine** (`src/lib/sound.ts`): selectable Monkeytype click packs (`cherrymx black abs`, `tealios v2`, `razer green`, …) plus `off`, and 4 error cues, shipped as real `.wav` files under `public/sounds/` and served with a one-year immutable `Cache-Control`. Decoded buffers are held in a 24-entry cache and failed URLs are negatively cached so a missing sample is never refetched in a loop. Every pack and cue is verified on disk by `src/tests/assets-and-routes.test.ts`.
 - **Six-tab bottom dock** (`src/components/navigation/BottomNav.tsx`): trail, atlas, panorama, review (with a due-count badge), settings, about.
 
@@ -185,7 +195,7 @@ src/
 │   │                     # SpokenTurnReply, TwistCard), retry queue, feedback sheets
 │   ├── review/           # Session controller, deck selector, answer entry, card and style dialog
 │   ├── navigation/       # Game-style bottom dock (all destinations) + slim TopNav
-│   ├── settings/         # SettingItem row primitive
+│   ├── settings/         # SettingItem and cohesive settings sections
 │   └── trail/            # TrailMap (incl. star-gate pills), LessonNodeDrawer
 ├── data/
 │   ├── compendium.json   # Generated from word_connections.md (never hand-edit)
@@ -204,6 +214,7 @@ src/
 │   ├── shift-annotator.ts, shift-diagnosis.ts   # Sound-shift aligner; wrong-answer diagnosis
 │   ├── review-decks.ts, review-modes.ts, review-session.ts   # Review decks, styles, lifecycle
 │   ├── srs.ts            # SuperMemo SM-2 interval scheduler
+│   ├── sentence-review*.ts # Failed-process scheduling and resumable replay sessions
 │   ├── store.ts, store/  # composed Zustand slices, validation and persistence
 │   ├── trail-map.ts      # Map graph, responsive layout engine, unlock/recommend/gate logic
 │   ├── word-entities-core.ts # Unified word / compound / trap / sentence entities

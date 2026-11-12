@@ -14,7 +14,7 @@ export const ThemeSelectorModal: React.FC = () => {
   const currentTheme = useAppStore((s) => s.theme);
   const setTheme = useAppStore((s) => s.setTheme);
 
-  const { query, setQuery, activeTab, setActiveTab, filteredThemes } = useThemeFilter();
+  const { query, setQuery, activeTab, setActiveTab, filteredThemes } = useThemeFilter(currentTheme);
   const searchInputRef = useRef<HTMLInputElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
 
@@ -83,6 +83,7 @@ export const ThemeSelectorModal: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab("popular")}
+              aria-pressed={activeTab === "popular"}
               className={`px-3 py-1 rounded transition cursor-pointer flex items-center gap-1.5 ${
                 activeTab === "popular"
                   ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
@@ -90,24 +91,26 @@ export const ThemeSelectorModal: React.FC = () => {
               }`}
             >
               <Sparkles className="w-3 h-3" />
-              <span>Popular ({POPULAR_THEMES.length})</span>
+              <span>Recommended ({POPULAR_THEMES.length})</span>
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab("all")}
+              aria-pressed={activeTab === "all"}
               className={`px-3 py-1 rounded transition cursor-pointer ${
                 activeTab === "all"
                   ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
                   : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
               }`}
             >
-              All ({THEME_LIST.length})
+              Show all ({THEME_LIST.length})
             </button>
 
             <button
               type="button"
               onClick={() => setActiveTab("dark")}
+              aria-pressed={activeTab === "dark"}
               className={`px-3 py-1 rounded transition cursor-pointer flex items-center gap-1.5 ${
                 activeTab === "dark"
                   ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
@@ -121,6 +124,7 @@ export const ThemeSelectorModal: React.FC = () => {
             <button
               type="button"
               onClick={() => setActiveTab("light")}
+              aria-pressed={activeTab === "light"}
               className={`px-3 py-1 rounded transition cursor-pointer flex items-center gap-1.5 ${
                 activeTab === "light"
                   ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
@@ -143,6 +147,7 @@ export const ThemeSelectorModal: React.FC = () => {
                 key={theme.id}
                 type="button"
                 onClick={() => setTheme(theme.id)}
+                aria-pressed={isSelected}
                 className={`p-3 rounded text-left transition flex items-center justify-between border cursor-pointer ${
                   isSelected
                     ? "border-[var(--main-color)] bg-[var(--sub-alt-color)] shadow-sm"
@@ -162,7 +167,7 @@ export const ThemeSelectorModal: React.FC = () => {
                     )}
                   </div>
                   <span className="text-[10px] font-mono text-[var(--sub-color)]">
-                    {theme.isDark ? "dark" : "light"}
+                    {theme.id === "dark" ? "high contrast · dark" : theme.isDark ? "dark" : "light"}
                   </span>
                 </div>
 

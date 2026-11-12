@@ -62,7 +62,7 @@ const lesson: Lesson = {
     {
       "id": "l2404_e1",
       "type": "matching_pairs",
-      "prompt": "Bare-noun phrases (no article!) — match each with its reading:",
+      "prompt": "Bare-noun phrases (no article!) — match each with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "sg1",
@@ -83,10 +83,20 @@ const lesson: Lesson = {
           "id": "sg4",
           "english": "old bread (no article)",
           "german": "altes Brot"
+        },
+        {
+          "id": "recall1",
+          "german": "Die Straße ist lang",
+          "english": "The street is long"
+        },
+        {
+          "id": "recall1b",
+          "german": "Das Brot ist lecker",
+          "english": "The bread is tasty"
         }
       ],
-      "target_answer": "kaltes Wasser, heißer Tee, guter Wein, altes Brot",
-      "meaning": "cold water, hot tea, good wine, old bread",
+      "target_answer": "kaltes Wasser, heißer Tee, guter Wein, altes Brot, Die Straße ist lang, Das Brot ist lecker",
+      "meaning": "cold water (no article); hot tea (no article); good wine (no article); old bread (no article); The street is long; The bread is tasty",
       "explanation": "No article → the adjective goes strong: -es after neuter nouns, -er after masculine, mirroring der/das themselves. But predicates rest bare: der Zug ist schnell, der Kuchen ist lecker und schwer, alles ist neu, der Kühlschrank ist voll, die Straße ist nass — no endings when nothing follows the adjective."
     },
     {

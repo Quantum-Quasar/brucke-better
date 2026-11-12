@@ -96,7 +96,7 @@ const lesson: Lesson = {
     {
       "id": "l1502_e3",
       "type": "matching_pairs",
-      "prompt": "Three modes of one verb — match:",
+      "prompt": "Three modes of one verb — match. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "fp1",
@@ -117,10 +117,50 @@ const lesson: Lesson = {
           "id": "fp4",
           "english": "dictionary form",
           "german": "einkaufen"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können zumachen",
+          "english": "We can close"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können anmachen",
+          "english": "We can turn on"
+        },
+        {
+          "id": "recall3",
+          "german": "Wir können abmachen",
+          "english": "We can arrange"
+        },
+        {
+          "id": "recall4",
+          "german": "Wir können mitnehmen",
+          "english": "We can take along"
+        },
+        {
+          "id": "recall5",
+          "german": "Wir können aussuchen",
+          "english": "We can choose"
+        },
+        {
+          "id": "recall6",
+          "german": "Das Haus kann gut aussehen",
+          "english": "The house can look good"
+        },
+        {
+          "id": "recall7",
+          "german": "das ist traurig",
+          "english": "that is sad"
+        },
+        {
+          "id": "spaced1",
+          "german": "Wir können morgen aufstehen",
+          "english": "We can get up tomorrow"
         }
       ],
-      "target_answer": "Ich kaufe morgen ein, Ich will morgen einkaufen, Ich habe eingekauft, einkaufen",
-      "meaning": "the same verb (to shop) in four architectures",
+      "target_answer": "Ich kaufe morgen ein, Ich will morgen einkaufen, Ich habe eingekauft, einkaufen, Wir können zumachen, Wir können anmachen, Wir können abmachen, Wir können mitnehmen, Wir können aussuchen, Das Haus kann gut aussehen, das ist traurig, Wir können morgen aufstehen",
+      "meaning": "flight mode; grounded mode (modal); Perfekt mode (prefix + ge); dictionary form; We can close; We can turn on; We can arrange; We can take along; We can choose; The house can look good; that is sad; We can get up tomorrow",
       "explanation": "Flight (prefix last), grounding (whole in the bracket), Perfekt (prefix + ge + stem + t) — read the mode first. einkaufen = ein + kaufen: shop 'in', buy in."
     },
     {

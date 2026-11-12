@@ -71,7 +71,7 @@ const lesson: Lesson = {
     {
       "id": "l902_e2",
       "type": "matching_pairs",
-      "prompt": "Run the circuit — match each du-form with its er-twin:",
+      "prompt": "Run the circuit — match each du-form with its er-twin. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "tc1",
@@ -92,10 +92,35 @@ const lesson: Lesson = {
           "id": "tc4",
           "english": "du denkst",
           "german": "er denkt"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können spazieren",
+          "english": "We can stroll"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können das setzen",
+          "english": "We can place that"
+        },
+        {
+          "id": "recall3",
+          "german": "Wir können sitzen",
+          "english": "We can sit"
+        },
+        {
+          "id": "recall4",
+          "german": "Wir können das halten",
+          "english": "We can hold that"
+        },
+        {
+          "id": "spaced1",
+          "german": "Wir können küssen",
+          "english": "We can kiss"
         }
       ],
-      "target_answer": "er lernt, er kommt, er macht, er denkt",
-      "meaning": "he learns, he comes, he makes, he thinks",
+      "target_answer": "er lernt, er kommt, er macht, er denkt, Wir können spazieren, Wir können das setzen, Wir können sitzen, Wir können das halten, Wir können küssen",
+      "meaning": "du lernst; du kommst; du machst; du denkst; We can stroll; We can place that; We can sit; We can hold that; We can kiss",
       "explanation": "du -st and er -t are the same consonant in two old costumes: thou learnest, he learneth."
     },
     {

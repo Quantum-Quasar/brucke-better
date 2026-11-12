@@ -62,7 +62,7 @@ const lesson: Lesson = {
     {
       "id": "l25_e1",
       "type": "matching_pairs",
-      "prompt": "Match the quiet family — swap v for b:",
+      "prompt": "Match the quiet family — swap v for b. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "vb1",
@@ -83,25 +83,50 @@ const lesson: Lesson = {
           "id": "vb4",
           "english": "seven",
           "german": "sieben"
+        },
+        {
+          "id": "recall1",
+          "german": "Das Buch ist lang",
+          "english": "The book is long"
+        },
+        {
+          "id": "recall1b",
+          "german": "Das Glas ist voll",
+          "english": "The glass is full"
+        },
+        {
+          "id": "recall2",
+          "german": "der Wein",
+          "english": "the wine"
+        },
+        {
+          "id": "recall3",
+          "german": "das ist gelb",
+          "english": "that is yellow"
+        },
+        {
+          "id": "recall4",
+          "german": "Wir können glauben",
+          "english": "We can believe"
         }
       ],
-      "target_answer": "geben, leben, lieben, sieben",
-      "meaning": "to give, to live, to love, seven",
+      "target_answer": "geben, leben, lieben, sieben, Das Buch ist lang, Das Glas ist voll, der Wein, das ist gelb, Wir können glauben",
+      "meaning": "give; live; love; seven; The book is long; The glass is full; the wine; that is yellow; We can believe",
       "explanation": "The most intimate verbs in both languages are one word each — with the consonant shut quietly into b."
     },
     {
       "id": "l25_e2",
       "type": "shift_select",
-      "prompt": "Which shift connects English 'over' and German 'über'?",
+      "prompt": "Before the new family, which familiar pair uses a different clue?",
       "options": [
-        "They are unrelated",
-        "K → CH",
-        "V/F → B (with vowel fronting)",
-        "T → Z"
+        "thumb → Daumen",
+        "brother → Bruder",
+        "help → helfen",
+        "thank → danken"
       ],
-      "target_answer": "V/F → B (with vowel fronting)",
-      "meaning": "over ↔ über — the quiet shift with an umlaut",
-      "explanation": "The v closed to b and the o fronted to ü — a quiet shift wearing a visible vowel change."
+      "target_answer": "help → helfen",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Thank, thumb and brother use TH → D. Help → helfen uses P → F."
     },
     {
       "id": "l25_e3",

@@ -56,6 +56,7 @@ export interface LessonSession {
   primaryShift: ShiftFamily | null | undefined;
   familyCount: number;
   handleExerciseError: (exercise: ExerciseItem) => void;
+  queueExerciseRetry: (exercise: ExerciseItem) => void;
   handleRetryError: (exercise: ExerciseItem) => void;
   handleTwistDone: (meetAgain: boolean) => void;
   handleResurfaceTwist: () => void;

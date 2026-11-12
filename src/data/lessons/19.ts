@@ -64,7 +64,7 @@ const lesson: Lesson = {
     {
       "id": "l19_e1",
       "type": "matching_pairs",
-      "prompt": "Match each English ablaut melody with its German twin:",
+      "prompt": "Match each English ablaut melody with its German twin. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "ab1",
@@ -95,25 +95,30 @@ const lesson: Lesson = {
           "id": "ab6",
           "english": "freeze / froze / frozen",
           "german": "frieren / fror / gefroren"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können fliegen",
+          "english": "We can fly"
         }
       ],
-      "target_answer": "singen / sang / gesungen, trinken / trank / getrunken, finden / fand, geben / gab / gegeben, blasen / blies / geblasen, frieren / fror / gefroren",
-      "meaning": "the sing, drink, find, give, blow, and freeze melodies",
+      "target_answer": "singen / sang / gesungen, trinken / trank / getrunken, finden / fand, geben / gab / gegeben, blasen / blies / geblasen, frieren / fror / gefroren, Wir können fliegen",
+      "meaning": "sing / sang / sung; drink / drank / drunk; find / found; give / gave / given; blow / blew / blown; freeze / froze / frozen; We can fly",
       "explanation": "The same three-note melody in both languages — ablaut is shared inheritance, not coincidence."
     },
     {
       "id": "l19_e2",
       "type": "shift_select",
-      "prompt": "What changes when a strong verb goes into the past?",
+      "prompt": "Separate the one different connection from this small review set.",
       "options": [
-        "A -te ending is added, like weak verbs",
-        "The whole stem is replaced with a new word",
-        "The root vowel — the ending stays out of it",
-        "The final consonant shifts"
+        "brother → Bruder",
+        "table → Tisch",
+        "deep → tief",
+        "drink → trinken"
       ],
-      "target_answer": "The root vowel — the ending stays out of it",
-      "meaning": "Strong past = vowel change (ablaut)",
-      "explanation": "singen → sang, trinken → trank: the vowel sings the tune. Endings belong to the weak (regular) system only. tragen and fliegen hum along: trug (wore), flog (flew) — the vowel IS the past tense."
+      "target_answer": "brother → Bruder",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Table, deep and drink share D → T. Brother → Bruder uses TH → D."
     },
     {
       "id": "l19_e3",

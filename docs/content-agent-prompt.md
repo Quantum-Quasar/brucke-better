@@ -69,10 +69,12 @@ More authored side lessons in a stretch only make its gate easier, so adding con
 
 1. **Read the shell** in `curriculum.ts`: the sprig/branch `plan` line is the brief; the cluster `blurb` is the topic's promise. (A core's `plan` is a placeholder — the lesson itself is its brief.)
 2. **Select vocabulary:** 5–8 useful, high-frequency table words that the plan calls for. Grammar lessons need fewer (3–6) but rich example sentences. Do not force a historical connection.
+   Use the corpus-backed `frequencyRank`/author suggestion report as one input, not a claim of universal usefulness. Missing subtitle forms are unranked, not necessarily rare.
 3. **Keep the explanation simple:** use a helpful connection when it is straightforward; cut shaky connections or replace them with plain German teaching. Do not run an etymology research or verification pass.
 4. **Grow `word_connections.md`** for each new word (§2; compounds → §3; false friends → §4; insights → §5). Bump the pinned counts in `compendium.test.ts` if you touched §3/§4/§5.
 5. **`bun run parse-data`** and confirm the new words compile.
 6. **Author the lesson** in `src/data/lessons/<id>.ts` per the schema and voice guide; add its import/ordered entry to `lessons.ts` and its shell to `curriculum.ts` if new.
+   Keep assessed retrieval of every taught German word in at least two distinct trail lessons. Add natural recall contexts rather than unrelated word bundles; declarations, banks and duplicate surfaces do not count. Core lessons from Topic 5 also need a mixed-pattern recognition item using prior-known words without naming the answer's rule.
 7. **Validate** (see Definition of Done).
 8. **Every 5 lessons:** stop and write a batch summary.
 
@@ -141,6 +143,7 @@ After every lesson:
 ```bash
 bun run parse-data && bun run test && bun run lint && bun run typecheck
 bun scripts/audit-word-refs.ts && bun scripts/audit-vocab-balance.ts --strict
+bun scripts/audit-recurrence.ts --strict
 ```
 
 After every batch (and before reporting): add `bun scripts/audit-teasers.ts`, `bun scripts/audit-wording.ts`, `bun run trail`, and `bun run build`.

@@ -472,7 +472,12 @@ function surfaces(lesson: (typeof LESSONS)[number]): Array<{ where: string; text
     const w = `l${lesson.id}/${ex.id}`;
     if (ex.type === "morpheme_tiles") out.push({ where: w, text: [...(ex.tile_options ?? []), ex.target_answer].join(" ") });
     else if (ex.type === "matching_pairs") out.push({ where: w, text: (ex.matching_pairs ?? []).map((p) => p.german).join(" ") });
-    else if (ex.type === "shift_select") out.push({ where: w, text: [...(ex.options ?? []), ex.target_answer].join(" ") });
+    else if (ex.type === "shift_select") {
+      const choices = [...(ex.options ?? []), ex.target_answer];
+      // Bilingual comparison choices put the assessed German after the arrow.
+      const pairs = choices.every((choice) => choice.split(" → ").length === 2);
+      out.push({ where: w, text: choices.map((choice) => pairs ? choice.split(" → ")[1] : choice).join(" ") });
+    }
     else if (ex.type === "derive" || ex.type === "reverse_cognate") out.push({ where: w, text: ex.target_answer });
     else if (ex.type === "syntax_builder") out.push({ where: w, text: [...(ex.word_bank ?? []), ex.target_answer].join(" ") });
     else if (ex.type === "transcribe") out.push({ where: w, text: [ex.target_answer, ...(ex.accepted_answers ?? []), ...(ex.word_bank ?? [])].join(" ") });

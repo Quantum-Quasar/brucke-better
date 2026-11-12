@@ -61,7 +61,7 @@ const lesson: Lesson = {
     {
       "id": "l5182_e1",
       "type": "matching_pairs",
-      "prompt": "The travel-and-leisure shelf in its frames — match each sentence with its reading:",
+      "prompt": "The travel-and-leisure shelf in its frames — match each sentence with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "tv1",
@@ -87,10 +87,15 @@ const lesson: Lesson = {
           "id": "tv5",
           "english": "My hobby is swimming",
           "german": "Mein Hobby ist Schwimmen"
+        },
+        {
+          "id": "recall1",
+          "german": "das Kino",
+          "english": "the cinema"
         }
       ],
-      "target_answer": "Der Bus kommt um sechs Uhr, Wir nehmen ein Taxi zum Hotel, Wir gehen heute ins Theater, Das Hotel ist sehr teuer, Mein Hobby ist Schwimmen",
-      "meaning": "bus, taxi, hotel, theater, hobby",
+      "target_answer": "Der Bus kommt um sechs Uhr, Wir nehmen ein Taxi zum Hotel, Wir gehen heute ins Theater, Das Hotel ist sehr teuer, Mein Hobby ist Schwimmen, das Kino",
+      "meaning": "The bus comes at six o'clock; We take a taxi to the hotel; We are going to the theater today; The hotel is very expensive; My hobby is swimming; the cinema",
       "explanation": "nehmen takes the taxi, mit + dem takes the bus, ins Theater is the destination frame, and das Hobby dresses a verb as a noun. Five loans, one grammar."
     },
     {

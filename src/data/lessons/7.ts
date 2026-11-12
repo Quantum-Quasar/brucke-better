@@ -84,7 +84,7 @@ const lesson: Lesson = {
     {
       "id": "l7_e2",
       "type": "matching_pairs",
-      "prompt": "Match each English D word with its hardened German T twin:",
+      "prompt": "Match each English D word with its hardened German T twin. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "dt1",
@@ -105,28 +105,51 @@ const lesson: Lesson = {
           "id": "dt4",
           "english": "dream",
           "german": "Traum"
+        },
+        {
+          "id": "recall1",
+          "german": "der Rauch",
+          "english": "the smoke"
+        },
+        {
+          "id": "spaced1",
+          "german": "die Milch",
+          "english": "the milk"
+        },
+        {
+          "id": "spaced1b",
+          "german": "der Knochen",
+          "english": "the bone"
+        },
+        {
+          "id": "spaced2",
+          "german": "Wir können kauen",
+          "english": "We can chew"
+        },
+        {
+          "id": "spaced3",
+          "german": "recht haben",
+          "english": "to be right"
         }
       ],
-      "target_answer": "Tag, Tür, Tochter, Traum",
-      "meaning": "day, door, daughter, dream",
+      "target_answer": "Tag, Tür, Tochter, Traum, der Rauch, die Milch, der Knochen, Wir können kauen, recht haben",
+      "meaning": "day; door; daughter; dream; the smoke; the milk; the bone; We can chew; to be right",
       "shift_hint": "D → T",
-      "affirmation": "Four d-words hardened on sight — Tag, Tür, Tochter, Traum: the domino, live.",
       "explanation": "Where English preserved Germanic D, High German hardened it into T."
     },
     {
       "id": "l7_e3",
       "type": "shift_select",
-      "prompt": "Which two sound shifts connect English 'deep' to German 'tief'?",
+      "prompt": "Find the odd connection in this four-pair review.",
       "options": [
-        "D → T and P → F",
-        "T → S and V → B",
-        "P → PF and Y → G",
-        "TH → D and K → CH"
+        "book → Buch",
+        "water → Wasser",
+        "better → besser",
+        "eat → essen"
       ],
-      "target_answer": "D → T and P → F",
-      "meaning": "Double shift: deep ↔ tief",
-      "affirmation": "You ran two shifts in one word — d to t, then p to f: deep became tief.",
-      "explanation": "Initial D hardened to T (deep → teep), and post-vocalic P shifted to F (teep → tief)."
+      "target_answer": "book → Buch",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Water, better and eat use T → SS. Book → Buch uses K → CH."
     },
     {
       "id": "l7_e4",

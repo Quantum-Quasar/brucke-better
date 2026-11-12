@@ -102,7 +102,7 @@ const lesson: Lesson = {
     {
       "id": "l2102_e3",
       "type": "matching_pairs",
-      "prompt": "Match the built compound with its English meaning:",
+      "prompt": "Match the built compound with its English meaning. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "cw1",
@@ -133,10 +133,40 @@ const lesson: Lesson = {
           "id": "cw6",
           "english": "rain-bow",
           "german": "der Regenbogen"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können schmecken",
+          "english": "We can taste"
+        },
+        {
+          "id": "recall2",
+          "german": "das Heimweh",
+          "english": "homesickness"
+        },
+        {
+          "id": "recall3",
+          "german": "der Zahn",
+          "english": "the tooth"
+        },
+        {
+          "id": "recall4",
+          "german": "Wir können feiern",
+          "english": "We can celebrate"
+        },
+        {
+          "id": "spaced1",
+          "german": "mein Zahnarzt in der Hauptstadt",
+          "english": "my dentist in the capital city"
+        },
+        {
+          "id": "spaced2",
+          "german": "Ich sehe einen Regenbogen",
+          "english": "I see a rainbow"
         }
       ],
-      "target_answer": "der Donnerstag, der Zahnarzt, der Apfelkuchen, der Kindergarten, der Fußball, der Regenbogen",
-      "meaning": "Thursday, dentist, apple cake, kindergarten, football, rainbow",
+      "target_answer": "der Donnerstag, der Zahnarzt, der Apfelkuchen, der Kindergarten, der Fußball, der Regenbogen, Wir können schmecken, das Heimweh, der Zahn, Wir können feiern, mein Zahnarzt in der Hauptstadt, Ich sehe einen Regenbogen",
+      "meaning": "thunder-day; tooth-doctor; apple-cake; children-garden; foot-ball (the game); rain-bow; We can taste; homesickness; the tooth; We can celebrate; my dentist in the capital city; I see a rainbow",
       "explanation": "All six end in masculine heads — Tag, Arzt, Kuchen, Garten, Ball, Bogen — so all six wear der."
     },
     {

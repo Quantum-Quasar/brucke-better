@@ -56,7 +56,7 @@ const lesson: Lesson = {
     {
       "id": "l16_e1",
       "type": "matching_pairs",
-      "prompt": "Match the ver- verbs with their for-/English twins:",
+      "prompt": "Match the ver- verbs with their for-/English twins. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "iv1",
@@ -77,25 +77,55 @@ const lesson: Lesson = {
           "id": "iv4",
           "english": "to sell",
           "german": "verkaufen"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir müssen aufwachen",
+          "english": "We must wake up"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können zurückkommen",
+          "english": "We can come back"
+        },
+        {
+          "id": "recall3",
+          "german": "Wir können anrufen",
+          "english": "We can call"
+        },
+        {
+          "id": "recall4",
+          "german": "Wir müssen einkaufen",
+          "english": "We must shop"
+        },
+        {
+          "id": "recall5",
+          "german": "Wir können abfahren",
+          "english": "We can depart"
+        },
+        {
+          "id": "recall6",
+          "german": "Wir können bekommen",
+          "english": "We can receive"
         }
       ],
-      "target_answer": "vergessen, verlieren, verstehen, verkaufen",
-      "meaning": "to forget, to lose, to understand, to sell",
+      "target_answer": "vergessen, verlieren, verstehen, verkaufen, Wir müssen aufwachen, Wir können zurückkommen, Wir können anrufen, Wir müssen einkaufen, Wir können abfahren, Wir können bekommen",
+      "meaning": "to forget; to lose; to understand; to sell; We must wake up; We can come back; We can call; We must shop; We can depart; We can receive",
       "explanation": "ver- is English for-: for-get, for-lorn (lost), for-bidden — and verstehen stands under it all, like understand."
     },
     {
       "id": "l16_e2",
       "type": "shift_select",
-      "prompt": "Which participle is correct?",
+      "prompt": "Find the pair that needs another connection, not the shared one.",
       "options": [
-        "verstanden",
-        "geverstanden",
-        "vergestanden",
-        "stand ver"
+        "pepper → Pfeffer",
+        "path → Pfad",
+        "pound → Pfund",
+        "better → besser"
       ],
-      "target_answer": "verstanden",
-      "meaning": "understood (no ge-)",
-      "explanation": "Inseparable prefixes block ge- — same law as -ieren verbs. verstanden, besucht, erklärt."
+      "target_answer": "better → besser",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Pepper, path and pound use P → PF. Better → besser uses T → SS."
     },
     {
       "id": "l16_e3",

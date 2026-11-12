@@ -56,7 +56,7 @@ const lesson: Lesson = {
     {
       "id": "l1803_e1",
       "type": "matching_pairs",
-      "prompt": "Match each weekend sentence with its English meaning:",
+      "prompt": "Match each weekend sentence with its English meaning. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "sd1",
@@ -77,10 +77,30 @@ const lesson: Lesson = {
           "id": "sd4",
           "english": "We came home (motion)",
           "german": "Wir sind nach Hause gekommen"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können Brot kaufen",
+          "english": "We can buy bread"
+        },
+        {
+          "id": "recall1b",
+          "german": "Wir können morgen fliegen",
+          "english": "We can fly tomorrow"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können tragen",
+          "english": "We can carry"
+        },
+        {
+          "id": "spaced1",
+          "german": "dreißig Minuten am Wochenende",
+          "english": "thirty minutes at the weekend"
         }
       ],
-      "target_answer": "Gestern habe ich Kaffee getrunken, Wir sind gewandert, Dann haben wir Brot gegessen, Wir sind nach Hause gekommen",
-      "meaning": "yesterday I drank coffee, we hiked, then we ate bread, we came home",
+      "target_answer": "Gestern habe ich Kaffee getrunken, Wir sind gewandert, Dann haben wir Brot gegessen, Wir sind nach Hause gekommen, Wir können Brot kaufen, Wir können morgen fliegen, Wir können tragen, dreißig Minuten am Wochenende",
+      "meaning": "Yesterday I drank coffee; We hiked; Then we ate bread; We came home (motion); We can buy bread; We can fly tomorrow; We can carry; thirty minutes at the weekend",
       "explanation": "haben for doing, sein for moving — the weekend machine never needs another part."
     },
     {

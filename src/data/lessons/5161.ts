@@ -67,7 +67,7 @@ const lesson: Lesson = {
     {
       "id": "l5161_e1",
       "type": "matching_pairs",
-      "prompt": "The pointing words in place — match each sentence with its reading:",
+      "prompt": "The pointing words in place — match each sentence with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "hd1",
@@ -98,10 +98,15 @@ const lesson: Lesson = {
           "id": "hd6",
           "english": "I am coming right away",
           "german": "Ich komme sofort"
+        },
+        {
+          "id": "recall1",
+          "german": "Es muss dauern",
+          "english": "It must take time"
         }
       ],
-      "target_answer": "Ich wohne hier, Die Brücke ist drüben, Gegenüber ist die Kirche, Das Haus gegenüber hat die Nummer eins, Wir nehmen einen Umweg, Ich komme sofort",
-      "meaning": "here, over there, opposite, detour, right away",
+      "target_answer": "Ich wohne hier, Die Brücke ist drüben, Gegenüber ist die Kirche, Das Haus gegenüber hat die Nummer eins, Wir nehmen einen Umweg, Ich komme sofort, Es muss dauern",
+      "meaning": "I live here; The bridge is over there; Opposite is the church; The house opposite has number one; We take a detour; I am coming right away; It must take time",
       "explanation": "Notice the two faces of gegenüber: alone in position 1 (Gegenüber ist die Kirche) or trailing its noun (das Haus gegenüber). One word, two seats — and der Umweg is literally a 'way-around'."
     },
     {

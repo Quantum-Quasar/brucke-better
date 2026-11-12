@@ -59,7 +59,7 @@ const lesson: Lesson = {
     {
       "id": "l5121_e1",
       "type": "matching_pairs",
-      "prompt": "The everyday count — match each sentence with its reading:",
+      "prompt": "The everyday count — match each sentence with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "zz1",
@@ -90,10 +90,15 @@ const lesson: Lesson = {
           "id": "zz6",
           "english": "I wait ten minutes",
           "german": "Ich warte zehn Minuten"
+        },
+        {
+          "id": "recall1",
+          "german": "ob wir kommen",
+          "english": "whether we are coming"
         }
       ],
-      "target_answer": "Ich zähle bis zehn, Es ist fünf Uhr, Es ist zwölf Uhr, Ich habe nur eins davon, Ich habe vier Bücher, Ich warte zehn Minuten",
-      "meaning": "counting, telling the time, counting things, waiting",
+      "target_answer": "Ich zähle bis zehn, Es ist fünf Uhr, Es ist zwölf Uhr, Ich habe nur eins davon, Ich habe vier Bücher, Ich warte zehn Minuten, ob wir kommen",
+      "meaning": "I count to ten; It is five o'clock; It is twelve o'clock; I have only one of those; I have four books; I wait ten minutes; whether we are coming",
       "explanation": "Five numbers in six frames. The bare plural after the numeral (vier Bücher, no article) is the German reflex of an older English 'four books'; the accusative Minute takes no preposition at all."
     },
     {

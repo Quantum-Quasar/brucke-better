@@ -54,7 +54,7 @@ const lesson: Lesson = {
     {
       "id": "l2401_e1",
       "type": "matching_pairs",
-      "prompt": "The twin pairs — match the irregulars:",
+      "prompt": "The twin pairs — match the irregulars. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "ts1",
@@ -75,10 +75,25 @@ const lesson: Lesson = {
           "id": "ts4",
           "english": "best",
           "german": "am besten"
+        },
+        {
+          "id": "recall1",
+          "german": "Das Haus ist hoch",
+          "english": "The house is tall"
+        },
+        {
+          "id": "recall1b",
+          "german": "Ich bin langsam",
+          "english": "I am slow"
+        },
+        {
+          "id": "recall2",
+          "german": "das Rad",
+          "english": "the wheel"
         }
       ],
-      "target_answer": "besser, mehr, höher, am besten",
-      "meaning": "better, more, higher, best",
+      "target_answer": "besser, mehr, höher, am besten, Das Haus ist hoch, Ich bin langsam, das Rad",
+      "meaning": "better; more; higher; best; The house is tall; I am slow; the wheel",
       "explanation": "Two borrowed comparatives and one umlaut native — all shared across the sea."
     },
     {

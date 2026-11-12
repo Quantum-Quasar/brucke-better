@@ -11,6 +11,7 @@
 
 import { LESSONS } from "../data/lessons";
 import { compendium } from "../data/compendium";
+import { GERMAN_FUNCTION_WORDS, germanTokens } from "./word-token-resolver";
 
 const compendiumIds = new Set(Object.keys(compendium.words));
 const compendiumTargets = new Set(Object.values(compendium.words).map((w) => w.target_word.toLowerCase()));
@@ -18,23 +19,7 @@ const compendiumTargets = new Set(Object.values(compendium.words).map((w) => w.t
 // Closed-class function words + formula words the trail uses as glue (articles,
 // pronouns, prepositions, contractions, greetings). Every entry is either a
 // vocab_hint somewhere on the trail or a function word no lesson "teaches".
-const FUNCTION_WORDS = new Set(
-  [
-    "ich", "du", "er", "sie", "es", "wir", "ihr",
-    "mich", "dich", "ihn", "dir", "mir", "ihm", "ihnen",
-    "der", "die", "das", "den", "dem", "ein", "eine", "einen", "einem", "einer",
-    "kein", "keine", "keinen", "mein", "meine", "meinen", "dein", "deine",
-    "ist", "bin", "bist", "sind", "war", "waren", "hat", "habe", "haben", "hatte",
-    "gibt", "und", "oder", "aber", "weil", "dass", "wenn", "als", "wie",
-    "nicht", "ja", "nein", "bitte", "danke", "sehr", "gut", "hier",
-    "in", "an", "auf", "aus", "bei", "mit", "nach", "von", "zu", "zum", "zur", "vor",
-    "im", "am", "ins", "vom", "beim",
-    "durch", "über", "unter", "ohne", "für",
-    "morgen", "heute", "gestern", "früh", "drei", "zwei", "zwölf", "eins",
-    "was", "wo", "wer", "wann", "warum", "wohin",
-    "Guten", "Gute", "Danke",
-  ].map((w) => w.toLowerCase())
-);
+const FUNCTION_WORDS = new Set(GERMAN_FUNCTION_WORDS);
 
 // vocab hints anywhere on the trail count as introduced words
 const hintedWords = new Set<string>();
@@ -99,9 +84,6 @@ function resolves(token: string): boolean {
   return false;
 }
 
-function germanTokens(s: string): string[] {
-  return s.split(/[\s—]+/).map((t) => t.replace(/[.,!?;:]+$/, "")).filter(Boolean);
-}
 
 export interface WordRefMiss {
   lesson: number;

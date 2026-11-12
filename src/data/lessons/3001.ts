@@ -64,7 +64,7 @@ const lesson: Lesson = {
     {
       "id": "l3001_e1",
       "type": "matching_pairs",
-      "prompt": "Story order — match each beat with its line:",
+      "prompt": "Story order — match each beat with its line. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "br1",
@@ -85,10 +85,35 @@ const lesson: Lesson = {
           "id": "br4",
           "english": "They read the book in the evening",
           "german": "Am Abend haben sie das Buch gelesen"
+        },
+        {
+          "id": "recall1",
+          "german": "die Gabe",
+          "english": "the gift"
+        },
+        {
+          "id": "recall2",
+          "german": "der Bauch",
+          "english": "the belly"
+        },
+        {
+          "id": "recall3",
+          "german": "das Fieber",
+          "english": "the fever"
+        },
+        {
+          "id": "recall4",
+          "german": "Wir müssen tun",
+          "english": "We must do"
+        },
+        {
+          "id": "spaced1",
+          "german": "das ist langweilig",
+          "english": "that is boring"
         }
       ],
-      "target_answer": "Sie sind mit dem Zug gefahren, Sie haben Brot und Wasser gekauft, Der Mann hat ein Buch über Berlin gefunden, Am Abend haben sie das Buch gelesen",
-      "meaning": "the four story beats",
+      "target_answer": "Sie sind mit dem Zug gefahren, Sie haben Brot und Wasser gekauft, Der Mann hat ein Buch über Berlin gefunden, Am Abend haben sie das Buch gelesen, die Gabe, der Bauch, das Fieber, Wir müssen tun, das ist langweilig",
+      "meaning": "They traveled by train; They bought bread and water; The man found a book about Berlin; They read the book in the evening; the gift; the belly; the fever; We must do; that is boring",
       "explanation": "Motion in sein-perfect, purchases in haben-perfect — the auxiliary logic running a real narrative."
     },
     {

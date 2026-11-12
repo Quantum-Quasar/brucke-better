@@ -74,7 +74,7 @@ const lesson: Lesson = {
     {
       "id": "l802_e2",
       "type": "matching_pairs",
-      "prompt": "Match each -ieren verb with its ge--free participle — the club's newest members included:",
+      "prompt": "Match each -ieren verb with its ge--free participle — the club's newest members included. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "ng1",
@@ -110,10 +110,35 @@ const lesson: Lesson = {
           "id": "ng7",
           "english": "gone for a walk",
           "german": "spaziert"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können reservieren",
+          "english": "We can reserve"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können existieren",
+          "english": "We can exist"
+        },
+        {
+          "id": "recall3",
+          "german": "Wir müssen kopieren",
+          "english": "We must copy"
+        },
+        {
+          "id": "recall4",
+          "german": "Wir können produzieren",
+          "english": "We can produce"
+        },
+        {
+          "id": "spaced1",
+          "german": "Wir können organisieren",
+          "english": "We can organize"
         }
       ],
-      "target_answer": "repariert, organisiert, kopiert, funktioniert, anprobiert, fotografiert, spaziert",
-      "meaning": "repaired, organized, copied, worked, tried on, photographed, gone for a walk",
+      "target_answer": "repariert, organisiert, kopiert, funktioniert, anprobiert, fotografiert, spaziert, Wir können reservieren, Wir können existieren, Wir müssen kopieren, Wir können produzieren, Wir können organisieren",
+      "meaning": "repaired; organized; copied; functioned / worked; tried on; photographed; gone for a walk; We can reserve; We can exist; We must copy; We can produce; We can organize",
       "explanation": "Drop -en from the infinitive, add -t — no ge- anywhere in the club, even when a separable prefix rides along: anprobiert keeps its an up front."
     },
     {

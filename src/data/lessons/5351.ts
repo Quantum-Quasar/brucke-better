@@ -79,7 +79,7 @@ const lesson: Lesson = {
     {
       "id": "l5351_e1",
       "type": "matching_pairs",
-      "prompt": "Reading check — match each story sentence with its English meaning:",
+      "prompt": "Reading check — match each story sentence with its English meaning. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "m1",
@@ -110,10 +110,25 @@ const lesson: Lesson = {
           "id": "m6",
           "english": "They search all evening but do not find the treasure.",
           "german": "Sie suchen den ganzen Abend, aber sie finden den Schatz nicht."
+        },
+        {
+          "id": "recall1",
+          "german": "die Tür ist offen",
+          "english": "the door is open"
+        },
+        {
+          "id": "recall2",
+          "german": "ein Junge",
+          "english": "a boy"
+        },
+        {
+          "id": "spaced1",
+          "german": "Der Schal ist rot und gelb",
+          "english": "The scarf is red and yellow"
         }
       ],
-      "target_answer": "Paul arbeitet in einem besonderen Haus., In diesem Haus gibt es viele Bücher und eine Bar., Plötzlich hören sie ein lautes Geräusch., Ein Buch ist auf den Boden gefallen., Paula findet einen kleinen Brief., Sie suchen den ganzen Abend, aber sie finden den Schatz nicht.",
-      "meaning": "the mystery beats: the place, the noise, the fallen book, the letter, the search",
+      "target_answer": "Paul arbeitet in einem besonderen Haus., In diesem Haus gibt es viele Bücher und eine Bar., Plötzlich hören sie ein lautes Geräusch., Ein Buch ist auf den Boden gefallen., Paula findet einen kleinen Brief., Sie suchen den ganzen Abend, aber sie finden den Schatz nicht., die Tür ist offen, ein Junge, Der Schal ist rot und gelb",
+      "meaning": "Paul works in a special house.; In this house there are many books and a bar.; Suddenly they hear a loud noise.; A book has fallen to the floor.; Paula finds a small letter.; They search all evening but do not find the treasure.; the door is open; a boy; The scarf is red and yellow",
       "explanation": "Every beat adds one piece of the mystery. The ending deliberately leaves the search unfinished."
     },
     {

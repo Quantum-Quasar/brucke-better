@@ -64,7 +64,7 @@ const lesson: Lesson = {
     {
       "id": "l5202_e1",
       "type": "matching_pairs",
-      "prompt": "The room, furnished — match each sentence with its reading:",
+      "prompt": "The room, furnished — match each sentence with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "m11",
@@ -95,10 +95,20 @@ const lesson: Lesson = {
           "id": "m16",
           "english": "The balcony is big",
           "german": "Der Balkon ist groß"
+        },
+        {
+          "id": "recall1",
+          "german": "das Zimmer",
+          "english": "the room"
+        },
+        {
+          "id": "recall2",
+          "german": "eine Etage",
+          "english": "a floor (storey)"
         }
       ],
-      "target_answer": "Der Vorhang ist oben, der Teppich ist unten, Der Schrank steht hinten, Der Teppich ist unter dem Sofa, Der Computer ist neu, Der Spiegel ist an der Wand, Der Balkon ist groß",
-      "meaning": "a curtain above and a rug below, a wardrobe at the back, a rug under the sofa, a new computer, a mirror on the wall, a big balcony",
+      "target_answer": "Der Vorhang ist oben, der Teppich ist unten, Der Schrank steht hinten, Der Teppich ist unter dem Sofa, Der Computer ist neu, Der Spiegel ist an der Wand, Der Balkon ist groß, das Zimmer, eine Etage",
+      "meaning": "The curtain is up top, the rug is down below; The wardrobe stands at the back; The rug is under the sofa; The computer is new; The mirror is on the wall; The balcony is big; the room; a floor (storey)",
       "explanation": "Five fittings and their places. oben/unten/hinten need no article — they are directions, not nouns — while unter dem Sofa takes the dative because the rug merely lies there."
     },
     {

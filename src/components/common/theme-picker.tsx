@@ -4,10 +4,13 @@ import { useMemo, useState } from "react";
 import { filterThemes, type ThemeFilterTab, type ThemeMeta } from "@/data/themes";
 
 /** Shared search/tab state for the dropdown panel and the full grid modal. */
-export function useThemeFilter() {
+export function useThemeFilter(selectedTheme?: string) {
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState<ThemeFilterTab>("popular");
-  const filteredThemes = useMemo(() => filterThemes(query, activeTab), [activeTab, query]);
+  const filteredThemes = useMemo(
+    () => filterThemes(query, activeTab, selectedTheme),
+    [activeTab, query, selectedTheme],
+  );
   return { query, setQuery, activeTab, setActiveTab, filteredThemes };
 }
 

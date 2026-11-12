@@ -105,6 +105,13 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   Tab from the unfocused trail targets Start; Enter launches it; ordinary focus navigation remains intact.
 - **Topic ids are welded** into lesson ids, spine edges, gate positions, store progress
   and tests — never renumber or insert before 30 (see `AGENT_PRECAUTIONS.md` §3.1).
+- Off-screen topic graphics, badges and watermark details mount as the viewport approaches;
+  lesson buttons remain mounted and usable. Node styling does not animate layout properties
+  during responsive sizing. Optional daily-insight data loads separately from the primary action.
+- German cores 5–30 include mixed-pattern recognition. `curriculum-recurrence.ts`
+  counts distinct assessed German surfaces by lesson/exercise type, excluding declarations,
+  banks, hints and duplicate surfaces. Every taught word meets a two-distinct-lesson floor;
+  three or more lessons is an authoring target, not a guaranteed retention claim.
 
 ## 5. Lessons and grading
 
@@ -149,7 +156,7 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   example sentences). Grades 1/3/4/5; below 3 resets repetitions, interval to 1 day and
   adds a lapse; ease factor `EF' = EF + 0.1 − (5−g)(0.08 + (5−g)·0.02)` floored at 1.3;
   a word is **mastered** at `repetitions ≥ 3 && interval ≥ 7`. Decks and styles live in
-  `src/lib/review-decks.ts` / `src/lib/review-modes.ts` (due, by shift family, by domain,
+  `src/lib/review-decks.ts` / `src/lib/review-modes.ts` (due, learned, by shift family, by domain,
   weakest, recent lessons, compounds & traps, sentence patterns, article & gender drill,
   everything; four styles: flip, MCQ, tile builder, derivation typing).
   Focused buttons and links retain their native Enter and Space activation instead of
@@ -158,12 +165,25 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   session card and style dialog. Beginner actions precede a closed advanced-options disclosure.
   The learned-word deck is independent of the advanced scope filter. Tiles and typing use
   the same grading policy: exact Good, spelling near-miss Hard with feedback, grammar omission Again.
+- **Sentence process review** is additive to the word/entity decks: first incorrect
+  sentence answers create language-scoped `SentenceCard`s; existing widgets replay
+  at most 15 due processes per session. Failure scheduling and lesson retry queueing
+  are separate callbacks, so one wrong answer cannot count twice. Replay never awards
+  lesson completion, stars or word mastery. See [`SENTENCE_REVIEW.md`](./SENTENCE_REVIEW.md).
+- **Frequency** comes from pinned FrequencyWords/OpenSubtitles 2018 lists, with
+  checksums and CC BY-SA provenance in `public/data/frequency-provenance.json`.
+  Build-time subsets enrich fetched lexical entities; no full corpus is imported
+  by client code. Exact normalized forms get ranks; missing forms, sentence and
+  article-drill entities remain unranked. Frequency breaks equal due-date/ease ties only.
+  Review lifecycle, ordering, grading and answer entry have separate modules.
 
 ## 7. Personalisation, audio, settings
 
 - **187 Monkeytype themes** (`src/data/themes.ts`), each WCAG-contrast-checked by
-  `src/tests/themes.test.ts`; an increased-contrast toggle strengthens muted text and
-  errors. **43 self-hosted fonts** (`src/data/fonts.ts`, `src/app/fonts.css`).
+  `src/tests/themes.test.ts`: 12 curated choices first, with all themes searchable.
+  An increased-contrast toggle remains available. **43 self-hosted fonts**:
+  six recommendations, then More fonts; non-default faces load on selection/preview.
+  Existing non-curated preferences remain visible rather than being replaced.
 - **Two independent audio paths, zero cloud TTS:** pronunciation is browser-native
   `window.speechSynthesis` (voice locale chosen per language, speech rate 0.92); the
   keyboard-click engine (`src/lib/sound.ts`) decodes bundled `.wav` packs from
@@ -171,6 +191,7 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
 - **Typing mechanics** (`/settings`, six sections): stop-on-error, confidence mode (no
   backspace), lazy mode (`ae`/`oe`/`ue`/`ss`), capitalisation tolerance, caps-lock
   warning, quick restart (`off`/`esc`), German character bar (focus-preserving).
+  The page composes separate behavior, input, sound, theme, visibility and danger-zone sections.
 - **JSON backup export/import** and a two-step danger zone (reset settings / reset
   progress).
 - **Local-first safety:** a nonblocking reminder offers a portable JSON backup
@@ -202,7 +223,8 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
 - `src/lib/store.ts` only composes Zustand slices. `store/` owns settings,
   progress, review, backup import/reset, hydration, validated schemas and
   versioned cross-tab merging. Persistence receives the store getter at startup,
-  avoiding a runtime import cycle. Saved keys and migration behavior are unchanged.
+  avoiding a runtime import cycle. Existing saved keys remain; sentence-process cards
+  are additive fields in each language slice, with validation and per-card merge versions.
 
 ## 9. Deliberately not built
 

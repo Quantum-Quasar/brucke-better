@@ -109,6 +109,10 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 - **Applies when:** you feel like "improving" existing content.
 - **Action:** treat authored lessons as frozen unless the human asks you to change them. Surgical learner-facing fixes (wrong German, unfinishable exercise, untaught word, stale text) are allowed under [`NORTH_STAR.md`](./NORTH_STAR.md); never change a lesson's `id`/`slug`/`title`/`phase`/`shift_categories`/position. Also protected unless the task is about them: `src/lib/trail-map.ts`, `src/lib/store.ts`, `src/components/**` (report rendering bugs instead of fixing them), `TRAIL_GATES` thresholds, theme data. The compendium's §1 shift definitions are parser-anchored — edit only with extreme care. If a prompt from the human grants an explicit override, that prompt wins for that task.
 
+### 4.6 Retrieval coverage and mixed recognition
+- **Applies when:** authoring or changing German practice.
+- **Action:** preserve assessed retrieval of every taught word in two distinct lessons, using natural phrases or meaningful separate cards. Do not satisfy the floor with unrelated word bundles or declared-only appearances. German cores from Topic 5 include mixed-pattern recognition using prior-known vocabulary without labeling the answer. Run `bun scripts/audit-recurrence.ts --strict`; the same floor is guarded in the unit suite.
+
 ---
 
 ## 5. Code & tooling — applies when running or changing code

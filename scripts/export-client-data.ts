@@ -18,7 +18,10 @@ import { FR_LESSONS } from "../src/data/french/lessons-fr";
 import { ES_LESSONS } from "../src/data/spanish/lessons-es";
 import { NL_LESSONS } from "../src/data/dutch/lessons-nl";
 import { trimCompendium } from "../src/lib/lesson-payload";
+import { buildWordEntityMaps } from "../src/lib/word-entities-core";
 import type { CompendiumData, Lesson, LessonIndexEntry, ShiftFamily } from "../src/lib/types";
+import frequencyRanks from "../src/data/frequency-ranks.json";
+import { withFrequencyMetadata } from "./lib/frequency-payload";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const OUT_DIR = path.join(ROOT, "public", "data");
@@ -79,9 +82,12 @@ let totalBytes = 0;
 let lessonPayloads = 0;
 
 for (const language of LANGUAGES) {
+  const ranks = frequencyRanks[language.id as keyof typeof frequencyRanks];
+  const compendium = withFrequencyMetadata(language.compendium, ranks);
+  const entities = buildWordEntityMaps(language.id, compendium, language.lessons).entities;
   // wordList is derived in the client; dailyInsights stays because the master
   // web uses it for expression nodes (French/Spanish carry an empty list).
-  const { wordList: _wordList, ...payload } = language.compendium;
+  const { wordList: _wordList, ...payload } = compendium;
   totalBytes += writeJson(path.join(OUT_DIR, language.id, "compendium.json"), payload);
   totalBytes += writeJson(
     path.join(OUT_DIR, language.id, "lesson-index.json"),
@@ -92,7 +98,7 @@ for (const language of LANGUAGES) {
   for (const lesson of language.lessons) {
     totalBytes += writeJson(
       path.join(OUT_DIR, language.id, "lessons", `${lesson.id}.json`),
-      { lesson, compendium: trimCompendium(language.compendium, lesson) }
+      { lesson, compendium: trimCompendium(compendium, lesson, entities) }
     );
     lessonPayloads += 1;
   }

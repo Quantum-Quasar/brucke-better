@@ -70,7 +70,7 @@ const lesson: Lesson = {
     {
       "id": "l1401_e2",
       "type": "matching_pairs",
-      "prompt": "Match each fronted sentence with its English meaning:",
+      "prompt": "Match each fronted sentence with its English meaning. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "vb1",
@@ -91,10 +91,25 @@ const lesson: Lesson = {
           "id": "vb4",
           "english": "now we walk",
           "german": "Jetzt wandern wir"
+        },
+        {
+          "id": "recall1",
+          "german": "nichts und niemand",
+          "english": "nothing and nobody"
+        },
+        {
+          "id": "recall2",
+          "german": "meine Sorge",
+          "english": "my worry"
+        },
+        {
+          "id": "spaced1",
+          "german": "Wann lernen wir",
+          "english": "When are we learning"
         }
       ],
-      "target_answer": "Heute trinken wir Tee, Morgen komme ich, Das Buch lese ich, Jetzt wandern wir",
-      "meaning": "today we drink tea, tomorrow I am coming, the book I am reading, now we hike",
+      "target_answer": "Heute trinken wir Tee, Morgen komme ich, Das Buch lese ich, Jetzt wandern wir, nichts und niemand, meine Sorge, Wann lernen wir",
+      "meaning": "Today we drink tea; Tomorrow I am coming; The book I am reading; now we walk; nothing and nobody; my worry; When are we learning",
       "explanation": "Anything can take position 1 — the verb answers from position 2 every time."
     },
     {

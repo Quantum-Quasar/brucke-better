@@ -68,7 +68,7 @@ const lesson: Lesson = {
     {
       "id": "l2302_e1",
       "type": "matching_pairs",
-      "prompt": "Sort the nouns — match each singular with its drawer:",
+      "prompt": "Sort the nouns — match each singular with its drawer. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "fp1",
@@ -99,10 +99,35 @@ const lesson: Lesson = {
           "id": "fp6",
           "english": "die Stunde → (-n)",
           "german": "die Stunden"
+        },
+        {
+          "id": "recall1",
+          "german": "Die Maus ist klein",
+          "english": "The mouse is small"
+        },
+        {
+          "id": "recall1b",
+          "german": "Die Kuh ist groß",
+          "english": "The cow is large"
+        },
+        {
+          "id": "recall2",
+          "german": "eine Stunde für das Spiel",
+          "english": "an hour for the game"
+        },
+        {
+          "id": "spaced1",
+          "german": "mein Auge",
+          "english": "my eye"
+        },
+        {
+          "id": "context1",
+          "german": "Die Lampe ist im Haus",
+          "english": "The lamp is in the house"
         }
       ],
-      "target_answer": "die Bücher, die Frauen, die Autos, die Lehrer, die Spiele, die Stunden",
-      "meaning": "the books, the women, the cars, the teachers, the games, the hours",
+      "target_answer": "die Bücher, die Frauen, die Autos, die Lehrer, die Spiele, die Stunden, Die Maus ist klein, Die Kuh ist groß, eine Stunde für das Spiel, mein Auge, Die Lampe ist im Haus",
+      "meaning": "das Buch → (-er, umlaut); die Frau → (-n); das Auto → (-s); der Lehrer → (zero); das Spiel → (-e); die Stunde → (-n); The mouse is small; The cow is large; an hour for the game; my eye; The lamp is in the house",
       "explanation": "-er umlaut, -n, -s, and zero — four of the five drawers, each with a family resemblance. Spiel and Stunde pick their drawers by sound."
     },
     {

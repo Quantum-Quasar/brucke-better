@@ -9,6 +9,7 @@ import { useReviewController, type ReviewHubProps } from "@/components/review/us
 import { ReviewSessionCard } from "@/components/review/ReviewSessionCard";
 import { ReviewDeckSelector } from "@/components/review/ReviewDeckSelector";
 import { ReviewStyleDialog } from "@/components/review/ReviewStyleDialog";
+import { SentenceReviewDeck } from "@/components/review/SentenceReviewDeck";
 
 
 export default function ReviewPage() {
@@ -97,6 +98,7 @@ function ReviewHub(props: ReviewHubProps) {
 
       {language.status === "available" && (
       <>
+      {!activeDeck && <SentenceReviewDeck languageId={props.activeLanguageId} resetAt={props.progressResetAt} resetActor={props.progressResetActor} data={props.data} />}
       {/* Stats Bar — day zero has its own empty state instead of three zeros */}
       {!activeDeck && hasAnyCards && (
       <div className="p-3 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">

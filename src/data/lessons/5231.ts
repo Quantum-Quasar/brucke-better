@@ -61,7 +61,7 @@ const lesson: Lesson = {
     {
       "id": "l5231_e1",
       "type": "matching_pairs",
-      "prompt": "The sweet shelf — match each sentence with its reading:",
+      "prompt": "The sweet shelf — match each sentence with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "ss1",
@@ -92,10 +92,30 @@ const lesson: Lesson = {
           "id": "ss6",
           "english": "The cake comes out of the oven",
           "german": "Der Kuchen kommt aus dem Ofen"
+        },
+        {
+          "id": "recall1",
+          "german": "Ich habe eine Kartoffel",
+          "english": "I have a potato"
+        },
+        {
+          "id": "recall1b",
+          "german": "Das ist eine Gurke",
+          "english": "That is a cucumber"
+        },
+        {
+          "id": "recall2",
+          "german": "Die Tomate ist reif",
+          "english": "The tomato is ripe"
+        },
+        {
+          "id": "recall2b",
+          "german": "Die Zwiebel ist scharf",
+          "english": "The onion is sharp"
         }
       ],
-      "target_answer": "Zu Ostern gibt es Schokolade, Ich nehme Zucker in den Kaffee, Der Honig schmeckt süß, Ich nehme einen Keks zum Kaffee, Manchmal esse ich eine Torte, Der Kuchen kommt aus dem Ofen",
-      "meaning": "Easter chocolate, sugar in coffee, sweet honey, a cookie with coffee, sometimes a cake",
+      "target_answer": "Zu Ostern gibt es Schokolade, Ich nehme Zucker in den Kaffee, Der Honig schmeckt süß, Ich nehme einen Keks zum Kaffee, Manchmal esse ich eine Torte, Der Kuchen kommt aus dem Ofen, Ich habe eine Kartoffel, Das ist eine Gurke, Die Tomate ist reif, Die Zwiebel ist scharf",
+      "meaning": "At Easter there is chocolate; I take sugar in my coffee; The honey tastes sweet; I take a cookie with the coffee; Sometimes I eat a cake; The cake comes out of the oven; I have a potato; That is a cucumber; The tomato is ripe; The onion is sharp",
       "explanation": "gibt + es hands out what exists, schmecken takes the taste as a bare adjective, and manchmal sits directly behind the verb. Note the genders on the shelf: der Zucker, der Honig, die Schokolade, der Keks, die Torte."
     },
     {

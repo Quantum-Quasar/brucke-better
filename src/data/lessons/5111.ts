@@ -60,7 +60,7 @@ const lesson: Lesson = {
     {
       "id": "l5111_e1",
       "type": "matching_pairs",
-      "prompt": "The when-split — match each sentence with its reading:",
+      "prompt": "The when-split — match each sentence with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "tw1",
@@ -96,10 +96,20 @@ const lesson: Lesson = {
           "id": "tw7",
           "english": "when the person leaves",
           "german": "wenn die Person geht"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir müssen lesen",
+          "english": "We must read"
+        },
+        {
+          "id": "recall2",
+          "german": "Es kann regnen",
+          "english": "It may rain"
         }
       ],
-      "target_answer": "Wann kommst du, als ich ein Kind war, wenn es regnet lese ich, älter als du, als mein Freund kam, wenn der Lehrer kommt, wenn die Person geht",
-      "meaning": "question, once-only past, repeater/condition, comparison",
+      "target_answer": "Wann kommst du?, als ich ein Kind war, wenn es regnet, lese ich, älter als du, als mein Freund kam, wenn der Lehrer kommt, wenn die Person geht, Wir müssen lesen, Es kann regnen",
+      "meaning": "When do you come? (question); when I was a child (once-only); when(ever) it rains, I read; older than you (the old job); when my friend arrived; when(ever) the teacher comes; when the person leaves; We must read; It may rain",
       "explanation": "wann asks, als marks the unique past moment (and 'than'), wenn repeats and conditions."
     },
     {

@@ -21,6 +21,7 @@ export interface LessonProgress {
 
 export interface WordEntity {
   id: string;
+  frequencyRank?: number | null;
   target_word: string;
   english_cognate: string;
   english_meaning: string;
@@ -97,6 +98,13 @@ export interface SRSCard {
   last_reviewed: string | null;
   /** TM-6: how many times the learner answered correctly but flagged "I guessed" */
   guessed?: number;
+}
+
+/** A failed sentence process, scheduled independently from words and mastery. */
+export interface SentenceCard extends Omit<SRSCard, "word_id" | "guessed"> {
+  id: string;
+  lessonId: number;
+  exerciseId: string;
 }
 
 export type ExerciseType =
@@ -318,6 +326,8 @@ export interface ExerciseItem {
   idea?: string;
   /** Authored alternative complete sentences for free-production transcribe drills. */
   accepted_answers?: string[];
+  /** Complete, authored replay surfaces. Unsafe or unknown vocabulary is rejected at runtime. */
+  variants?: ExerciseItem[];
   cues?: string[]; // 1–3 scaled prompts, ordered easy→late, revealed on demand or on failure
   // --- TM-6: break the thought up before German orders it (guidebook §0.3) ---
   /** The elements of the thought, one per line. Taught skill, not decoration. */
@@ -533,6 +543,7 @@ export interface TrailGate {
 export interface CompendiumData {
   words: Record<string, WordEntity>;
   wordList: WordEntity[];
+  frequencyRanks?: Record<string, number | null>;
   shifts: Record<string, ShiftFamily>;
   compounds: CompoundCalque[];
   falseFriends: FalseFriend[];

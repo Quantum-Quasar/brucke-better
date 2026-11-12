@@ -92,7 +92,7 @@ const lesson: Lesson = {
     {
       "id": "l2702_e3",
       "type": "matching_pairs",
-      "prompt": "Match each scene with its correct case logic:",
+      "prompt": "Match each scene with its correct case logic. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "ct1",
@@ -133,10 +133,20 @@ const lesson: Lesson = {
           "id": "ct8",
           "english": "into the harbor (motion)",
           "german": "in den Hafen"
+        },
+        {
+          "id": "recall1",
+          "german": "der Nachbar am Platz",
+          "english": "the neighbour at the square"
+        },
+        {
+          "id": "recall2",
+          "german": "meine Entschuldigung",
+          "english": "my apology"
         }
       ],
-      "target_answer": "ins Haus, im Haus, unter den Tisch, unter dem Tisch, an der Ecke, in der Mitte, unter der Brücke, in den Hafen",
-      "meaning": "the case logic in eight scenes",
+      "target_answer": "ins Haus (in + das), im Haus (in + dem), unter den Tisch, unter dem Tisch, an der Ecke, in der Mitte, unter der Brücke, in den Hafen, der Nachbar am Platz, meine Entschuldigung",
+      "meaning": "into the house (motion); in the house (location); under the table, going; under the table, resting; at the corner (location); in the middle (location); under the bridge (location); into the harbor (motion); the neighbour at the square; my apology",
       "explanation": "The contraction or article ending IS the case report — motion gets accusative, location gets dative. der Brücke rests, den Hafen crosses."
     },
     {

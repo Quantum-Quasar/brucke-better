@@ -60,7 +60,7 @@ const lesson: Lesson = {
     {
       "id": "l5041_e1",
       "type": "matching_pairs",
-      "prompt": "Match each verb to its class melody:",
+      "prompt": "Match each verb to its class melody. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "sc1",
@@ -81,10 +81,45 @@ const lesson: Lesson = {
           "id": "sc4",
           "english": "schlafen (Room VII)",
           "german": "schlief / geschlafen"
+        },
+        {
+          "id": "recall1",
+          "german": "meine Art",
+          "english": "my manner"
+        },
+        {
+          "id": "recall2",
+          "german": "eine Kaution",
+          "english": "a deposit"
+        },
+        {
+          "id": "recall3",
+          "german": "eventuell lernen",
+          "english": "possibly learn"
+        },
+        {
+          "id": "recall4",
+          "german": "Das Öl ist teuer",
+          "english": "The oil is expensive"
+        },
+        {
+          "id": "recall4b",
+          "german": "Die Tüte ist voll",
+          "english": "The bag is full"
+        },
+        {
+          "id": "spaced1",
+          "german": "meine Rente",
+          "english": "my pension"
+        },
+        {
+          "id": "spaced2",
+          "german": "der Dom ist groß",
+          "english": "the cathedral is large"
         }
       ],
-      "target_answer": "schrieb / geschrieben, zog / gezogen, sprach / gesprochen, schlief / geschlafen",
-      "meaning": "the four distinctive melodies",
+      "target_answer": "schrieb / geschrieben, zog / gezogen, sprach / gesprochen, schlief / geschlafen, meine Art, eine Kaution, eventuell lernen, Das Öl ist teuer, Die Tüte ist voll, meine Rente, der Dom ist groß",
+      "meaning": "schreiben (Room I); ziehen (Room II); sprechen (Room IV); schlafen (Room VII); my manner; a deposit; possibly learn; The oil is expensive; The bag is full; my pension; the cathedral is large",
       "explanation": "ei–ie, ie–o–o, e–a–o, and the reduplicating relic — four of the seven rooms on one wall."
     },
     {

@@ -100,16 +100,16 @@ const lesson: Lesson = {
     {
       "id": "l28_e2",
       "type": "shift_select",
-      "prompt": "'Der Zug fährt um acht.' — what is der Zug, literally?",
+      "prompt": "Which pair asks for another clue than its three neighbours?",
       "options": [
-        "The fare",
-        "The car",
-        "The track",
-        "The pull — the train is named for pulling"
+        "give → geben",
+        "calf → Kalb",
+        "silver → Silber",
+        "milk → Milch"
       ],
-      "target_answer": "The pull — the train is named for pulling",
-      "meaning": "der Zug = the pull(er) = the train",
-      "explanation": "ziehen → der Zug: the thing that pulls. An elevator is the up-pull (Aufzug), moving house the around-pull (Umzug). The city map radiates too: der Platz (the square), der Fluss (the river, flow's cousin), der Markt, die Wand (the wall — English's own wand, magic included) — nouns named by what they are."
+      "target_answer": "milk → Milch",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Give, calf and silver use V → B. Milk → Milch uses K → CH."
     },
     {
       "id": "l28_e3",

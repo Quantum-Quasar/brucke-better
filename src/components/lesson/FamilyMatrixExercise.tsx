@@ -124,17 +124,19 @@ export const FamilyMatrixExercise: React.FC<FamilyMatrixExerciseProps> = ({
 
       <p className="text-base text-[var(--text-color)] font-bold leading-snug">{exercise.prompt}</p>
 
-      <div className="grid gap-1.5" style={{ gridTemplateColumns: `minmax(72px, auto) repeat(${Math.max(1, columns.length)}, minmax(0, 1fr))` }}>
-        <div />
-        {columns.map((c, ci) => (
-          <div key={`h-${ci}`} className="px-2 py-1.5 text-center text-xs font-bold text-[var(--main-color)]">
-            {c}
-          </div>
-        ))}
+      <div role="table" aria-label="Word family" className="grid gap-1.5" style={{ gridTemplateColumns: `minmax(72px, auto) repeat(${Math.max(1, columns.length)}, minmax(0, 1fr))` }}>
+        <div role="row" className="contents">
+          <div role="columnheader"><span className="sr-only">Root</span></div>
+          {columns.map((c, ci) => (
+            <div role="columnheader" key={`h-${ci}`} className="px-2 py-1.5 text-center text-xs font-bold text-[var(--main-color)]">
+              {c}
+            </div>
+          ))}
+        </div>
 
         {rows.map((r, ri) => (
-          <React.Fragment key={`r-${ri}`}>
-            <div className="px-2 py-1.5 text-xs font-bold text-[var(--main-color)] self-center">{r}</div>
+          <div role="row" className="contents" key={`r-${ri}`}>
+            <div role="rowheader" className="px-2 py-1.5 text-xs font-bold text-[var(--main-color)] self-center">{r}</div>
             {columns.map((_c, ci) => {
               const isTask = task.row === ri && task.column === ci;
               const isSeed = seed.has(`${ri}:${ci}`);
@@ -143,6 +145,8 @@ export const FamilyMatrixExercise: React.FC<FamilyMatrixExerciseProps> = ({
               return (
                 <div
                   key={`c-${ri}-${ci}`}
+                  role="cell"
+                  aria-label={`${r} + ${columns[ci]}: ${show && cell ? `${cell.german}, ${cell.english}` : isTask ? "build this form" : "not revealed"}`}
                   className={[
                     "px-2 py-2 rounded border text-center text-sm min-h-[3rem] flex flex-col items-center justify-center gap-0.5",
                     isTask
@@ -165,7 +169,7 @@ export const FamilyMatrixExercise: React.FC<FamilyMatrixExerciseProps> = ({
                 </div>
               );
             })}
-          </React.Fragment>
+          </div>
         ))}
       </div>
 

@@ -7,10 +7,16 @@ import type { ClassicExerciseController } from "../classic-exercise-types";
 export default function TypingInput({ controller }: { controller: ClassicExerciseController }) {
   const { exercise, userInput, status, isCapsLock, setIsCapsLock, isInputFocused, setIsInputFocused, inputRef, settings, language, isReverseCognate, resetCurrentExercise, handleInputChange, handleVerify } = controller;
   return (
-        <div className="space-y-3">
+        <div
+          className="space-y-3"
+          onFocusCapture={() => setIsInputFocused(true)}
+          onBlurCapture={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setIsInputFocused(false);
+          }}
+        >
           {/* Caps Lock warning indicator */}
           {settings.capsLockWarning && isCapsLock && (
-            <div className="flex items-center gap-1.5 text-xs text-[var(--error-color)] font-mono animate-pulse">
+            <div role="status" aria-live="polite" className="flex items-center gap-1.5 text-xs text-[var(--error-color)] font-mono animate-pulse">
               <AlertCircle className="w-3.5 h-3.5" />
               <span>caps lock is on</span>
             </div>
@@ -30,10 +36,9 @@ export default function TypingInput({ controller }: { controller: ClassicExercis
               autoComplete="off"
               autoCorrect="off"
               autoCapitalize="off"
-              onFocus={() => setIsInputFocused(true)}
-              onBlur={() => setIsInputFocused(false)}
               onChange={(e) => handleInputChange(e.target.value)}
               onKeyDown={(e) => {
+                if (e.nativeEvent.isComposing) return;
                 if (e.getModifierState) {
                   setIsCapsLock(e.getModifierState("CapsLock"));
                 }
@@ -43,6 +48,7 @@ export default function TypingInput({ controller }: { controller: ClassicExercis
                 }
                 if (settings.quickRestart === "esc" && e.key === "Escape") {
                   e.preventDefault();
+                  e.stopPropagation();
                   resetCurrentExercise();
                   return;
                 }

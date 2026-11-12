@@ -12,12 +12,12 @@
 // shown, audio still available if they want it). Never a penalty, never a blocker.
 
 import React, { useState, useRef, useEffect } from "react";
-import { Volume2, EarOff, Lightbulb, Quote, Sparkles, AlertCircle } from "lucide-react";
-import { GermanCharBar } from "@/components/common/GermanCharBar";
+import { Volume2, EarOff, Lightbulb, Quote, Sparkles } from "lucide-react";
+import { ProductionAnswerInput } from "./inputs/ProductionAnswerInput";
 import { VoiceStatusBanner } from "@/components/common/VoiceStatusBanner";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
-import { gradeLessonAnswer } from "@/lib/lesson-grading";
+import { gradeExerciseAttempt } from "@/lib/exercise-grading";
 import { playTargetAudio } from "@/lib/audio";
 import { getLanguageDefinition } from "@/data/languages";
 import { useAppStore } from "@/lib/store";
@@ -53,13 +53,13 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
   const [status, setStatus] = useState<"idle" | "correct" | "almost" | "incorrect">("idle");
   const [sheetVariant, setSheetVariant] = useState<"exact" | "almost">("exact");
   const [verifiedAttemptText, setVerifiedAttemptText] = useState("");
+  const [acceptedTarget, setAcceptedTarget] = useState(exercise.target_answer);
   const [almostWarningNote, setAlmostWarningNote] = useState<string | undefined>(undefined);
   const [feedbackNote, setFeedbackNote] = useState<string | null>(null);
   const [showErrorSheet, setShowErrorSheet] = useState(false);
   const [showSuccessSheet, setShowSuccessSheet] = useState(false);
   const [failedAttemptText, setFailedAttemptText] = useState("");
   const [failedDiagnosis, setFailedDiagnosis] = useState<ExerciseDiagnosis | undefined>(undefined);
-  const [isCapsLock, setIsCapsLock] = useState(false);
 
   const inputRef = useRef<HTMLInputElement>(null);
   // one keypress must never verify twice (Enter fires the input handler, then the
@@ -132,29 +132,6 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
     setCuesRevealed((n) => n + 1);
   };
 
-  const diagnoseFailure = (attempt: string): ExerciseDiagnosis | undefined => {
-    if (exercise.diagnosis) return exercise.diagnosis;
-    const attemptTokens = attempt.toLowerCase().split(/\s+/).filter(Boolean);
-    const targetTokens = target.toLowerCase().split(/\s+/).filter(Boolean);
-    if (attemptTokens.length === targetTokens.length) {
-      const a = [...attemptTokens].sort().join(" ");
-      const b = [...targetTokens].sort().join(" ");
-      if (a === b && attempt.trim() !== target) {
-        return {
-          slip: "the words are right, the order is not",
-          cue:
-            activeLanguageId === "de"
-              ? "German puts the conjugated verb in position 2 and parks the infinitive at the end — listen for which word carries the ending."
-              : activeLanguageId === "nl"
-                ? "Dutch puts the finite verb second in main clauses and last in subordinate clauses — listen for which word carries the ending."
-                : activeLanguageId === "fr"
-                  ? "French keeps object pronouns before the verb and the conjugated verb next to the subject — listen for which word comes first."
-                  : "Spanish often drops the subject pronoun and leans on the verb ending — listen for which word comes first.",
-        };
-      }
-    }
-    return undefined;
-  };
 
   const handleVerify = () => {
     if (verifyingRef.current) return;
@@ -170,7 +147,9 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
       umlautTolerance: Boolean(settings.lazyMode ?? tolerance.umlautTolerance),
       capitalizationTolerance: Boolean(settings.capitalizationTolerance ?? tolerance.capitalizationTolerance),
     };
-    const { result: evaluation } = gradeLessonAnswer([answerToCheck], [target], evalOptions, isRetry);
+    const graded = gradeExerciseAttempt(exercise, [answerToCheck], { ...evalOptions, languageId: activeLanguageId }, isRetry);
+    const evaluation = graded.result;
+    setAcceptedTarget(graded.target);
 
     if (evaluation.accuracy === "exact" || evaluation.accuracy === "almost") {
       setStatus(evaluation.accuracy === "exact" ? "correct" : "almost");
@@ -183,10 +162,7 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
           : evaluation.warningNote || `Almost right! Note standard spelling: "${target}"`
       );
       setShowSuccessSheet(true);
-      if (evaluation.accuracy === "almost" && (evaluation.reason === "typo" || evaluation.reason === "sharp-s")) onQueueRetry?.();
-      if (evaluation.accuracy === "almost" && evaluation.reason === "umlaut" && !evalOptions.umlautTolerance) {
-        onQueueRetry?.();
-      }
+      if (graded.queueRetry) onQueueRetry?.();
       // the parent advances from the success sheet's onContinue, so the sheet
       // (correct spelling + meaning) actually paints before the widget unmounts
       return;
@@ -194,11 +170,9 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
 
     setStatus("incorrect");
     setFailedAttemptText(answerToCheck);
-    setFailedDiagnosis(diagnoseFailure(answerToCheck));
+    setFailedDiagnosis(graded.diagnosis);
     void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
-    onError(
-      evaluation.reason === "umlaut" ? "umlaut" : evaluation.reason === "case" ? "capitalization" : "spelling"
-    );
+    onError(graded.errorType);
     onQueueRetry?.();
     if (cuesRevealed < cues.length) setCuesRevealed((n) => n + 1);
     setShowErrorSheet(true);
@@ -206,7 +180,7 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.getModifierState) setIsCapsLock(e.getModifierState("CapsLock"));
+      if (e.isComposing || e.ctrlKey || e.metaKey || e.altKey) return;
       if (settings.quickRestart === "esc" && e.key === "Escape") {
         e.preventDefault();
         resetCurrentExercise();
@@ -257,107 +231,13 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
     }
   };
 
-  /* ---------------- degraded mode: the learner cannot listen ---------------- */
-  if (listeningOff) {
-    return (
-      <div className="p-6 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--main-color)]/25 space-y-5 shadow-lg font-mono">
-        <div className="flex items-center justify-between border-b border-[var(--sub-color)]/15 pb-3">
-          <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-[var(--sub-color)]" />
-            <span className="text-xs uppercase tracking-wider text-[var(--sub-color)] font-semibold">
-              {isRetry ? "retry exercise" : `write the ${language.name}`}
-            </span>
-          </div>
-          {exercise.shift_hint && (
-            <span className="text-xs px-2.5 py-0.5 rounded bg-[var(--bg-color)] text-[var(--main-color)] border border-[var(--sub-color)]/20 font-bold">
-              {exercise.shift_hint}
-            </span>
-          )}
-        </div>
-
-        <div className="p-4 rounded-lg bg-[var(--bg-color)] border border-dashed border-[var(--sub-color)]/40 space-y-2">
-          <div className="flex items-center gap-2 text-xs text-[var(--sub-color)] uppercase tracking-wider">
-            <EarOff className="w-4 h-4" /> Listening is off
-          </div>
-          <p className="text-sm text-[var(--text-color)]">
-            You asked to skip listening. This one is on the page instead — type it exactly as written.
-          </p>
-          <p className="text-base text-[var(--main-color)] font-bold">{spoken}</p>
-          <button
-            onClick={() => playTargetAudio(spoken)}
-            className="inline-flex items-center gap-1.5 text-xs text-[var(--sub-color)] hover:text-[var(--main-color)]"
-          >
-            <Volume2 className="w-3.5 h-3.5" /> play it anyway
-          </button>
-        </div>
-
-        <div className="space-y-3">
-          <input
-            ref={inputRef}
-            type="text"
-            value={userInput}
-            aria-label={`Type the ${language.name} sentence exactly as written`}
-            lang={language.id}
-            spellCheck={false}
-            autoComplete="off"
-            autoCorrect="off"
-            autoCapitalize="off"
-            onChange={(e) => setUserInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && userInput.trim()) {
-                e.preventDefault();
-                e.stopPropagation();
-                handleVerify();
-              }
-            }}
-            placeholder={`Type the ${language.name}…`}
-            className="w-full bg-[var(--bg-color)] border border-[var(--sub-color)]/40 rounded px-4 py-3 text-lg font-mono focus:border-[var(--main-color)] outline-none"
-          />
-          {userInput.trim() && (
-            <button
-              onClick={handleVerify}
-              className="w-full py-3 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-semibold"
-            >
-              Check
-            </button>
-          )}
-          <GermanCharBar inputRef={inputRef} value={userInput} onChange={setUserInput} />
-        </div>
-
-        {showSuccessSheet && (
-          <SuccessFeedbackSheet
-            onFlagGuessed={!isRetry ? onFlagGuessed : undefined}
-            targetAnswer={target}
-            meaning={exercise.meaning}
-            explanation={exercise.explanation}
-            variant={sheetVariant}
-            userAttempt={verifiedAttemptText}
-            warningNote={almostWarningNote}
-            affirmation={affirmation}
-            onContinue={handleSuccessContinue}
-          />
-        )}
-        {showErrorSheet && (
-          <ErrorFeedbackSheet
-            userInput={failedAttemptText}
-            expectedAnswer={target}
-            explanation={exercise.explanation}
-            diagnosis={failedDiagnosis}
-            onContinue={handleErrorContinue}
-          />
-        )}
-      </div>
-    );
-  }
-
-  /* ---------------------------- normal mode: the ear --------------------------- */
   return (
     <div className="p-6 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--main-color)]/25 space-y-5 shadow-lg font-mono">
       <div className="flex items-center justify-between border-b border-[var(--sub-color)]/15 pb-3">
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-[var(--main-color)]" />
           <span className="text-xs uppercase tracking-wider text-[var(--main-color)] font-semibold">
-            {isRetry ? "retry exercise" : "listen and write"}
+            {isRetry ? "retry exercise" : listeningOff ? `write the ${language.name}` : "listen and write"}
           </span>
         </div>
         {exercise.shift_hint && (
@@ -371,6 +251,24 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
       <VoiceStatusBanner allowSkipListening />
 
       {/* the prompt is a sound, not a sentence */}
+      {listeningOff ? (
+        <div className="p-4 rounded-lg bg-[var(--bg-color)] border border-dashed border-[var(--sub-color)]/40 space-y-2">
+          <div className="flex items-center gap-2 text-xs text-[var(--sub-color)] uppercase tracking-wider">
+            <EarOff className="w-4 h-4" /> Listening is off
+          </div>
+          <p className="text-sm text-[var(--text-color)]">
+            You asked to skip listening. This one is on the page instead — type it exactly as written.
+          </p>
+          <p className="text-base text-[var(--main-color)] font-bold">{spoken}</p>
+          <button
+            type="button"
+            onClick={() => playTargetAudio(spoken)}
+            className="inline-flex items-center gap-1.5 text-xs text-[var(--sub-color)] hover:text-[var(--main-color)]"
+          >
+            <Volume2 className="w-3.5 h-3.5" /> play it anyway
+          </button>
+        </div>
+      ) : (
       <div className="p-4 rounded-lg bg-[var(--bg-color)] border-l-4 border-[var(--main-color)] space-y-3">
         <Quote className="w-4 h-4 text-[var(--main-color)]" />
         <div className="flex items-center gap-3">
@@ -399,8 +297,9 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
           <EarOff className="w-3.5 h-3.5" /> I can&rsquo;t listen right now — skip listening for 15 min
         </button>
       </div>
+      )}
 
-      {exercise.vocab_hints && exercise.vocab_hints.length > 0 && (
+      {!listeningOff && exercise.vocab_hints && exercise.vocab_hints.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 p-3 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 text-xs">
           <span className="text-[var(--main-color)] font-bold uppercase tracking-wider flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5" /> clue:
@@ -418,8 +317,8 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
         </div>
       )}
 
-      {cuesRevealed > 0 && (
-        <ol className="space-y-1.5">
+      {!listeningOff && cuesRevealed > 0 && (
+        <ol className="space-y-1.5" aria-live="polite">
           {cues.slice(0, cuesRevealed).map((cue, i) => (
             <li key={i} className="flex items-start gap-2 text-xs text-[var(--text-color)] leading-relaxed">
               <span className="text-[var(--main-color)] font-bold shrink-0">{i + 1}.</span>
@@ -428,7 +327,7 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
           ))}
         </ol>
       )}
-      {cuesRevealed < cues.length && (
+      {!listeningOff && cuesRevealed < cues.length && (
         <button
           type="button"
           onClick={revealNextCue}
@@ -441,35 +340,18 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
       )}
 
       <div className="space-y-3">
-        {settings.capsLockWarning && isCapsLock && (
-          <div className="flex items-center gap-1.5 text-xs text-[var(--error-color)] font-mono animate-pulse">
-            <AlertCircle className="w-3.5 h-3.5" />
-            <span>caps lock is on</span>
-          </div>
-        )}
-        <input
-          ref={inputRef}
-          type="text"
+        <ProductionAnswerInput
+          inputRef={inputRef}
           value={userInput}
-          aria-label="Write down the sentence you heard"
-          lang={language.id}
-          spellCheck={false}
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
-          onChange={(e) => setUserInput(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" && userInput.trim()) {
-              e.preventDefault();
-              e.stopPropagation();
-              handleVerify();
-            }
-          }}
-          placeholder="Write down what you heard…"
-          disabled={status === "correct" || status === "almost"}
-          className="w-full bg-[var(--bg-color)] border border-[var(--sub-color)]/40 rounded px-4 py-3 pr-4 text-lg font-mono focus:border-[var(--main-color)] outline-none disabled:opacity-50"
+          onChange={(value) => { setUserInput(value); setFeedbackNote(null); }}
+          onVerify={handleVerify}
+          onReset={resetCurrentExercise}
+          label={listeningOff ? `Type the ${language.name} sentence exactly as written` : "Write down the sentence you heard"}
+          languageId={language.id}
+          placeholder={listeningOff ? `Type the ${language.name}…` : "Write down what you heard…"}
+          readOnly={status === "correct" || status === "almost"}
+          settings={settings}
         />
-        <GermanCharBar inputRef={inputRef} value={userInput} onChange={setUserInput} />
         {userInput.trim() && (
           <button
             onClick={handleVerify}
@@ -478,17 +360,13 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
             Check
           </button>
         )}
-        {feedbackNote && (
-          <p className="text-xs text-[var(--sub-color)]" role="status">
-            {feedbackNote}
-          </p>
-        )}
+        <p className="text-xs text-[var(--sub-color)]" role="status" aria-live="polite">{feedbackNote}</p>
       </div>
 
       {showSuccessSheet && (
         <SuccessFeedbackSheet
           onFlagGuessed={!isRetry ? onFlagGuessed : undefined}
-          targetAnswer={target}
+          targetAnswer={acceptedTarget}
           meaning={exercise.meaning}
           explanation={exercise.explanation}
           variant={sheetVariant}

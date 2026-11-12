@@ -88,7 +88,7 @@ const lesson: Lesson = {
     {
       "id": "l2_e2",
       "type": "matching_pairs",
-      "prompt": "Match the modal phrases to their English meanings:",
+      "prompt": "Match the modal phrases to their English meanings. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "m1",
@@ -109,10 +109,20 @@ const lesson: Lesson = {
           "id": "m4",
           "english": "to have",
           "german": "haben"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir müssen warnen",
+          "english": "We must warn"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können hungern",
+          "english": "We can go hungry"
         }
       ],
-      "target_answer": "ich kann, ich muss, ich will, haben",
-      "meaning": "I can, I must, I want, to have",
+      "target_answer": "ich kann, ich muss, ich will, haben, Wir müssen warnen, Wir können hungern",
+      "meaning": "I can; I must; I want; to have; We must warn; We can go hungry",
       "explanation": "Modal auxiliaries anchor German sentence frames and simplify communication."
     },
     {

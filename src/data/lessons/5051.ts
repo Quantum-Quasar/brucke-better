@@ -57,7 +57,7 @@ const lesson: Lesson = {
     {
       "id": "l5051_e1",
       "type": "matching_pairs",
-      "prompt": "Match each scene with its case-logic:",
+      "prompt": "Match each scene with its case-logic. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "tw1",
@@ -78,10 +78,20 @@ const lesson: Lesson = {
           "id": "tw4",
           "english": "on the table (location)",
           "german": "auf dem Tisch"
+        },
+        {
+          "id": "recall1",
+          "german": "hinter dem Haus",
+          "english": "behind the house"
+        },
+        {
+          "id": "recall2",
+          "german": "neben dem Garten",
+          "english": "beside the garden"
         }
       ],
-      "target_answer": "in die Stadt, in der Stadt, auf den Tisch, auf dem Tisch",
-      "meaning": "the four-way pair drill",
+      "target_answer": "in die Stadt, in der Stadt, auf den Tisch, auf dem Tisch, hinter dem Haus, neben dem Garten",
+      "meaning": "into the city (motion); in the city (location); onto the table (motion); on the table (location); behind the house; beside the garden",
       "explanation": "Same preposition, same nouns — the question (wohin? or wo?) alone decides the case."
     },
     {

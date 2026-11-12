@@ -58,7 +58,7 @@ Use a familiar word or a clear pattern to make new German easier to remember, th
 
 ### Pillar 3: Spaced Repetition Review Hub (`/review`)
 - **Algorithm**: Unified SuperMemo SM-2 interval scheduler (`src/lib/srs.ts`) tracking repetitions, ease factors, lapses, intervals, and due dates.
-- **10 review deck types** (`DECK_CAPABILITIES` in `src/lib/review-decks.ts`); beginner actions lead, advanced filters are disclosed on demand:
+- **10 review deck types** for vocabulary/example entities (`DECK_CAPABILITIES` in `src/lib/review-decks.ts`); beginner actions lead, advanced filters are disclosed on demand. Failed sentence processes have a separate additive queue:
   1. **Due Today**: Spaced repetition queue filtered by algorithmic due date.
   2. **By Shift Family**: Filterable practice by individual consonant shift.
   3. **By Domain**: Words grouped by the `domain` column of the compendium.
@@ -76,6 +76,9 @@ Use a familiar word or a clear pattern to make new German easier to remember, th
   - `typing` (Derivation Typing): Type full derivation with on-screen umlaut bar.
 - **Active Recall Shield**: Front card hides gender article badges, displaying neutral placeholder `Gender: [ der / die / das ? ]` to avoid leaking answers before recall. Full color badge and pronunciation reveal on card flip.
 - **Review Style Prompt**: Multi-style decks open a selector before the session and allow style changes in-session. The article drill goes straight to MCQ.
+- **Failed sentence processes**: one language-scoped `SentenceCard` per `${lessonId}:${exerciseId}`, created on incorrect answers and persisted with progress. Replays use existing widgets, cap sessions at 15, and do not alter stars, lesson completion or word mastery. Assistance/near-miss replays grade Hard; wrong replays grade Again. See [`docs/SENTENCE_REVIEW.md`](docs/SENTENCE_REVIEW.md).
+- **Vocabulary frequency**: exact-form subtitle-corpus ranks enrich lexical entities; missing forms remain unranked. Due date and ease factor take precedence over frequency ordering. Provenance, pinned source revision and CC BY-SA attribution ship in `public/data/frequency-provenance.json`.
+- **Practice coverage**: German cores 5–30 include mixed-pattern recognition; the recurrence guard requires assessed retrieval of each taught word in two distinct lessons, excluding declaration-only appearances and duplicate surfaces.
 
 ---
 
@@ -130,9 +133,10 @@ In-page views: lessons and atlas details are rendered by `AppShell.tsx` (`Lesson
 
 ## 6. Key Data Entities & Schemas (`src/lib/types.ts`)
 
-- **`WordEntity`**: Primary vocabulary item. Fields include `id`, `target_word`, `english_cognate`, `english_meaning`, `gender` (`der`/`die`/`das` for German; `le`/`la`, `el`/`la`, `de`/`het` for the sibling courses; or `null`), `ipa`, `sound_shift_ids`, `shift_rule`, `context_phrase`, `context_translation`, `etymology_derivation`, `domain`.
+- **`WordEntity`**: Primary vocabulary item with meaning, pronunciation, context, domain and optional `frequencyRank` (`null` for an unmatched corpus form). Article and example-sentence entities do not borrow a lexical rank.
 - **`ShiftFamily`**: Consonant shift definition. Fields: `id`, `name`, `symbol`, `phonetic_rule`, `historical_linguistics`, `philological_note`, `literature_source`, `word_ids`.
 - **`SRSCard`**: Spaced repetition tracking card. Fields: `word_id`, `interval`, `repetitions`, `ease_factor`, `due_date`, `lapses`, `last_reviewed`.
+- **`SentenceCard`**: Failed-process schedule keyed by `id`, with `lessonId`, `exerciseId` and SM-2 interval/repetition/ease/lapse/date fields. Stored separately from word `srsCards` in the active language slice.
 - **`Lesson`**: Curriculum unit. Fields: `id`, `slug`, `title`, `subtitle`, `phase`, `shift_categories`, `word_ids`, `hook`, `pattern`, `table_word_ids`, `exercises` (typed by `ExerciseType`), `summary`, and an optional `twist`.
 - **`CompoundCalque`**: Transparent compound nouns. Fields: `id`, `compound`, `gender`, `literal_morphemes`, `real_meaning`, `english_counterpart`, `lore`.
 - **`FalseFriend`**: Deceptive cognate traps. Fields: `id`, `german_word`, `looks_like`, `actual_meaning`, `trap_note`.
@@ -179,9 +183,11 @@ bun scripts/audit-word-refs.ts    # every word/table_word/transcribe/dictation/f
 bun scripts/audit-teasers.ts      # title + curiosity_teaser chain drift (must be 0)
 bun scripts/audit-wording.ts      # adjacent-lesson wording report; not a mandate to prove historical derivations
 bun scripts/audit-vocab-balance.ts --strict
+bun scripts/audit-recurrence.ts --strict # assessed German retrieval floor, including lesson/exercise-type report
 
 # 6. Browser smoke suite (Playwright; starts its own dev server on :3111)
 bun run test:e2e
+bun run test:product             # after build: keyboard completion, widget accessibility, mobile 4G budgets
 ```
 
 ---

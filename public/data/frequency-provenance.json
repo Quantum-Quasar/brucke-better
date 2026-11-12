@@ -1,0 +1,37 @@
+{
+  "title": "App vocabulary surface-form frequency ranks",
+  "attribution": "Hermit Dave, FrequencyWords; generated from the OPUS OpenSubtitles 2018 tokenized corpus.",
+  "source": "https://github.com/hermitdave/FrequencyWords/tree/525f9b560de45753a5ea01069454e72e9aa541c6/content/2018",
+  "sourceReadme": "https://github.com/hermitdave/FrequencyWords/blob/525f9b560de45753a5ea01069454e72e9aa541c6/README.md",
+  "corpus": "https://opus.nlpl.eu/OpenSubtitles.php",
+  "revision": "525f9b560de45753a5ea01069454e72e9aa541c6",
+  "license": "CC-BY-SA-4.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "licenseText": "https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt",
+  "notice": "The source content and this derived rank subset are licensed under CC BY-SA 4.0, provided without warranties. No endorsement is implied. The source repository's MIT license applies to its code, not these data.",
+  "modifications": "Selected only app vocabulary; converted source line positions to ranks; NFC-normalized and lowercased exact surface-form lookup; explicit null for absent forms. Counts omitted. No lemmatization or inferred inflection frequencies.",
+  "limits": "Ranks are positions in each language's 50,000-form subtitle list, not general-language or lemma frequencies. Subtitle dialogue, names, spelling and corpus selection affect ranks. Missing means not matched, not necessarily rare. Sentences are not ranked.",
+  "generatedBy": "bun scripts/generate-frequency.ts",
+  "sources": {
+    "de": {
+      "url": "https://raw.githubusercontent.com/hermitdave/FrequencyWords/525f9b560de45753a5ea01069454e72e9aa541c6/content/2018/de/de_50k.txt",
+      "sha256": "d9e50546fd7e8b6fe6542a2b33c51d1331092b2a3916ec09f80d97856068705b",
+      "forms": 50000
+    },
+    "fr": {
+      "url": "https://raw.githubusercontent.com/hermitdave/FrequencyWords/525f9b560de45753a5ea01069454e72e9aa541c6/content/2018/fr/fr_50k.txt",
+      "sha256": "f81f7c570b6433764da99aa30f4dfb08d81c5926301377b709af23a13b1f9596",
+      "forms": 50000
+    },
+    "es": {
+      "url": "https://raw.githubusercontent.com/hermitdave/FrequencyWords/525f9b560de45753a5ea01069454e72e9aa541c6/content/2018/es/es_50k.txt",
+      "sha256": "dcff3ad4316192f4dc4ff7d26e637c6ff314ef1ca0f3f720c5649018a71056c0",
+      "forms": 50000
+    },
+    "nl": {
+      "url": "https://raw.githubusercontent.com/hermitdave/FrequencyWords/525f9b560de45753a5ea01069454e72e9aa541c6/content/2018/nl/nl_50k.txt",
+      "sha256": "099bd0c27b514d54284360ad9ce2b4ef7b6903b22e848b67ab10f6aa2adb4baa",
+      "forms": 50000
+    }
+  }
+}

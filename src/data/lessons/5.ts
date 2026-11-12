@@ -91,7 +91,7 @@ const lesson: Lesson = {
     {
       "id": "l5_e2",
       "type": "matching_pairs",
-      "prompt": "Match the English T words to their German S/SS/Z shifts:",
+      "prompt": "Match the English T words to their German S/SS/Z shifts. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "t1",
@@ -112,28 +112,66 @@ const lesson: Lesson = {
           "id": "t4",
           "english": "hate",
           "german": "hassen"
+        },
+        {
+          "id": "recall1",
+          "german": "dick und dünn",
+          "english": "thick and thin"
+        },
+        {
+          "id": "recall2",
+          "german": "der Donner",
+          "english": "the thunder"
+        },
+        {
+          "id": "recall3",
+          "german": "der Dorn",
+          "english": "the thorn"
+        },
+        {
+          "id": "recall4",
+          "german": "der Daumen",
+          "english": "the thumb"
+        },
+        {
+          "id": "recall5",
+          "german": "Wir haben Durst",
+          "english": "We are thirsty"
+        },
+        {
+          "id": "recall5b",
+          "german": "Die Erde ist groß",
+          "english": "The earth is large"
+        },
+        {
+          "id": "spaced1",
+          "german": "die Pflanze",
+          "english": "the plant"
+        },
+        {
+          "id": "spaced2",
+          "german": "das Bad",
+          "english": "the bath"
         }
       ],
-      "target_answer": "besser, essen, zwei, hassen",
-      "meaning": "better, to eat, two, to hate",
+      "target_answer": "besser, essen, zwei, hassen, dick und dünn, der Donner, der Dorn, der Daumen, Wir haben Durst, Die Erde ist groß, die Pflanze, das Bad",
+      "meaning": "better; eat; two; hate; thick and thin; the thunder; the thorn; the thumb; We are thirsty; The earth is large; the plant; the bath",
       "shift_hint": "T → S/SS/Z",
-      "affirmation": "Four t-words hissed into German — ss after vowels, z at the front door. You're starting to hear it everywhere.",
       "explanation": "T becomes ss after vowels, and z at the start of words."
     },
     {
       "id": "l5_e3",
       "type": "shift_select",
-      "prompt": "What consonant shift connects English 'better' and German 'besser'?",
-      "target_answer": "T → S/SS",
-      "meaning": "English better ↔ German besser (T → SS)",
+      "prompt": "Pick the pair whose connection differs from the other three.",
       "options": [
-        "TH → D",
-        "K → CH",
-        "P → F/FF",
-        "T → S/SS"
+        "thank → danken",
+        "three → drei",
+        "apple → Apfel",
+        "think → denken"
       ],
-      "affirmation": "You read besser backwards to better — the doubled ss whispers its tt origin.",
-      "explanation": "Medial tt shifted into geminate sibilant ss."
+      "target_answer": "apple → Apfel",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Think, thank and three use TH → D. Apple → Apfel uses P → PF."
     },
     {
       "id": "l5_e4",

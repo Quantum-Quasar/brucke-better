@@ -64,7 +64,7 @@ const lesson: Lesson = {
     {
       "id": "l3003_e1",
       "type": "matching_pairs",
-      "prompt": "Mixed round — match at full speed:",
+      "prompt": "Mixed round — match at full speed. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "rg1",
@@ -85,10 +85,45 @@ const lesson: Lesson = {
           "id": "rg4",
           "english": "took (nim's past)",
           "german": "nahm"
+        },
+        {
+          "id": "recall1",
+          "german": "mein Bauch",
+          "english": "my belly"
+        },
+        {
+          "id": "recall2",
+          "german": "das Gift",
+          "english": "the poison"
+        },
+        {
+          "id": "recall3",
+          "german": "mein Handy",
+          "english": "my mobile phone"
+        },
+        {
+          "id": "recall4",
+          "german": "Das ist aktuell",
+          "english": "That is current"
+        },
+        {
+          "id": "recall4b",
+          "german": "Ich komme bald",
+          "english": "I am coming soon"
+        },
+        {
+          "id": "recall5",
+          "german": "Das Kind ist brav",
+          "english": "The child is well-behaved"
+        },
+        {
+          "id": "recall5b",
+          "german": "Ich bin fast fertig",
+          "english": "I am almost finished"
         }
       ],
-      "target_answer": "tief, sagte, sieben, nahm",
-      "meaning": "deep, said, seven, took",
+      "target_answer": "tief, sagte, sieben, nahm, mein Bauch, das Gift, mein Handy, Das ist aktuell, Ich komme bald, Das Kind ist brav, Ich bin fast fertig",
+      "meaning": "deep (double shift); said (y→g past); seven (v→b); took (nim's past); my belly; the poison; my mobile phone; That is current; I am coming soon; The child is well-behaved; I am almost finished",
       "explanation": "Four shift families in one round — the decode engine at full speed."
     },
     {

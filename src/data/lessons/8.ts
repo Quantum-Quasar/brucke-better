@@ -80,7 +80,7 @@ const lesson: Lesson = {
     {
       "id": "l8_e2",
       "type": "matching_pairs",
-      "prompt": "Match the English Latinate verbs with their German -ieren counterparts:",
+      "prompt": "Match the English Latinate verbs with their German -ieren counterparts. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "ir1",
@@ -116,26 +116,36 @@ const lesson: Lesson = {
           "id": "ir7",
           "english": "to exist",
           "german": "existieren"
+        },
+        {
+          "id": "recall1",
+          "german": "Der Tod kommt",
+          "english": "Death comes"
+        },
+        {
+          "id": "recall1b",
+          "german": "ein Traum",
+          "english": "a dream"
         }
       ],
-      "target_answer": "studieren, reparieren, funktionieren, kapieren, akzeptieren, informieren, existieren",
-      "meaning": "to study, to repair, to function, to grasp, to accept, to inform, to exist",
+      "target_answer": "studieren, reparieren, funktionieren, kapieren, akzeptieren, informieren, existieren, Der Tod kommt, ein Traum",
+      "meaning": "to study; to repair; to function / work; to grasp / understand; to accept; to inform; to exist; Death comes; a dream",
       "shift_hint": "-ate / -ize / -ish → -ieren",
       "explanation": "French/Latin verbs entered English directly and entered German through the -ieren suffix — accept, inform and exist included."
     },
     {
       "id": "l8_e3",
       "type": "shift_select",
-      "prompt": "Why do verbs ending in '-ieren' never take the prefix 'ge-' in the past participle (e.g. studiert, NOT gestudiert)?",
+      "prompt": "Which pair needs a different memory aid from its three neighbours?",
       "options": [
-        "Only transitive verbs take 'ge-'",
-        "Because they are borrowed from English",
-        "Because they are irregular strong verbs",
-        "The stress is on the suffix (-IE-ren), and German only adds 'ge-' to verbs with root stress"
+        "make → machen",
+        "cook → kochen",
+        "milk → Milch",
+        "cold → kalt"
       ],
-      "target_answer": "The stress is on the suffix (-IE-ren), and German only adds 'ge-' to verbs with root stress",
-      "meaning": "Stress rule for -ieren past participles",
-      "explanation": "German past participle prefix ge- attaches only to verbs with initial syllable stress. Since -ieren shifts stress to the suffix, ge- is phonetically rejected."
+      "target_answer": "cold → kalt",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Make, cook and milk use K → CH. Cold → kalt uses D → T at the end."
     },
     {
       "id": "l8_e4",

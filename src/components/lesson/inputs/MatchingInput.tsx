@@ -7,6 +7,10 @@ export default function MatchingInput({ controller }: { controller: ClassicExerc
   const { exercise, selectedEnglish, matchedPairs, settings, language, displayGermanPairs, handleSelectEnglish, handleSelectGerman } = controller;
   return exercise.matching_pairs && (
         <div className="grid grid-cols-2 gap-4 pt-1">
+          <p className="sr-only" role="status" aria-live="polite">
+            {matchedPairs.length} of {exercise.matching_pairs.length} pairs matched.
+            {selectedEnglish ? ` Selected ${selectedEnglish}; choose its ${language.name} match.` : " Choose an English word."}
+          </p>
           {/* Left Column: English Cognates */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
@@ -28,6 +32,7 @@ export default function MatchingInput({ controller }: { controller: ClassicExerc
                   type="button"
                   onClick={() => handleSelectEnglish(pair.english)}
                   disabled={isMatched}
+                  aria-label={`${pair.english}${isMatched ? ", matched" : ""}`}
                   aria-pressed={isSelected}
                   className={`w-full p-3 rounded-lg border text-xs font-mono transition text-left flex items-center justify-between cursor-pointer ${
                     isMatched
@@ -39,7 +44,7 @@ export default function MatchingInput({ controller }: { controller: ClassicExerc
                 >
                   <span className="flex items-center gap-2">
                     {settings.showKeyTips && !isMatched && (
-                      <span className="keycap text-[10px]">
+                      <span className="keycap text-[10px]" aria-hidden="true">
                         {index + 1}
                       </span>
                     )}
@@ -65,14 +70,14 @@ export default function MatchingInput({ controller }: { controller: ClassicExerc
             </div>
             {displayGermanPairs.map((pair, index) => {
               const isMatched = matchedPairs.includes(pair.id);
-              const isSelected = false;
               return (
                 <button
                   key={`de_${pair.id}`}
                   type="button"
                   onClick={() => handleSelectGerman(pair.german, pair.id, pair.english)}
                   disabled={isMatched}
-                  aria-pressed={isSelected}
+                  aria-label={`${pair.german}${isMatched ? ", matched" : ""}`}
+                  aria-pressed={isMatched}
                   className={`w-full p-3 rounded-lg border text-xs font-mono transition text-left flex items-center justify-between cursor-pointer ${
                     isMatched
                       ? "bg-[var(--main-color)]/10 border-[var(--main-color)]/30 text-[var(--main-color)] opacity-60"
@@ -81,7 +86,7 @@ export default function MatchingInput({ controller }: { controller: ClassicExerc
                 >
                   <span className="flex items-center gap-2">
                     {settings.showKeyTips && selectedEnglish && !isMatched && (
-                      <span className="keycap text-[10px]">
+                      <span className="keycap text-[10px]" aria-hidden="true">
                         {index + 1}
                       </span>
                     )}

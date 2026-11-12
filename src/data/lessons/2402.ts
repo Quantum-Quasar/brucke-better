@@ -90,7 +90,7 @@ const lesson: Lesson = {
     {
       "id": "l2402_e3",
       "type": "matching_pairs",
-      "prompt": "Match the comparison sentences with their English meanings:",
+      "prompt": "Match the comparison sentences with their English meanings. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "sg1",
@@ -116,10 +116,15 @@ const lesson: Lesson = {
           "id": "sg5",
           "english": "The test is harder than the game",
           "german": "Der Test ist schwerer als das Spiel"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir fahren langsam mit dem Rad",
+          "english": "We travel slowly by bike"
         }
       ],
-      "target_answer": "Ich bin älter als du, Das Wasser ist zu kalt, Kaffee ist besser als Tee, Das Haus ist so groß wie ein Schloss, Der Test ist schwerer als das Spiel",
-      "meaning": "four comparison patterns and a heavyweight",
+      "target_answer": "Ich bin älter als du, Das Wasser ist zu kalt, Kaffee ist besser als Tee, Das Haus ist so groß wie ein Schloss, Der Test ist schwerer als das Spiel, Wir fahren langsam mit dem Rad",
+      "meaning": "I am older than you; The water is too cold; Coffee is better than tea; The house is as big as a castle; The test is harder than the game; We travel slowly by bike",
       "explanation": "als compares down the ladder, wie holds it level, zu cranks it — three tools, one gym. schwer (heavy, difficult) weighs in: schwerer als — heavier than."
     },
     {

@@ -109,6 +109,7 @@ export const createHydrationSlice: StoreSlice<"hydrateFromStorage"> = (set, get)
           passedGateIds: activeSlice.passedGateIds,
           wordMastery: activeSlice.wordMastery,
           srsCards: activeSlice.srsCards,
+          sentenceCards: activeSlice.sentenceCards,
           weeklyActivity: activeSlice.weeklyActivity,
           lastActivityWeek: activeSlice.lastActivityWeek,
           activeWordDrawerId: isLangSwitch ? null : s.activeWordDrawerId,

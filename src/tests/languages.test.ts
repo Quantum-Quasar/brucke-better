@@ -265,6 +265,7 @@ describe("store multi-language progress", () => {
       passedGateIds: [],
       wordMastery: {},
       srsCards: {},
+      sentenceCards: {},
       weeklyActivity: [true, false, false, false, false, false, false],
     };
     useAppStore.setState((s) => ({ progressByLanguage: { ...s.progressByLanguage, fr: slice } }));

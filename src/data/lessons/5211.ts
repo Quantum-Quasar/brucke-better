@@ -64,7 +64,7 @@ const lesson: Lesson = {
     {
       "id": "l5211_e1",
       "type": "matching_pairs",
-      "prompt": "Am Tisch — match each sentence with its reading:",
+      "prompt": "Am Tisch — match each sentence with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "t11",
@@ -95,10 +95,15 @@ const lesson: Lesson = {
           "id": "t16",
           "english": "The fork and the knife are on the table",
           "german": "Die Gabel und das Messer sind auf dem Tisch"
+        },
+        {
+          "id": "recall1",
+          "german": "die Etage",
+          "english": "the floor (storey)"
         }
       ],
-      "target_answer": "Einen Moment, bitte, die Kanne ist heiß, Das Wasser ist in der Flasche, Ich trinke den Kaffee aus dem Becher, Die Hälfte der Teller ist hier, Die Zahl ist vier, Die Gabel und das Messer sind auf dem Tisch",
-      "meaning": "a hot pot and a polite warning, water in the bottle, coffee from the mug, half the plates here, the number four, fork and knife on the table",
+      "target_answer": "Einen Moment, bitte, die Kanne ist heiß, Das Wasser ist in der Flasche, Ich trinke den Kaffee aus dem Becher, Die Hälfte der Teller ist hier, Die Zahl ist vier, Die Gabel und das Messer sind auf dem Tisch, die Etage",
+      "meaning": "A moment please, the pot is hot; The water is in the bottle; I drink the coffee from the mug; Half of the plates are here; The number is four; The fork and the knife are on the table; the floor (storey)",
       "explanation": "The table set in six sentences. in der Flasche is dative because the water rests there; aus dem Becher is dative because the coffee only leaves it; and die Gabel und das Messer shows the gender flip — die, then das — with no warning."
     },
     {

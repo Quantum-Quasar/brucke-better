@@ -71,7 +71,7 @@ const lesson: Lesson = {
     {
       "id": "l1302_e2",
       "type": "matching_pairs",
-      "prompt": "Match each statement with its flipped question:",
+      "prompt": "Match each statement with its flipped question. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "nd1",
@@ -92,10 +92,30 @@ const lesson: Lesson = {
           "id": "nd4",
           "english": "Kommst du morgen?",
           "german": "Du kommst morgen"
+        },
+        {
+          "id": "recall1",
+          "german": "Warum kommen wir",
+          "english": "Why are we coming"
+        },
+        {
+          "id": "recall2",
+          "german": "Wohin gehen wir",
+          "english": "Where are we going to"
+        },
+        {
+          "id": "recall3",
+          "german": "Wir können das Tier kennen",
+          "english": "We can know the animal"
+        },
+        {
+          "id": "context1",
+          "german": "Das Bier ist billig",
+          "english": "The beer is cheap"
         }
       ],
-      "target_answer": "Du kannst kommen, Er ist da, Du hast Zeit, Du kommst morgen",
-      "meaning": "can you come, is he here, do you have time, are you coming tomorrow",
+      "target_answer": "Du kannst kommen, Er ist da, Du hast Zeit, Du kommst morgen, Warum kommen wir, Wohin gehen wir, Wir können das Tier kennen, Das Bier ist billig",
+      "meaning": "Kannst du kommen?; Ist er da?; Hast du Zeit?; Kommst du morgen?; Why are we coming; Where are we going to; We can know the animal; The beer is cheap",
       "explanation": "One flip each: the conjugated verb steps in front of the subject, nothing else moves."
     },
     {

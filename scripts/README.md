@@ -14,6 +14,7 @@ run by hand.
 | `parse-compendium.ts` | `bun run parse-data` | **The one script that must run before `next build`.** Parses [`word_connections.md`](../word_connections.md) into `src/data/compendium.json` and `src/data/insights.json`. |
 | `export-client-data.ts` | `bun run export-data` | Exports each language's compendium, compact lesson index and one payload per lesson (`lesson` + its trimmed compendium) to `public/data/<lang>/`, plus the generated `src/data/shift-names.json`. `dev` and `build` run it automatically. |
 | `append-words.mjs` | `bun scripts/append-words.mjs <json…>` | Batch-appends word records to §2 of `word_connections.md` (numbered after the current max; dedupes by German headword). Run `parse-data` afterwards. |
+| `generate-frequency.ts` | `bun scripts/generate-frequency.ts` | Fetches pinned FrequencyWords/OpenSubtitles lists, verifies SHA-256 checksums, and writes compact exact-form rank subsets plus CC BY-SA provenance. Run when the vocabulary inventory changes, not during every build. |
 
 `word_connections.md` is the hand-maintained source of truth for every word,
 shift family, compound, trap, and insight. `compendium.json` is **generated** —
@@ -40,6 +41,13 @@ Lesson authoring is per-file (`src/data/lessons/<id>.ts` for German;
 are build/audit inputs only. Exporting still creates one JSON payload per lesson;
 splitting source files does not make the browser download the full course.
 
+Frequency metadata is attached during export, not imported as a corpus by the browser.
+Missing forms stay `null`; ranks describe subtitle surface forms, not lemma frequency
+or general usefulness. Author candidates can be ranked with
+`bun scripts/generate-frequency.ts --suggestions=words.json --language=de`;
+the input is an array such as `[{"target_word":"Wasser"}]`. Attribution and source
+limits live in `public/data/frequency-provenance.json`.
+
 ## Audits
 
 These read the codebase and report. `audit-word-refs`, `audit-teasers`, `audit-wording` and
@@ -55,6 +63,7 @@ summary is `title drift: 0 | teaser flags: 0`.
 | `audit-wording.ts` | **No cargo-cult repetition.** Blocks `explanation` strings, prose sentences, and prompt formulas copy-pasted between neighbouring lessons, while an allowlist protects widget labels that are *meant* to stay identical. |
 | `audit-word-refs.ts` | Word-reference integrity — every lesson/exercise token reference resolves; exits 1 on failure. |
 | `audit-teasers.ts` | Lesson title drift and `curiosity_teaser` chaining: each teaser must point at the next node in trail order. |
+| `audit-recurrence.ts` | Assessed German retrieval by word, lesson and exercise type. `--strict` enforces two distinct lessons; `--all`/`--json` expose the map. Declarations, banks, hints, duplicate surfaces and ungraded twists do not count. The same helper is enforced by `curriculum-recurrence.test.ts` in CI. |
 | `contrast-audit.ts` | One-off fixer for theme contrast. Walks all themes and nudges failing colors' lightness while preserving hue and saturation, then regenerates `POPULAR_THEMES` from the passing set. The WCAG thresholds are *enforced* by `src/tests/themes.test.ts`, so this is only needed when adding or editing a theme. |
 
 ## Output

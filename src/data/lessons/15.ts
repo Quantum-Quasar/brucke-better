@@ -105,12 +105,17 @@ const lesson: Lesson = {
     },
     {
       "id": "l15_e3",
-      "type": "derive",
-      "prompt": "Send the prefix home: 'Wir kommen morgen _____' (come back):",
-      "english_hint": "the prefix rides at the end",
-      "target_answer": "zurück",
-      "meaning": "Wir kommen morgen zurück = We are coming back tomorrow",
-      "explanation": "zurückkommen splits: kommen in position 2, zurück at the caboose — 'come back' with the back-word last."
+      "type": "shift_select",
+      "prompt": "Recall the earlier clues: which of these pairs is the outsider?",
+      "options": [
+        "hope → hoffen",
+        "thin → dünn",
+        "thorn → Dorn",
+        "thumb → Daumen"
+      ],
+      "target_answer": "hope → hoffen",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Thin, thorn and thumb use TH → D. Hope → hoffen uses P → FF."
     },
     {
       "id": "l15_e4",

@@ -58,7 +58,7 @@ const lesson: Lesson = {
     {
       "id": "l5011_e1",
       "type": "matching_pairs",
-      "prompt": "Match the T–V forms with their English twins:",
+      "prompt": "Match the T–V forms with their English twins. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "tv1",
@@ -79,10 +79,40 @@ const lesson: Lesson = {
           "id": "tv4",
           "english": "to-you-formal",
           "german": "Ihnen"
+        },
+        {
+          "id": "recall1",
+          "german": "Gift im Glas",
+          "english": "poison in the glass"
+        },
+        {
+          "id": "recall2",
+          "german": "das Handy",
+          "english": "the mobile phone"
+        },
+        {
+          "id": "recall3",
+          "german": "Das Handy ist aktuell und teuer",
+          "english": "The mobile phone is current and expensive"
+        },
+        {
+          "id": "recall4",
+          "german": "Das Kind ist brav und lustig",
+          "english": "The child is well-behaved and funny"
+        },
+        {
+          "id": "recall5",
+          "german": "bald kommen",
+          "english": "to come soon"
+        },
+        {
+          "id": "recall6",
+          "german": "der Chef",
+          "english": "the boss"
         }
       ],
-      "target_answer": "du, dir, Sie, Ihnen",
-      "meaning": "thou, to-thee, you-formal, to-you-formal",
+      "target_answer": "du, dir, Sie, Ihnen, Gift im Glas, das Handy, Das Handy ist aktuell und teuer, Das Kind ist brav und lustig, bald kommen, der Chef",
+      "meaning": "thou (informal); thee, to-thee (informal dative); you-formal (grammatically 'they'); to-you-formal; poison in the glass; the mobile phone; The mobile phone is current and expensive; The child is well-behaved and funny; to come soon; the boss",
       "explanation": "The T–V ladder: du/dir for the close circle, Sie/Ihnen for the respectful distance — English retired it, German lives in it."
     },
     {

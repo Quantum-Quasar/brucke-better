@@ -10,9 +10,8 @@ import { ThemeSwatch, useThemeFilter } from "@/components/common/theme-picker";
 /** The open dropdown body. Split from the trigger so the 187-theme table is
  * only downloaded when someone opens the theme menu. */
 export default function ThemeDropdownPanel({ onClose }: { onClose: () => void }) {
-  const { query, setQuery, activeTab, setActiveTab, filteredThemes } = useThemeFilter();
-
   const currentTheme = useAppStore((s) => s.theme);
+  const { query, setQuery, activeTab, setActiveTab, filteredThemes } = useThemeFilter(currentTheme);
   const setTheme = useAppStore((s) => s.setTheme);
   const openThemeSelector = useAppStore((s) => s.openThemeSelector);
   const openFontSelector = useAppStore((s) => s.openFontSelector);
@@ -60,6 +59,7 @@ export default function ThemeDropdownPanel({ onClose }: { onClose: () => void })
           <button
             type="button"
             onClick={() => setActiveTab("popular")}
+            aria-pressed={activeTab === "popular"}
             className={`min-h-9 rounded px-2 py-1 transition cursor-pointer flex items-center gap-1 shrink-0 ${
               activeTab === "popular"
                 ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
@@ -67,12 +67,13 @@ export default function ThemeDropdownPanel({ onClose }: { onClose: () => void })
             }`}
           >
             <Sparkles className="w-2.5 h-2.5" />
-            <span>Popular ({POPULAR_THEMES.length})</span>
+            <span>Recommended ({POPULAR_THEMES.length})</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab("dark")}
+            aria-pressed={activeTab === "dark"}
             className={`min-h-9 rounded px-2 py-1 transition cursor-pointer flex items-center gap-1 shrink-0 ${
               activeTab === "dark"
                 ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
@@ -86,6 +87,7 @@ export default function ThemeDropdownPanel({ onClose }: { onClose: () => void })
           <button
             type="button"
             onClick={() => setActiveTab("light")}
+            aria-pressed={activeTab === "light"}
             className={`min-h-9 rounded px-2 py-1 transition cursor-pointer flex items-center gap-1 shrink-0 ${
               activeTab === "light"
                 ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
@@ -99,13 +101,14 @@ export default function ThemeDropdownPanel({ onClose }: { onClose: () => void })
           <button
             type="button"
             onClick={() => setActiveTab("all")}
+            aria-pressed={activeTab === "all"}
             className={`min-h-9 rounded px-2 py-1 transition cursor-pointer shrink-0 ${
               activeTab === "all"
                 ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
                 : "bg-[var(--bg-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
             }`}
           >
-            All ({THEME_LIST.length})
+            Show all ({THEME_LIST.length})
           </button>
         </div>
       </div>
@@ -123,6 +126,7 @@ export default function ThemeDropdownPanel({ onClose }: { onClose: () => void })
                 setTheme(theme.id);
                 onClose();
               }}
+              aria-pressed={isSelected}
               className={`w-full min-h-10 px-2.5 py-1.5 rounded text-left transition flex items-center justify-between cursor-pointer group ${
                 isSelected
                   ? "bg-[var(--sub-alt-color)] border border-[var(--main-color)]/50"
@@ -140,7 +144,7 @@ export default function ThemeDropdownPanel({ onClose }: { onClose: () => void })
                   {theme.name}
                 </span>
                 <span className="text-[9px] font-mono text-[var(--sub-color)] shrink-0">
-                  {theme.isDark ? "dark" : "light"}
+                  {theme.id === "dark" ? "high contrast · dark" : theme.isDark ? "dark" : "light"}
                 </span>
               </div>
 

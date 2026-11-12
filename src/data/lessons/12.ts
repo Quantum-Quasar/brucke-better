@@ -65,21 +65,21 @@ const lesson: Lesson = {
     {
       "id": "l12_e1",
       "type": "shift_select",
-      "prompt": "Negate the noun: 'Ich habe Zeit' →",
+      "prompt": "Which familiar pair breaks the pattern of the other three?",
       "options": [
-        "Ich habe nicht Zeit",
-        "Ich nicht habe Zeit",
-        "Ich habe Zeit nicht",
-        "Ich habe keine Zeit"
+        "out → aus",
+        "what → was",
+        "two → zwei",
+        "week → Woche"
       ],
-      "target_answer": "Ich habe keine Zeit",
-      "meaning": "I have no time",
-      "explanation": "Nouns take kein (declined like ein): keine Zeit. nicht is for verbs and adjectives."
+      "target_answer": "week → Woche",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Out, what and two use T → S/Z. Week → Woche uses K → CH."
     },
     {
       "id": "l12_e2",
       "type": "matching_pairs",
-      "prompt": "Match each negated sentence with its English meaning:",
+      "prompt": "Match each negated sentence with its English meaning. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "nk1",
@@ -120,10 +120,25 @@ const lesson: Lesson = {
           "id": "nk8",
           "english": "No fog today",
           "german": "kein Nebel heute"
+        },
+        {
+          "id": "recall1",
+          "german": "die Tasse",
+          "english": "the cup"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können wissen",
+          "english": "We can know"
+        },
+        {
+          "id": "spaced1",
+          "german": "das Bett ist teuer",
+          "english": "the bed is expensive"
         }
       ],
-      "target_answer": "Ich kann nicht kommen, Ich habe kein Haus, Das ist nicht gut, Wir haben keine Zeit, nicht laut — leise, Das Getränk ist nicht billig, keine Insel, kein Nebel heute",
-      "meaning": "I cannot come, I have no house, that is not good, we have no time, not loud — quiet, the drink is not cheap, no island, no fog today",
+      "target_answer": "Ich kann nicht kommen, Ich habe kein Haus, Das ist nicht gut, Wir haben keine Zeit, nicht laut — leise, Das Getränk ist nicht billig, keine Insel, kein Nebel heute, die Tasse, Wir können wissen, das Bett ist teuer",
+      "meaning": "I cannot come; I have no house; That is not good; We have no time; not loud — quiet; The drink is not cheap; No island; No fog today; the cup; We can know; the bed is expensive",
       "explanation": "Verbs and adjectives take nicht; noun phrases take kein, declined like ein: die Insel → keine Insel, der Nebel → kein Nebel. Two negations, two jobs."
     },
     {

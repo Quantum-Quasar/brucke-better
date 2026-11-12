@@ -173,7 +173,7 @@ export function saveState(state: AppState, options?: { immediate?: boolean }) {
     for (const entries of Object.values(versions)) {
       for (const version of Object.values(entries)) progressClock = Math.max(progressClock, Number(version.slice(0, 16)));
     }
-    for (const field of ["lessonProgress", "wordMastery", "srsCards"] as const) {
+    for (const field of ["lessonProgress", "wordMastery", "srsCards", "sentenceCards"] as const) {
       const before = current[field];
       const after = state[field];
       if (before === after) continue;

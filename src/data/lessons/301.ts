@@ -92,7 +92,7 @@ const lesson: Lesson = {
     {
       "id": "l301_e2",
       "type": "matching_pairs",
-      "prompt": "Match each English word with its German twin:",
+      "prompt": "Match each English word with its German twin. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "pf1",
@@ -128,10 +128,20 @@ const lesson: Lesson = {
           "id": "pf7",
           "english": "to get off",
           "german": "aussteigen"
+        },
+        {
+          "id": "recall1",
+          "german": "der Apfel ist reif",
+          "english": "the apple is ripe"
+        },
+        {
+          "id": "recall2",
+          "german": "das Schiff",
+          "english": "the ship"
         }
       ],
-      "target_answer": "Pfad, Pfund, Pfeffer, Pflug, Pfirsich, einsteigen, aussteigen",
-      "meaning": "path, pound, pepper, plow, peach, to board, to get off",
+      "target_answer": "Pfad, Pfund, Pfeffer, Pflug, Pfirsich, einsteigen, aussteigen, der Apfel ist reif, das Schiff",
+      "meaning": "path; pound; pepper; plow; peach; to board / get on; to get off; the apple is ripe; the ship",
       "shift_hint": "P → PF",
       "explanation": "Word-initial p exploded into the affricate pf in native German words — and the last two are the bracket infinitives from the modal topic, back for another ride."
     },

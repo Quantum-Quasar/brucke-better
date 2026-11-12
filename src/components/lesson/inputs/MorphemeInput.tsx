@@ -6,6 +6,9 @@ export default function MorphemeInput({ controller }: { controller: ClassicExerc
   const { selectedIndices, status, settings, language, sanitizedTileOptions, pickTileIndex, unpickTilePosition } = controller;
   return (
         <div className="space-y-4">
+          <p className="sr-only" role="status" aria-live="polite">
+            {selectedIndices.length ? `Selected tiles: ${selectedIndices.map((index) => sanitizedTileOptions[index]).join(" ")}` : "No tiles selected"}
+          </p>
           {/* Target Assembly Slot */}
           <div className="min-h-[58px] p-3 rounded-lg bg-[var(--bg-color)] border border-dashed border-[var(--sub-color)]/30 flex flex-wrap gap-2 items-center justify-center">
             {selectedIndices.length === 0 ? (
@@ -16,6 +19,9 @@ export default function MorphemeInput({ controller }: { controller: ClassicExerc
               selectedIndices.map((tileIdx, pos) => (
                 <button
                   key={`${sanitizedTileOptions[tileIdx]}-${tileIdx}-${pos}`}
+                  type="button"
+                  aria-label={`Remove ${sanitizedTileOptions[tileIdx]} from answer, position ${pos + 1}`}
+                  disabled={status === "correct" || status === "almost"}
                   onClick={() => unpickTilePosition(pos)}
                   className="px-3 py-1.5 rounded bg-[var(--main-color)]/15 text-[var(--main-color)] border border-[var(--main-color)]/40 text-sm font-bold hover:bg-[var(--error-color)]/20 hover:text-[var(--error-color)] hover:border-[var(--error-color)]/40 transition flex items-center gap-1.5 cursor-pointer"
                   title="Click or press Backspace to unpick"
@@ -37,6 +43,8 @@ export default function MorphemeInput({ controller }: { controller: ClassicExerc
                   type="button"
                   onClick={() => pickTileIndex(i)}
                   disabled={isUsed || status === "correct" || status === "almost"}
+                  aria-label={tile}
+                  aria-pressed={isUsed}
                   className={`px-3.5 py-2 rounded-lg border text-xs font-bold transition flex items-center gap-2 cursor-pointer ${
                     isUsed
                       ? "opacity-25 border-[var(--sub-color)]/10 bg-[var(--bg-color)] text-[var(--sub-color)] cursor-not-allowed"
@@ -44,7 +52,7 @@ export default function MorphemeInput({ controller }: { controller: ClassicExerc
                   }`}
                 >
                   {settings.showKeyTips && (
-                    <span className="keycap text-[10px]">
+                    <span className="keycap text-[10px]" aria-hidden="true">
                       {i + 1}
                     </span>
                   )}

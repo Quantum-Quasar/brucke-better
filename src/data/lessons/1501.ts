@@ -59,7 +59,7 @@ const lesson: Lesson = {
     {
       "id": "l1501_e1",
       "type": "matching_pairs",
-      "prompt": "Mirror wall round one — match the pairs:",
+      "prompt": "Mirror wall round one — match the pairs. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "pv1",
@@ -80,10 +80,30 @@ const lesson: Lesson = {
           "id": "pv4",
           "english": "agree on (a deal)",
           "german": "abmachen"
+        },
+        {
+          "id": "recall1",
+          "german": "meine Hoffnung",
+          "english": "my hope"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können versuchen",
+          "english": "We can try"
+        },
+        {
+          "id": "recall3",
+          "german": "Wir können aufmachen",
+          "english": "We can open"
+        },
+        {
+          "id": "recall4",
+          "german": "Wir können gut aussehen",
+          "english": "We can look good"
         }
       ],
-      "target_answer": "anmachen, zumachen, aussuchen, abmachen",
-      "meaning": "turn on, shut, pick out, agree on",
+      "target_answer": "anmachen, zumachen, aussuchen, abmachen, meine Hoffnung, Wir können versuchen, Wir können aufmachen, Wir können gut aussehen",
+      "meaning": "turn on (the light); shut (the door); pick out (a book); agree on (a deal); my hope; We can try; We can open; We can look good",
       "explanation": "an=on, zu=to/shut, aus=out, ab=off — the same particles as the English phrasal twins."
     },
     {

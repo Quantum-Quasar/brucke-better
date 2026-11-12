@@ -67,7 +67,7 @@ const lesson: Lesson = {
     {
       "id": "l2301_e1",
       "type": "matching_pairs",
-      "prompt": "The display cases — match each English fossil with its living German pair:",
+      "prompt": "The display cases — match each English fossil with its living German pair. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "fu1",
@@ -98,10 +98,40 @@ const lesson: Lesson = {
           "id": "fu6",
           "english": "cow / kine (archaic!)",
           "german": "Kuh / Kühe"
+        },
+        {
+          "id": "recall1",
+          "german": "das Blatt im Buch",
+          "english": "the sheet in the book"
+        },
+        {
+          "id": "recall1b",
+          "german": "das Auge",
+          "english": "the eye"
+        },
+        {
+          "id": "recall2",
+          "german": "das Ei",
+          "english": "the egg"
+        },
+        {
+          "id": "recall2b",
+          "german": "das Knie",
+          "english": "the knee"
+        },
+        {
+          "id": "recall3",
+          "german": "ein Auge",
+          "english": "an eye"
+        },
+        {
+          "id": "spaced1",
+          "german": "Die Briefmarke ist teuer",
+          "english": "The postage stamp is expensive"
         }
       ],
-      "target_answer": "Mann / Männer, Fuß / Füße, Maus / Mäuse, Tochter / Töchter, Vogel / Vögel, Kuh / Kühe",
-      "meaning": "the six oldest plural fossils",
+      "target_answer": "Mann / Männer, Fuß / Füße, Maus / Mäuse, Tochter / Töchter, Vogel / Vögel, Kuh / Kühe, das Blatt im Buch, das Auge, das Ei, das Knie, ein Auge, Die Briefmarke ist teuer",
+      "meaning": "man / men; foot / feet; mouse / mice; daughter / daughters; fowl (and its archaic kin); cow / kine (archaic!); the sheet in the book; the eye; the egg; the knee; an eye; The postage stamp is expensive",
       "explanation": "Same vowel-pull, same words — the dots in German are the only visible difference. Kine, English's own umlaut plural of cow, survived into the 1800s."
     },
     {

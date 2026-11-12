@@ -61,7 +61,7 @@ const lesson: Lesson = {
     {
       "id": "l1103_e1",
       "type": "matching_pairs",
-      "prompt": "Match the ladder rungs with their English twins:",
+      "prompt": "Match the ladder rungs with their English twins. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "pl1",
@@ -92,10 +92,15 @@ const lesson: Lesson = {
           "id": "pl6",
           "english": "my plate",
           "german": "mein Teller"
+        },
+        {
+          "id": "recall1",
+          "german": "jener Teller",
+          "english": "that plate over there"
         }
       ],
-      "target_answer": "mein, dein, sein, ihr, mein Bett, mein Teller",
-      "meaning": "my, thy, his, her, my bed, my plate",
+      "target_answer": "mein, dein, sein, ihr, mein Bett, mein Teller, jener Teller",
+      "meaning": "my / mine; thy / thine; his; her; my bed; my plate; that plate over there",
       "explanation": "One ladder, four rungs — and dein is literally thine with the dental hardening. The bare rung (no ending) takes the room words with it: mein Bett, mein Teller."
     },
     {

@@ -113,16 +113,16 @@ const lesson: Lesson = {
     {
       "id": "l11_e2",
       "type": "shift_select",
-      "prompt": "Complete: 'Ich habe _____ Teller' (with the possessive, accusative):",
+      "prompt": "Three pairs share a clue; which pair asks you to switch clues?",
       "options": [
-        "mein",
-        "meine",
-        "meinen",
-        "meiner"
+        "two → zwei",
+        "ship → Schiff",
+        "ape → Affe",
+        "ripe → reif"
       ],
-      "target_answer": "meinen",
-      "meaning": "Ich habe meinen Teller = I have my plate",
-      "explanation": "mein copies ein exactly: masculine accusative adds -en (the Him-Case): der Teller → meinen Teller."
+      "target_answer": "two → zwei",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Ship, ape and ripe use P → F/FF. Two → zwei uses T → Z."
     },
     {
       "id": "l11_e3",

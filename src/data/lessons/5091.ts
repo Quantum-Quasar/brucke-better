@@ -64,7 +64,7 @@ const lesson: Lesson = {
     {
       "id": "l5091_e1",
       "type": "matching_pairs",
-      "prompt": "Match the kin cognates:",
+      "prompt": "Match the kin cognates. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "bk1",
@@ -95,10 +95,25 @@ const lesson: Lesson = {
           "id": "bk6",
           "english": "the whole family (every generation under one roof)",
           "german": "die Familie"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können Max heißen",
+          "english": "We can be called Max"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können buchstabieren",
+          "english": "We can spell"
+        },
+        {
+          "id": "recall3",
+          "german": "ein Buchstabe",
+          "english": "a letter of the alphabet"
         }
       ],
-      "target_answer": "der Vater, die Mutter, der Sohn, die Tochter, die Schwester, die Familie",
-      "meaning": "father, mother, son, daughter, sister, family",
+      "target_answer": "der Vater, die Mutter, der Sohn, die Tochter, die Schwester, die Familie, Wir können Max heißen, Wir können buchstabieren, ein Buchstabe",
+      "meaning": "father (Verner's law, NOT V→B); mother (essentially unchanged); son (the h was once heard); daughter (double shift: d→t + gh→ch); sister (sw→schw); the whole family (every generation under one roof); We can be called Max; We can spell; a letter of the alphabet",
       "explanation": "Five twins and one warning label: Vater's v is [f] — Verner's law, not the V→B shift that turned give into geben."
     },
     {

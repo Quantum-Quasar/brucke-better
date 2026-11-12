@@ -71,7 +71,7 @@ const lesson: Lesson = {
     {
       "id": "l23_e1",
       "type": "matching_pairs",
-      "prompt": "Match each singular with its umlaut plural — and its English fossil:",
+      "prompt": "Match each singular with its umlaut plural — and its English fossil. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "pl1",
@@ -102,25 +102,50 @@ const lesson: Lesson = {
           "id": "pl6",
           "english": "Berg → ? (mountain, no dots needed)",
           "german": "Berge"
+        },
+        {
+          "id": "recall1",
+          "german": "Die Rechnung für die Bluse",
+          "english": "the bill for the blouse"
+        },
+        {
+          "id": "recall2",
+          "german": "die Lampe",
+          "english": "the lamp"
+        },
+        {
+          "id": "recall3",
+          "german": "ein Blatt",
+          "english": "a leaf"
+        },
+        {
+          "id": "recall4",
+          "german": "ein Ei",
+          "english": "an egg"
+        },
+        {
+          "id": "recall5",
+          "german": "ein Knie",
+          "english": "a knee"
         }
       ],
-      "target_answer": "Männer, Füße, Töchter, Bücher, Blätter, Berge",
-      "meaning": "men, feet, daughters, books, leaves, mountains",
+      "target_answer": "Männer, Füße, Töchter, Bücher, Blätter, Berge, Die Rechnung für die Bluse, die Lampe, ein Blatt, ein Ei, ein Knie",
+      "meaning": "Mann → ? (man/men); Fuß → ? (foot/feet); Tochter → ? (daughter/daughters); das Buch → ?; Blatt → ? (leaf/leaves — the blade twin); Berg → ? (mountain, no dots needed); the bill for the blouse; the lamp; a leaf; an egg; a knee",
       "explanation": "The two dots mark the same vowel-pull English performed silently in men, feet, and geese — Blätter pulls them too; Berge takes the plain -e."
     },
     {
       "id": "l23_e2",
       "type": "shift_select",
-      "prompt": "Which English plural pair is the SAME i-mutation as 'Mann → Männer'?",
+      "prompt": "Which old connection is the odd one out in this set?",
       "options": [
-        "book → books",
-        "house → houses",
-        "child → children",
-        "man → men"
+        "garden → Garten",
+        "make → machen",
+        "week → Woche",
+        "book → Buch"
       ],
-      "target_answer": "man → men",
-      "meaning": "The a→e pull is the identical umlaut",
-      "explanation": "man/men and Mann/Männer are one sound law on two shores — English just never wrote the dots. The other patterns wait their turn: Auge → Augen (plain -n), Ei → Eier (-er, no dots), Knie → Knie (no change at all)."
+      "target_answer": "garden → Garten",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Make, week and book use K → CH. Garden → Garten uses D → T."
     },
     {
       "id": "l23_e3",

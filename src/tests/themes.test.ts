@@ -315,8 +315,17 @@ describe("Theme Contrast Guarantees", () => {
     }
   });
 
+  it("offers a high-contrast default with bright reading text and accents on both surfaces", () => {
+    expect(POPULAR_THEMES).toContain("dark");
+    const theme = THEMES.dark;
+    for (const surface of [theme.bg, theme.subAlt]) {
+      expect(wcagContrast(theme.text, surface)).toBeGreaterThanOrEqual(12);
+      expect(wcagContrast(theme.main, surface)).toBeGreaterThanOrEqual(12);
+    }
+  });
+
   it("suggests only themes that clear the contrast floors", () => {
-    expect(POPULAR_THEMES.length).toBeGreaterThanOrEqual(16);
+    expect(POPULAR_THEMES).toHaveLength(12);
     for (const id of POPULAR_THEMES) {
       const t = THEMES[id];
       expect(t, `${id} must exist in THEMES`).toBeDefined();

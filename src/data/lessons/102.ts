@@ -82,7 +82,7 @@ const lesson: Lesson = {
     {
       "id": "l102_e2",
       "type": "matching_pairs",
-      "prompt": "Match each German sentence with its English meaning:",
+      "prompt": "Match each German sentence with its English meaning. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "fs1",
@@ -113,10 +113,20 @@ const lesson: Lesson = {
           "id": "fs6",
           "english": "I find the sausage",
           "german": "Ich finde die Wurst"
+        },
+        {
+          "id": "recall1",
+          "german": "Gold im Sand",
+          "english": "gold in the sand"
+        },
+        {
+          "id": "recall2",
+          "german": "der Ring",
+          "english": "the ring"
         }
       ],
-      "target_answer": "Wir schwimmen, Ich finde das Glas, Wir singen, Ich komme, Ich lerne Deutsch, Ich finde die Wurst",
-      "meaning": "we swim, I find the glass, we sing, I come, I learn German, I find the sausage",
+      "target_answer": "Wir schwimmen, Ich finde das Glas, Wir singen, Ich komme, Ich lerne Deutsch, Ich finde die Wurst, Gold im Sand, der Ring",
+      "meaning": "We swim; I find the glass; We sing; I come; I learn German; I find the sausage; gold in the sand; the ring",
       "explanation": "Subject + verb in position 2: with wir the verb keeps its full dictionary -en. Deutsch, Wurst — zero-shift words slot straight in."
     },
     {

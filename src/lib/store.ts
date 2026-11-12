@@ -31,6 +31,7 @@ export const useAppStore = create<AppState>((...args) => ({
   passedGateIds: [],
   wordMastery: {},
   srsCards: {},
+  sentenceCards: {},
   weeklyActivity: emptyWeek(),
   lastActivityWeek: undefined,
   progressResetAt: 0,

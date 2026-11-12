@@ -12,6 +12,7 @@
     "start": "next start",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "test:product": "PLAYWRIGHT_PRODUCTION=1 PLAYWRIGHT_WEB_SERVER='bun run start' playwright test product-quality.spec.ts",
     "lint": "eslint . && oxlint -c .oxlintrc.json src tests",
     "typecheck": "tsc --noEmit"
   },

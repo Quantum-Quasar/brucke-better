@@ -61,7 +61,7 @@ const lesson: Lesson = {
     {
       "id": "l2603_e1",
       "type": "matching_pairs",
-      "prompt": "The cabinet — match the y→g twins:",
+      "prompt": "The cabinet — match the y→g twins. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "yg1",
@@ -87,10 +87,35 @@ const lesson: Lesson = {
           "id": "yg5",
           "english": "lay / laid",
           "german": "legen / legte"
+        },
+        {
+          "id": "recall1",
+          "german": "Die Fracht ist schwer",
+          "english": "The cargo is heavy"
+        },
+        {
+          "id": "recall1b",
+          "german": "Der Mond ist hell",
+          "english": "The moon is bright"
+        },
+        {
+          "id": "recall2",
+          "german": "ein Stern",
+          "english": "a star"
+        },
+        {
+          "id": "recall3",
+          "german": "Mitternacht ist spät",
+          "english": "midnight is late"
+        },
+        {
+          "id": "recall4",
+          "german": "meine Nichte",
+          "english": "my niece"
         }
       ],
-      "target_answer": "sagen / sagte, gestern, der Weg, der Regen, legen / legte",
-      "meaning": "say, yesterday, way, rain, lay",
+      "target_answer": "sagen / sagte, gestern, der Weg, der Regen, legen / legte, Die Fracht ist schwer, Der Mond ist hell, ein Stern, Mitternacht ist spät, meine Nichte",
+      "meaning": "say / said; yesterday; way / path; rain; lay / laid; The cargo is heavy; The moon is bright; a star; midnight is late; my niece",
       "explanation": "English vocalized the g to y; German kept it sounding — the last Atlas cabinet, full. The night exhibits too: der Mond, der Stern, hell (bright), um Mitternacht — and die Nichte, the niece whose n- never shifted at all."
     },
     {

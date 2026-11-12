@@ -53,7 +53,7 @@ const lesson: Lesson = {
     {
       "id": "l5012_e1",
       "type": "matching_pairs",
-      "prompt": "Match each greeting with its literal reading:",
+      "prompt": "Match each greeting with its literal reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "gg1",
@@ -74,10 +74,25 @@ const lesson: Lesson = {
           "id": "gg4",
           "english": "good night (bedtime)",
           "german": "Gute Nacht"
+        },
+        {
+          "id": "recall1",
+          "german": "der Rat",
+          "english": "the advice"
+        },
+        {
+          "id": "recall2",
+          "german": "fast halb",
+          "english": "almost half"
+        },
+        {
+          "id": "recall3",
+          "german": "der Herr",
+          "english": "the gentleman"
         }
       ],
-      "target_answer": "Guten Tag, Auf Wiedersehen, Guten Abend, Gute Nacht",
-      "meaning": "hello, formal goodbye, good evening, good night",
+      "target_answer": "Guten Tag, Auf Wiedersehen, Guten Abend, Gute Nacht, der Rat, fast halb, der Herr",
+      "meaning": "good day; until re-seeing; good evening; good night (bedtime); the advice; almost half; the gentleman",
       "explanation": "Guten Tag wishes a good day (masculine accusative); Gute Nacht is feminine — the article reports the noun's gender."
     },
     {

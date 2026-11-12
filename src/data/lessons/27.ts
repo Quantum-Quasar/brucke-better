@@ -65,7 +65,7 @@ const lesson: Lesson = {
     {
       "id": "l27_e1",
       "type": "matching_pairs",
-      "prompt": "The spatial twins — match each preposition with its English cognate:",
+      "prompt": "The spatial twins — match each preposition with its English cognate. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "pm1",
@@ -96,25 +96,40 @@ const lesson: Lesson = {
           "id": "pm6",
           "english": "middle (mid)",
           "german": "die Mitte"
+        },
+        {
+          "id": "recall1",
+          "german": "das Licht",
+          "english": "the light"
+        },
+        {
+          "id": "recall2",
+          "german": "die Nichte und die Tochter",
+          "english": "the niece and the daughter"
+        },
+        {
+          "id": "recall3",
+          "german": "Wir können legen",
+          "english": "We can lay down"
         }
       ],
-      "target_answer": "über, unter, durch, bei, die Ecke, die Mitte",
-      "meaning": "over, under, through, by/at, the corner, the middle",
+      "target_answer": "über, unter, durch, bei, die Ecke, die Mitte, das Licht, die Nichte und die Tochter, Wir können legen",
+      "meaning": "over; under; through; by / at; corner (edge's cousin); middle (mid); the light; the niece and the daughter; We can lay down",
       "explanation": "The spatial prepositions are almost all twins — the V→B shift (über), the gh→ch pair (durch/through), the exact match (bei/by) — and die Ecke, die Mitte are the nouns that name the spots: an der Ecke, in der Mitte. They build time too: um Mitternacht — at midnight, the gh→ch compound on the clock."
     },
     {
       "id": "l27_e2",
       "type": "shift_select",
-      "prompt": "'Die Katze ist _____ dem Tisch.' (The cat is lying under the table — no motion):",
+      "prompt": "Switch between familiar clues: which pair has the different one?",
       "options": [
-        "ohne",
-        "über (dative — location)",
-        "unter (dative — location)",
-        "durch"
+        "silver → Silber",
+        "night → Nacht",
+        "light → Licht",
+        "eight → acht"
       ],
-      "target_answer": "unter (dative — location)",
-      "meaning": "Die Katze ist unter dem Tisch",
-      "explanation": "wo? (where-at?) → dative: dem. The cat is AT REST under the table — am Strand too (the beach; strand is the shore-word English kept): location, dative. legen lays things somewhere and takes the destination: Ich lege das Buch auf den Tisch — lay's y→g twin, accusative on arrival."
+      "target_answer": "silver → Silber",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Night, light and eight use GH → CH. Silver → Silber uses V → B."
     },
     {
       "id": "l27_e3",

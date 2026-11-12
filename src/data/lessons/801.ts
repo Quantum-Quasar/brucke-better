@@ -82,7 +82,7 @@ const lesson: Lesson = {
     {
       "id": "l801_e2",
       "type": "matching_pairs",
-      "prompt": "Run the stamp over the Latin loans:",
+      "prompt": "Run the stamp over the Latin loans. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "vb1",
@@ -113,10 +113,40 @@ const lesson: Lesson = {
           "id": "vb6",
           "english": "to argue",
           "german": "argumentieren"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können studieren",
+          "english": "We can study"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir müssen reparieren",
+          "english": "We must repair"
+        },
+        {
+          "id": "recall3",
+          "german": "Wir können funktionieren",
+          "english": "We can function"
+        },
+        {
+          "id": "recall4",
+          "german": "Wir müssen kapieren",
+          "english": "We must understand"
+        },
+        {
+          "id": "recall5",
+          "german": "Wir können akzeptieren",
+          "english": "We can accept"
+        },
+        {
+          "id": "recall6",
+          "german": "Wir müssen informieren",
+          "english": "We must inform"
         }
       ],
-      "target_answer": "kopieren, produzieren, korrigieren, reduzieren, fotografieren, argumentieren",
-      "meaning": "to copy, to produce, to correct, to reduce, to photograph, to argue",
+      "target_answer": "kopieren, produzieren, korrigieren, reduzieren, fotografieren, argumentieren, Wir können studieren, Wir müssen reparieren, Wir können funktionieren, Wir müssen kapieren, Wir können akzeptieren, Wir müssen informieren",
+      "meaning": "to copy; to produce; to correct; to reduce; to photograph; to argue; We can study; We must repair; We can function; We must understand; We can accept; We must inform",
       "shift_hint": "Latin Bridge",
       "explanation": "Same Latin roots, same English words, one German suffix: -ieren — the camera verb included (Foto is German's word for photo)."
     },

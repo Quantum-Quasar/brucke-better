@@ -60,7 +60,7 @@ const lesson: Lesson = {
     {
       "id": "l26_e1",
       "type": "matching_pairs",
-      "prompt": "The ghost map — match each silent-gh word with its sounding ch twin:",
+      "prompt": "The ghost map — match each silent-gh word with its sounding ch twin. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "gc1",
@@ -81,25 +81,55 @@ const lesson: Lesson = {
           "id": "gc4",
           "english": "daughter",
           "german": "Tochter"
+        },
+        {
+          "id": "recall1",
+          "german": "meine Leber",
+          "english": "my liver"
+        },
+        {
+          "id": "recall1b",
+          "german": "Laub im Garten",
+          "english": "foliage in the garden"
+        },
+        {
+          "id": "recall2",
+          "german": "der Rabe",
+          "english": "the raven"
+        },
+        {
+          "id": "recall3",
+          "german": "ich selbst",
+          "english": "I myself"
+        },
+        {
+          "id": "spaced1",
+          "german": "Das Kalb ist jung",
+          "english": "The calf is young"
+        },
+        {
+          "id": "spaced1b",
+          "german": "Der Rabe ist groß",
+          "english": "The raven is large"
         }
       ],
-      "target_answer": "Nacht, Licht, acht, Tochter",
-      "meaning": "night, light, eight, daughter",
+      "target_answer": "Nacht, Licht, acht, Tochter, meine Leber, Laub im Garten, der Rabe, ich selbst, Das Kalb ist jung, Der Rabe ist groß",
+      "meaning": "night; light; eight; daughter; my liver; foliage in the garden; the raven; I myself; The calf is young; The raven is large",
       "explanation": "English silenced the gh; German still sounds it as ch. The ghost letters were always German ch."
     },
     {
       "id": "l26_e2",
       "type": "shift_select",
-      "prompt": "Why does English 'say' and German 'sagen' start differently?",
+      "prompt": "Which of these earlier pairs does not belong with the other three?",
       "options": [
-        "English vocalized the ancient g into y; German kept the g",
-        "The words are unrelated",
-        "sagen is a French loan",
-        "say is a Norse import"
+        "over → über",
+        "water → Wasser",
+        "live → leben",
+        "love → lieben"
       ],
-      "target_answer": "English vocalized the ancient g into y; German kept the g",
-      "meaning": "say ↔ sagen: the y→g inversion",
-      "explanation": "Same word, two pronunciations: English wore the g down to y (say, day, way); German kept it audible."
+      "target_answer": "water → Wasser",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Live, love and over use V → B. Water → Wasser uses T → SS."
     },
     {
       "id": "l26_e3",

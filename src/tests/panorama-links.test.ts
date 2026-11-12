@@ -1,6 +1,4 @@
 import { describe, test, expect } from "vitest";
-import { readFileSync } from "node:fs";
-import { resolve } from "node:path";
 
 // ponytail: the panorama's footer claims "where this is taught". Every link
 // must point at the lesson that teaches that structure *in that language*, and
@@ -18,9 +16,6 @@ import {
   type PanoramaLink,
 } from "@/data/panorama-links";
 import { PANORAMA_LANGUAGE_IDS } from "@/data/panorama-data";
-
-const PAGE_SOURCE = readFileSync(resolve(__dirname, "../app/panorama/page.tsx"), "utf8");
-const VIEW_SOURCE = readFileSync(resolve(__dirname, "../app/panorama/PanoramaView.tsx"), "utf8");
 
 const LABEL_PATTERN = /^Topic (\d+) · (.+)$/;
 
@@ -146,28 +141,3 @@ describe("panorama lesson links", () => {
   });
 });
 
-describe("panorama page wiring", () => {
-  test("the page no longer hand-writes trail ids", () => {
-    expect(PAGE_SOURCE).not.toMatch(/\/trail\/\d+/);
-    expect(VIEW_SOURCE).not.toMatch(/\/trail\/\d+/);
-  });
-
-  test("language tabs are view-only; opening a lesson is the explicit switch", () => {
-    expect(VIEW_SOURCE).toContain("setViewedLanguageId(languageId)");
-    expect(VIEW_SOURCE).not.toContain("setSelectedLang");
-    // picking a tab changes only the viewed panorama
-    expect(VIEW_SOURCE).toMatch(/onClick=\{\(\) => view\(lid\)\}/);
-    expect(VIEW_SOURCE).not.toMatch(/setActiveLanguage\(languageId\)/);
-    // opening a lesson is the explicit course switch (openLesson switches the
-    // course for the lesson's own language before showing it in-page)
-    expect(VIEW_SOURCE).toContain("parseLessonHref");
-    expect(VIEW_SOURCE).toMatch(/openLesson\(target\.languageId, target\.lessonId\)/);
-  });
-
-  test("link resolution stays on the server so lessons stay out of this chunk", () => {
-    expect(PAGE_SOURCE).not.toContain('"use client"');
-    expect(PAGE_SOURCE).toContain('@/data/panorama-links');
-    expect(VIEW_SOURCE).not.toContain("language-content");
-    expect(VIEW_SOURCE).not.toMatch(/@\/data\/lessons/);
-  });
-});

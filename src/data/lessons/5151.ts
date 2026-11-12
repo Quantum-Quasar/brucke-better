@@ -60,7 +60,7 @@ const lesson: Lesson = {
     {
       "id": "l5151_e1",
       "type": "matching_pairs",
-      "prompt": "Moments, seconds, appointments — match each sentence with its reading:",
+      "prompt": "Moments, seconds, appointments — match each sentence with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "mt1",
@@ -96,10 +96,15 @@ const lesson: Lesson = {
           "id": "mt7",
           "english": "See you later",
           "german": "Bis später"
+        },
+        {
+          "id": "recall1",
+          "german": "Es kann dauern",
+          "english": "It can take time"
         }
       ],
-      "target_answer": "Einen Moment, bitte, Eine Sekunde, bitte, Der Termin dauert zwanzig Minuten, Null ist eine Zahl, Eine Million hat sechs Nullen, Der Termin ist früh am Morgen, Bis später",
-      "meaning": "the politeness pair, the duration frame, and the numbers on the clock",
+      "target_answer": "Einen Moment, bitte, Eine Sekunde, bitte, Der Termin dauert zwanzig Minuten, Null ist eine Zahl, Eine Million hat sechs Nullen, Der Termin ist früh am Morgen, Bis später, Es kann dauern",
+      "meaning": "One moment, please; One second, please; The appointment lasts twenty minutes; Zero is a number; A million has six zeros; The appointment is early in the morning; See you later; It can take time",
       "explanation": "The accusative is everywhere: einen Moment (der Moment), eine Sekunde (die Sekunde), zwanzig Minuten — duration and objects, no preposition in sight. And the numbers you drilled are already inside: null, eine Million, sechs Nullen."
     },
     {

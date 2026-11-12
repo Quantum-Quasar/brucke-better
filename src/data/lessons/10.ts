@@ -78,7 +78,7 @@ const lesson: Lesson = {
     {
       "id": "l10_e2",
       "type": "matching_pairs",
-      "prompt": "Match the English objective pronouns with their German accusative twins:",
+      "prompt": "Match the English objective pronouns with their German accusative twins. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "ac1",
@@ -99,26 +99,36 @@ const lesson: Lesson = {
           "id": "ac4",
           "english": "us",
           "german": "uns"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können im Haus sitzen und das Glas halten",
+          "english": "We can sit in the house and hold the glass"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können das zeigen",
+          "english": "We can show that"
         }
       ],
-      "target_answer": "ihn, mich, dich, uns",
-      "meaning": "him, me, thee/you, us",
+      "target_answer": "ihn, mich, dich, uns, Wir können im Haus sitzen und das Glas halten, Wir können das zeigen",
+      "meaning": "him; me; thee / you; us; We can sit in the house and hold the glass; We can show that",
       "shift_hint": "The 'Him-Case'",
       "explanation": "English preserved the ancient accusative/dative in him/me/thee/us; German preserves ihn/mich/dich/uns."
     },
     {
       "id": "l10_e3",
       "type": "shift_select",
-      "prompt": "Why does 'der Kaffee' change to 'den Kaffee' in 'Ich trinke den Kaffee', but 'das Wasser' stays 'das Wasser'?",
+      "prompt": "Spot the different connection among these words you already know.",
       "options": [
-        "Because coffee is a hot beverage",
-        "In Germanic, only masculine singular marks the direct object with the nasal -n (cognate with English 'him' and 'whom')",
-        "Because trinken only changes masculine verbs",
-        "Neuter nouns are completely immune to verbs"
+        "bath → Bad",
+        "ship → Schiff",
+        "three → drei",
+        "brother → Bruder"
       ],
-      "target_answer": "In Germanic, only masculine singular marks the direct object with the nasal -n (cognate with English 'him' and 'whom')",
-      "meaning": "Masculine exclusivity of the accusative shift",
-      "explanation": "Neuter and feminine nouns collapsed nominative and accusative in ancient Indo-European. Only masculine retains the distinct nasal accusative ending (-n in German, -m in English him/whom)."
+      "target_answer": "ship → Schiff",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Three, brother and bath use TH → D. Ship → Schiff uses P → FF."
     },
     {
       "id": "l10_e4",

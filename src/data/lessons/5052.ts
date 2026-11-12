@@ -86,7 +86,7 @@ const lesson: Lesson = {
     {
       "id": "l5052_e3",
       "type": "matching_pairs",
-      "prompt": "Match each full sentence with its case logic:",
+      "prompt": "Match each full sentence with its case logic. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "wp1",
@@ -107,10 +107,25 @@ const lesson: Lesson = {
           "id": "wp4",
           "english": "The cat sleeps on the sofa",
           "german": "Die Katze schläft auf dem Sofa"
+        },
+        {
+          "id": "recall1",
+          "german": "hinter der Tür",
+          "english": "behind the door"
+        },
+        {
+          "id": "recall2",
+          "german": "neben der Kirche",
+          "english": "beside the church"
+        },
+        {
+          "id": "recall3",
+          "german": "zwischen Haus und Garten",
+          "english": "between house and garden"
         }
       ],
-      "target_answer": "Wir fahren in die Stadt, Wir sind in der Stadt, Die Katze springt auf den Tisch, Die Katze schläft auf dem Sofa",
-      "meaning": "motion vs rest, four scenes",
+      "target_answer": "Wir fahren in die Stadt, Wir sind in der Stadt, Die Katze springt auf den Tisch, Die Katze schläft auf dem Sofa, hinter der Tür, neben der Kirche, zwischen Haus und Garten",
+      "meaning": "We drive INTO the city (motion); We are in the city (rest); The cat jumps onto the table; The cat sleeps on the sofa; behind the door; beside the church; between house and garden",
       "explanation": "fahren/springt move (accusative); sind/schläft rest (dative) — the verb tells, the case obeys."
     },
     {

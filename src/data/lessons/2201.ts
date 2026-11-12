@@ -96,7 +96,7 @@ const lesson: Lesson = {
     {
       "id": "l2201_e4",
       "type": "matching_pairs",
-      "prompt": "Match each stamped noun with its English meaning:",
+      "prompt": "Match each stamped noun with its English meaning. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "fs1",
@@ -137,10 +137,30 @@ const lesson: Lesson = {
           "id": "fs8",
           "english": "the blouse",
           "german": "die Bluse"
+        },
+        {
+          "id": "recall1",
+          "german": "meine Wahrnehmung",
+          "english": "my perception"
+        },
+        {
+          "id": "recall2",
+          "german": "ein Begriff",
+          "english": "a concept"
+        },
+        {
+          "id": "recall3",
+          "german": "der Berg",
+          "english": "the mountain"
+        },
+        {
+          "id": "context1",
+          "german": "Fußball im Garten",
+          "english": "football in the garden"
         }
       ],
-      "target_answer": "die Warnung, die Wahrheit, die Möglichkeit, die Wissenschaft, die Rechnung, die Blume, die Lampe, die Bluse",
-      "meaning": "the warning, the truth, the possibility, the science, the bill, the flower, the lamp, the blouse",
+      "target_answer": "die Warnung, die Wahrheit, die Möglichkeit, die Wissenschaft, die Rechnung, die Blume, die Lampe, die Bluse, meine Wahrnehmung, ein Begriff, der Berg, Fußball im Garten",
+      "meaning": "the warning; the truth; the possibility; the science / knowledge-ship; the bill (the reckoning); the flower; the lamp; the blouse; my perception; a concept; the mountain; football in the garden",
       "explanation": "Four stamps, one gender — the entire feminine abstract factory in four words, and four plain-die nouns (Rechnung, Blume, Lampe, Bluse) marching in step."
     },
     {

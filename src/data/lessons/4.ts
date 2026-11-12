@@ -89,7 +89,7 @@ const lesson: Lesson = {
     {
       "id": "l4_e2",
       "type": "matching_pairs",
-      "prompt": "Match the English TH words to their German D counterparts:",
+      "prompt": "Match the English TH words to their German D counterparts. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "th1",
@@ -110,12 +110,51 @@ const lesson: Lesson = {
           "id": "th4",
           "english": "bath",
           "german": "Bad"
+        },
+        {
+          "id": "recall1",
+          "german": "der Pfeffer",
+          "english": "the pepper"
+        },
+        {
+          "id": "recall2",
+          "german": "der Pfad",
+          "english": "the path"
+        },
+        {
+          "id": "recall3",
+          "german": "die Pfeife",
+          "english": "the pipe"
+        },
+        {
+          "id": "recall4",
+          "german": "das Pferd",
+          "english": "the horse"
+        },
+        {
+          "id": "recall5",
+          "german": "das Pfund",
+          "english": "the pound"
+        },
+        {
+          "id": "recall6",
+          "german": "die Pfanne",
+          "english": "the pan"
+        },
+        {
+          "id": "spaced1",
+          "german": "Ich habe ein Pferd",
+          "english": "I have a horse"
+        },
+        {
+          "id": "spaced1b",
+          "german": "Der Pfirsich ist reif",
+          "english": "The peach is ripe"
         }
       ],
-      "target_answer": "Bruder, denken, drei, Bad",
-      "meaning": "brother, to think, three, bath",
+      "target_answer": "Bruder, denken, drei, Bad, der Pfeffer, der Pfad, die Pfeife, das Pferd, das Pfund, die Pfanne, Ich habe ein Pferd, Der Pfirsich ist reif",
+      "meaning": "brother; think; three; bath; the pepper; the path; the pipe; the horse; the pound; the pan; I have a horse; The peach is ripe",
       "shift_hint": "TH → D",
-      "affirmation": "Four th-words hardened to d on sight — a 1,300-year-old rule, live in your hands.",
       "explanation": "Every Germanic dental fricative TH hardened into D in German."
     },
     {

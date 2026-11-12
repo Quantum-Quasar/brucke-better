@@ -60,7 +60,7 @@ const lesson: Lesson = {
     {
       "id": "l1901_e1",
       "type": "matching_pairs",
-      "prompt": "Match the English clues to the German forms:",
+      "prompt": "Match the English clues to the German forms. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "sg1",
@@ -81,10 +81,20 @@ const lesson: Lesson = {
           "id": "sg4",
           "english": "sleep / slept",
           "german": "schlafen / schlief"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können in das Glas blasen",
+          "english": "We can blow into the glass"
+        },
+        {
+          "id": "recall1b",
+          "german": "Wir wollen nicht frieren",
+          "english": "We do not want to freeze"
         }
       ],
-      "target_answer": "sprechen / sprach / gesprochen, kommen / kam / gekommen, schreiben / schrieb / geschrieben, schlafen / schlief",
-      "meaning": "German forms for speaking, coming, writing and sleeping",
+      "target_answer": "sprechen / sprach / gesprochen, kommen / kam / gekommen, schreiben / schrieb / geschrieben, schlafen / schlief, Wir können in das Glas blasen, Wir wollen nicht frieren",
+      "meaning": "speak / spoke / spoken; come / came / come; describe (scribe family); sleep / slept; We can blow into the glass; We do not want to freeze",
       "explanation": "The clues help you remember the German forms. Describe belongs to the scribe family, but is a regular English verb — not a shared vowel melody."
     },
     {

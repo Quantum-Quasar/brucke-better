@@ -56,7 +56,7 @@ const lesson: Lesson = {
     {
       "id": "l5082_e1",
       "type": "matching_pairs",
-      "prompt": "The polite toolkit — match each form with its job:",
+      "prompt": "The polite toolkit — match each form with its job. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "pk1",
@@ -82,10 +82,20 @@ const lesson: Lesson = {
           "id": "pk5",
           "english": "that would be kind",
           "german": "Das wäre freundlich"
+        },
+        {
+          "id": "recall1",
+          "german": "mein Geld",
+          "english": "my money"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können reich werden",
+          "english": "We can become rich"
         }
       ],
-      "target_answer": "Könnten Sie, Ich würde kommen, Ich möchte, Es wurde kalt, Das wäre freundlich",
-      "meaning": "the polite toolkit plus the umlaut trap",
+      "target_answer": "Könnten Sie, Ich würde kommen, Ich möchte, Es wurde kalt, Das wäre freundlich, mein Geld, Wir können reich werden",
+      "meaning": "could you...? (polite ask); I would come; I would like; it got cold (plain past!); that would be kind; my money; We can become rich",
       "explanation": "könnte asks politely, würde runs the conditional, möchte softens wanting — and wurde (no umlaut) is just the real past."
     },
     {

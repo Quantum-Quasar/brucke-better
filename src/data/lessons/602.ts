@@ -89,7 +89,7 @@ const lesson: Lesson = {
     {
       "id": "l602_e2",
       "type": "matching_pairs",
-      "prompt": "Match the ch-words with their English twins — the silent-gh set, plus two K → CH cousins:",
+      "prompt": "Match the ch-words with their English twins — the silent-gh set, plus two K → CH cousins. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "kd1",
@@ -120,10 +120,20 @@ const lesson: Lesson = {
           "id": "kd6",
           "english": "bone",
           "german": "Knochen"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können riechen",
+          "english": "We can smell"
+        },
+        {
+          "id": "spaced1",
+          "german": "Der Kuchen ist weich und süß",
+          "english": "The cake is soft and sweet"
         }
       ],
-      "target_answer": "acht, Recht, Rauch, Kirche, kauen, Knochen",
-      "meaning": "eight, right, smoke, church, to chew, bone",
+      "target_answer": "acht, Recht, Rauch, Kirche, kauen, Knochen, Wir können riechen, Der Kuchen ist weich und süß",
+      "meaning": "eight; right; reek / smoke; kirk / church; to chew; bone; We can smell; The cake is soft and sweet",
       "shift_hint": "K → CH / gh → ch",
       "explanation": "English spelled the guttural gh and silenced it; German spells it ch and still sounds it. kauen is the mirror image: English chew shifted k to ch, German kept the k — the reverse of kirk/Kirche."
     },

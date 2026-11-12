@@ -64,7 +64,7 @@ const lesson: Lesson = {
     {
       "id": "l2901_e1",
       "type": "matching_pairs",
-      "prompt": "The paradigm wall — match each sein-form with its twin:",
+      "prompt": "The paradigm wall — match each sein-form with its twin. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "bw1",
@@ -90,10 +90,25 @@ const lesson: Lesson = {
           "id": "bw5",
           "english": "I am human (a person)",
           "german": "ich bin ein Mensch"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir haben Hunger",
+          "english": "We are hungry"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir sind satt und glücklich",
+          "english": "We are full and happy"
+        },
+        {
+          "id": "recall3",
+          "german": "wieder kommen",
+          "english": "to come again"
         }
       ],
-      "target_answer": "ist, war, du bist, gewesen, ich bin ein Mensch",
-      "meaning": "is, was, thou art, been, I am a person",
+      "target_answer": "ist, war, du bist, gewesen, ich bin ein Mensch, Wir haben Hunger, Wir sind satt und glücklich, wieder kommen",
+      "meaning": "is; was; thou art; been; I am human (a person); We are hungry; We are full and happy; to come again",
       "explanation": "Three roots, one verb, identical across the sea — the most conservative words in Germanic. der Mensch (human — the mannish kin) takes sein like any noun: der Mensch ist alt."
     },
     {

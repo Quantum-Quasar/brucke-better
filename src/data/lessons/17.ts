@@ -64,7 +64,7 @@ const lesson: Lesson = {
     {
       "id": "l17_e1",
       "type": "matching_pairs",
-      "prompt": "Match the shifted numbers with their English twins:",
+      "prompt": "Match the shifted numbers with their English twins. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "nt1",
@@ -85,25 +85,30 @@ const lesson: Lesson = {
           "id": "nt4",
           "english": "thirty",
           "german": "dreißig"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir müssen uns anziehen und ausziehen",
+          "english": "We must get dressed and undressed"
         }
       ],
-      "target_answer": "drei, zwölf, zwanzig, dreißig",
-      "meaning": "three, twelve, twenty, thirty",
+      "target_answer": "drei, zwölf, zwanzig, dreißig, Wir müssen uns anziehen und ausziehen",
+      "meaning": "three; twelve; twenty; thirty; We must get dressed and undressed",
       "explanation": "TH→D in drei, TW→ZW in zwölf and zwanzig, and a double shift in dreißig — counting runs the whole shift ledger. Even moving day runs on numbers: um acht Uhr wollen wir ausziehen — the separable verb from the routine lessons rides the clock."
     },
     {
       "id": "l17_e2",
       "type": "shift_select",
-      "prompt": "German 'elf' means eleven. What did the word originally describe?",
+      "prompt": "One connection differs here. Recover it from the familiar words.",
       "options": [
-        "A dozen minus one",
-        "One left over (after counting all ten fingers)",
-        "The number of Thor's goats",
-        "The magical forest creature"
+        "hate → hassen",
+        "out → aus",
+        "make → machen",
+        "water → Wasser"
       ],
-      "target_answer": "One left over (after counting all ten fingers)",
-      "meaning": "elf = 'one-left' (eleven)",
-      "explanation": "*ainalif, 'one left' — and zwölf is *twalif, 'two left'. The numbers are honest arithmetic from ten fingers."
+      "target_answer": "make → machen",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Water, hate and out use T → S/SS. Make → machen uses K → CH."
     },
     {
       "id": "l17_e3",

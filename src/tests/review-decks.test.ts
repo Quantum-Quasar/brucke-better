@@ -42,6 +42,18 @@ describe("review decks", () => {
     expect(sortDueCards([a, b]).map((c) => c.word_id)).toEqual(["b", "a"]);
   });
 
+  it("uses real frequency only after matching due date and learning urgency", () => {
+    const overdue = { ...createInitialCard("overdue"), due_date: "2026-01-01" };
+    const hard = { ...createInitialCard("hard"), due_date: "2026-01-02", ease_factor: 1.3 };
+    const rare = { ...createInitialCard("rare"), due_date: "2026-01-02" };
+    const common = { ...createInitialCard("common"), due_date: "2026-01-02" };
+    const unknown = { ...createInitialCard("unknown"), due_date: "2026-01-02" };
+    const words = { overdue: { frequencyRank: 50000 }, hard: { frequencyRank: null }, rare: { frequencyRank: 10000 }, common: { frequencyRank: 100 } };
+    expect(sortDueCards([unknown, rare, common, hard, overdue], words).map((card) => card.word_id))
+      .toEqual(["overdue", "hard", "common", "rare", "unknown"]);
+    expect(overdue.interval).toBe(0);
+  });
+
   it("ranks weakest by lapses then guesses, including guessed-only words", () => {
     const mk = (id: string, lapses: number, guessed = 0) => ({ ...createInitialCard(id), lapses, guessed });
     const out = rankWeakestCards({ a: mk("a", 1), b: mk("b", 3), c: mk("c", 0, 2), d: mk("d", 0) });

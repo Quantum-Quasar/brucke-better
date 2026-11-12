@@ -6,15 +6,14 @@ import { useAppStore } from "@/lib/store";
 import { useViewStore, EMPTY_TRAIL_POSITION } from "@/lib/view-store";
 import { hasSavedPosition, hasVisited } from "@/lib/scroll-memory";
 import { useAppNavigation } from "@/lib/app-navigation";
-import { buildTrailEdgePairs, buildTrailLayout, type TrailNode, type NodeStatus, type GateView } from "@/lib/trail-map";
+import { buildTrailEdgePairs, buildTrailLayout, type TrailNode, type GateView } from "@/lib/trail-map";
 import { getLanguageDefinition } from "@/data/languages";
 import { useCourseRecommendation } from "@/lib/use-course-recommendation";
 import { NextLessonBar } from "./NextLessonBar";
 import { LessonNodeDrawer, GateDrawer } from "./LessonNodeDrawer";
 import { prefetchLesson } from "@/lib/content-client";
+import { TrailMapNode, GOLD_STAR } from "./TrailMapNode";
 
-const GOLD_STAR = "#eab308";
-const PURPLE_STAR = "#a78bfa";
 
 interface NodeGroup {
   topicId: number;
@@ -73,6 +72,10 @@ export const TrailMap: React.FC = () => {
   const setTrailPosition = useViewStore((s) => s.setTrailPosition);
   const selectedNodeId = trailPosition.nodeId;
   const selectedGateId = trailPosition.gateId;
+  const selectNode = useCallback((node: TrailNode) => {
+    prefetchLesson(activeLanguageId, node.id);
+    setTrailPosition(activeLanguageId, { nodeId: node.id, gateId: null });
+  }, [activeLanguageId, setTrailPosition]);
 
   useEffect(() => {
     const el = wrapRef.current;
@@ -89,6 +92,38 @@ export const TrailMap: React.FC = () => {
   const layout = useMemo(() => buildTrailLayout(width, trailData, decoChars), [width, trailData, decoChars]);
   const nodeById = useMemo(() => new Map(layout.nodes.map((n) => [n.id, n])), [layout]);
   const groups = useMemo(() => groupNodesByTopic(layout.nodes, layout.topicAnchors), [layout]);
+  const [detailedTopics, setDetailedTopics] = useState<ReadonlySet<number>>(() => new Set<number>());
+  const detailedTopicIds = useMemo(() => {
+    const ids = new Set(detailedTopics);
+    for (const group of groups) if (group.top < 1_000) ids.add(group.topicId);
+    return ids;
+  }, [groups, detailedTopics]);
+
+  // Keep every lesson button usable; hydrate off-screen decorative details only
+  // as their topic approaches the viewport.
+  useEffect(() => {
+    const container = wrapRef.current;
+    if (!container) return;
+    if (typeof IntersectionObserver === "undefined") {
+      setDetailedTopics(new Set(groups.map((group) => group.topicId)));
+      return;
+    }
+    const observer = new IntersectionObserver((entries) => {
+      for (const entry of entries) if (entry.isIntersecting) observer.unobserve(entry.target);
+      setDetailedTopics((previous) => {
+        let next: Set<number> | undefined;
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const id = Number((entry.target as HTMLElement).dataset.trailTopic);
+          if ((next ?? previous).has(id)) continue;
+          (next ??= new Set(previous)).add(id);
+        }
+        return next ?? previous;
+      });
+    }, { rootMargin: "600px 0px" });
+    for (const section of container.querySelectorAll('[data-trail-details="false"]')) observer.observe(section);
+    return () => observer.disconnect();
+  }, [groups]);
 
   // Open the map at the learner's current lesson (topic 1 sits at the bottom),
   // then glide upward whenever the recommendation advances. The first scroll
@@ -172,13 +207,6 @@ export const TrailMap: React.FC = () => {
     return `Unlocks when you complete: ${parts.join(", ")}.`;
   }, [selected, nodeById, edgePairs, state]);
 
-  const edgeCenter = useCallback(
-    (id: number) => {
-      const n = nodeById.get(id);
-      return n ? { x: n.x + n.w / 2, y: n.y + n.h / 2 } : { x: 0, y: 0 };
-    },
-    [nodeById]
-  );
 
 
   return (
@@ -213,7 +241,8 @@ export const TrailMap: React.FC = () => {
       <div className="relative mx-auto overflow-hidden" style={{ width: layout.width, height: layout.height }}>
         {/* faint germanic watermark decorations */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none select-none" aria-hidden>
-          {layout.decorations.map((d, i) => (
+          {layout.decorations.map((d, i) => groups.some((group) => detailedTopicIds.has(group.topicId) &&
+            d.y >= group.top && d.y <= group.top + group.height) ? (
             <span
               key={i}
               className="absolute font-bold text-[var(--sub-color)]"
@@ -221,17 +250,18 @@ export const TrailMap: React.FC = () => {
             >
               {d.char}
             </span>
-          ))}
+          ) : null)}
         </div>
 
         {/* dashed connectors (decoration only — the buttons carry semantics) */}
         <svg className="absolute inset-0 pointer-events-none" width={layout.width} height={layout.height} aria-hidden>
           {layout.edges.map(({ a, b }) => {
-            const ca = edgeCenter(a);
-            const cb = edgeCenter(b);
-            const lit = state.litEdges.has(`${Math.min(a, b)}-${Math.max(a, b)}`);
             const na = nodeById.get(a);
             const nb = nodeById.get(b);
+            if (!detailedTopicIds.has(na?.topicId ?? -1) && !detailedTopicIds.has(nb?.topicId ?? -1)) return null;
+            const ca = na ? { x: na.x + na.w / 2, y: na.y + na.h / 2 } : { x: 0, y: 0 };
+            const cb = nb ? { x: nb.x + nb.w / 2, y: nb.y + nb.h / 2 } : { x: 0, y: 0 };
+            const lit = state.litEdges.has(`${Math.min(a, b)}-${Math.max(a, b)}`);
             const isSpine = (kind: TrailNode["kind"] | undefined) =>
               kind === "core" || kind === "story";
             const isSide = !isSpine(na?.kind) || !isSpine(nb?.kind);
@@ -285,9 +315,13 @@ export const TrailMap: React.FC = () => {
         </svg>
 
         {/* topic signposts + nodes, one section per topic for content-visibility windowing */}
-        {groups.map((group) => (
+        {groups.map((group) => {
+          const detailed = detailedTopicIds.has(group.topicId);
+          return (
           <section
             key={group.topicId}
+            data-trail-topic={group.topicId}
+            data-trail-details={String(detailed)}
             className="trail-section absolute left-0 w-full"
             style={{ top: group.top, height: group.height }}
           >
@@ -307,22 +341,24 @@ export const TrailMap: React.FC = () => {
                 </span>
               </div>
             )}
-            {group.nodes.map((node) => (
-              <MapNode
+            {group.nodes.map((node) => {
+              const view = state.nodes.get(node.id)!;
+              return (
+              <TrailMapNode
                 key={node.id}
                 node={node}
                 sectionTop={group.top}
-                view={state.nodes.get(node.id)!}
-                isRecommended={state.recommendedId === node.id}
+                status={view.status}
+                star={view.star}
+                detailed={detailed}
                 hasProgress={Boolean(lessonProgress[node.id])}
-                onClick={() => {
-                  prefetchLesson(activeLanguageId, node.id);
-                  setTrailPosition(activeLanguageId, { nodeId: node.id, gateId: null });
-                }}
+                onSelect={selectNode}
               />
-            ))}
+              );
+            })}
           </section>
-        ))}
+          );
+        })}
 
         {/* star-gate checkpoint pills on the spine */}
         {layout.gates.map((gate) => {
@@ -339,7 +375,7 @@ export const TrailMap: React.FC = () => {
               }
               aria-label={`${gate.title} star gate: ${stars} of ${gate.requiredStars} stars in topics ${gv?.fromTopic}–${gv?.toTopic} — ${open ? "open" : "closed"}`}
               title={`${gate.title} — ${stars}/${gate.requiredStars}★`}
-              className={`absolute z-10 flex items-center justify-center gap-1.5 rounded-full font-mono text-[10px] transition-all duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--main-color)] ${
+              className={`absolute z-10 flex items-center justify-center gap-1.5 rounded-full font-mono text-[10px] transition duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--main-color)] ${
                 open
                   ? "bg-[var(--main-color)] border-2 border-[var(--main-color)] text-[var(--bg-color)] shadow-sm"
                   : "bg-[var(--sub-alt-color)] border border-dashed border-[var(--text-color)]/35 text-[var(--text-color)]/80 hover:border-[var(--main-color)]/60"
@@ -409,129 +445,3 @@ export const TrailMap: React.FC = () => {
   );
 };
 
-/* -------------------------------------------------------------------------- */
-
-interface MapNodeProps {
-  node: TrailNode;
-  sectionTop: number;
-  view: { status: NodeStatus; star?: "gold" | "purple"; gate?: { id: number; title: string } };
-  isRecommended: boolean;
-  hasProgress: boolean;
-  onClick: () => void;
-}
-
-const MapNode: React.FC<MapNodeProps> = ({ node, sectionTop, view, hasProgress, onClick }) => {
-  const { status, star } = view;
-  const completed = status === "completed";
-  const locked = status === "locked";
-  const unwritten = locked && !node.authored;
-
-  const label =
-    `${node.kind === "core"
-      ? `Topic ${node.topicId}`
-      : node.kind === "story"
-      ? `Story ${node.label ?? ""}`
-      : node.kind === "sprig"
-      ? "Extra lesson"
-      : "Support branch"}: ${node.title} — ` +
-    (completed
-      ? `completed${star === "purple" ? " with a purple star" : ""}`
-      : locked
-      ? unwritten
-        ? "locked, content being written"
-        : "locked"
-      : "available to play");
-
-  const statusStyle = completed
-    ? "bg-[var(--main-color)] border-[var(--main-color)] text-[var(--bg-color)] shadow-sm"
-    : locked
-    ? unwritten
-      ? "bg-[var(--bg-color)] border border-dashed border-[var(--text-color)]/25 text-[var(--text-color)]/55 cursor-not-allowed"
-      : "bg-[var(--bg-color)] border border-dashed border-[var(--text-color)]/35 text-[var(--text-color)]/80"
-    : "bg-[var(--sub-alt-color)] border border-[var(--text-color)]/25 text-[var(--text-color)] hover:border-[var(--main-color)] hover:-translate-y-0.5";
-
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      aria-label={label}
-      title={node.title}
-      data-trail-node-id={node.id}
-      className={`absolute flex items-center justify-center text-left transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--main-color)] ${statusStyle} ${
-        locked ? "cursor-default" : "cursor-pointer"
-      }`}
-      style={{
-        left: node.x,
-        top: node.y - sectionTop,
-        width: node.w,
-        height: node.h,
-        borderRadius: node.kind === "core" || node.kind === "story" ? 14 : 12,
-        borderWidth: completed ? 2 : 1,
-        animation: status === "available" && !hasProgress ? "trail-node-pop 400ms ease both" : undefined,
-      }}
-    >
-      {node.kind === "core" && (
-        <span className="flex items-center gap-2 px-2.5 w-full">
-          <span
-            className={`w-6 h-6 rounded-md flex items-center justify-center font-mono text-[11px] font-bold shrink-0 ${
-              completed
-                ? "bg-[var(--bg-color)]/25 text-[var(--bg-color)]"
-                : "bg-[var(--bg-color)] text-[var(--text-color)] border border-[var(--sub-color)]/30"
-            }`}
-          >
-            {completed ? "✓" : node.topicId}
-          </span>
-          <span className="text-[12px] font-semibold leading-tight line-clamp-2">{node.title}</span>
-        </span>
-      )}
-
-      {node.kind === "story" && (
-        <span className="flex items-center gap-2 px-2.5 w-full">
-          <span
-            className={`w-6 h-6 rounded-md flex items-center justify-center font-mono text-[11px] font-bold shrink-0 ${
-              completed
-                ? "bg-[var(--bg-color)]/25 text-[var(--bg-color)]"
-                : "bg-[var(--bg-color)] text-[var(--main-color)] border border-[var(--main-color)]/35"
-            }`}
-          >
-            {completed ? "✓" : node.label ?? "s"}
-          </span>
-          <span className="flex items-center gap-1 min-w-0">
-            <BookOpen className="w-3 h-3 shrink-0 opacity-70" />
-            <span className="text-[11px] font-semibold leading-tight line-clamp-2">{node.title}</span>
-          </span>
-        </span>
-      )}
-
-      {node.kind === "sprig" && (
-        <span className="flex flex-col items-center gap-0.5">
-          <BookOpen className="w-3.5 h-3.5" />
-          <span className="font-mono text-[11px] font-bold">{node.id % 100}</span>
-        </span>
-      )}
-
-      {node.kind === "branch" && (
-        <span className="flex items-center gap-1.5 px-2 w-full min-w-0">
-          <GitBranch className="w-3 h-3 shrink-0 opacity-70" />
-          <span className="text-[11px] font-semibold leading-tight line-clamp-2">{node.title}</span>
-        </span>
-      )}
-
-      {completed && (
-        <span
-          className="absolute -top-2 -right-2 w-5 h-5 rounded-full flex items-center justify-center border-2"
-          style={{ background: star === "purple" ? PURPLE_STAR : GOLD_STAR, borderColor: "var(--bg-color)" }}
-          aria-hidden
-        >
-          <Star className="w-2.5 h-2.5 text-[var(--bg-color)]" fill="var(--bg-color)" strokeWidth={0} />
-        </span>
-      )}
-
-      {locked && (
-        <span className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-[var(--bg-color)] border border-[var(--text-color)]/35 flex items-center justify-center">
-          <Lock className="w-2.5 h-2.5 text-[var(--sub-color)]" />
-        </span>
-      )}
-    </button>
-  );
-};

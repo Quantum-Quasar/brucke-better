@@ -62,7 +62,7 @@ const lesson: Lesson = {
     {
       "id": "l20_e1",
       "type": "matching_pairs",
-      "prompt": "Match the dative pronouns with their English twins:",
+      "prompt": "Match the dative pronouns with their English twins. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "dt1",
@@ -83,25 +83,35 @@ const lesson: Lesson = {
           "id": "dt4",
           "english": "with",
           "german": "mit"
+        },
+        {
+          "id": "recall1",
+          "german": "Ich bin schwach",
+          "english": "I am weak"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir dürfen wünschen",
+          "english": "We may wish"
         }
       ],
-      "target_answer": "mir, dir, ihm, mit",
-      "meaning": "to me, to thee, to him, with",
+      "target_answer": "mir, dir, ihm, mit, Ich bin schwach, Wir dürfen wünschen",
+      "meaning": "to me / me; to thee / thee; to him / him; with; I am weak; We may wish",
       "explanation": "The dative pronouns are English fossils alive in German: 'give it me', 'I give it thee', 'give it him' — plus mit/mid."
     },
     {
       "id": "l20_e2",
       "type": "shift_select",
-      "prompt": "Complete: 'Ich danke _____.' (I thank THEE):",
+      "prompt": "Which pair does not use the clue shared by its three companions?",
       "options": [
-        "dich",
-        "du",
-        "dein",
-        "dir"
+        "thirst → Durst",
+        "earth → Erde",
+        "think → denken",
+        "apple → Apfel"
       ],
-      "target_answer": "dir",
-      "meaning": "Ich danke dir = I thank thee",
-      "explanation": "danken demands the dative — thanking goes TO someone. dich would be the accusative; danken refuses it."
+      "target_answer": "apple → Apfel",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Thirst, earth and think use TH → D. Apple → Apfel uses P → PF."
     },
     {
       "id": "l20_e3",

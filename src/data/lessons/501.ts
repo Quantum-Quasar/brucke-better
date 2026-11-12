@@ -81,7 +81,7 @@ const lesson: Lesson = {
     {
       "id": "l501_e2",
       "type": "matching_pairs",
-      "prompt": "Match each English word with its German twin — the zw- family, plus four guests from your TH → D and PF- shelves:",
+      "prompt": "Match each English word with its German twin — the zw- family, plus four guests from your TH → D and PF- shelves. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "zt1",
@@ -127,10 +127,20 @@ const lesson: Lesson = {
           "id": "zt9",
           "english": "plant",
           "german": "Pflanze"
+        },
+        {
+          "id": "recall1",
+          "german": "das Ding",
+          "english": "the thing"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir hassen das",
+          "english": "We hate that"
         }
       ],
-      "target_answer": "zwei, Zwilling, Zwerg, zwanzig, Zunge, Kleid, Monat, Darm, Pflanze",
-      "meaning": "two, twin, dwarf, twenty, tongue, dress, month, gut, plant",
+      "target_answer": "zwei, Zwilling, Zwerg, zwanzig, Zunge, Kleid, Monat, Darm, Pflanze, das Ding, Wir hassen das",
+      "meaning": "two; twin; dwarf; twenty; tongue; dress; month; gut; plant; the thing; We hate that",
       "shift_hint": "TW → ZW",
       "explanation": "Every English tw- maps onto German zw- in the native word stock — even dwarf/Zwerg. And tongue joins them: t → z turned tongue into Zunge, while Kleid, Monat and Darm carry their TH → D badges from the last topic."
     },

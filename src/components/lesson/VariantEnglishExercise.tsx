@@ -117,6 +117,7 @@ export const VariantEnglishExercise: React.FC<VariantEnglishExerciseProps> = ({
               key={opt}
               onClick={() => toggle(opt)}
               disabled={revealed}
+              aria-pressed={isPicked}
               className={[
                 "w-full text-left px-4 py-3 rounded border flex items-start gap-3 transition",
                 isPicked
@@ -189,7 +190,7 @@ export const VariantEnglishExercise: React.FC<VariantEnglishExerciseProps> = ({
       )}
 
       {state === "wrong" && (
-        <div className="space-y-2">
+        <div role="alert" className="space-y-2">
           <p className="text-sm text-[var(--text-color)]">
             The ones that say the same thing: {renderings.join(" · ")}
           </p>

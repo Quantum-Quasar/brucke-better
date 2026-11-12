@@ -1,6 +1,6 @@
 import type { AppState, LanguageProgress, ProgressVersions } from "./types";
 
-export const emptyVersions = (): ProgressVersions => ({ lessonProgress: {}, wordMastery: {}, srsCards: {} });
+export const emptyVersions = (): ProgressVersions => ({ lessonProgress: {}, wordMastery: {}, srsCards: {}, sentenceCards: {} });
 export function getWeekString(date = new Date()): string {
   // purely local time: keyed by the local Monday of that week — never mixes
   // local getters with UTC setters
@@ -22,6 +22,7 @@ export function sliceFromMirrors(state: AppState): LanguageProgress {
     passedGateIds: state.passedGateIds,
     wordMastery: state.wordMastery,
     srsCards: state.srsCards,
+    sentenceCards: state.sentenceCards,
     weeklyActivity: state.weeklyActivity,
     lastActivityWeek: state.lastActivityWeek,
     progressVersions: state.progressVersions,
@@ -51,6 +52,7 @@ export function mergeLanguageSlice(current: LanguageProgress, incoming: Language
   const lessons = mergeVersioned(current.lessonProgress, incoming.lessonProgress, a.lessonProgress, b.lessonProgress, preferLegacyIncoming);
   const mastery = mergeVersioned(current.wordMastery, incoming.wordMastery, a.wordMastery, b.wordMastery, preferLegacyIncoming);
   const cards = mergeVersioned(current.srsCards, incoming.srsCards, a.srsCards, b.srsCards, preferLegacyIncoming);
+  const sentenceCards = mergeVersioned(current.sentenceCards ?? {}, incoming.sentenceCards ?? {}, a.sentenceCards ?? {}, b.sentenceCards ?? {}, preferLegacyIncoming);
   const lessonStars = { ...current.lessonStars, ...incoming.lessonStars };
   for (const [id, star] of Object.entries(current.lessonStars)) {
     if (star === "purple") lessonStars[Number(id)] = star;
@@ -65,7 +67,8 @@ export function mergeLanguageSlice(current: LanguageProgress, incoming: Language
     passedGateIds: Array.from(new Set([...current.passedGateIds, ...incoming.passedGateIds])),
     wordMastery: mastery.values,
     srsCards: cards.values,
-    progressVersions: { lessonProgress: lessons.versions, wordMastery: mastery.versions, srsCards: cards.versions },
+    sentenceCards: sentenceCards.values,
+    progressVersions: { lessonProgress: lessons.versions, wordMastery: mastery.versions, srsCards: cards.versions, sentenceCards: sentenceCards.versions },
     weeklyActivity: sameWeek
       ? current.weeklyActivity.map((day, index) => day || incoming.weeklyActivity[index])
       : incomingIsNewerWeek ? incoming.weeklyActivity : current.weeklyActivity,

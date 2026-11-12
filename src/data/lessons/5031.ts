@@ -89,7 +89,7 @@ const lesson: Lesson = {
     {
       "id": "l5031_e3",
       "type": "matching_pairs",
-      "prompt": "Match each word with its umlaut story:",
+      "prompt": "Match each word with its umlaut story. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "um3",
@@ -110,10 +110,45 @@ const lesson: Lesson = {
           "id": "um6",
           "english": "schön (with ö)",
           "german": "beautiful — the minimal-pair star"
+        },
+        {
+          "id": "recall1",
+          "german": "Die Fabrik ist groß",
+          "english": "The factory is large"
+        },
+        {
+          "id": "recall1b",
+          "german": "Das Gymnasium ist neu",
+          "english": "The grammar school is new"
+        },
+        {
+          "id": "recall2",
+          "german": "die Rente",
+          "english": "the pension"
+        },
+        {
+          "id": "recall3",
+          "german": "der Dom",
+          "english": "the cathedral"
+        },
+        {
+          "id": "recall4",
+          "german": "die Art",
+          "english": "the kind"
+        },
+        {
+          "id": "recall5",
+          "german": "die Kaution",
+          "english": "the deposit"
+        },
+        {
+          "id": "recall6",
+          "german": "eventuell kommen",
+          "english": "possibly come"
         }
       ],
-      "target_answer": "the PLURAL of Bruder — umlaut as sound, twelve — the tw→zw number, the PLURAL of Mann — the men-fossil, beautiful — the minimal-pair star",
-      "meaning": "the four umlaut showcases",
+      "target_answer": "the PLURAL of Bruder — umlaut as sound, twelve — the tw→zw number, the PLURAL of Mann — the men-fossil, beautiful — the minimal-pair star, Die Fabrik ist groß, Das Gymnasium ist neu, die Rente, der Dom, die Art, die Kaution, eventuell kommen",
+      "meaning": "Brüder (with ü); zwölf (with ö); Männer (with ä); schön (with ö); The factory is large; The grammar school is new; the pension; the cathedral; the kind; the deposit; possibly come",
       "explanation": "The dots are not decoration — they are the vowel-pull you learned in the plurals lesson, made audible."
     },
     {

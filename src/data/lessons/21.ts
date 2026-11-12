@@ -63,16 +63,16 @@ const lesson: Lesson = {
     {
       "id": "l21_e1",
       "type": "shift_select",
-      "prompt": "Compound gender rule: der Apfel + der Kuchen = ?",
+      "prompt": "Choose the different connection before building longer words.",
       "options": [
-        "die Apfelkuchen — food is feminine",
-        "der Apfelkuchen — the last noun donates the gender",
-        "das Apfelkuchen — compounds are neuter",
-        "no article — compounds reject articles"
+        "plough → Pflug",
+        "horse → Pferd",
+        "eat → essen",
+        "pipe → Pfeife"
       ],
-      "target_answer": "der Apfelkuchen — the last noun donates the gender",
-      "meaning": "The head word rules",
-      "explanation": "The final piece is the grammatical head: its article, its plural, its meaning core. das Haus → das Krankenhaus."
+      "target_answer": "eat → essen",
+      "meaning": "Recognize a familiar German word by choosing between earlier connection patterns.",
+      "explanation": "Pipe, plough and horse use P → PF. Eat → essen uses T → SS."
     },
     {
       "id": "l21_e2",
@@ -85,7 +85,7 @@ const lesson: Lesson = {
     {
       "id": "l21_e3",
       "type": "matching_pairs",
-      "prompt": "Match each transparent compound with its literal reading:",
+      "prompt": "Match each transparent compound with its literal reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "cn1",
@@ -111,10 +111,25 @@ const lesson: Lesson = {
           "id": "cn5",
           "english": "head-city",
           "german": "die Hauptstadt"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir können das Brot sehen und schmecken",
+          "english": "We can see and taste the bread"
+        },
+        {
+          "id": "recall2",
+          "german": "die Postkarte im Rucksack",
+          "english": "the postcard in the backpack"
+        },
+        {
+          "id": "recall3",
+          "german": "das Land ist nass",
+          "english": "the land is wet"
         }
       ],
-      "target_answer": "der Zahnarzt, das Feuerzeug, der Staubsauger, der Fernseher, die Hauptstadt",
-      "meaning": "dentist, lighter, vacuum cleaner, television, capital (city)",
+      "target_answer": "der Zahnarzt, das Feuerzeug, der Staubsauger, der Fernseher, die Hauptstadt, Wir können das Brot sehen und schmecken, die Postkarte im Rucksack, das Land ist nass",
+      "meaning": "tooth-doctor; fire-stuff; dust-sucker; far-seer; head-city; We can see and taste the bread; the postcard in the backpack; the land is wet",
       "explanation": "German calqued the Greek/Latin science words from native parts — read the parts and the meaning is free. The head word donates the gender: Arzt → der, Stadt → die."
     },
     {

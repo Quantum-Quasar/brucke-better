@@ -56,7 +56,7 @@ const lesson: Lesson = {
     {
       "id": "l5081_e1",
       "type": "matching_pairs",
-      "prompt": "The would-world — match each soft form with its reading:",
+      "prompt": "The would-world — match each soft form with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "kw1",
@@ -87,10 +87,30 @@ const lesson: Lesson = {
           "id": "kw6",
           "english": "I would be tired",
           "german": "Ich wäre müde"
+        },
+        {
+          "id": "recall1",
+          "german": "Großvater und Großmutter",
+          "english": "grandfather and grandmother"
+        },
+        {
+          "id": "recall2",
+          "german": "Oma und Opa",
+          "english": "grandma and grandpa"
+        },
+        {
+          "id": "recall3",
+          "german": "Onkel und Tante",
+          "english": "uncle and aunt"
+        },
+        {
+          "id": "recall4",
+          "german": "Geschwister und Enkel",
+          "english": "siblings and grandchildren"
         }
       ],
-      "target_answer": "Wenn ich Zeit hätte, Wenn ich reich wäre, Das wäre gut, Das wäre alles, Wenn ich Geld hätte, Ich wäre müde",
-      "meaning": "the two great hätte/wäre frames",
+      "target_answer": "Wenn ich Zeit hätte, Wenn ich reich wäre, Das wäre gut, Das wäre alles, Wenn ich Geld hätte, Ich wäre müde, Großvater und Großmutter, Oma und Opa, Onkel und Tante, Geschwister und Enkel",
+      "meaning": "if I had time; if I were rich; that would be good; that would be all; if I had money; I would be tired; grandfather and grandmother; grandma and grandpa; uncle and aunt; siblings and grandchildren",
       "explanation": "Wishes take Wenn + hätte/wäre; soft statements use wäre alone. The -e marks the world as hypothetical. And the would-world is where families and names live: die Familie wünscht sich Zeit, and every new name arrives spelled out, one Buchstabe at a time."
     },
     {

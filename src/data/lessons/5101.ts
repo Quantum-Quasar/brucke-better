@@ -61,7 +61,7 @@ const lesson: Lesson = {
     {
       "id": "l5101_e1",
       "type": "matching_pairs",
-      "prompt": "The third job — match each relative clause with its reading:",
+      "prompt": "The third job — match each relative clause with its reading. Then recall earlier vocabulary in the short phrases:",
       "matching_pairs": [
         {
           "id": "rr1",
@@ -92,10 +92,20 @@ const lesson: Lesson = {
           "id": "rr6",
           "english": "the person who comes first",
           "german": "die Person, die zuerst kommt"
+        },
+        {
+          "id": "recall1",
+          "german": "Wir wollen freundlich werden",
+          "english": "We want to become friendly"
+        },
+        {
+          "id": "recall2",
+          "german": "Wir können lesen",
+          "english": "We can read"
         }
       ],
-      "target_answer": "der Mann, der Kaffee trinkt, die Frau, die Deutsch lernt, das Buch, das ich lese, das Kind, das spielt, der Lehrer, der jeden Tag liest, die Person, die zuerst kommt",
-      "meaning": "subject and object relatives across all three genders",
+      "target_answer": "der Mann, der Kaffee trinkt, die Frau, die Deutsch lernt, das Buch, das ich lese, das Kind, das spielt, der Lehrer, der jeden Tag liest, die Person, die zuerst kommt, Wir wollen freundlich werden, Wir können lesen",
+      "meaning": "the man who drinks coffee; the woman who learns German; the book that I read; the child that plays; the teacher who reads every day; the person who comes first; We want to become friendly; We can read",
       "explanation": "The relative pronoun copies the noun's gender (der/die/das) — and the clause verb waits in the basement."
     },
     {

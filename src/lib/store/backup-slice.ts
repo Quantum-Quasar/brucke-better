@@ -7,6 +7,7 @@ import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "../storage-keys";
 import { deleteCookie } from "./persistence";
 import { emptyVersions, sliceFromMirrors } from "./progress-state";
 import { isPlausibleStateObject, isDangerousKey, normalizeSettings, normalizeThemeId, normalizeFontId, normalizeLessonIdList, parseLessonId, normalizeLessonProgress, normalizeLessonStars, normalizeWordMastery, importSrsCards, normalizeWeeklyActivity, applyImportedSlice, normalizeLanguageSlice, normalizeTolerance, oneOf, VALID_REVIEW_MODES, emptyWeek } from "./schema";
+import { normalizeSentenceCards } from "./schema";
 
 /** A progress field that carries meaningful (non-dangerous-key) data but
  * normalizes to nothing is corrupt, not a legitimate empty snapshot. Importing it
@@ -30,6 +31,11 @@ function isCorruptProgressField(field: string, value: unknown): boolean {
         : normalizeWordMastery(value);
       return meaningful > 0 && Object.keys(normalized).length === 0;
     }
+    case "sentenceCards": {
+      if (!isPlausibleStateObject(value)) return true;
+      const meaningful = Object.keys(value).filter((key) => !isDangerousKey(key)).length;
+      return meaningful > 0 && Object.keys(normalizeSentenceCards(value)).length === 0;
+    }
     case "srsCards": {
       if (Array.isArray(value)) {
         const meaningful = value.filter(
@@ -48,7 +54,7 @@ function isCorruptProgressField(field: string, value: unknown): boolean {
   }
 }
 
-const PROGRESS_FIELDS = ["completedLessons", "lessonProgress", "lessonStars", "passedGateIds", "wordMastery", "srsCards"];
+const PROGRESS_FIELDS = ["completedLessons", "lessonProgress", "lessonStars", "passedGateIds", "wordMastery", "srsCards", "sentenceCards"];
 function hasCorruptProgress(slice: Record<string, unknown>): boolean {
   return PROGRESS_FIELDS.some((field) => Object.prototype.hasOwnProperty.call(slice, field) && isCorruptProgressField(field, slice[field]));
 }
@@ -72,6 +78,7 @@ export const createBackupSlice: StoreSlice<"resetProgress" | "importBackupState"
         passedGateIds: [],
         wordMastery: {},
         srsCards: {},
+        sentenceCards: {},
         weeklyActivity: emptyWeek(),
         lastActivityWeek: undefined,
         // Cross-tab hydration unions progress, so a reset must be explicit:
@@ -121,6 +128,7 @@ export const createBackupSlice: StoreSlice<"resetProgress" | "importBackupState"
       "passedGateIds",
       "wordMastery",
       "srsCards",
+      "sentenceCards",
       "weeklyActivity",
       "lastActivityWeek",
       "preferredReviewMode",
@@ -168,6 +176,7 @@ export const createBackupSlice: StoreSlice<"resetProgress" | "importBackupState"
           "passedGateIds",
           "wordMastery",
           "srsCards",
+          "sentenceCards",
           "weeklyActivity",
           "lastActivityWeek",
         ].some((field) => payload[field] !== undefined) ||
@@ -198,6 +207,9 @@ export const createBackupSlice: StoreSlice<"resetProgress" | "importBackupState"
       }
       if (Array.isArray(payload.srsCards) || isPlausibleStateObject(payload.srsCards)) {
         topLevelPatch.srsCards = importSrsCards(payload.srsCards, {});
+      }
+      if (isPlausibleStateObject(payload.sentenceCards)) {
+        topLevelPatch.sentenceCards = normalizeSentenceCards(payload.sentenceCards);
       }
       if (Array.isArray(payload.weeklyActivity)) {
         const week = normalizeWeeklyActivity(payload.weeklyActivity);
@@ -263,6 +275,7 @@ export const createBackupSlice: StoreSlice<"resetProgress" | "importBackupState"
         passedGateIds: activeSlice.passedGateIds,
         wordMastery: activeSlice.wordMastery,
         srsCards: activeSlice.srsCards,
+        sentenceCards: activeSlice.sentenceCards,
         weeklyActivity: activeSlice.weeklyActivity,
         lastActivityWeek: activeSlice.lastActivityWeek,
         activeWordDrawerId: activeTargetLanguageId === s.activeLanguageId ? s.activeWordDrawerId : null,

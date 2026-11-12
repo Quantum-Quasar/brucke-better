@@ -3,26 +3,20 @@
 A short backlog of things that are **not built**, gathered from older planning documents
 after they were checked against the code. Each line says what is missing; none is a commitment.
 Longer specs: [`cognitive-load-adaptivity.md`](./cognitive-load-adaptivity.md),
-[`sentence-level-srs-review.md`](./sentence-level-srs-review.md),
 [`native-speaker-naturalness-audit.md`](./native-speaker-naturalness-audit.md).
 Check each against [`../NORTH_STAR.md`](../NORTH_STAR.md) before starting: does it help a learner
 understand, remember, use or keep wanting to learn German?
+
+Completed sentence-process review is documented in [`../SENTENCE_REVIEW.md`](../SENTENCE_REVIEW.md);
+frequency ranks, the German recurrence floor and core mixed-pattern practice are also shipped.
 
 ## Curriculum and content
 
 - **Lighter early cores.** The first eight core lessons still carry 9–14 `word_ids` and 16–18 table
   ids; an earlier review proposed 5–6 new words per early lesson. Treat as a hypothesis and test with
   real beginners ([`../USER_TESTING.md`](../USER_TESTING.md)) before cutting content.
-- **Frequency data.** `WordEntity` has no frequency tier or corpus rank. Adding one from a real
-  frequency list would let the compendium order introductions and weight SRS by usefulness.
-- **Mixed-shift discrimination in the core lessons.** Drills where the learner must *identify* the
-  shift without the lesson naming it exist only in optional sprigs. The distinction matters:
-  applying a rule when the lesson labels it is easier than recognising which rule applies.
 - **Systematic recall openers.** Lessons open on a new concept; there is no `recall` field or
   convention that starts a lesson by bridging back to earlier material (some hooks do it ad hoc).
-- **Recurrence plan with a test.** `word-refs.test.ts` proves references resolve, not that each word
-  *recurs* enough. A per-word encounter map (lesson × exercise type) with a floor would catch words
-  that are taught once and never seen again. Do not promise a rigid "seven encounters".
 - **Explicit payoff arcs for hard words** (`vergessen`, `tief`): foreshadow/payoff exists generically
   (`tm6-ideas.test.ts`), but these words have no typed multi-lesson arc.
 - **External syllabus audit.** No mapping of the trail against a CEFR/Goethe checklist. Use courses
