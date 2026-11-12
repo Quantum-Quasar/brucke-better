@@ -145,7 +145,7 @@ const lesson: Lesson = {
       "english": "I am going to visit Madrid in January — on January 10th."
     },
     "takeaway": "el [number] de [month] gives you every calendar date in Spanish.",
-    "curiosity_teaser": "Up next ([17] The -ado / -ido Past): unlock your first past tense ('I have confirmed, I have eaten') with haber + -ado/-ido!"
+    "curiosity_teaser": "Up next ([1603] The Full Date): build any date as el + number + de + month — and meet el primero, the lone ordinal!"
   },
   "twist": {
     "prompt": "Assemble: 'On Monday I am going to confirm'",

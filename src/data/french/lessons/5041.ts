@@ -149,7 +149,7 @@ const lesson: Lesson = {
       "english": "At work, we all use 'tu' with each other."
     },
     "takeaway": "Wait for 'On se tutoie ?' to switch from vous to tu — and use on for everyday 'we'.",
-    "curiosity_teaser": "Up next on Le Pont ([5051] Lieu & Direction: ici, là, tout droit): see how Tutoyer & Vouvoyer leads directly into Lieu & Direction: ici, là, tout droit."
+    "curiosity_teaser": "Up next on Le Pont ([5042] On: The Everyday We): see how Tutoyer & Vouvoyer leads directly into On: The Everyday We."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"We are going to the café together\" in French:",

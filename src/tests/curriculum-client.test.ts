@@ -27,7 +27,7 @@ describe("lazy curriculum client", () => {
     const first = await loadCurriculum("fr");
     expect(first.topics.length).toBe(30);
     expect(first.totalTopics).toBe(30);
-    expect(first.lessonCount).toBe(123);
+    expect(first.lessonCount).toBe(133);
     expect(peekCurriculum("fr")).toBe(first);
 
     const second = await loadCurriculum("fr");
@@ -39,7 +39,7 @@ describe("lazy curriculum client", () => {
     const spanish = await loadCurriculum("es");
 
     expect(spanish.topics.length).toBe(30);
-    expect(spanish.lessonCount).toBe(123);
+    expect(spanish.lessonCount).toBe(133);
   });
 
   it("returns the empty curriculum for unknown languages", async () => {

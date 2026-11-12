@@ -159,7 +159,7 @@ const lesson: Lesson = {
       "english": "I want two tickets for Madrid tomorrow by train, please."
     },
     "takeaway": "Travel by a vehicle takes en without an article: en tren ('by train').",
-    "curiosity_teaser": "Next branch ([5141] Familia, Profesiones & Pasiones): learn why Spanish drops 'un/una' before professions!"
+    "curiosity_teaser": "Up next ([13] por vs para): back to the spine — the arrow and the path settle it!"
   },
   "twist": {
     "prompt": "Assemble: 'I am going to the station today'",

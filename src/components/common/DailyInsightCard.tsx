@@ -26,19 +26,20 @@ export const DailyInsightCard: React.FC<DailyInsightCardProps> = ({
   const [copied, setCopied] = useState(false);
   const [visible, setVisible] = useState(false);
   const dismissKey = `${languageName}:${insight.day}`;
+  const storageKey = `${DISMISSED_KEY}:${languageName}`;
 
   useEffect(() => {
     try {
-      setVisible(localStorage.getItem(DISMISSED_KEY) !== dismissKey);
+      setVisible(localStorage.getItem(storageKey) !== dismissKey);
     } catch {
       setVisible(true);
     }
-  }, [dismissKey]);
+  }, [dismissKey, storageKey]);
 
   const handleDismiss = () => {
     setVisible(false);
     try {
-      localStorage.setItem(DISMISSED_KEY, dismissKey);
+      localStorage.setItem(storageKey, dismissKey);
     } catch {}
   };
 

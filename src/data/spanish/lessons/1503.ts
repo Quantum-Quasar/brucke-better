@@ -160,7 +160,7 @@ const lesson: Lesson = {
       "english": "You are right — I am very hungry and very thirsty."
     },
     "takeaway": "Because hambre, sed, frío, and razón are nouns, pair them with tener and intensify them with mucho/mucha (never muy)!",
-    "curiosity_teaser": "Up next ([16] Days, Months & Dates): see how the seven Roman planets name the Spanish days of the week."
+    "curiosity_teaser": "Up next ([5061] ¿Cuánto es?): numbers under pressure — ask the price and pedir la cuenta!"
   },
   "twist": {
     "prompt": "Assemble: 'I am very thirsty'",

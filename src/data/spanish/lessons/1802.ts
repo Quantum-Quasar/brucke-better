@@ -156,7 +156,7 @@ const lesson: Lesson = {
       "english": "Yesterday he/she went to Madrid and the visit was a success."
     },
     "takeaway": "ser and ir share the exact same preterite (fui, fuiste, fue) — 'a + place' tells you it means 'went'!",
-    "curiosity_teaser": "Up next ([19] The Imperfect: The Storytelling Past): paint ongoing past scenes and habits with -aba, -ía, era, and estaba."
+    "curiosity_teaser": "Up next ([5151] La Cabeza, La Mano & El Corazón): a new branch — why la mano is feminine despite the o!"
   },
   "twist": {
     "prompt": "Assemble: 'It was a success'",

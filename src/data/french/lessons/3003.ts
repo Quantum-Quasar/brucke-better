@@ -173,7 +173,7 @@ const lesson: Lesson = {
       "english": "I know now that I can speak French."
     },
     "takeaway": "Every complex French sentence is built from simple, transparent pieces you now own.",
-    "curiosity_teaser": "Up next on Le Pont ([5011] Bonjour & Merci): see how The Whole-Trail Review Game leads directly into Bonjour & Merci."
+    "curiosity_teaser": "Up next on Le Pont ([5091] Dont & Où): see how The Whole-Trail Review Game leads directly into Dont & Où."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"I would like to go there tomorrow because it is very beautiful\" in French:",

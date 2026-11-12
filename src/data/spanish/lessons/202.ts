@@ -163,7 +163,7 @@ const lesson: Lesson = {
       "english": "I want the coffee and the collection."
     },
     "takeaway": "Articles in Spanish weld to their nouns — learn them as one sound unit.",
-    "curiosity_teaser": "Up next ([3] The -ar Engine: Verbs from Nouns): turn your -ción nouns into active verbs."
+    "curiosity_teaser": "Up next ([5031] Actualmente, Librería & Co.): meet the trap deck — actualmente is 'currently', not 'actually'!"
   },
   "twist": {
     "prompt": "Assemble: 'Do you want the hotel?'",

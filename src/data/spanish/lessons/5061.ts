@@ -160,7 +160,7 @@ const lesson: Lesson = {
       "english": "How much is this? — It is twenty euros, please."
     },
     "takeaway": "Plural prices use Son ('Son diez euros') — and prices in exchange always take por.",
-    "curiosity_teaser": "Next branch ([5071] No he terminado): practice negative and question sentences in the -ado/-ido past!"
+    "curiosity_teaser": "Up next ([5062] La Cuenta, Por Favor): close the meal — the bill is the count, and por favor does the asking!"
   },
   "twist": {
     "prompt": "Assemble: 'It is ten euros (Son diez euros)'",

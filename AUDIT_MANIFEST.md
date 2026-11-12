@@ -150,7 +150,7 @@ In-page views: lessons and atlas details are rendered by `AppShell.tsx` (`Lesson
 ## 7. Performance & Resource Optimization Highlights
 
 1. **100% Pre-rendered Static Site Generation (SSG)**:
-   - The app ships 6 static routes (`/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`), plus canonical `/trail/<lang>/<id>` lesson reference pages with introductions, patterns, vocabulary and outcomes. Lessons (188 unique lessons across 500 per-lesson payloads) and atlas families (37 atlas families across four atlases) retain instant practice/reference overlays.
+   - The app ships 6 static routes (`/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`), plus canonical `/trail/<lang>/<id>` lesson reference pages with introductions, patterns, vocabulary and outcomes. Lessons (193 unique lessons across 530 per-lesson payloads) and atlas families (37 atlas families across four atlases) retain instant practice/reference overlays.
    - Overlays replace the current history entry with language-explicit query URLs; copied links and reloads restore them. Canonical lesson pages carry `LearningResource` data and appear in the sitemap; robots points to it. Builds regenerate ignored `public/data/` distribution files from committed content, rather than storing those copies in git.
 2. **Shift Alignment Memoization**:
    - `alignShiftPair` aligns whole spellings before highlighting known correspondences, handles double shifts and uses a bounded 500-entry cache. Twenty golden alignments pin the actual highlighted spans, including V/F→B and Y/GH→G/CH.

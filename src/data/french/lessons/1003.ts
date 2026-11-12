@@ -159,7 +159,7 @@ const lesson: Lesson = {
       "english": "You have a good friend at the hotel."
     },
     "takeaway": "Final consonants sleep unless they are CaReFuL — or unless the next word's vowel wakes them up.",
-    "curiosity_teaser": "Up next on Le Pont ([11] Adjectives & the Silent -s): see how Liaison & Silent Consonants: CaReFuL leads directly into Adjectives & the Silent -s."
+    "curiosity_teaser": "Up next on Le Pont ([5111] Dormant Consonants Wake Up): see how Liaison & Silent Consonants: CaReFuL leads directly into Dormant Consonants Wake Up."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"You have two friends here\" in French:",

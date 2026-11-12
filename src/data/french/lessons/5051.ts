@@ -162,7 +162,7 @@ const lesson: Lesson = {
       "english": "Excuse me, the station? — It's straight ahead, then on the left."
     },
     "takeaway": "Straight ahead = tout droit; left = à gauche; right = à droite.",
-    "curiosity_teaser": "Up next on Le Pont ([5061] C'est combien ?): see how Lieu & Direction: ici, là, tout droit leads directly into C'est combien ?."
+    "curiosity_teaser": "Up next on Le Pont ([5052] Où est la gare ?): see how Lieu & Direction: ici, là, tout droit leads directly into Où est la gare ?"
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"The station is on the right and the hotel is on the left\" in French:",

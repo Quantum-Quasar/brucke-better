@@ -77,13 +77,13 @@ describe("Review Modes Engine & Question Generators", () => {
 
 
 describe("Sentence-Level SRS Deck across German, French, and Spanish", () => {
-  it("synthesizes 123 sentence entities for German, French, and Spanish", () => {
+  it("synthesizes 133 sentence entities for German, French, and Spanish", () => {
     const deSentences = getSentenceEntities("de");
     const frSentences = getSentenceEntities("fr");
     const esSentences = getSentenceEntities("es");
     expect(deSentences.length).toBeGreaterThanOrEqual(120);
-    expect(frSentences.length).toBe(123);
-    expect(esSentences.length).toBe(123);
+    expect(frSentences.length).toBe(133);
+    expect(esSentences.length).toBe(133);
   });
 
   it("generates word-order permutations for sentence MCQ so structure is tested", () => {

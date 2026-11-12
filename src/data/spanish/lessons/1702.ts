@@ -159,7 +159,7 @@ const lesson: Lesson = {
       "english": "I have never seen that, but today we have done it."
     },
     "takeaway": "Keep haber + participle welded together — place no, nunca, and pronouns in front of haber.",
-    "curiosity_teaser": "Up next ([18] The Preterite: The Dot in Time): learn how a single accent mark separates 'I speak' (hablo) from 'he spoke' (habló)!"
+    "curiosity_teaser": "Up next ([5071] No he terminado): negate and question the -ado/-ido past!"
   },
   "twist": {
     "prompt": "Assemble: 'Have you eaten today?'",

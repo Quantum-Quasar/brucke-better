@@ -144,7 +144,7 @@ const lesson: Lesson = {
       "english": "I would like to live in this beautiful city and I would buy a house here."
     },
     "takeaway": "Even two-letter ir ('to go') forms its conditional regularly: ir + -ía = iría ('would go')!",
-    "curiosity_teaser": "Next branch ([5111] The Boot-Verb Gym): master stem-changing boot verbs and -go verbs!"
+    "curiosity_teaser": "Up next ([5102] El Condicional Cortés): me gustaría, ¿podría… ? — the conditional as the politeness lever!"
   },
   "twist": {
     "prompt": "Assemble: 'Could you (formal) confirm?'",

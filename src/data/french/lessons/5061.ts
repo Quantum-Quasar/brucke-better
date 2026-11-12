@@ -168,7 +168,7 @@ const lesson: Lesson = {
       "english": "Hello, how much is it for this book? — That comes to ten euros."
     },
     "takeaway": "How much = C'est combien ?; Total = Ça fait X euros; Restaurant check = L'addition.",
-    "curiosity_teaser": "Up next on Le Pont ([5071] Je n'ai pas mangé): see how C'est combien ? leads directly into Je n'ai pas mangé."
+    "curiosity_teaser": "Up next on Le Pont ([5062] L'addition, s'il vous plaît): see how C'est combien ? leads directly into L'addition, s'il vous plaît."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"How much is it for two coffees\" in French:",

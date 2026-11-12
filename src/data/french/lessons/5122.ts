@@ -172,7 +172,7 @@ const lesson: Lesson = {
       "english": "What are you having? — I'll have a coffee and a croissant."
     },
     "takeaway": "To order food or drink, English 'I'll have' is always French Je prends ('I take').",
-    "curiosity_teaser": "Up next on Le Pont ([5131] Le Train, Le Billet & La Gare): see how Commander au Bistro leads directly into Le Train, Le Billet & La Gare."
+    "curiosity_teaser": "Up next on Le Pont ([14] Possessives Agree with the Thing): see how Commander au Bistro leads directly into Possessives Agree with the Thing."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"I'll have some soup and some bread, please\" in French:",

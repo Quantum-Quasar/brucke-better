@@ -45,6 +45,7 @@ export const NL_TOPICS: TopicCluster[] = [
     core: authoredCore(2, "The SCH Bridge"),
     sprigs: [
       shell(nlSprigId(2, 1), "SCH Spelling Gym", "shell, sharp, shoulder, shadow: read sch as one sound and keep the English twin in view."),
+      shell(nlSprigId(2, 2), "SCH Twins in the Wild", "Het schaap is wit — the sch block now carries whole sentences."),
     ],
   },
   {
@@ -72,6 +73,7 @@ export const NL_TOPICS: TopicCluster[] = [
     core: authoredCore(5, "The GH → CH Bridge"),
     sprigs: [
       shell(nlSprigId(5, 1), "CH & G Clinic", "The two throat sounds: nacht, licht, recht versus goed, groen, geven."),
+      shell(nlSprigId(5, 2), "Nacht & Licht Sentences", "The two throat sounds share whole sentences: g up front, ch behind the vowel."),
     ],
   },
   {
@@ -117,6 +119,7 @@ export const NL_TOPICS: TopicCluster[] = [
     core: authoredCore(10, "The Present Tense"),
     sprigs: [
       shell(nlSprigId(10, 1), "Present Tense Drill", "werk/werkt/werken, maak/maakt/maken: conjugate the stem and invert without losing the t."),
+      shell(nlSprigId(10, 2), "The Present in the Wild", "Feed fresh verbs (wonen, spelen, komen) through the stem-and-ending machine in real sentences."),
     ],
   },
   {
@@ -162,6 +165,7 @@ export const NL_TOPICS: TopicCluster[] = [
     core: authoredCore(15, "Numbers & Time"),
     sprigs: [
       shell(nlSprigId(15, 1), "Clock & Numbers Gym", "tien, twintig, honderd; hoe laat is het? — numbers and the Dutch clock."),
+      shell(nlSprigId(15, 2), "The Clock in Conversation", "half vier is half past three: ask hoe laat is het? and answer with the forward-looking clock."),
     ],
   },
   {
@@ -207,6 +211,7 @@ export const NL_TOPICS: TopicCluster[] = [
     core: authoredCore(20, "The Future & the Would-World"),
     sprigs: [
       shell(nlSprigId(20, 1), "Future & Would Gym", "ik ga werken, ik zou graag willen: plans, predictions and politeness."),
+      shell(nlSprigId(20, 2), "Plans for Tomorrow", "gaan + infinitive for plans, wil graag + infinitive for wishes — the second verb waits at the end."),
     ],
   },
   {
@@ -252,6 +257,7 @@ export const NL_TOPICS: TopicCluster[] = [
     core: authoredCore(25, "Subordinate Clauses"),
     sprigs: [
       shell(nlSprigId(25, 1), "Verb-Final Gym", "ik denk dat hij komt, omdat ik werk: move the verb to the end."),
+      shell(nlSprigId(25, 2), "Because & When", "omdat, dat and als bend their own clause: connector first, verb last."),
     ],
   },
   {
@@ -314,7 +320,10 @@ export const NL_TRAIL_BRANCHES: TrailBranch[] = [
     attach: 2,
     title: "The Sound Gym",
     blurb: "Dutch vowels, diphthongs and the sch/g/ch trio.",
-    lessons: [shell(5021, "Vowels & Diphthongs", "aa/ee/oo/uu, ij/ui/oe/eu: hear the length and the glide before spelling them.")],
+    lessons: [
+      shell(5021, "Vowels & Diphthongs", "aa/ee/oo/uu, ij/ui/oe/eu: hear the length and the glide before spelling them."),
+      shell(5022, "G & CH Sentences", "de gans in het gras: the two throat sounds share one sentence."),
+    ],
   },
   {
     id: 5030,
@@ -335,14 +344,20 @@ export const NL_TRAIL_BRANCHES: TrailBranch[] = [
     attach: 12,
     title: "In de Stad",
     blurb: "Directions, trams and the words on every Dutch corner.",
-    lessons: [shell(5051, "Links, Rechts & Rechtdoor", "links, rechts, rechtdoor, de tram, het station: ask and give directions.")],
+    lessons: [
+      shell(5051, "Links, Rechts & Rechtdoor", "links, rechts, rechtdoor, de tram, het station: ask and give directions."),
+      shell(5052, "De Tram & Het Station", "nemen takes transport, wachten op waits for it — the city run, door to door."),
+    ],
   },
   {
     id: 5060,
     attach: 15,
     title: "Shopping & Euros",
     blurb: "Prices, paying and the Dutch pin machine.",
-    lessons: [shell(5061, "Hoeveel Kost Het?", "hoeveel kost het, betalen, pinnen, contant: shopping in euros.")],
+    lessons: [
+      shell(5061, "Hoeveel Kost Het?", "hoeveel kost het, betalen, pinnen, contant: shopping in euros."),
+      shell(5062, "Pinnen & De Rekening", "kopen, betaal de rekening, and pin it — the Dutch checkout."),
+    ],
   },
   {
     id: 5070,
@@ -356,7 +371,10 @@ export const NL_TRAIL_BRANCHES: TrailBranch[] = [
     attach: 23,
     title: "De Hele Dag",
     blurb: "A full day told through reflexive verbs.",
-    lessons: [shell(5081, "Opstaan, Wassen & Slapen", "zich aankleden, zich wassen, zich voorbereiden: a reflexive morning-to-night chain.")],
+    lessons: [
+      shell(5081, "Opstaan, Wassen & Slapen", "zich aankleden, zich wassen, zich voorbereiden: a reflexive morning-to-night chain."),
+      shell(5082, "De Hele Dag Door", "Split the verb (sta op), flip the verb (lees ik) — the day's edges."),
+    ],
   },
   {
     id: 5090,

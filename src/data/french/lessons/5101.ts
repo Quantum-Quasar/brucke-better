@@ -160,7 +160,7 @@ const lesson: Lesson = {
       "english": "If I lived in Paris, I would go to the museum every Sunday."
     },
     "takeaway": "After si ('if') use the imparfait (Si j'avais); in the result use the conditional (j'irais).",
-    "curiosity_teaser": "Up next on Le Pont ([5111] Dormant Consonants Wake Up): see how Tout le conditionnel leads directly into Dormant Consonants Wake Up."
+    "curiosity_teaser": "Up next on Le Pont ([5102] Le conditionnel poli): see how Tout le conditionnel leads directly into Le conditionnel poli."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"It would be very good to visit Lyon\" in French:",

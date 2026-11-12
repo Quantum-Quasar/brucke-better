@@ -157,7 +157,7 @@ const lesson: Lesson = {
       "english": "Where is the station and is there a good restaurant around here?"
     },
     "takeaway": "el/la (the specific place) → está; un/una (a place) → hay.",
-    "curiosity_teaser": "Next branch ([5061] ¿Cuánto es?): master shopping, prices, and restaurant bills!"
+    "curiosity_teaser": "Up next ([5052] Hay vs Está in the Street): split the street in two — hay asks if it exists, está asks where it is!"
   },
   "twist": {
     "prompt": "Assemble: 'The university is here'",

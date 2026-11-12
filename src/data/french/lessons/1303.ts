@@ -167,7 +167,7 @@ const lesson: Lesson = {
       "english": "I'm having bread and soup, but I'm not having wine."
     },
     "takeaway": "Use du / de la / de l' / des for 'some', and collapse to bare de after pas.",
-    "curiosity_teaser": "Up next on Le Pont ([14] Possessives Agree with the Thing): see how The Partitive: du, de la & Negative de leads directly into Possessives Agree with the Thing."
+    "curiosity_teaser": "Up next on Le Pont ([5121] Le Pain, Le Fromage, Le Vin & L'Eau): see how The Partitive: du, de la & Negative de leads directly into Le Pain, Le Fromage, Le Vin & L'Eau."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"I want some bread and cheese, please\" in French:",

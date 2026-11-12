@@ -151,7 +151,7 @@ const lesson: Lesson = {
       "english": "Why don't you want to go? — Because it is not possible today."
     },
     "takeaway": "Two words with an accent ask the question (¿por qué?); one welded word gives the reason (porque).",
-    "curiosity_teaser": "Up next ([8] The -ico & -al Bridges): cross the Decode Gate into Topic 8 and unlock ratusan of adjectives in -ico and -al!"
+    "curiosity_teaser": "Up next ([703] The Full Question Gym): drill all five question words in real questions — the accent asks, nothing moves!"
   },
   "twist": {
     "prompt": "Assemble: 'Why is it important?'",

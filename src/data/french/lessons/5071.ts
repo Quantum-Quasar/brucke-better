@@ -169,7 +169,7 @@ const lesson: Lesson = {
       "english": "I've never seen this movie, but I've already read the book."
     },
     "takeaway": "In the past tense, pas, jamais, rien, and déjà always sit between the auxiliary and the participle.",
-    "curiosity_teaser": "Up next on Le Pont ([5081] De matin à soir): see how Je n'ai pas mangé leads directly into De matin à soir."
+    "curiosity_teaser": "Up next on Le Pont ([5072] Avez-vous déjà vu ?): see how Je n'ai pas mangé leads directly into Avez-vous déjà vu ?"
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"I did not understand the question\" in French:",

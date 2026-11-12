@@ -149,7 +149,7 @@ const lesson: Lesson = {
       "english": "I order a coffee, I tell the truth, and I put the key on the table."
     },
     "takeaway": "Learn the five -go verbs together: tengo, hago, pongo, digo, traigo.",
-    "curiosity_teaser": "Next branch ([5121] Tapas, Mesa & Comida): step into a Spanish restaurant and order like a local!"
+    "curiosity_teaser": "Up next ([11] Adjective Agreement): back to the spine — paint the noun after you name it!"
   },
   "twist": {
     "prompt": "Assemble: 'What are you doing today? (¿Qué haces hoy?)'",

@@ -159,7 +159,7 @@ const lesson: Lesson = {
       "english": "He is the friend with whom I spoke yesterday in the city where I live."
     },
     "takeaway": "Keep prepositions right in front of quien (con quien, para quien) — never at the end of the sentence!",
-    "curiosity_teaser": "Next branch ([5101] Hypothetical Situations): expand conditional -ía and subjunctive sentences!"
+    "curiosity_teaser": "Up next ([29] Spanish Idioms as Thought): back to the spine — idioms as thought!"
   },
   "twist": {
     "prompt": "Assemble: 'The friend with whom I live'",

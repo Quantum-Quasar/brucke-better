@@ -60,6 +60,7 @@ export const FR_TOPICS: TopicCluster[] = [
     sprigs: [
       shell(frSprigId(4, 1), "Pas Un Pas", "The etymology gym: ne vais pas un pas — negation as refusing to take a step."),
       shell(frSprigId(4, 2), "Negation in the Wild", "Flip 10 sentences to the negative without changing anything else."),
+      shell(frSprigId(4, 3), "The Extended Sandwich", "jamais, rien and plus: three new fillings for the ne...pas sandwich, drilled in place."),
     ],
   },
   {
@@ -185,6 +186,7 @@ export const FR_TOPICS: TopicCluster[] = [
     sprigs: [
       shell(frSprigId(16, 1), "The Sky Calendar", "lundi, mardi, mercredi, jeudi, vendredi, samedi, dimanche — the Roman planetary week."),
       shell(frSprigId(16, 2), "En janvier Gym", "Months with en (en janvier, en juillet), dates with le, and aujourd'hui / demain / hier."),
+      shell(frSprigId(16, 3), "The Full Date: le 14 juillet", "le + number + month for any date — and le premier, the one ordinal that survives."),
     ],
   },
   {
@@ -352,6 +354,7 @@ export const FR_TRAIL_BRANCHES: TrailBranch[] = [
     blurb: "on, en, an, in — think the N, don't say it.",
     lessons: [
       shell(5021, "Think the N", "The four nasal vowels with minimal pairs and the 'moving toward N' technique."),
+      shell(5022, "Minimal Pairs: Pain, Vin & Vingt", "Nasal discrimination across pain, vin, vingt, bon, blanc — five words, one trick."),
     ],
   },
   {
@@ -361,6 +364,7 @@ export const FR_TRAIL_BRANCHES: TrailBranch[] = [
     blurb: "actuellement is 'currently' — a first walk through the trap deck.",
     lessons: [
       shell(5031, "Actuellement, Librairie & Co.", "Six highest-value false friends in contrastive recall drills; link-out to the Review Hub deck."),
+      shell(5032, "False Friends II: The Second Deck", "sensible, monnaie, assister, coin, formidable, notice — six more costumes to strip."),
     ],
   },
   {
@@ -370,6 +374,7 @@ export const FR_TRAIL_BRANCHES: TrailBranch[] = [
     blurb: "tutoyer/vouvoyer — and on, the worn-down homme.",
     lessons: [
       shell(5041, "Tutoyer & Vouvoyer", "Choosing tu vs vous as social verbs, and how on ('one/the man') became spoken French's everyday 'we'."),
+      shell(5042, "On: The Everyday We", "on + a third-person verb as spoken French's everyday 'we', drilled against nous."),
     ],
   },
   {
@@ -379,6 +384,7 @@ export const FR_TRAIL_BRANCHES: TrailBranch[] = [
     blurb: "ici, là, tout droit — directions in the street.",
     lessons: [
       shell(5051, "Lieu & Direction: ici, là, tout droit", "Navigating streets: tout droit, à gauche, à droite, où est la gare ?"),
+      shell(5052, "Où est la gare ?", "Asking with the accented où and routing someone with tout droit, à gauche, à droite."),
     ],
   },
   {
@@ -388,6 +394,7 @@ export const FR_TRAIL_BRANCHES: TrailBranch[] = [
     blurb: "Combien ? — prices, euros, and numbers under pressure.",
     lessons: [
       shell(5061, "C'est combien ?", "Asking prices, ordering with numbers 1–100, and l'addition at the bistro."),
+      shell(5062, "L'addition, s'il vous plaît", "The meal-closing ritual: requesting politely, paying, and la monnaie vs l'addition."),
     ],
   },
   {
@@ -397,6 +404,7 @@ export const FR_TRAIL_BRANCHES: TrailBranch[] = [
     blurb: "Negation and questions inside the passé composé.",
     lessons: [
       shell(5071, "Je n'ai pas mangé", "The sandwich wraps the auxiliary (je n'ai pas compris, tu n'as pas vu) and déjà slots inside."),
+      shell(5072, "Avez-vous déjà vu ?", "Questions inside the passé composé: est-ce que, the raised voice, and déjà in the pair."),
     ],
   },
   {
@@ -406,6 +414,7 @@ export const FR_TRAIL_BRANCHES: TrailBranch[] = [
     blurb: "Reflexive chains across a whole day.",
     lessons: [
       shell(5081, "De matin à soir", "Chaining reflexives (se lever, se laver, s'habiller, se coucher) across a full day."),
+      shell(5082, "Le dimanche de Marie", "Reflexive chains with clock phrases (à sept heures) and le + weekday habits."),
     ],
   },
   {
@@ -424,6 +433,7 @@ export const FR_TRAIL_BRANCHES: TrailBranch[] = [
     blurb: "The full would-world paradigm.",
     lessons: [
       shell(5101, "Tout le conditionnel", "Building any conditional from the future stem + imparfait ending (-ais, -ait)."),
+      shell(5102, "Le conditionnel poli", "Polite requests with voudrais and pourriez — the conditional as the softness lever."),
     ],
   },
   {

@@ -5,9 +5,10 @@ import { flattenTrailNodes } from "../data/curriculum";
 import { isListeningSkipped, LISTENING_SKIP_MS, listeningSkipLabel, listeningSkipRemaining } from "../lib/listening";
 import { retryVariant, RETRY_INTENT_LINE } from "../lib/retry-variation";
 import { consciousnessLineFor, CONSCIOUSNESS_EVERY } from "../data/consciousness";
-import { SOUND_IMPORTS } from "../data/sound-imports";
+import { SOUND_IMPORTS, soundImportSpellings, soundImportsPresentIn } from "../data/sound-imports";
 import { DEFAULT_SETTINGS } from "../data/settings";
 import type { ExerciseItem } from "../lib/types";
+import { COLD_OPEN_FORBIDDEN } from "../lib/types";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
@@ -15,16 +16,6 @@ import { resolve } from "node:path";
 const trailOrder = flattenTrailNodes().map((n) => n.id);
 const lessonIndex = new Map(LESSONS.map((l) => [l.id, l]));
 const trailIndex = new Map(trailOrder.map((id, i) => [id, i]));
-
-const COLD_OPEN_FORBIDDEN = [
-  "derive",
-  "reverse_cognate",
-  "transcribe",
-  "literal_gloss",
-  "dictation",
-  "family_matrix",
-  "variant_english",
-];
 
 describe("TM-6: the dictation exercise", () => {
   it("plays audio the learner must write down, and never opens a lesson", () => {
@@ -323,6 +314,22 @@ describe("TM-6: sound import — you already make this sound", () => {
     expect(byGrapheme.has("ch (hard, after a/o/u)")).toBe(true);
     expect(byGrapheme.get("ch (soft, after i/e)")!.taughtIn).toBe(6);
     expect(byGrapheme.get("ch (hard, after a/o/u)")!.taughtIn).toBe(6);
+  });
+
+  it("matches the spelling it claims, not the first letter of it", () => {
+    expect(soundImportSpellings("sch")).toEqual(["sch"]);
+    expect(soundImportSpellings("ch (soft, after i/e)")).toEqual(["ch"]);
+    expect(soundImportSpellings("sp- / st- (initial)")).toEqual(["sp", "st"]);
+
+    const frenchCafe = soundImportsPresentIn("fr", ["café"]).map((imp) => imp.grapheme);
+    expect(frenchCafe).not.toContain("ch");
+    expect(soundImportsPresentIn("fr", ["changer"]).map((imp) => imp.grapheme)).toContain("ch");
+
+    const schwimmen = soundImportsPresentIn("de", ["schwimmen"]).map((imp) => imp.grapheme);
+    expect(schwimmen).toContain("sch");
+    expect(schwimmen.filter((grapheme) => grapheme.startsWith("ch"))).toEqual([]);
+    const spielen = soundImportsPresentIn("de", ["spielen"]).map((imp) => imp.grapheme);
+    expect(spielen).toContain("sp- / st- (initial)");
   });
 });
 

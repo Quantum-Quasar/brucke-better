@@ -161,7 +161,7 @@ const lesson: Lesson = {
       "english": "In the morning I get up at seven and at night I go to bed at ten."
     },
     "takeaway": "empezar (e→ie) always takes 'a' before a following infinitive: Empiezo a comprender.",
-    "curiosity_teaser": "Next branch ([5091] Relative Clauses in Depth): master con quien, para quien, lo que, and donde!"
+    "curiosity_teaser": "Up next ([5082] De la Tarde a la Noche): stamp the reflexive day with por la mañana and por la noche!"
   },
   "twist": {
     "prompt": "Assemble: 'I start to eat at eight'",

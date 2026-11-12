@@ -216,7 +216,7 @@ const lesson: Lesson = {
       "english": "I suppose that you want to maintain the tradition and obtain the confirmation."
     },
     "takeaway": "English -pose = Spanish -poner (pongo); English -tain = Spanish -tener (tengo); English -tract = Spanish -traer (traigo)!",
-    "curiosity_teaser": "Up next ([29] Spanish Idioms as Thought): explore how Spanish idioms and Arabic heritage express everyday thought."
+    "curiosity_teaser": "Up next ([5091] Relative Clauses in Depth): con quien, lo que and donde — the relatives grow up!"
   },
   "twist": {
     "prompt": "Assemble: 'I want to obtain the confirmation'",

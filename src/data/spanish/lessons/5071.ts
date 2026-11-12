@@ -148,7 +148,7 @@ const lesson: Lesson = {
       "english": "I haven't finished today and I haven't seen it."
     },
     "takeaway": "Think of he visto / he hablado / hemos hecho as a single compound word — nothing can step inside it.",
-    "curiosity_teaser": "Next branch ([5081] De la mañana a la noche): chain daily reflexives from morning to night!"
+    "curiosity_teaser": "Up next ([5072] Questions in the Perfect): ¿Has comido ? — ask the perfect and keep the glue!"
   },
   "twist": {
     "prompt": "Assemble: 'We have not eaten today'",

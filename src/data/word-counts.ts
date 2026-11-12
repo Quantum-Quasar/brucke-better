@@ -20,9 +20,9 @@ export interface CourseCounts {
  *  to the real content by `src/tests/languages.test.ts`. */
 export const COURSE_COUNTS: Readonly<Record<string, CourseCounts>> = {
   de: { topics: 30, lessons: 179, families: 10, words: 1227 },
-  fr: { topics: 30, lessons: 123, families: 10, words: 306 },
-  es: { topics: 30, lessons: 123, families: 10, words: 293 },
-  nl: { topics: 30, lessons: 75, families: 10, words: 390 },
+  fr: { topics: 30, lessons: 133, families: 10, words: 306 },
+  es: { topics: 30, lessons: 133, families: 10, words: 293 },
+  nl: { topics: 30, lessons: 85, families: 10, words: 390 },
 };
 
 const EMPTY_COUNTS: CourseCounts = { topics: 0, lessons: 0, families: 0, words: 0 };

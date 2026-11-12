@@ -159,7 +159,7 @@ const lesson: Lesson = {
       "english": "I want to remember the moment because the reservation is a success."
     },
     "takeaway": "actualmente = currently; librería = bookstore; éxito = success; asistir = attend; recordar = remember; embarazada = pregnant.",
-    "curiosity_teaser": "Return to the main spine or continue to the next branch along the trail!"
+    "curiosity_teaser": "Up next ([5032] False Friends II: The Second Deck): constipado, carpeta, fábrica and three more costumes to strip!"
   },
   "twist": {
     "prompt": "Assemble: 'I want to remember the moment'",

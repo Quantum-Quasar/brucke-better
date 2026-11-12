@@ -169,7 +169,7 @@ const lesson: Lesson = {
       "english": "I ask for directions at the bookshop."
     },
     "takeaway": "Spelling converts reliably; meaning converts mostly. The Review Hub keeps the liars in rotation.",
-    "curiosity_teaser": "Up next on Le Pont ([5041] Tutoyer & Vouvoyer): see how Actuellement, Librairie & Co. leads directly into Tutoyer & Vouvoyer."
+    "curiosity_teaser": "Up next on Le Pont ([5032] False Friends II: The Second Deck): see how Actuellement, Librairie & Co. leads directly into False Friends II: The Second Deck."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"I might possibly come\" in French:",

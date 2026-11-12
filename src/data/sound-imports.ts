@@ -308,6 +308,35 @@ export function getSoundImportsForLanguage(languageId: string): SoundImport[] {
   return SOUND_IMPORTS_BY_LANG[languageId] ?? SOUND_IMPORTS;
 }
 
+/** The spellings an import claims, not its first letter or parenthetical:
+ * "sch" → sch, "ch (soft, after i/e)" → ch, "sp- / st- (initial)" → sp and st. */
+export function soundImportSpellings(grapheme: string): string[] {
+  return grapheme
+    .toLowerCase()
+    .split("(")[0]
+    .split("/")
+    .map((part) => part.trim().replace(/^-+|-+$/g, ""))
+    .filter(Boolean);
+}
+
+/** Imports whose spelled cluster really occurs in one of these table words.
+ * A short spelling does not count when a longer one swallows it in the same
+ * word: "schwimmen" is sch, not also ch. */
+export function soundImportsPresentIn(languageId: string, words: readonly string[]): SoundImport[] {
+  const lowerWords = words.map((word) => word.toLowerCase()).filter(Boolean);
+  const imports = getSoundImportsForLanguage(languageId);
+  const matched = Array.from(new Set(imports.flatMap((imp) => soundImportSpellings(imp.grapheme))));
+  return imports
+    .filter((imp) => soundImportSpellings(imp.grapheme).some((spelling) =>
+      lowerWords.some((word) => word.includes(spelling) &&
+        !matched.some((longer) =>
+          longer.length > spelling.length && longer.includes(spelling) && word.includes(longer)
+        )
+      )
+    ))
+    .slice(0, 3);
+}
+
 /** The line rendered on a lesson or a word card: "you already say this — here's where." */
 export function importLineFor(sound: SoundImport): string {
   return `You already make this sound: ${sound.englishSource} in ${sound.sourceWord}. ${sound.whatsNew}`;

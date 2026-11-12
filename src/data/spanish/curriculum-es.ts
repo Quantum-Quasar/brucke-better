@@ -91,6 +91,7 @@ export const ES_TOPICS: TopicCluster[] = [
     sprigs: [
       shell(esSprigId(7, 1), "dónde, qué & quién", "The accented question words: ¿dónde está?, ¿qué quieres?, ¿quién es?, ¿cuándo?, ¿cuánto?"),
       shell(esSprigId(7, 2), "por qué vs porque", "Asking why (por qué, two words accented) vs answering because (porque, one word)."),
+      shell(esSprigId(7, 3), "The Full Question Gym", "All five question words in real questions: ¿? marks, the accent, and statement order that never moves."),
     ],
   },
   {
@@ -186,6 +187,7 @@ export const ES_TOPICS: TopicCluster[] = [
     sprigs: [
       shell(esSprigId(16, 1), "The Days of the Planets", "lunes (Moon), martes (Mars), miércoles (Mercury), jueves (Jove), viernes (Venus), sábado, domingo."),
       shell(esSprigId(16, 2), "Dates & Appointments", "el lunes ('on Monday'), los lunes ('on Mondays'), en enero, el cinco de mayo."),
+      shell(esSprigId(16, 3), "The Full Date", "el + number + de + month for any date — and el primero, the one ordinal that survives."),
     ],
   },
   {
@@ -352,6 +354,7 @@ export const ES_TRAIL_BRANCHES: TrailBranch[] = [
     blurb: "The 5 pure vowels (a, e, i, o, u) and the written accent mark.",
     lessons: [
       shell(5021, "The Five Pure Vowels", "Never glide into diphthongs: clean vowel training and acute accent rules."),
+      shell(5022, "Minimal Pairs: Clean Vowels", "mesa, casa, música, cinco, ocho — five words proving the vowels never glide."),
     ],
   },
   {
@@ -361,6 +364,7 @@ export const ES_TRAIL_BRANCHES: TrailBranch[] = [
     blurb: "actualmente is 'currently' — a first walk through the trap deck.",
     lessons: [
       shell(5031, "Actualmente, Librería & Co.", "Key false friends in contrastive recall drills: actualmente, librería, éxito, asistir, recordar, sensible, sopa, embarazada."),
+      shell(5032, "False Friends II: The Second Deck", "constipado, carpeta, fábrica, pretender, soportar, bizarro — six more costumes to strip."),
     ],
   },
   {
@@ -370,6 +374,7 @@ export const ES_TRAIL_BRANCHES: TrailBranch[] = [
     blurb: "When to use tú vs usted in Spain and Latin America.",
     lessons: [
       shell(5041, "The Social Line", "Register decisions with tú, usted, and ustedes across Spain and Latin America."),
+      shell(5042, "Usted in the Wild", "Greetings and questions with usted + third-person verb — Buenos días, señora, ¿cómo está usted ?"),
     ],
   },
   {
@@ -379,6 +384,7 @@ export const ES_TRAIL_BRANCHES: TrailBranch[] = [
     blurb: "aquí, allí, todo recto — navigating streets and plazas.",
     lessons: [
       shell(5051, "Directions & Places", "Asking ¿Dónde está…? and navigating with todo recto, a la izquierda, a la derecha, aquí, allí."),
+      shell(5052, "Hay vs Está in the Street", "Existence with hay (un hotel) vs location with está (el hotel) — and no hay problema."),
     ],
   },
   {
@@ -388,6 +394,7 @@ export const ES_TRAIL_BRANCHES: TrailBranch[] = [
     blurb: "¿Cuánto cuesta? — prices, market Spanish, and numbers under pressure.",
     lessons: [
       shell(5061, "¿Cuánto es?", "Asking prices with ¿Cuánto cuesta? / ¿Cuánto es?, numbers 1–100, and pedir la cuenta."),
+      shell(5062, "La Cuenta, Por Favor", "Closing the meal: la cuenta ('the count'), por favor, gracias — and económico as the price verdict."),
     ],
   },
   {
@@ -397,6 +404,7 @@ export const ES_TRAIL_BRANCHES: TrailBranch[] = [
     blurb: "Negative and question sentences with the pretérito perfecto.",
     lessons: [
       shell(5071, "No he terminado", "Keeping haber and its participle glued together: No he terminado, ¿Ya has comido?, Nunca he visto."),
+      shell(5072, "Questions in the Perfect", "¿Has comido ? ¿Qué has hecho ? — ask the perfect and keep the haber + participle glue."),
     ],
   },
   {
@@ -406,6 +414,7 @@ export const ES_TRAIL_BRANCHES: TrailBranch[] = [
     blurb: "Reflexive chains across a whole morning and evening.",
     lessons: [
       shell(5081, "De la mañana a la noche", "Chaining reflexives (me levanto, me lavo, me acuesto) and time markers across a realistic day."),
+      shell(5082, "De la Tarde a la Noche", "por la mañana / por la noche as the clockwork around the reflexive routine."),
     ],
   },
   {
@@ -424,6 +433,7 @@ export const ES_TRAIL_BRANCHES: TrailBranch[] = [
     blurb: "Politeness and hypotheticals expanded.",
     lessons: [
       shell(5101, "Hypothetical Situations", "Conditional -ía across verbs and polite/hypothetical expressions."),
+      shell(5102, "El Condicional Cortés", "me gustaría + infinitive and ¿podría… ? — the conditional as the politeness lever."),
     ],
   },
   {

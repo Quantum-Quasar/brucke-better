@@ -16,11 +16,11 @@ Sound correspondences, compounds and sentence patterns are memory aids, not a re
 
 The German compendium contains **1227 words**. Use the lesson examples and pronunciation, then practise recall; the atlas and historical notes are optional reference material.
 
-**French course (open trail).** The same engine teaches French through the Norman doublets — 1066 left English and French sharing thousands of cognates, and the French trail decodes them the same way: 30 topics (123 lessons authored), 9 conversion-bridge families (`-ion`, `-ation→-er`, `-ité`, `-ance`, `-é`, `-ment`, `-eur`, `-able`, doublets), a 306-word compendium with 16 compound calques and 16 false friends, and its own trail/atlas/review layers. Authored as typed modules in `src/data/french/` (not parsed from `word_connections.md`).
+**French course (open trail).** The same engine teaches French through the Norman doublets — 1066 left English and French sharing thousands of cognates, and the French trail decodes them the same way: 30 topics (133 lessons authored), 9 conversion-bridge families (`-ion`, `-ation→-er`, `-ité`, `-ance`, `-é`, `-ment`, `-eur`, `-able`, doublets), a 306-word compendium with 16 compound calques and 16 false friends, and its own trail/atlas/review layers. Authored as typed modules in `src/data/french/` (not parsed from `word_connections.md`).
 
-**Spanish course (open trail).** Spanish keeps the Latin stems English borrowed: 30 topics (123 lessons authored), 9 conversion-bridge families (`-ción`, `-dad`, `-mente`, the `-ar` verb engine, `-ico`, `-al`, and three historical shifts: `f→h`, `-ct-→-ch-`, `pl/cl/fl→ll`), and a 293-word compendium. Typed modules in `src/data/spanish/`.
+**Spanish course (open trail).** Spanish keeps the Latin stems English borrowed: 30 topics (133 lessons authored), 9 conversion-bridge families (`-ción`, `-dad`, `-mente`, the `-ar` verb engine, `-ico`, `-al`, and three historical shifts: `f→h`, `-ct-→-ch-`, `pl/cl/fl→ll`), and a 293-word compendium. Typed modules in `src/data/spanish/`.
 
-**Dutch course (open trail).** Dutch is the West Germanic twin English kept closest: it is Low Franconian and skipped the High German consonant shift, so *water* stays *water*, *ship* becomes *schip*, and *book* becomes *boek*. The Dutch trail has 30 topics, 75 Dutch lessons, 9 correspondence families, and a 390-word compendium with 16 compound calques and 18 false friends. Typed modules in `src/data/dutch/`.
+**Dutch course (open trail).** Dutch is the West Germanic twin English kept closest: it is Low Franconian and skipped the High German consonant shift, so *water* stays *water*, *ship* becomes *schip*, and *book* becomes *boek*. The Dutch trail has 30 topics, 85 Dutch lessons, 9 correspondence families, and a 390-word compendium with 16 compound calques and 18 false friends. Typed modules in `src/data/dutch/`.
 
 Per-language design notes, shared method and test constraints: [`courses.md`](./courses.md).
 
@@ -84,7 +84,7 @@ surviving reload, tab closure and expiry without restarting its timer.
 
 ### Production Build
 
-Pre-renders six top-level tabs — 6 static routes: `/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about` — plus canonical lesson reference pages at `/trail/<lang>/<id>`. There are 188 unique ids (179 German plus 9 French/Spanish-only ids; Dutch reuses the shared lesson-id space), 500 per-lesson payloads, and 37 atlas families. Practice and atlas details still open as instant overlays: opening, changing or closing one replaces the current history entry with a language-explicit query URL (`/?lesson=1&lang=de`, `/atlas?family=th_to_d&lang=de`, `/atlas?master=1&lang=de`). Reload restores that view; Back follows top-level tab history. Canonical lesson pages render introductions, patterns, vocabulary and outcomes for readers and search engines, with `LearningResource` structured data, `sitemap.xml` and `robots.txt`. `bun run build` regenerates ignored `public/data/` payloads before `next build`; these distribution copies are not committed.
+Pre-renders six top-level tabs — 6 static routes: `/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about` — plus canonical lesson reference pages at `/trail/<lang>/<id>`. There are 193 unique ids (179 German plus 14 French/Spanish-only ids; Dutch reuses the shared lesson-id space), 530 per-lesson payloads, and 37 atlas families. Practice and atlas details still open as instant overlays: opening, changing or closing one replaces the current history entry with a language-explicit query URL (`/?lesson=1&lang=de`, `/atlas?family=th_to_d&lang=de`, `/atlas?master=1&lang=de`). Reload restores that view; Back follows top-level tab history. Canonical lesson pages render introductions, patterns, vocabulary and outcomes for readers and search engines, with `LearningResource` structured data, `sitemap.xml` and `robots.txt`. `bun run build` regenerates ignored `public/data/` payloads before `next build`; these distribution copies are not committed.
 
 ```bash
 NEXT_PUBLIC_SITE_URL=https://your-public-origin.example bun run build
@@ -175,7 +175,7 @@ The whole surface is themeable and typable, and the app never leaves the browser
 - **Word and lesson search** in the top nav (`/` outside inputs/dialogs): target words, English cognates/meanings, lesson titles, shift families and domains. Results open the word drawer or the lesson that teaches it; language indexes load on demand.
 - **Optional speaking practice** in sound settings uses browser recognition when supported. Feedback is lenient and never gates progress. Starting requires an explicit gesture and warns that the browser/provider may process audio online; the app stores no recordings or transcripts. Missing target-language TTS voices trigger a one-time install guide and fallback warning, not a learning block.
 
-The regenerated `public/` inventory is **16,938,345 raw bytes (16.15 MiB), 711 files**.
+The regenerated `public/` inventory is **17,182,538 raw bytes (16.39 MiB), 741 files**.
 This is available disk content, not an initial download: only requested lesson data,
 selected sound samples and selected/previewed fonts load. Reproduce with
 `bun run export-data && bun run audit:assets`; [category breakdown](../scripts/README.md#public-asset-inventory-and-request-audit).

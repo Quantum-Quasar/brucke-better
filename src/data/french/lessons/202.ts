@@ -119,7 +119,7 @@ const lesson: Lesson = {
       "english": "Thanks for the invitation — I accept the complication."
     },
     "takeaway": "Two glances per noun: -ION → feminine; vowel → elide. The rule is in the word, not in a list.",
-    "curiosity_teaser": "Up next on Le Pont ([3] The -ation Engine): see how -ION Discrimination Drills leads directly into The -ation Engine."
+    "curiosity_teaser": "Up next on Le Pont ([5031] Actuellement, Librairie & Co.): see how -ION Discrimination Drills leads directly into Actuellement, Librairie & Co.."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"I want it (the reservation)\" in French:",

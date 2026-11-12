@@ -153,7 +153,7 @@ const lesson: Lesson = {
       "english": "I'm leaving now — see you on Friday!"
     },
     "takeaway": "voy = 'I go [somewhere]'; me voy = 'I'm leaving!'",
-    "curiosity_teaser": "Up next ([25] Gustar: The Inverted Liking): discover why 'I like coffee' in Spanish is literally 'The coffee pleases to me'!"
+    "curiosity_teaser": "Up next ([5081] De la mañana a la noche): chain the reflexives from wake-up to lights-out!"
   },
   "twist": {
     "prompt": "Assemble: 'Are you leaving today?'",

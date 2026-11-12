@@ -155,7 +155,7 @@ const lesson: Lesson = {
       "english": "How are you, sir, and how are you all?"
     },
     "takeaway": "usted takes the 3rd-person singular verb; ustedes takes the 3rd-person plural verb (-n) across the entire Hispanic world.",
-    "curiosity_teaser": "Next branch ([5051] Directions & Places): navigate city streets and plazas!"
+    "curiosity_teaser": "Up next ([5042] Usted in the Wild): greet formally — usted borrows the he/she verb, and the distance is the politeness!"
   },
   "twist": {
     "prompt": "Assemble: 'Do you all (ustedes) have a reservation?'",

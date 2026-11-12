@@ -9,7 +9,7 @@ import { whisperCuesForLesson } from "@/data/posture-cues";
 import { retryVariant } from "@/lib/retry-variation";
 import { isListeningSkipped } from "@/lib/listening";
 import { consciousnessLineFor } from "@/data/consciousness";
-import { getSoundImportsForLanguage, type SoundImport } from "@/data/sound-imports";
+import { soundImportsPresentIn, type SoundImport } from "@/data/sound-imports";
 import { getLanguageDefinition } from "@/data/languages";
 import type { LessonReaderProps, LessonSession } from "./lesson-session-types";
 import { restoreRetries, useLessonProgress } from "./use-lesson-progress";
@@ -79,15 +79,10 @@ export const useLessonSession = ({
   // about a sound the learner is not meeting right now.
   const soundImports = React.useMemo<SoundImport[]>(() => {
     if (currentSegment !== "table") return [];
-    const onPage = new Set(
-      lesson.table_word_ids
-        .map((wid) => data.words[wid.toLowerCase()]?.target_word.toLowerCase() ?? "")
-        .join(" ")
-    );
-    return getSoundImportsForLanguage(activeLanguageId).filter((imp) =>
-      onPage.has(imp.grapheme[0].toLowerCase()) || [...onPage].some((w) => w.includes(imp.grapheme[0].toLowerCase()))
-    ).slice(0, 3);
-  }, [currentSegment, lesson.id, data.words, activeLanguageId]);
+    const tableWords = lesson.table_word_ids
+      .map((wid) => data.words[wid.toLowerCase()]?.target_word ?? "");
+    return soundImportsPresentIn(activeLanguageId, tableWords);
+  }, [currentSegment, lesson.id, lesson.table_word_ids, data.words, activeLanguageId]);
 
   const showDetour = Boolean(detourFootnote) && !detourDismissed && practiceIndex === 2 && !inRetryPhase && !twistPhase;
   // TM-6: re-whisper learning consciousness on a deterministic subset of the trail
@@ -258,6 +253,11 @@ export const useLessonSession = ({
       setFailCounts({});
       setMercyRevealFor(null);
       setRetryAttempts({});
+      // A replay is not a finished run. Leaving the old practice/summary marks in
+      // place let a learner skip straight to summary from the table and mint a
+      // purple star without answering anything.
+      setCompletedSegments((prev) => prev.filter((segment) => segment !== "practice" && segment !== "summary"));
+      setIsLessonFinished(false);
     }
     markSegmentDone("table", "practice");
   };

@@ -170,7 +170,7 @@ const lesson: Lesson = {
       "english": "I want to finish because it is very important."
     },
     "takeaway": "When a casual English word hides the Spanish root, trade it for its formal Latinate synonym.",
-    "curiosity_teaser": "Up next ([2] The -CIÓN Bridge): unlock over a thousand feminine Spanish nouns with a single suffix."
+    "curiosity_teaser": "Up next ([5011] ¡Hola! y Gracias): the first branch opens — greetings, gracias and politeness in dialogue!"
   },
   "twist": {
     "prompt": "Assemble: 'I want to continue'",

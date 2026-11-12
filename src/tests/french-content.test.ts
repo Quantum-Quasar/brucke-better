@@ -39,7 +39,7 @@ describe("french course content", () => {
     expect(frContent.totalTopics).toBe(30);
     expect(frContent.topics).toHaveLength(30);
     expect(frContent.lessons.length).toBeGreaterThanOrEqual(19);
-    expect(frContent.insights).toHaveLength(28);
+    expect(frContent.insights).toHaveLength(40);
     expect(frContent.compendium).toBe(frenchCompendium);
 
     // Validate exercise solvability, MCQ integrity, and narrative arcs

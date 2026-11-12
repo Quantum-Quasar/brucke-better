@@ -161,7 +161,7 @@ const lesson: Lesson = {
       "english": "My grandmother is eighty years old."
     },
     "takeaway": "70 is sixty-ten, 80 is four-twenties, and 100 is bare cent.",
-    "curiosity_teaser": "Up next on Le Pont ([16] Days, Months & Dates): see how Four Score & Seven leads directly into Days, Months & Dates."
+    "curiosity_teaser": "Up next on Le Pont ([5061] C'est combien ?): see how Four Score & Seven leads directly into C'est combien ?."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"My father is sixty years old\" in French:",

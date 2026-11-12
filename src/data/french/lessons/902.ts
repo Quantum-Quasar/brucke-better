@@ -156,7 +156,7 @@ const lesson: Lesson = {
       "english": "Are you coming? — Yes! And you all, are you coming with us?"
     },
     "takeaway": "One friend is tu; one stranger is vous; two of anybody is vous.",
-    "curiosity_teaser": "Up next on Le Pont ([10] avoir & the H It Lost): see how The vous Register leads directly into avoir & the H It Lost."
+    "curiosity_teaser": "Up next on Le Pont ([5041] Tutoyer & Vouvoyer): see how The vous Register leads directly into Tutoyer & Vouvoyer."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"Do you speak French or English\" in French:",

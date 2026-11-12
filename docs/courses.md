@@ -10,8 +10,8 @@ read those, not a prose copy that can drift. Counts: `COURSE_COUNTS` in `src/dat
 
 | | French (`fr`) | Spanish (`es`) | Dutch (`nl`) |
 |---|---|---|---|
-| Lessons / words | 123 / 306 | 123 / 293 | 75 / 390 |
-| Shape | 30 cores, 72 sprigs, 15 branches (21 lessons) | 30 cores, 72 sprigs, 15 branches (21 lessons) | 30 cores, 30 sprigs, 15 branches (1 lesson each) |
+| Lessons / words | 133 / 306 | 133 / 293 | 85 / 390 |
+| Shape | 30 cores, 74 sprigs, 15 branches (29 lessons) | 30 cores, 74 sprigs, 15 branches (29 lessons) | 30 cores, 36 sprigs, 15 branches (19 lessons) |
 | Star gates | 5, after topics 7, 10, 14, 21, 26 | 5, after topics 7, 10, 14, 21, 26 | 5, after topics 7, 14, 21, 26, 29 |
 | Gender values | `le` / `la` | `el` / `la` | `de` / `het` |
 | Bridge | Norman doublets + Latin conversion rules | Latin stems + a few historical sound shifts | the *unshifted* sibling: spelling and vowel bridges |

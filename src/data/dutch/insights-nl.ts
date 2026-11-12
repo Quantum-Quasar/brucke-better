@@ -229,4 +229,112 @@ export const DUTCH_INSIGHTS: DailyInsight[] = [
       "A proverb built on a domestic diminutive (klokje) rather than an abstract claim about belonging. Example: Na drie weken reizen dacht ik: zoals het klokje thuis tikt, tikt het nergens.",
     takeaway_principle: "Dutch proverbs often prefer a homely image to a general truth.",
   },
+  {
+    day: 29,
+    german_expression: "nu komt de aap uit de mouw",
+    english_meaning: "now the truth comes out (lit. now the monkey comes out of the sleeve)",
+    cultural_etymology:
+      "Street conjurers kept the monkey hidden in a sleeve until the trick's finale. When the secret shows, the monkey shows. Example: Je had het de hele week verzwegen — nu komt de aap uit de mouw!",
+    takeaway_principle:
+      "komen (to come) drives Dutch motion idioms, and mouw is a sleeve — Dutch keeps its surprises in its clothing.",
+  },
+  {
+    day: 30,
+    german_expression: "stof tot nadenken",
+    english_meaning: "food for thought (lit. dust/material for thinking)",
+    cultural_etymology:
+      "stof means dust, fabric and material at once — thoughts need material to chew on. Example: Dat filosofische boek gaf me veel stof tot nadenken.",
+    takeaway_principle:
+      "tot (until, to) + a noun phrase: Dutch aims its nouns at purposes the way English aims 'for' at them.",
+  },
+  {
+    day: 31,
+    german_expression: "de appel valt niet ver van de boom",
+    english_meaning: "the apple doesn't fall far from the tree",
+    cultural_etymology:
+      "Dutch, English and German all keep this same proverb about children and parents — one image, three languages. Example: Zoals de vader, zoals de zoon: de appel valt niet ver van de boom.",
+    takeaway_principle:
+      "vallen (to fall) again — some proverbs are so obvious that every language plants the same tree.",
+  },
+  {
+    day: 32,
+    german_expression: "dweilen met de kraan open",
+    english_meaning: "endless futile work (lit. to mop with the tap open)",
+    cultural_etymology:
+      "Mopping while the tap keeps pouring — the floor floods back as fast as you dry it. A Sisyphean image from everyday housework. Example: Zonder planning is dit dweilen met de kraan open.",
+    takeaway_principle:
+      "met (with) marks the instrument, and open doubles as adjective and adverb — Dutch leaves its adjectives bare.",
+  },
+  {
+    day: 33,
+    german_expression: "door de vingers kijken",
+    english_meaning: "to turn a blind eye (lit. to look through one's fingers)",
+    cultural_etymology:
+      "Pretend not to see by looking between the fingers you politely keep in front of your eyes. Example: De docent kijkt de kleine foutjes door de vingers.",
+    takeaway_principle:
+      "kijken + door (through) — prepositions do the semantic work in Dutch idioms, exactly as they do in Dutch word-building.",
+  },
+  {
+    day: 34,
+    german_expression: "koekje van eigen deeg",
+    english_meaning: "a taste of your own medicine (lit. a cookie of your own dough)",
+    cultural_etymology:
+      "When your own trick turns on you, you eat a cookie baked from your own dough. Example: Hij klaagt over rommel en krijgt nu het koekje van eigen deeg.",
+    takeaway_principle:
+      "koekje (little cake) is the diminutive again, and deeg (dough) — reciprocity idioms borrow from the kitchen.",
+  },
+  {
+    day: 35,
+    german_expression: "hagelslag",
+    english_meaning: "chocolate sprinkles on buttered bread",
+    cultural_etymology:
+      "hagel is hail — the sprinkles fall on your morning slice like a hail shower. A whole nation's breakfast, named by weather. Example: Nederlands ontbijt: brood met boter en hagelslag.",
+    takeaway_principle:
+      "Dutch names new things by describing them plainly: hail on your bread. The compound stays transparent, and breakfast stays joyful.",
+  },
+  {
+    day: 36,
+    german_expression: "een oogje in het zeil houden",
+    english_meaning: "to keep an eye on things (lit. to keep a little eye on the sail)",
+    cultural_etymology:
+      "From the age of sail: the lookout watched the sails for every shift of wind. The little eye never leaves the canvas. Example: Ik hou een oogje in het zeil terwijl je weg bent.",
+    takeaway_principle:
+      "oogje is the diminutive of oog (eye) — and holding (houden) + a body part builds watchfulness, like door de vingers kijken.",
+  },
+  {
+    day: 37,
+    german_expression: "twee vliegen in één klap",
+    english_meaning: "two birds with one stone (lit. two flies with one swat)",
+    cultural_etymology:
+      "One clap of the tea towel, two flies down. Efficiency priced in insects instead of birds. Example: Met de fiets naar het werk: we bewegen én we sparen — twee vliegen in één klap.",
+    takeaway_principle:
+      "één (one) + klap (a clap/swat) — small countable nouns do the work; the thought is the same, the image is Dutch.",
+  },
+  {
+    day: 38,
+    german_expression: "een kat een kat noemen",
+    english_meaning: "to call a cat a cat (to say it plainly)",
+    cultural_etymology:
+      "Dutch directness in one image: whatever it is, name it. No euphemism, no decoration. Example: Ik noem gewoon een kat een kat: het plan is te duur.",
+    takeaway_principle:
+      "noemen (to name) is the naming verb — and the idiom's plainness is the whole culture of doe normaal in miniature.",
+  },
+  {
+    day: 39,
+    german_expression: "het hart op de tong",
+    english_meaning: "to wear your heart on your sleeve (lit. to have the heart on the tongue)",
+    cultural_etymology:
+      "English hangs the heart on the sleeve; Dutch puts it on the tongue, where every feeling gets spoken out loud. Example: Zij heeft altijd haar hart op de tong.",
+    takeaway_principle:
+      "The heart words (het hart) + body geography — Dutch locates honesty in the mouth, not the chest.",
+  },
+  {
+    day: 40,
+    german_expression: "door de mand vallen",
+    english_meaning: "to give yourself away (lit. to fall through the basket)",
+    cultural_etymology:
+      "At old markets, a seller caught cheating sometimes literally fell through the basket he stood on. The lie collapses; so does the floor. Example: Door te overdrijven viel hij door de mand.",
+    takeaway_principle:
+      "de mand (basket) + vallen (to fall) — exposure idioms stage a small accident, and the truth does the pushing.",
+  },
 ];

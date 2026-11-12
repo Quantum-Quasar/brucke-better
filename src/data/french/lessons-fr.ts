@@ -13,6 +13,7 @@ import lesson303 from "./lessons/303";
 import lesson4 from "./lessons/4";
 import lesson401 from "./lessons/401";
 import lesson402 from "./lessons/402";
+import lesson403 from "./lessons/403";
 import lesson5 from "./lessons/5";
 import lesson501 from "./lessons/501";
 import lesson502 from "./lessons/502";
@@ -54,6 +55,7 @@ import lesson1502 from "./lessons/1502";
 import lesson16 from "./lessons/16";
 import lesson1601 from "./lessons/1601";
 import lesson1602 from "./lessons/1602";
+import lesson1603 from "./lessons/1603";
 import lesson17 from "./lessons/17";
 import lesson1701 from "./lessons/1701";
 import lesson1702 from "./lessons/1702";
@@ -104,14 +106,22 @@ import lesson3003 from "./lessons/3003";
 import lesson5011 from "./lessons/5011";
 import lesson5012 from "./lessons/5012";
 import lesson5021 from "./lessons/5021";
+import lesson5022 from "./lessons/5022";
 import lesson5031 from "./lessons/5031";
+import lesson5032 from "./lessons/5032";
 import lesson5041 from "./lessons/5041";
+import lesson5042 from "./lessons/5042";
 import lesson5051 from "./lessons/5051";
+import lesson5052 from "./lessons/5052";
 import lesson5061 from "./lessons/5061";
+import lesson5062 from "./lessons/5062";
 import lesson5071 from "./lessons/5071";
+import lesson5072 from "./lessons/5072";
 import lesson5081 from "./lessons/5081";
+import lesson5082 from "./lessons/5082";
 import lesson5091 from "./lessons/5091";
 import lesson5101 from "./lessons/5101";
+import lesson5102 from "./lessons/5102";
 import lesson5111 from "./lessons/5111";
 import lesson5112 from "./lessons/5112";
 import lesson5121 from "./lessons/5121";
@@ -139,6 +149,7 @@ export const FR_LESSONS: Lesson[] = [
   lesson4,
   lesson401,
   lesson402,
+  lesson403,
   lesson5,
   lesson501,
   lesson502,
@@ -180,6 +191,7 @@ export const FR_LESSONS: Lesson[] = [
   lesson16,
   lesson1601,
   lesson1602,
+  lesson1603,
   lesson17,
   lesson1701,
   lesson1702,
@@ -230,14 +242,22 @@ export const FR_LESSONS: Lesson[] = [
   lesson5011,
   lesson5012,
   lesson5021,
+  lesson5022,
   lesson5031,
+  lesson5032,
   lesson5041,
+  lesson5042,
   lesson5051,
+  lesson5052,
   lesson5061,
+  lesson5062,
   lesson5071,
+  lesson5072,
   lesson5081,
+  lesson5082,
   lesson5091,
   lesson5101,
+  lesson5102,
   lesson5111,
   lesson5112,
   lesson5121,

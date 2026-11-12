@@ -6,11 +6,17 @@
 
 import { useAsyncResource, type AsyncResource } from "@/lib/async-resource";
 import { EMPTY_COMPENDIUM } from "@/data/empty-compendium";
+import { LANGUAGES } from "@/data/languages";
 import type { CompendiumData, LessonIndexEntry, LessonPayload } from "@/lib/types";
 
 type CompendiumPayload = Omit<CompendiumData, "wordList">;
 
-const AVAILABLE_LANGUAGES = new Set(["de", "fr", "es", "nl"]);
+// Only courses the registry makes available have payloads under public/data
+// (export-client-data writes exactly those). A second hand-kept id list here
+// silently emptied a new language instead of loading it.
+const AVAILABLE_LANGUAGES = new Set(
+  LANGUAGES.filter((language) => language.status === "available").map((language) => language.id)
+);
 
 // Content hash baked in at build time (next.config.mjs). Versioned URLs let
 // the server mark /data/* immutable without risking stale content after a deploy.

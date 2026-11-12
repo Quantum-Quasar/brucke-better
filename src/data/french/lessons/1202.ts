@@ -167,7 +167,7 @@ const lesson: Lesson = {
       "english": "Tonight, we're going to prepare a good dinner and celebrate."
     },
     "takeaway": "Conjugate aller, park the infinitive, and hug aller with ne...pas when negating.",
-    "curiosity_teaser": "Up next on Le Pont ([13] à, de, chez): see how Future Gym leads directly into à, de, chez."
+    "curiosity_teaser": "Up next on Le Pont ([5051] Lieu & Direction: ici, là, tout droit): see how Future Gym leads directly into Lieu & Direction: ici, là, tout droit."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"I am going to prepare the reservation tomorrow\" in French:",

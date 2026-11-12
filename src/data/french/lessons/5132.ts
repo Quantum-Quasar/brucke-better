@@ -166,7 +166,7 @@ const lesson: Lesson = {
       "english": "A round-trip ticket to Bordeaux, please."
     },
     "takeaway": "One-way = un aller simple; Round-trip = un aller-retour; Ticket destination = pour [City].",
-    "curiosity_teaser": "Up next on Le Pont ([5141] Docteur, Professeur & Acteur): see how Départ, Arrivée & Aller-Retour leads directly into Docteur, Professeur & Acteur."
+    "curiosity_teaser": "Up next on Le Pont ([13] à, de, chez): see how Départ, Arrivée & Aller-Retour leads directly into à, de, chez."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"The train leaves this morning and I'm coming back tomorrow\" in French:",

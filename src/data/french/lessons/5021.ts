@@ -140,7 +140,7 @@ const lesson: Lesson = {
       "english": "The bread is good — shall we?"
     },
     "takeaway": "The N is a direction, not a destination. Unfinished is correct.",
-    "curiosity_teaser": "Up next on Le Pont ([5031] Actuellement, Librairie & Co.): see how Think the N leads directly into Actuellement, Librairie & Co.."
+    "curiosity_teaser": "Up next on Le Pont ([5022] Minimal Pairs: Pain, Vin & Vingt): see how Think the N leads directly into Minimal Pairs: Pain, Vin & Vingt."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"The bread is good\" in French:",

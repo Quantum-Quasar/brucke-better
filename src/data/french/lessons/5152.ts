@@ -160,7 +160,7 @@ const lesson: Lesson = {
       "english": "It's cold, so I'm wearing my big blue coat."
     },
     "takeaway": "Old French -el became modern French -eau (mantle → manteau, castle → château).",
-    "curiosity_teaser": "You have completed every core, sprig, and support branch on Le Pont — félicitations !"
+    "curiosity_teaser": "Up next on Le Pont ([19] The Storytelling Past): see how Le Manteau & La Robe leads directly into The Storytelling Past."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"I am wearing a black coat today\" in French:",

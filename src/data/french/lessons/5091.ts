@@ -157,7 +157,7 @@ const lesson: Lesson = {
       "english": "The day when I arrived in the city you're talking about."
     },
     "takeaway": "de-verb → dont; place or 'the day when' → où.",
-    "curiosity_teaser": "Up next on Le Pont ([5101] Tout le conditionnel): see how Dont & Où leads directly into Tout le conditionnel."
+    "curiosity_teaser": "You have walked every core, sprig and support branch of Le Pont — from le gâteau to dont & où. The whole trail is yours."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"This is the city where I used to live\" in French:",

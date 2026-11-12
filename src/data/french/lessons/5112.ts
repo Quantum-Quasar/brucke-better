@@ -162,7 +162,7 @@ const lesson: Lesson = {
       "english": "He is the hero of the story."
     },
     "takeaway": "Both H's are silent; Latin H muet elides (l'histoire), while H aspiré stands apart (le héros).",
-    "curiosity_teaser": "Up next on Le Pont ([5121] Le Pain, Le Fromage, Le Vin & L'Eau): see how H muet vs H aspiré leads directly into Le Pain, Le Fromage, Le Vin & L'Eau."
+    "curiosity_teaser": "Up next on Le Pont ([11] Adjectives & the Silent -s): see how H muet vs H aspiré leads directly into Adjectives & the Silent -s."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"In winter, the man lives at the hotel\" in French:",

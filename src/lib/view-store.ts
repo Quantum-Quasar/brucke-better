@@ -6,9 +6,11 @@
 
 import { create } from "zustand";
 import { VIEW_STORAGE_KEY } from "./storage-keys";
+import { LANGUAGES } from "@/data/languages";
 
-const LANGUAGE_IDS = ["de", "fr", "es", "nl"] as const;
-const LANGUAGE_ID_SET = new Set<string>(LANGUAGE_IDS);
+const LANGUAGE_ID_SET = new Set<string>(
+  LANGUAGES.filter((language) => language.status === "available").map((language) => language.id)
+);
 
 const MAX_TEXT = 200;
 const MIN_VISIBLE = 60;

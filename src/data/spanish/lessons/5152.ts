@@ -139,7 +139,7 @@ const lesson: Lesson = {
       "english": "I want to buy this black coat and that red dress."
     },
     "takeaway": "Notice that el vestido ('the dress') ends in -o and is grammatically masculine: un vestido rojo!",
-    "curiosity_teaser": "Congratulations — you have completed every spine topic, cluster sprig, and support branch of El Puente!"
+    "curiosity_teaser": "Up next ([19] The Storytelling Past): leave the perfect for the imperfect — era, hablaba, the background tense!"
   },
   "twist": {
     "prompt": "Assemble: 'I have a black coat'",

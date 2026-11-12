@@ -161,7 +161,7 @@ const lesson: Lesson = {
       "english": "I love classical music, I like books, and we're going to the movies tonight."
     },
     "takeaway": "Never drop el/la/los/las when naming things you like after gustar or encantar!",
-    "curiosity_teaser": "Next branch ([5151] El Cuerpo, La Ropa & Los Colores): discover why la mano is feminine despite ending in -o!"
+    "curiosity_teaser": "Up next ([15] Numbers & Ages: 1–100): back to the spine — count to cien and own your age!"
   },
   "twist": {
     "prompt": "Assemble: 'Do you like cinema?'",

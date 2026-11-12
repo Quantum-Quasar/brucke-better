@@ -173,7 +173,7 @@ const lesson: Lesson = {
       "english": "I want this book here, that coffee (near you), and that table way over there."
     },
     "takeaway": "Masculine singular before a noun is este/ese (plural estos/esos); esto and eso are only for unnamed ideas!",
-    "curiosity_teaser": "Up next ([15] Numbers & Ages: 1–100): cross the Sentence Gate and learn why Spanish possesses ages and physical feelings with tener."
+    "curiosity_teaser": "Up next ([5141] Médico, Profesor & Actor (No 'un'!)): professions drop the un — soy profesor!"
   },
   "twist": {
     "prompt": "Assemble: 'What is this (unnamed thing)?'",

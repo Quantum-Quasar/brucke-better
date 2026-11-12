@@ -68,11 +68,20 @@ self.addEventListener("fetch", (event) => {
 
   event.respondWith((async () => {
     const cache = await caches.open(cacheName);
+    // An in-page lesson open rewrites the URL (/?lesson=1&lang=de) without a
+    // document request, so only the bare route shell ("/") is in the cache.
+    // A reload of that URL is still a navigation to the same JS app; match the
+    // shell by path (exact URL first) instead of missing and showing the
+    // "not saved offline" page. Never do this for RSC/asset requests: their
+    // query is meaningful (?v= content version).
+    const shellUrl = navigation ? new URL(url.pathname, url.origin).href : null;
     let saved = await cache.match(request);
+    if (!saved && shellUrl) saved = await cache.match(shellUrl);
     if (!saved) {
       const previous = (await caches.keys()).filter((key) => key.startsWith(prefix) && key !== cacheName).reverse();
       for (const key of previous) {
         saved = await (await caches.open(key)).match(request);
+        if (!saved && shellUrl) saved = await (await caches.open(key)).match(shellUrl);
         if (saved) break;
       }
     }

@@ -156,7 +156,7 @@ const lesson: Lesson = {
       "english": "My brother was born in July."
     },
     "takeaway": "en + month ('en juillet'); le + number + month ('le quatorze juillet').",
-    "curiosity_teaser": "Up next on Le Pont ([17] The -é Past): see how En janvier Gym leads directly into The -é Past."
+    "curiosity_teaser": "Up next on Le Pont ([1603] The Full Date: le 14 juillet): see how En janvier Gym leads directly into The Full Date: le 14 juillet."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"I am going to visit Paris in July\" in French:",

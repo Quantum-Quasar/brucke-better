@@ -158,7 +158,7 @@ const lesson: Lesson = {
       "english": "Good morning, madam — a coffee, please. Thank you very much!"
     },
     "takeaway": "el día is masculine (buenos días); la tarde, la noche, and las gracias are feminine (buenas tardes, muchas gracias).",
-    "curiosity_teaser": "Up next ([10] tener & hay): unlock possession (tengo, tienes) and universal existence (hay)."
+    "curiosity_teaser": "Up next ([5041] The Social Line): choose tú or usted across Spain and Latin America!"
   },
   "twist": {
     "prompt": "Assemble: 'Good night, until tomorrow'",

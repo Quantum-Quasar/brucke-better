@@ -180,3 +180,30 @@ test("one failed sentence attempt persists once and its replay never awards less
   expect(after.wordMastery).toEqual(before.wordMastery);
   expect(after.srsCards).toEqual(before.srsCards);
 });
+
+test("replaying practice from the table cannot skip straight back to summary for a perfect star", async ({ page }) => {
+  await seed(page, {
+    completedLessons: [1],
+    currentLessonId: 2,
+    lessonStars: { 1: "gold" },
+    lessonProgress: {
+      1: {
+        segment: "summary",
+        practiceIndex: 4,
+        completedSegments: ["hook", "pattern", "table", "practice", "summary"],
+        everQueued: true,
+        retryExerciseIds: [],
+        inRetryPhase: false,
+        retryIndex: 0,
+      },
+    },
+  });
+  await page.goto("/?lang=de&lesson=1");
+  await page.getByRole("button", { name: "Table, completed", exact: true }).click();
+  await page.getByRole("button", { name: /^start exercises/i }).click();
+  await expect(page.getByText(/problem 1 of 5/i)).toBeVisible();
+  // The old summary mark must not survive the replay: otherwise the summary CTA
+  // completes the lesson with a fresh everQueued=false and upgrades gold to purple.
+  await expect(page.getByRole("button", { name: "Summary, locked", exact: true })).toBeDisabled();
+  expect((await progress(page)).lessonStars[1]).toBe("gold");
+});

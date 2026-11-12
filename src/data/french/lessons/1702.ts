@@ -157,7 +157,7 @@ const lesson: Lesson = {
       "english": "Yesterday, I reserved a table and we celebrated."
     },
     "takeaway": "In speech, je vais /vizite/ and j'ai /vizite/ differ only by vais vs. ai; in writing, vais takes -er and ai takes -é.",
-    "curiosity_teaser": "Up next on Le Pont ([18] Motion Takes être): see how Hier j'ai… Story Drills leads directly into Motion Takes être."
+    "curiosity_teaser": "Up next on Le Pont ([5071] Je n'ai pas mangé): see how Hier j'ai… Story Drills leads directly into Je n'ai pas mangé."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"Yesterday, I spoke with my friend and we ate at the restaurant\" in French:",

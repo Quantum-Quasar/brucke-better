@@ -159,7 +159,7 @@ const lesson: Lesson = {
       "english": "You'll see, it will be a great adventure!"
     },
     "takeaway": "Every future stem ends in -r-; add -ai/-as/-a for 'will' and -ais/-ait for 'would'.",
-    "curiosity_teaser": "Up next on Le Pont ([27] il faut): see how The -ai Future leads directly into il faut."
+    "curiosity_teaser": "Up next on Le Pont ([5101] Tout le conditionnel): see how The -ai Future leads directly into Tout le conditionnel."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"You will see tomorrow, it will be very good\" in French:",

@@ -5,6 +5,14 @@ const STORAGE_KEY = "brucke_app_state_v1";
 
 test("loads only the opened lesson and resumes visited practice after an offline reload", async ({ page, context }) => {
   test.skip(!process.env.PLAYWRIGHT_WEB_SERVER?.includes("start"), "Offline caching is production-only; run against next start.");
+  // Headless Chromium exposes no speech voices, so the one-time "install a
+  // voice" sheet (armed 2.5 s after the first lesson opens) would intercept the
+  // lesson controls this test is about. Other e2e specs seed the same flag.
+  await page.addInitScript((key) => {
+    const state = JSON.parse(localStorage.getItem(key) ?? "{}");
+    state.settings = { ...state.settings, voiceGuidanceDismissed: ["de", "fr", "es", "nl"] };
+    localStorage.setItem(key, JSON.stringify(state));
+  }, STORAGE_KEY);
   const lessons: string[] = [];
   page.on("request", (request) => {
     if (/\/data\/.*\/lessons\//.test(request.url())) lessons.push(new URL(request.url()).pathname);
@@ -33,7 +41,10 @@ test("loads only the opened lesson and resumes visited practice after an offline
   });
   await context.setOffline(true);
   await page.reload();
-  await page.getByRole("button", { name: "Resume next recommended lesson: The Germanic Core", exact: true }).click();
+  // The URL's ?lesson=1&lang=de is restored by DeepLinkRestorer, so the app
+  // shell must boot offline straight into that lesson at the saved problem —
+  // there is no intermediate "Resume next recommended lesson" button to click.
+  await expect(page.getByRole("dialog", { name: "Lesson 1" })).toBeVisible();
   await expect(page.getByText(/problem 2 of 5/i)).toBeVisible();
   await expect(page.getByText(/Offline — cached pages/)).toBeVisible();
   await context.setOffline(false);

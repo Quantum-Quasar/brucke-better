@@ -166,7 +166,7 @@ const lesson: Lesson = {
       "english": "This morning, I got up early and got dressed."
     },
     "takeaway": "All reflexives take être in the past (Je me suis levé), and body parts take le/la/les (Je me lave les mains).",
-    "curiosity_teaser": "Up next on Le Pont ([25] il y a): see how The Morning Round leads directly into il y a."
+    "curiosity_teaser": "Up next on Le Pont ([5081] De matin à soir): see how The Morning Round leads directly into De matin à soir."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"I get up and get dressed quickly\" in French:",

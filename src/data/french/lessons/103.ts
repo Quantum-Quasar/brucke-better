@@ -152,7 +152,7 @@ const lesson: Lesson = {
       "english": "I want to go in and keep going."
     },
     "takeaway": "When a two-word English verb blocks you, step up to its one-word formal synonym — that word is already French.",
-    "curiosity_teaser": "Up next on Le Pont ([2] The -ION Bridge): see how The Register Ladder leads directly into The -ION Bridge."
+    "curiosity_teaser": "Up next on Le Pont ([5011] Bonjour & Merci): see how The Register Ladder leads directly into Bonjour & Merci."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"I want to go in here\" in French:",

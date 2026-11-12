@@ -37,9 +37,9 @@ describe("dutch course content", () => {
   it("wires the dutch bundle completely", () => {
     expect(nlContent.totalTopics).toBe(30);
     expect(nlContent.topics).toHaveLength(30);
-    expect(NL_LESSONS).toHaveLength(75);
-    expect(nlContent.lessons).toHaveLength(75);
-    expect(nlContent.insights).toHaveLength(28);
+    expect(NL_LESSONS).toHaveLength(85);
+    expect(nlContent.lessons).toHaveLength(85);
+    expect(nlContent.insights).toHaveLength(40);
     expect(nlContent.compendium).toBe(dutchCompendium);
     expect(nlContent.totalTopics).toBe(NL_TOPICS.length);
 

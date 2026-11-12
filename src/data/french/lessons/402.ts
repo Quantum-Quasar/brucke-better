@@ -123,7 +123,7 @@ const lesson: Lesson = {
       "english": "It's not possible — but it's not serious."
     },
     "takeaway": "The flip is two words around the verb. Even c'est un-fuses to be hugged.",
-    "curiosity_teaser": "Up next on Le Pont ([5] être & Its Secrets): see how Negation in the Wild leads directly into être & Its Secrets."
+    "curiosity_teaser": "Up next on Le Pont ([403] The Extended Sandwich): see how Negation in the Wild leads directly into The Extended Sandwich."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"I don't want the complication\" in French:",

@@ -104,9 +104,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     var cached = null;
                     try { cached = JSON.parse(localStorage.getItem('${THEME_VARS_CACHE_KEY}') || 'null'); } catch (e) {}
                     if (cached && cached.vars) {
-                      // only re-apply plausibly-safe CSS values (hex/rgb/hsl/named sizes)
+                      // only re-apply plausibly-safe CSS values (hex/rgb/hsl)
                       // — localStorage is writable by any script, so treat it as untrusted
-                      var safeValue = /^(#[0-9a-fA-F]{3,8}|rgba?\\([0-9.,%\\s]+\\)|hsla?\\([0-9.,%\\s/deg]+\\)|[a-zA-Z0-9()_\\- ,%.\\/'"]+)$/;
+                      var safeValue = /^(#[0-9a-fA-F]{3,8}|rgba?\\([0-9.,%\\s]+\\)|hsla?\\([0-9.,%\\s/deg]+\\))$/;
                       for (var k in cached.vars) {
                         if (/^--[a-zA-Z0-9_-]+$/.test(k) && typeof cached.vars[k] === 'string' && safeValue.test(cached.vars[k])) {
                           document.documentElement.style.setProperty(k, cached.vars[k]);

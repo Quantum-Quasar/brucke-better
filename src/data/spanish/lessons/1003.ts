@@ -231,7 +231,7 @@ const lesson: Lesson = {
       "english": "I can go today, but I prefer to go tomorrow."
     },
     "takeaway": "Stressed stem = split vowel (quiero, puedo, pido); stressed nosotros ending = single vowel (queremos, podemos, pedimos).",
-    "curiosity_teaser": "Up next ([11] Adjective Agreement): build full noun phrases with gender and plural concord."
+    "curiosity_teaser": "Up next ([5111] o→ue & e→ie: puedo, duermo, empiezo): enter the Boot-Verb Gym!"
   },
   "twist": {
     "prompt": "Assemble: 'I cannot go today'",

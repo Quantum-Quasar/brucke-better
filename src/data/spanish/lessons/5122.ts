@@ -163,7 +163,7 @@ const lesson: Lesson = {
       "english": "The water is cold and the soup is hot and very delicious."
     },
     "takeaway": "el agua wears masculine el in front, but takes feminine adjectives after it: el agua fría!",
-    "curiosity_teaser": "Next branch ([5131] Viajes, Trenes & Estaciones): navigate train stations, tickets, and round-trip travel!"
+    "curiosity_teaser": "Up next ([14] Possessives Agree with the Thing): back to the spine — mi, tu, su follow the noun!"
   },
   "twist": {
     "prompt": "Assemble: 'The water is very cold'",

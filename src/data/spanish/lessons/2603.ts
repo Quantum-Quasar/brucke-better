@@ -158,7 +158,7 @@ const lesson: Lesson = {
       "english": "I hope you have time tomorrow — it is good that you have the key!"
     },
     "takeaway": "Whenever you say ojalá ('hopefully / I hope'), flip the verb into the subjunctive!",
-    "curiosity_teaser": "Up next ([27] The Silent H & Palatal Shifts): cross into Phase 5 and decode the three historical sound shifts that connect Latin F, -CT-, and PL-/CL- to Spanish H, -CH-, and LL-!"
+    "curiosity_teaser": "Up next ([5101] Hypothetical Situations): the conditional -ía across real what-ifs!"
   },
   "twist": {
     "prompt": "Assemble: 'Hopefully you have the confirmation'",

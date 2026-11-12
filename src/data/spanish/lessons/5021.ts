@@ -141,7 +141,7 @@ const lesson: Lesson = {
       "english": "I want coffee with milk and the water, please."
     },
     "takeaway": "Spanish vowels never glide — and feminine nouns starting with stressed /a/ borrow el in the singular (el agua).",
-    "curiosity_teaser": "Next branch ([5031] Actualmente, Librería & Co.): preview the most important Spanish false friends!"
+    "curiosity_teaser": "Up next ([5022] Minimal Pairs: Clean Vowels): put all five pure vowels to work inside real words!"
   },
   "twist": {
     "prompt": "Assemble: 'Good night'",

@@ -168,7 +168,7 @@ const lesson: Lesson = {
       "english": "During the week I get up early, but on Sundays I rest."
     },
     "takeaway": "ne...pas hugs the reflexive pronoun and verb together: Je ne me lève pas.",
-    "curiosity_teaser": "Up next on Le Pont ([5091] Dont & Où): see how De matin à soir leads directly into Dont & Où."
+    "curiosity_teaser": "Up next on Le Pont ([5082] Le dimanche de Marie): see how De matin à soir leads directly into Le dimanche de Marie."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"On Sundays, I don't get up early\" in French:",

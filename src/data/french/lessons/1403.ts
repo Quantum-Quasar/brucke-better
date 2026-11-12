@@ -172,7 +172,7 @@ const lesson: Lesson = {
       "english": "This hotel is very beautiful — are you coming with me?"
     },
     "takeaway": "ce becomes cet before a masculine vowel, and prepositions always take moi, toi, lui, elle.",
-    "curiosity_teaser": "Up next on Le Pont ([15] Numbers & the Four-Twenties): see how Demonstratives & Stressed Pronouns leads directly into Numbers & the Four-Twenties."
+    "curiosity_teaser": "Up next on Le Pont ([5141] Docteur, Professeur & Acteur): see how Demonstratives & Stressed Pronouns leads directly into Docteur, Professeur & Acteur."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"I am coming with you to this hotel\" in French:",

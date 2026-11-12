@@ -162,7 +162,7 @@ const lesson: Lesson = {
       "english": "I love music, but tonight I prefer to read a good book."
     },
     "takeaway": "After aimer/adorer/préférer, always keep le, la, l', les (J'aime la musique).",
-    "curiosity_teaser": "Up next on Le Pont ([5151] La Tête, La Main & Le Cœur): see how La Musique, Le Cinéma & Le Livre leads directly into La Tête, La Main & Le Cœur."
+    "curiosity_teaser": "Up next on Le Pont ([15] Numbers & the Four-Twenties): see how La Musique, Le Cinéma & Le Livre leads directly into Numbers & the Four-Twenties."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"We're going to the cinema tonight because I love this movie\" in French:",

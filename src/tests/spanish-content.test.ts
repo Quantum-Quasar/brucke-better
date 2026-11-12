@@ -35,7 +35,7 @@ describe("spanish course content", () => {
     expect(esContent.totalTopics).toBe(30);
     expect(esContent.topics).toHaveLength(30);
     expect(esContent.lessons.length).toBeGreaterThanOrEqual(19);
-    expect(esContent.insights).toHaveLength(28);
+    expect(esContent.insights).toHaveLength(40);
     expect(esContent.compendium).toBe(spanishCompendium);
 
     // Validate exercise solvability, MCQ integrity, and narrative arcs

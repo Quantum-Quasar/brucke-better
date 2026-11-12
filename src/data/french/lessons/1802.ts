@@ -167,7 +167,7 @@ const lesson: Lesson = {
       "english": "She went out, but she forgot her umbrella."
     },
     "takeaway": "être participles agree with the subject (Elle est allée); avoir participles do not (Elle a mangé).",
-    "curiosity_teaser": "Up next on Le Pont ([19] The Storytelling Past): see how Agreement Drills leads directly into The Storytelling Past."
+    "curiosity_teaser": "Up next on Le Pont ([5151] La Tête, La Main & Le Cœur): see how Agreement Drills leads directly into La Tête, La Main & Le Cœur."
   },
   "twist": {
     "prompt": "Think it through again without looking back — express \"Marie arrived yesterday and stayed at my place\" in French:",

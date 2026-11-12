@@ -158,7 +158,7 @@ const lesson: Lesson = {
       "english": "I am going to buy it today — yes, I am going to buy it."
     },
     "takeaway": "Front of the train (Lo voy a ver) or hooked to the caboose (Voy a verlo) — never between the cars!",
-    "curiosity_teaser": "Up next ([13] por vs para): master Spanish's two words for 'for' with the Arrow and the Scale."
+    "curiosity_teaser": "Up next ([5051] Directions & Places): todo recto to the plaza — navigate the city!"
   },
   "twist": {
     "prompt": "Assemble: 'I cannot see it'",

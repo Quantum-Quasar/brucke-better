@@ -161,7 +161,7 @@ const lesson: Lesson = {
       "english": "Thank you very much for the invitation — I am going in the morning."
     },
     "takeaway": "por = because of, in exchange for, through/around (por aquí), and during parts of the day (por la mañana).",
-    "curiosity_teaser": "Up next ([14] Possessives Agree with the Thing): see why mi/mis, tu/tus, and su/sus agree with the possession rather than the owner."
+    "curiosity_teaser": "Up next ([5121] En el Restaurante: La Mesa & La Cuenta): reserve una mesa and order para mí!"
   },
   "twist": {
     "prompt": "Assemble: 'I buy the book for ten euros'",
