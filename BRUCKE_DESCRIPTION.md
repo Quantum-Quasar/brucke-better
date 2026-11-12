@@ -24,7 +24,7 @@ without requiring the constellation animation.
 
 Lessons mix supported word-building, sentence production, translation and listening. Historical notes are optional. Explanations should be short and grounded in the meaning and example: keep a useful memory aid, or teach the word plainly when the connection is shaky. There is no requirement to prove every historical derivation or add citations before teaching a word.
 
-The same engine also runs French, Spanish and Dutch courses. The German compendium contains **1226 words**; the [canonical project guide](./docs/README.md) describes course coverage and implementation.
+The same engine also runs French, Spanish and Dutch courses. The German compendium contains **1227 words**; the [canonical project guide](./docs/README.md) describes course coverage and implementation.
 
 German cores from Topic 5 include mixed-pattern recognition. Each taught German word
 has assessed retrieval in at least two distinct lessons; this is a practice floor,

@@ -1,4 +1,4 @@
-export const TOTAL_COMPENDIUM_WORDS = 1226;
+export const TOTAL_COMPENDIUM_WORDS = 1227;
 
 export type Gender = "der" | "die" | "das" | "le" | "la" | "el" | "de" | "het";
 

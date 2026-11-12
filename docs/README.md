@@ -14,7 +14,7 @@ quick-start pointer; [`INDEX.md`](./INDEX.md) maps task-specific documentation.
 
 Sound correspondences, compounds and sentence patterns are memory aids, not a requirement to study historical linguistics. Start with usable words, try the exercises, and revisit difficult words in review. Keep explanations short and grounded in the actual meaning and example; if a connection is shaky, drop it or teach the word plainly rather than demanding a research pass.
 
-The German compendium contains **1226 words**. Use the lesson examples and pronunciation, then practise recall; the atlas and historical notes are optional reference material.
+The German compendium contains **1227 words**. Use the lesson examples and pronunciation, then practise recall; the atlas and historical notes are optional reference material.
 
 **French course (open trail).** The same engine teaches French through the Norman doublets — 1066 left English and French sharing thousands of cognates, and the French trail decodes them the same way: 30 topics (123 lessons authored), 9 conversion-bridge families (`-ion`, `-ation→-er`, `-ité`, `-ance`, `-é`, `-ment`, `-eur`, `-able`, doublets), a 306-word compendium with 16 compound calques and 16 false friends, and its own trail/atlas/review layers. Authored as typed modules in `src/data/french/` (not parsed from `word_connections.md`).
 

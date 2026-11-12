@@ -100,6 +100,9 @@ let updated = content.slice(0, separator) + block + content.slice(separator);
 const header = new RegExp("(## 2\\. Exhaustive Core Vocabulary Dictionary \\(All )\\d+( Words\\))");
 if (!header.test(updated)) throw new Error("§2 header not found");
 updated = updated.replace(header, `$1${nextRow - 1}$2`);
+// The document's own inventory bullet is a second, hand-written count.
+const inventory = /(> - \*\*)\d+(\*\* Core Vocabulary Words)/;
+if (inventory.test(updated)) updated = updated.replace(inventory, `$1${nextRow - 1}$2`);
 
 const { issues } = analyzeCompendium(updated);
 if (issues.length > 0) {

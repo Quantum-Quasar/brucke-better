@@ -124,7 +124,7 @@ A short map of where things live; list the directories yourself for the full tre
 │   │                          #   LessonReader, one widget per exercise type), atlas/, trail/, navigation/
 │   ├── lib/                   # types.ts, store.ts, srs.ts, letter-diff.ts, shift-annotator.ts,
 │   │                          #   trail-map.ts, review-decks.ts, review-modes.ts, word-entities-core.ts, audio.ts, sound.ts
-│   ├── data/                  # compendium.json (1226 words, 9 shifts, 32 compounds, 16 false friends, 28 insights),
+│   ├── data/                  # compendium.json (1227 words, 9 shifts, 32 compounds, 16 false friends, 28 insights),
 │   │                          #   lessons/<id>.ts (all 179 authored German lessons), ordered lessons.ts, curriculum.ts
 │   └── tests/                 # Vitest — whole-curriculum integrity, timezone boundaries,
 │                              #   persistence merging, security, docs-sync

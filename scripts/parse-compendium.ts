@@ -201,7 +201,8 @@ function buildCompendium(content: string, issues: CompendiumIssue[]): ParsedComp
       if (!Object.hasOwn(shifts, pattern) || sound_shift_ids.includes(pattern)) fail(line, `unknown or duplicate shift id: ${pattern}`);
       sound_shift_ids.push(pattern);
     }
-    if (Object.hasOwn(ablautVerbs, base) && !sound_shift_ids.includes("strong_verbs_ablaut")) sound_shift_ids.push("strong_verbs_ablaut");
+    const isVerb = !cell.suffix || cell.suffix === "verb";
+    if (isVerb && Object.hasOwn(ablautVerbs, base) && !sound_shift_ids.includes("strong_verbs_ablaut")) sound_shift_ids.push("strong_verbs_ablaut");
     const hookProblems = twinHookProblems(cols[2]);
     if (hookProblems.length) fail(line, `${id}: ${hookProblems.join("; ")} — ${HOOK_PROBLEM_HINT}`);
     const siblings = wordBases.get(base) ?? [];

@@ -17979,6 +17979,22 @@
       "context_translation": "The children are building a snowman.",
       "etymology_derivation": "Schnee + Mann — the exact compound calque of snowman; both elements are documented twins. [wiktionary]",
       "domain": "weather"
+    },
+    "essen#noun": {
+      "id": "essen#noun",
+      "target_word": "Essen",
+      "english_cognate": "food / meal",
+      "english_meaning": "food / meal",
+      "gender": "das",
+      "ipa": "/ˈɛsn̩/",
+      "sound_shift_ids": [
+        "t_to_s_ss_z"
+      ],
+      "shift_rule": "T → S / SS / Z",
+      "context_phrase": "Das Essen ist fertig.",
+      "context_translation": "The food is ready.",
+      "etymology_derivation": "Nominalized infinitive of essen (to eat): every infinitive used as a noun is neuter and takes das. Same t → ss correspondence as English eat. [wiktionary]",
+      "domain": "food"
     }
   },
   "shifts": {
@@ -18285,7 +18301,8 @@
         "lassen",
         "grüßen",
         "zäh",
-        "wasserfall"
+        "wasserfall",
+        "essen#noun"
       ]
     },
     "k_to_ch": {

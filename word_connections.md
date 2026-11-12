@@ -3,7 +3,7 @@
 An exhaustive, unabridged reference repository containing every single word, sound shift law, compound calque, false friend trap, and cultural etymology in the Brücke platform database.
 
 > **Database Inventory (100% Unabridged):**
-> - **1226** Core Vocabulary Words & Systematic Sound Shifts
+> - **1227** Core Vocabulary Words & Systematic Sound Shifts
 > - **32** Morphological Compound Calques
 > - **16** False Friend Traps (*Falsche Freunde*)
 > - **28** Daily Cultural Etymologies
@@ -69,7 +69,7 @@ An exhaustive, unabridged reference repository containing every single word, sou
 
 ---
 
-## 2. Exhaustive Core Vocabulary Dictionary (All 1226 Words)
+## 2. Exhaustive Core Vocabulary Dictionary (All 1227 Words)
 
 | # | German Word | English Cognate | Gender / Article | IPA | Sound Shift / Pattern | Context Phrase & Translation | Etymological Derivation | Domain |
 | :- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :- |
@@ -1316,6 +1316,8 @@ An exhaustive, unabridged reference repository containing every single word, sou
 | 1224 | **Hauptbahnhof** | main station | der (m) | /ˈhaʊ̯ptˌbaːnˌhoːf/ | `Direct Cognate` | Wir treffen uns am Hauptbahnhof. *("We are meeting at the main station.")* | Haupt + Bahnhof — the head-station; Haupt traces to the Proto-Indo-European *kap- head root (Latin caput, English head). [wiktionary] | travel |
 | 1225 | **Großstadt** | big city | die (f) | /ˈɡʁoːsʃtat/ | `Direct Cognate` | Die Großstadt ist laut, aber spannend. *("The big city is loud but exciting.")* | groß + Stadt — the big city; groß is the twin of great (t → ß). [wiktionary] | travel |
 | 1226 | **Schneemann** | snowman | der (m) | /ˈʃneːˌman/ | `Direct Cognate` | Die Kinder bauen einen Schneemann. *("The children are building a snowman.")* | Schnee + Mann — the exact compound calque of snowman; both elements are documented twins. [wiktionary] | weather |
+
+| 1227 | **Essen#noun** | food / meal | das (n) | /ˈɛsn̩/ | `t_to_s_ss_z` | Das Essen ist fertig. *("The food is ready.")* | Nominalized infinitive of essen (to eat): every infinitive used as a noun is neuter and takes das. Same t → ss correspondence as English eat. [wiktionary] | food |
 
 ---
 
