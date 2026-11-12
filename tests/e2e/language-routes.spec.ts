@@ -31,6 +31,7 @@ function seedFor(languageId: string): string {
     isOnboardingOpen: false,
     seenIntroLanguages: ["de", languageId],
     preferredReviewMode: "flashcard",
+    settings: { voiceGuidanceDismissed: ["de", "fr", "es", "nl"] },
     progressByLanguage: { [languageId]: slice },
     ...slice,
   });
@@ -203,12 +204,14 @@ test.describe("French, Spanish and Dutch courses", () => {
   test("a language-scoped lesson route switches the course without a reload", async ({ page }) => {
     await seed(page, "de");
 
-    // deep link into the Spanish course while German is active: the URL wins,
-    // and the header identity follows it
+    // The canonical reference stays readable without changing saved course state.
     await page.goto("/trail/es/1");
-    await expect(page.locator("header")).toContainText(/spanish through english/i, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/trail\/es\/1$/);
+    await page.getByRole("link", { name: "Start lesson practice", exact: true }).first().click();
+    await expect(page).toHaveURL(/\/\?lesson=1&lang=es$/);
+    await expect(page.getByRole("banner")).toContainText(/spanish through english/i, { timeout: 15_000 });
 
-    // The legacy route restores a shareable language-explicit in-page URL.
+    // Practice restores the shareable language-explicit in-page URL.
     await expect(page.getByRole("button", { name: /next: pattern/i })).toBeVisible();
     await expect(page).toHaveURL(/\/\?lesson=1&lang=es$/);
     await page.evaluate(() => window.dispatchEvent(new Event("pagehide")));

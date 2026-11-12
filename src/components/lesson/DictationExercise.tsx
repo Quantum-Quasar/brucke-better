@@ -22,6 +22,7 @@ import { playTargetAudio } from "@/lib/audio";
 import { getLanguageDefinition } from "@/data/languages";
 import { useAppStore } from "@/lib/store";
 import { soundEngine } from "@/lib/sound";
+import { hasBlockingKeyboardDialog } from "@/lib/use-dialog-focus";
 import { LISTENING_SKIP_MS, isListeningSkipped } from "@/lib/listening";
 import { affirmationFor } from "@/lib/shift-diagnosis";
 import type { ExerciseDiagnosis, ExerciseItem } from "@/lib/types";
@@ -180,7 +181,7 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.isComposing || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.defaultPrevented || hasBlockingKeyboardDialog() || e.isComposing || e.ctrlKey || e.metaKey || e.altKey) return;
       if (settings.quickRestart === "esc" && e.key === "Escape") {
         e.preventDefault();
         resetCurrentExercise();

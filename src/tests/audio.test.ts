@@ -1,77 +1,92 @@
-import { describe, it, expect } from "vitest";
-import { playTargetAudio, detectLanguageVoice } from "@/lib/audio";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { detectLanguageVoice, findLanguageVoice, playTargetAudio, subscribeVoiceChanges, VOICE_LOAD_WAIT_MS } from "@/lib/audio";
 
-describe("Native Speech Synthesis Audio Engine", () => {
-  it("safely handles server-side or non-browser environments without crashing", () => {
-    // In node/test environment, window or speechSynthesis might not be fully featured
-    const result = playTargetAudio("Wasser");
-    expect(typeof result).toBe("boolean");
+function voice(name: string, lang: string): SpeechSynthesisVoice {
+  return { name, lang, default: false, localService: true, voiceURI: name };
+}
+
+function synthesisFixture(initialVoices: SpeechSynthesisVoice[] = []) {
+  let voices = initialVoices;
+  const events = new EventTarget();
+  const synthesis = Object.assign(events, {
+    getVoices: () => voices,
+    cancel: vi.fn(), speak: vi.fn(), resume: vi.fn(), paused: false,
   });
+  vi.stubGlobal("window", { speechSynthesis: synthesis });
+  return { synthesis, change: (next: SpeechSynthesisVoice[]) => {
+    voices = next;
+    synthesis.dispatchEvent(new Event("voiceschanged"));
+  } };
+}
 
-  it("handles empty or whitespace strings gracefully", () => {
-    const result = playTargetAudio("");
-    expect(result).toBe(false);
-
-    const whitespaceResult = playTargetAudio("   ");
-    expect(whitespaceResult).toBe(false);
-  });
-
-  it("configures utterance with de-DE locale and 0.92 rate when browser speech synthesis is present", () => {
-    let capturedUtterance: any = null;
-    let cancelCalled = false;
-    let spoken = false;
-
-    const mockVoices = [
-      { name: "Austrian Voice", lang: "de-AT" },
-      { name: "German Voice", lang: "DE_de" },
-    ];
-
-    (globalThis as any).window = {
-      speechSynthesis: {
-        cancel: () => {
-          cancelCalled = true;
-        },
-        getVoices: () => mockVoices,
-        speak: (utt: any) => {
-          capturedUtterance = utt;
-          spoken = true;
-        },
-        onvoiceschanged: null,
-      },
-    };
-    (globalThis as any).SpeechSynthesisUtterance = function (text: string) {
-      this.text = text;
-      this.lang = "";
-      this.rate = 1;
-      this.pitch = 1;
-      this.voice = null;
-    };
-
-    expect(detectLanguageVoice("de-DE").voiceName).toBe("German Voice");
-    const res = playTargetAudio("[der] Wasser");
-    expect(res).toBe(true);
-    expect(cancelCalled).toBe(true);
-    expect(spoken).toBe(true);
-    expect(capturedUtterance).toBeDefined();
-    expect(capturedUtterance.text).toBe("Wasser");
-    expect(capturedUtterance.lang).toBe("de-DE");
-    expect(capturedUtterance.rate).toBe(0.92);
-    expect(capturedUtterance.voice?.name).toBe("German Voice");
-
-    delete (globalThis as any).window;
-    delete (globalThis as any).SpeechSynthesisUtterance;
-  });
+beforeEach(() => vi.useFakeTimers());
+afterEach(() => {
+  vi.clearAllTimers();
+  vi.useRealTimers();
+  vi.unstubAllGlobals();
 });
 
-  it("detects when a Linux/Android device has no voice installed for the target language", () => {
-    (globalThis as any).window = {
-      speechSynthesis: {
-        getVoices: () => [{ name: "Unrelated language", lang: "den" }],
-      },
-    };
-    const diag = detectLanguageVoice("de-DE");
-    expect(diag.supported).toBe(true);
-    expect(diag.hasLanguageVoice).toBe(false);
-    expect(diag.warningMessage).toContain("German");
-    delete (globalThis as any).window;
+describe("native target-language voices", () => {
+  it("handles non-browser environments and empty speech safely", () => {
+    vi.stubGlobal("window", undefined);
+    expect(detectLanguageVoice("de-DE").supported).toBe(false);
+    expect(playTargetAudio("Wasser")).toBe(false);
+    synthesisFixture();
+    expect(playTargetAudio("  ")).toBe(false);
   });
+
+  it.each([["de-DE", "de-AT"], ["fr-FR", "fr-CA"], ["es-ES", "es-MX"], ["nl-NL", "nl-BE"]])("accepts %s regional voice %s", (requested, regional) => {
+    synthesisFixture([voice("Regional", regional)]);
+    const status = detectLanguageVoice(requested);
+    expect(status).toMatchObject({ hasLanguageVoice: true, isExactLocale: false, voiceLang: regional, warningMessage: null });
+  });
+
+  it("prefers normalized exact locale and rejects unrelated language prefixes", () => {
+    const voices = [voice("Austrian", "de-AT"), voice("German", "DE_de"), voice("Unrelated", "den")];
+    expect(findLanguageVoice(voices, "de-DE").voice?.name).toBe("German");
+    expect(findLanguageVoice([voices[2]], "de-DE").voice).toBeUndefined();
+  });
+
+  it("waits for asynchronous voiceschanged without an early missing warning", () => {
+    const fixture = synthesisFixture();
+    const listener = vi.fn();
+    const otherListener = vi.fn();
+    fixture.synthesis.addEventListener("voiceschanged", otherListener);
+    const unsubscribe = subscribeVoiceChanges(listener);
+    expect(detectLanguageVoice("fr-FR")).toMatchObject({ voicesLoaded: false, warningMessage: null });
+    vi.advanceTimersByTime(350);
+    expect(detectLanguageVoice("fr-FR").warningMessage).toBeNull();
+    fixture.change([voice("Quebec", "fr-CA")]);
+    expect(listener).toHaveBeenCalledOnce();
+    expect(otherListener).toHaveBeenCalledOnce();
+    expect(detectLanguageVoice("fr-FR").hasLanguageVoice).toBe(true);
+    unsubscribe();
+    fixture.change([]);
+    expect(listener).toHaveBeenCalledOnce();
+  });
+
+  it("waits for target voices even if an initial partial list contains another language", () => {
+    const fixture = synthesisFixture([voice("English", "en-US")]);
+    expect(detectLanguageVoice("es-ES")).toMatchObject({ voicesLoaded: false, warningMessage: null });
+    fixture.change([voice("English", "en-US"), voice("Mexican Spanish", "es-MX")]);
+    expect(detectLanguageVoice("es-ES")).toMatchObject({ voicesLoaded: true, hasLanguageVoice: true, warningMessage: null });
+  });
+
+  it("shows a bounded missing warning and recovers when a late voice arrives", () => {
+    const fixture = synthesisFixture();
+    expect(detectLanguageVoice("nl-NL").voicesLoaded).toBe(false);
+    vi.advanceTimersByTime(VOICE_LOAD_WAIT_MS);
+    expect(detectLanguageVoice("nl-NL")).toMatchObject({ voicesLoaded: true, hasLanguageVoice: false });
+    expect(detectLanguageVoice("nl-NL").warningMessage).toContain("Dutch");
+    fixture.change([voice("Belgian Dutch", "nl-BE")]);
+    expect(detectLanguageVoice("nl-NL").warningMessage).toBeNull();
+  });
+
+  it("sets pronunciation locale, rate and preferred voice", () => {
+    const fixture = synthesisFixture([voice("German", "de-DE")]);
+    vi.stubGlobal("SpeechSynthesisUtterance", class { constructor(public text: string) {} });
+    expect(playTargetAudio("[der] Wasser", "de-DE")).toBe(true);
+    expect(fixture.synthesis.cancel).toHaveBeenCalledOnce();
+    expect(fixture.synthesis.speak).toHaveBeenCalledWith(expect.objectContaining({ text: "Wasser", lang: "de-DE", rate: 0.92, voice: expect.objectContaining({ name: "German" }) }));
+  });
+});

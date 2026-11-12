@@ -7,6 +7,7 @@ import { LazyLoadBoundary } from "@/components/common/LazyLoadBoundary";
 import { listeningSkipLabel } from "@/lib/listening";
 import { useLessonSession } from "./use-lesson-session";
 import type { LessonReaderProps } from "./lesson-session-types";
+import { LessonEffort } from "@/components/common/LessonEffort";
 
 const HookSegment = React.lazy(() => import("./segments/HookSegment"));
 const PatternSegment = React.lazy(() => import("./segments/PatternSegment"));
@@ -70,6 +71,7 @@ export function LessonReader(props: LessonReaderProps) {
             {lesson.subtitle}
           </p>
 
+          <div className="mt-2"><LessonEffort exerciseCount={lesson.exercises.length} /></div>
           {/* TM-6: hearing is off for now — said once, plainly, never as an error */}
           {listeningOff && (
             <p className="mt-3 text-xs font-mono text-[var(--sub-color)] inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20">

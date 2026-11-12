@@ -6,12 +6,14 @@ import { useAppStore } from "@/lib/store";
 import { useViewStore, EMPTY_TRAIL_POSITION } from "@/lib/view-store";
 import { hasSavedPosition, hasVisited } from "@/lib/scroll-memory";
 import { useAppNavigation } from "@/lib/app-navigation";
-import { buildTrailEdgePairs, buildTrailLayout, type TrailNode, type GateView } from "@/lib/trail-map";
+import { buildTrailPrerequisites, buildTrailLayout, type TrailNode, type GateView } from "@/lib/trail-map";
 import { getLanguageDefinition } from "@/data/languages";
 import { useCourseRecommendation } from "@/lib/use-course-recommendation";
 import { NextLessonBar } from "./NextLessonBar";
 import { LessonNodeDrawer, GateDrawer } from "./LessonNodeDrawer";
 import { prefetchLesson } from "@/lib/content-client";
+import { getLessonExerciseCount } from "@/lib/lesson-effort";
+import { rememberFocusOpener } from "@/lib/focus-return";
 import { TrailMapNode, GOLD_STAR } from "./TrailMapNode";
 
 
@@ -62,7 +64,8 @@ export const TrailMap: React.FC = () => {
   const storeHydrated = useAppStore((s) => s.storeHydrated);
 
   const { state, trailData } = useCourseRecommendation(activeLanguageId);
-  const edgePairs = useMemo(() => buildTrailEdgePairs(trailData), [trailData]);
+  const prerequisites = useMemo(() => buildTrailPrerequisites(trailData), [trailData]);
+  const placementTopic = useAppStore((s) => s.settings.placementTopic);
 
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [width, setWidth] = useState(640);
@@ -73,6 +76,7 @@ export const TrailMap: React.FC = () => {
   const selectedNodeId = trailPosition.nodeId;
   const selectedGateId = trailPosition.gateId;
   const selectNode = useCallback((node: TrailNode) => {
+    rememberFocusOpener();
     prefetchLesson(activeLanguageId, node.id);
     setTrailPosition(activeLanguageId, { nodeId: node.id, gateId: null });
   }, [activeLanguageId, setTrailPosition]);
@@ -184,34 +188,27 @@ export const TrailMap: React.FC = () => {
 
   const lockHint = useMemo(() => {
     if (!selected) return null;
-    const neighborIds = edgePairs
-      .filter((e) => e.a === selected.id || e.b === selected.id)
-      .map((e) => (e.a === selected.id ? e.b : e.a));
-    // Only point at neighbours that can actually be played right now.
-    const availableNeighborIds = neighborIds.filter(
-      (id) => state.nodes.get(id)?.status !== "locked"
-    );
-    if (availableNeighborIds.length === 0) {
-      return "This lesson is still ahead on the trail. Complete the previous topic to unlock it.";
+    let previous = prerequisites.get(selected.id);
+    while (previous !== undefined && previous !== null) {
+      if (!completedLessons.includes(previous)) {
+        const prerequisite = nodeById.get(previous);
+        return prerequisite ? `Complete the required lesson “${prerequisite.title}” and all earlier main-path lessons to unlock this one.` : "Complete the earlier main-path lessons to unlock this one.";
+      }
+      previous = prerequisites.get(previous);
     }
-    const parts = availableNeighborIds
-      .map((id) => nodeById.get(id))
-      .filter((n): n is TrailNode => Boolean(n))
-      .map((n) =>
-        n.kind === "core"
-          ? `topic ${n.topicId}`
-          : n.kind === "story"
-          ? `story ${n.label ?? ""}`
-          : `“${n.title}”`
-      );
-    return `Unlocks when you complete: ${parts.join(", ")}.`;
-  }, [selected, nodeById, edgePairs, state]);
+    return "Complete the earlier main-path lessons and pass any intervening star gates to unlock this one.";
+  }, [selected, nodeById, prerequisites, completedLessons]);
 
 
 
   return (
     <div ref={wrapRef} className="relative w-full">
       <NextLessonBar />
+      {placementTopic > 1 && (
+        <p className="mb-4 rounded-lg border border-[var(--sub-color)]/25 p-3 text-xs text-[var(--sub-color)]">
+          Placement target: topic {placementTopic}. This is a recommendation, not an unlock — complete the earlier main-path lessons and checkpoints first.
+        </p>
+      )}
       {/* Map legend — the next step is the fixed resume control below */}
       <div className="mb-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] font-mono text-[var(--sub-color)]">
         <span className="inline-flex items-center gap-1.5">
@@ -370,9 +367,10 @@ export const TrailMap: React.FC = () => {
             <button
               key={gate.id}
               type="button"
-              onClick={() =>
-                setTrailPosition(activeLanguageId, { gateId: gate.id, nodeId: null })
-              }
+              onClick={() => {
+                rememberFocusOpener();
+                setTrailPosition(activeLanguageId, { gateId: gate.id, nodeId: null });
+              }}
               aria-label={`${gate.title} star gate: ${stars} of ${gate.requiredStars} stars in topics ${gv?.fromTopic}–${gv?.toTopic} — ${open ? "open" : "closed"}`}
               title={`${gate.title} — ${stars}/${gate.requiredStars}★`}
               className={`absolute z-10 flex items-center justify-center gap-1.5 rounded-full font-mono text-[10px] transition duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--main-color)] ${
@@ -414,6 +412,7 @@ export const TrailMap: React.FC = () => {
           node={selected}
           view={state.nodes.get(selected.id)!}
           hasProgress={Boolean(lessonProgress[selected.id])}
+          exerciseCount={getLessonExerciseCount(activeLanguageId, selected.id)}
           unlockHint={lockHint}
           onClose={() => setTrailPosition(activeLanguageId, { nodeId: null })}
           onStart={(id) => {

@@ -6,6 +6,7 @@ import { useAppStore } from "@/lib/store";
 import { THEME_LIST, POPULAR_THEMES } from "@/data/themes";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
+import { focusOpener } from "@/lib/focus-return";
 import { ThemeSwatch, useThemeFilter } from "@/components/common/theme-picker";
 
 export const ThemeSelectorModal: React.FC = () => {
@@ -24,6 +25,7 @@ export const ThemeSelectorModal: React.FC = () => {
     open: isOpen,
     containerRef: dialogRef,
     initialFocusRef: searchInputRef,
+    returnFocus: focusOpener,
     onEscape: closeThemeSelector,
   });
 

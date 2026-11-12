@@ -35,6 +35,10 @@ const FontSelectorModal = dynamic(
   () => import("@/components/common/FontSelectorModal").then((m) => m.FontSelectorModal),
   { ssr: false }
 );
+const VoiceGuidanceSheet = dynamic(
+  () => import("@/components/common/VoiceGuidanceSheet").then((m) => m.VoiceGuidanceSheet),
+  { ssr: false }
+);
 function ViewNotice() {
   const notice = useViewStore((s) => s.notice);
   const dismiss = useViewStore((s) => s.dismissNotice);
@@ -221,6 +225,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </SubviewOverlay>
         )}
       </LazyLoadBoundary>
+
+      {subView?.kind === "lesson" && !isOnboardingOpen && (
+        <VoiceGuidanceSheet key={subView.languageId} languageId={subView.languageId} />
+      )}
 
       <DeepLinkRestorer />
       <ViewNotice />

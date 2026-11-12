@@ -75,18 +75,19 @@ Browser smoke suite (Playwright) — onboarding, segment progression, SRS persis
 bun run test:e2e
 ```
 
-Production product checks (build first): `bun run build && bun run test:product`.
-They cover keyboard-only Lesson 1 completion, accessible controls/error feedback
-for all exercise types, and cold mobile 4G/4× CPU budgets for homepage readiness
-and the real Lesson 1 payload. Browser tests also cover failed-process persistence
-and replay without awarding lesson or word progress.
+Production product checks (build first): `NEXT_PUBLIC_SITE_URL=https://your-public-origin.example bun run build && bun run test:product`.
+They cover keyboard-only Lesson 1 completion with a blocking word drawer, shortcut
+isolation, accessible controls/error feedback for all exercise types, and cold mobile
+4G/4× CPU budgets for homepage readiness and the real Lesson 1 payload. Browser tests
+also cover failed-process persistence/replay, shareable links, and a listening pause
+surviving reload, tab closure and expiry without restarting its timer.
 
 ### Production Build
 
-Pre-renders the six top-level tab routes to static HTML (`● SSG`) — 6 static routes: `/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`. Lessons and atlas details are client-rendered overlays: 188 unique ids (179 German plus 9 French/Spanish-only ids; Dutch reuses the shared lesson-id space) load from 500 per-lesson payloads, and the four atlases expose 37 atlas families. Opening, changing or closing an overlay replaces the current history entry; short shareable query URLs explicitly include the learning language (`/?lesson=1&lang=de`, `/atlas?family=th_to_d&lang=de`, `/atlas?master=1&lang=de`). Copied links and reloads restore the selected view and language. Cross-tab opens push one normal tab entry; Back traverses actual top-level tab history and Forward restores the overlay in its URL. Lesson content is not server-rendered. `bun run build` runs `parse-data`, then `export-data` (per-language payloads under `public/data/<lang>/`), then `next build`. Legacy `/trail/...`, `/atlas/<family>` and `/atlas/master` URLs redirect into the matching in-page state.
+Pre-renders six top-level tabs — 6 static routes: `/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about` — plus canonical lesson reference pages at `/trail/<lang>/<id>`. There are 188 unique ids (179 German plus 9 French/Spanish-only ids; Dutch reuses the shared lesson-id space), 500 per-lesson payloads, and 37 atlas families. Practice and atlas details still open as instant overlays: opening, changing or closing one replaces the current history entry with a language-explicit query URL (`/?lesson=1&lang=de`, `/atlas?family=th_to_d&lang=de`, `/atlas?master=1&lang=de`). Reload restores that view; Back follows top-level tab history. Canonical lesson pages render introductions, patterns, vocabulary and outcomes for readers and search engines, with `LearningResource` structured data, `sitemap.xml` and `robots.txt`. `bun run build` regenerates ignored `public/data/` payloads before `next build`; these distribution copies are not committed.
 
 ```bash
-bun run build
+NEXT_PUBLIC_SITE_URL=https://your-public-origin.example bun run build
 ```
 
 ### Start Development Server
@@ -103,7 +104,7 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
 
 1. **The Trail Map (`/` — the homepage)**:
    - Baba Is You-style node map: 30 topic clusters on one linear spine, with skip-able extra-practice nodes ("sprigs") and support-material branches hanging off each cluster.
-   - All adjacent nodes unlock at once when a node is completed; the spine itself stays strictly ordered. Each gate requires both its stretch's star quota and a passed checkpoint test covering the preceding spine lessons.
+   - Required spine cores and reading stories unlock sequentially; optional sprigs/branches cannot bypass a missing core. Each gate also requires its stretch's star quota and a passed checkpoint test.
    - Topic 1 starts at the bottom; the learner climbs upward. The pulsing selector and minimalist next-lesson bar share the same recommendation.
    - The entire curriculum is authored — 30 cores + 79 sprigs + 65 branch lessons + 5 required reading stories = 179 lessons, each with a title, plan and full `Lesson` object (`src/data/curriculum.ts`, `src/data/lessons.ts`).
    - Recommendations visit every authored lesson: core, sprigs, attached support branches, then story. Earlier missed lessons come first; **Continue ahead** bypasses them without marking completion. Three explicit bypasses stop automatic reminders for those gaps; the lessons remain available on the map. Preferences are language-scoped and reset with progress.
@@ -114,13 +115,14 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
    - Taught German vocabulary has assessed retrieval in at least two distinct trail lessons. Declarations, hints, banks and duplicate surfaces do not count; `bun scripts/audit-recurrence.ts --strict` reports the encounter map by lesson and exercise type. This is a minimum practice floor, not a promise of retention.
    - 5-part card-by-card lesson wizard (Hook, Pattern, Transformation Table, Bite-Sized Practice, Summary & Retries) in the in-page lesson reader.
    - Scaffolded exercises across 13 types (`ExerciseType` in `src/lib/types.ts`): morpheme tiles, matching pairs, shift select, syntax builder, derivation typing, reverse-cognate typing, **transcribe** production drills (thought + lexicon + cue ladder), **literal gloss** direct translations, **dictation** listening drills (played audio, capped replays, a 15-minute listening skip), **family grid** prefix × base matrices, **variant English** "every honest rendering" drills, **pronoun compression**, and **spoken turn reply**.
-   - Every authored lesson (cores, sprigs, and branches) ends with an ungraded, skippable **Twist** card (deliberate friction, outside the 5-exercise contract) and may whisper up to two **posture cues** per lesson; onboarding is three steps and closes with a short posture summary.
+   - Every authored lesson ends with an ungraded, skippable **Twist** card and may whisper up to two **posture cues**. Onboarding offers optional goals, daily minutes and a ten-question placement recommendation; placement never invents completion or opens a locked core. Lesson previews show approximate time, exercise count and the possibility of retries.
    - Pre-exercise vocabulary hints (`vocab_hints`) for auxiliary words (e.g., `mit`).
    - End-of-lesson Retry Queue: grammatical omissions do not pass, and spelling mistakes must be corrected during reinforcement or resolved through guided re-learning. A flawless first-try run earns a **purple star** (gold otherwise).
 
 2. **Sound Shift Atlas (`/atlas`)** (family detail and the master web open in-page):
    - Radial spatial spoke visualization for the consonant shift families ($TH \rightarrow D$, $P \rightarrow FF/PF$, $T \rightarrow SS/S/Z$, etc.).
    - Short pattern explanations, word examples and 5-question branch practice drills. Historical background is optional; remembering and using the word comes first.
+   - Family tables expose English, target word, shift and example sentence alongside the same drill. Graph nodes have keyboard focus, animations respect reduced motion, and gender cues include readable text rather than colour alone.
 
 3. **Grammar Panorama (`/panorama`)**: the second atlas — consultable diagrams of German *structure* instead of sound. Opt-in reference layer: no levels, no progress, no gating.
 
@@ -128,13 +130,14 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
    - Algorithmic spaced repetition powered by SuperMemo SM-2.
    - Beginner actions are **Continue lesson**, **Review learned words**, and **Practise difficult words**, followed by Due Today. **More practice options** contains family/domain filters, recent lessons, compounds/traps, sentence patterns, article drills and everything.
    - There are **10 review deck types** for vocabulary and example-sentence entities: due, learned, shift family, domain, weakest words, recent lessons, compounds & traps, sentence patterns, article & gender, and everything (`DECK_CAPABILITIES` in `src/lib/review-decks.ts`). Failed sentence processes use a separate replay queue, not another word deck or review style.
+   - Word-review sessions offer 5 / 10 / 20 / All cards (default 10), including Learned Words; the old special 20-card cap is gone. Bury hides a card until the next local day; Suspend requires manual resumption. Five lapses move a card to **Relearn**, outside normal queues, with a teaching-lesson link where available and explicit resumption after relearning. Mastery does not stop future scheduling.
    - The article drill covers the usual singular definite article for gendered nouns in German, Dutch, French and Spanish; a fixed-width blank marks the missing article. It does not practise cases or articles in sentence context.
    - 4 review styles are available overall: *Quick Flip*, *Multiple Choice (MCQ)*, *Tile Builder*, and *Derivation Typing*. Article & Gender uses MCQ only; other decks support all four.
    - Typing and tiles share grading: exact → Good, spelling near-miss → Hard with a correction, grammatical omission → Again. Authored `accepted_answers` support valid complete alternatives in free-production exercises.
    - Anti-spoiler gender shields: front card prompts with `[ der / die / das ? ]` instead of leaking the article before recall.
    - Desktop keyboard navigation (`1`–`4`, `Space`, `Enter`, `Backspace`, `←`/`→` back and forward between cards, `[R]` audio replay, `Esc`).
    - **Sentence process review** schedules incorrectly answered sentence exercises, not just their words. Cards are language-scoped, durable and replayed through the existing widgets, up to 15 per session. Correct-only work creates no card; replay changes neither stars nor word mastery. [Scheduling, recovery and conservative variation rules](./SENTENCE_REVIEW.md).
-   - Corpus-backed `frequencyRank` metadata covers exact vocabulary forms across all four languages. Due date and learning difficulty retain priority; frequency only breaks ties. The word drawer explains subtitle-corpus limits and unranked forms. [Source and CC BY-SA attribution](../public/data/frequency-provenance.json).
+   - Corpus-backed `frequencyRank` metadata covers exact vocabulary forms across all four languages. Due date and learning difficulty retain priority; frequency only breaks ties. The word drawer explains subtitle-corpus limits and unranked forms. [Source and CC BY-SA attribution](../src/data/frequency-provenance.json).
 
 5. **3-Color Grammatical Gender System**:
    - `der` (Masculine): Azure Blue
@@ -169,6 +172,13 @@ The whole surface is themeable and typable, and the app never leaves the browser
 - **JSON backup import/export** (`src/components/settings/`): backups include settings, per-language learning progress, word SRS and sentence-process cards. Imports validate the payload and remain compatible with older backups. The settings page composes separate behavior, input, sound, theme, visibility and danger-zone components.
 - **Mechanical-keyboard sound engine** (`src/lib/sound.ts`): selectable Monkeytype click packs (`cherrymx black abs`, `tealios v2`, `razer green`, …) plus `off`, and 4 error cues, shipped as real `.wav` files under `public/sounds/` and served with a one-year immutable `Cache-Control`. Decoded buffers are held in a 24-entry cache and failed URLs are negatively cached so a missing sample is never refetched in a loop. Every pack and cue is verified on disk by `src/tests/assets-and-routes.test.ts`.
 - **Six-tab bottom dock** (`src/components/navigation/BottomNav.tsx`): trail, atlas, panorama, review (with a due-count badge), settings, about.
+- **Word and lesson search** in the top nav (`/` outside inputs/dialogs): target words, English cognates/meanings, lesson titles, shift families and domains. Results open the word drawer or the lesson that teaches it; language indexes load on demand.
+- **Optional speaking practice** in sound settings uses browser recognition when supported. Feedback is lenient and never gates progress. Starting requires an explicit gesture and warns that the browser/provider may process audio online; the app stores no recordings or transcripts. Missing target-language TTS voices trigger a one-time install guide and fallback warning, not a learning block.
+
+The regenerated `public/` inventory is **16,938,345 raw bytes (16.15 MiB), 711 files**.
+This is available disk content, not an initial download: only requested lesson data,
+selected sound samples and selected/previewed fonts load. Reproduce with
+`bun run export-data && bun run audit:assets`; [category breakdown](../scripts/README.md#public-asset-inventory-and-request-audit).
 
 ---
 
@@ -229,9 +239,9 @@ src/
 ## Architecture Invariants
 
 - **No Third-Party Component Bloat**: The UI strictly avoids component libraries like Radix, Headless UI, or Framer Motion. Standard DOM and Tailwind CSS are used.
-- **Zero Cloud TTS Dependency**: Pronunciation uses the browser's native `window.speechSynthesis`, avoiding external API costs, latency, or asset downloads.
+- **No app-operated cloud TTS service**: Pronunciation uses native `window.speechSynthesis`; installed voices and their offline/network behaviour depend on the device. Optional speech recognition may use a browser/provider service, disclosed before microphone use.
 - **Durable Local Storage**: Progress is preserved using `localStorage` with a size-guarded cookie fallback: progress is included only when the payload URL-encodes to ≤ 2048 bytes. Otherwise the cookie retains preferences, onboarding/reset markers and `storageFailed`, and the warning offers a JSON backup (`src/lib/store/persistence.ts`). A cookie cannot preserve unlimited progress.
 - **Recovery and offline**: A reminder offers JSON backups after progress exists and weekly thereafter. Settings requests persistent storage. Installation uses the browser menu; production caches visited pages, lesson payloads and lazy chunks, not the entire course. Unopened or evicted content needs a connection. Neither installation nor persistent storage prevents manual deletion or device loss; there are no accounts or cloud sync.
 - **Cross-tab fallback**: When localStorage rejects writes, BroadcastChannel shares the full in-memory snapshot with other open tabs, including progress too large for the cookie. Versioned progress/reset merging still applies. Without BroadcastChannel, cookie-only writes cannot notify other tabs. This is not disk persistence: heed the storage warning and export a JSON backup.
-- **Static tabs, client-rendered lessons**: Top-level tabs pre-render at build time. Lessons and atlas details load into overlays with language-explicit query URLs; legacy path redirects remain supported. This does not provide server-rendered lesson pages.
+- **Static references, lazy practice**: Top-level tabs and canonical lesson reference pages pre-render at build time. Practice and atlas details retain short shareable overlays without adding lesson-by-lesson history. Production builds require a valid public site origin; successful staging/preview deployments trigger smoke verification.
 - **Deferred Ideas Live in `docs/ideas to add in future/`**: specified-but-unimplemented work. These are write-ups, not commitments — nothing in them is wired into the app.

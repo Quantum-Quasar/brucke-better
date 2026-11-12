@@ -23,7 +23,7 @@ Open <http://localhost:3000>.
 
 ```bash
 bun run test       # Vitest; reports current suite totals
-bun run build      # Compile content, export payloads, build static tab routes
+NEXT_PUBLIC_SITE_URL=https://your-public-origin.example bun run build
 ```
 
 See [deployment](./docs/DEPLOYMENT.md) for hosting and

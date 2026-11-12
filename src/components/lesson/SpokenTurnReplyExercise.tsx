@@ -15,6 +15,7 @@ import {
 import { ProductionAnswerInput } from "./inputs/ProductionAnswerInput";
 import { ProductionAnswerActions } from "./ProductionAnswerActions";
 import { VoiceStatusBanner } from "@/components/common/VoiceStatusBanner";
+import { MicrophonePractice } from "@/components/common/MicrophonePractice";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
 import { arrangeTilesDeterministically } from "./exercise-tiles";
@@ -310,6 +311,10 @@ export const SpokenTurnReplyExercise: React.FC<SpokenTurnReplyExerciseProps> = (
           ))}
         </div>
       </div>
+
+      {settings.microphonePractice && status !== "correct" && status !== "almost" && (
+        <MicrophonePractice key={exercise.id} target={target} locale={language.ttsLocale} />
+      )}
 
       {/* Footer */}
       <ProductionAnswerActions status={status} feedback={feedbackNote} onVerify={handleVerify} action="reply" />

@@ -4,13 +4,14 @@ import "./globals.css";
 import { AppShell } from "@/components/common/AppShell";
 import { THEME_VARS_CACHE_KEY } from "@/lib/theme-runtime";
 import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "@/lib/storage-keys";
+import { getSiteUrl } from "@/lib/site-url";
 
 const SITE_TITLE = "Brücke — Learn through the words you already know";
 const SITE_DESCRIPTION =
   "Learn German, Dutch, French and Spanish by decoding the words you already know — 30 topics, sound-law lessons and spaced review.";
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
+  metadataBase: getSiteUrl(),
   title: SITE_TITLE,
   description: SITE_DESCRIPTION,
   openGraph: {

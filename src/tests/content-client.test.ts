@@ -63,6 +63,12 @@ afterEach(() => {
 });
 
 describe("client content loading", () => {
+  it("does not request any language data merely by importing the loader", async () => {
+    // Import after the fetch spy is installed to exercise the module-loading boundary.
+    await import("../lib/content-client");
+    expect(requests).toEqual([]);
+  });
+
   it("loads a compendium once per language and derives wordList", async () => {
     const { loadCompendium } = await import("../lib/content-client");
     const [first, second] = await Promise.all([loadCompendium("de"), loadCompendium("de")]);

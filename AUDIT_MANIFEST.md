@@ -55,6 +55,7 @@ Use a familiar word or a clear pattern to make new German easier to remember, th
   8. $-ate / -ize \rightarrow -ieren$ (`organize` $\rightarrow$ `organisieren`)
   9. Ablaut vowels (`sing / sang / sung` $\rightarrow$ `singen / sang / gesungen`)
 - **Interactive Drill**: 5-question modal practice drill per constellation family.
+- **Accessible alternative**: each family exposes a semantic English/target/shift/example table with the same drill. Atlas nodes and Trail lesson buttons are keyboard reachable with visible focus; reduced motion disables animated/pulsing decoration.
 
 ### Pillar 3: Spaced Repetition Review Hub (`/review`)
 - **Algorithm**: Unified SuperMemo SM-2 interval scheduler (`src/lib/srs.ts`) tracking repetitions, ease factors, lapses, intervals, and due dates.
@@ -68,7 +69,8 @@ Use a familiar word or a clear pattern to make new German easier to remember, th
   7. **Sentence Patterns**: Lesson example sentences as review items.
   8. **Article & Gender Drill**: The usual singular definite article for gendered nouns in German, Dutch, French and Spanish, with a fixed-width blank. It does not teach cases or articles in sentence context.
   9. **Everything**: The full pool.
-  10. **Learned Words**: Up to 20 encountered/mastered words, independent of advanced new-word filters.
+  10. **Learned Words**: Encountered/mastered words, independent of advanced new-word filters.
+  All ordinary decks use the learner's 5/10/20/All session limit (default 10), rather than a hidden Learned-only cap. Suspend persists until manual resumption; Bury lasts through the current local day. Five lapses since relearning move the card to the separate Relearn queue; mapped cards link back to a teaching lesson, dictionary-only cards offer contextual relearning. Mastery does not stop future scheduling.
 - **4 review styles overall** (Article & Gender uses MCQ only; other decks support all four):
   - `flashcard` (Quick Flip): Recall in mind $\rightarrow$ Space/Enter reveals $\rightarrow$ 1–4 SM-2 grade.
   - `mcq` (Multiple Choice): Pick target word from 4 options (hotkeys 1–4).
@@ -89,10 +91,12 @@ Use a familiar word or a clear pattern to make new German easier to remember, th
    - `die` (Feminine): Vivid Rose (`#f43f5e` / `text-rose-200 bg-rose-500/25 border-rose-400/60`)
    - `das` (Neuter): Emerald Green (`#10b981` / `text-emerald-200 bg-emerald-500/25 border-emerald-400/60`)
    - Introduced via an educational dismissible banner (`GenderGuideBanner.tsx`) and onboarding.
+   - The article and readable gender cue accompany colour; colour is never the sole badge label.
 2. **Zero-Dependency Native Speech Synthesis (`src/lib/audio.ts`)**:
    - Uses `window.speechSynthesis` with the active language's locale (`de-DE` for German), voice matching, and `0.92x` learner pace.
-   - Zero speech MP3 bundles, zero cloud API keys, zero network latency. (Keyboard-click sounds are bundled `.wav` packs under `public/sounds/`, played by `src/lib/sound.ts`.)
+   - No app-operated speech API or speech MP3 bundles. Device voices may still need installation or a connection; a missing target-language voice triggers guidance and a warning. Keyboard samples load only when played from the selected pack.
    - Embedded speaker buttons across `ShiftPair`, `WordCardDrawer`, `ReviewPage`, and `LessonReader`, plus keyboard shortcut `[R]` / `[A]`.
+   - Optional browser speech recognition is explicitly enabled and started by the learner, with a provider/online-processing disclosure. Transcript feedback is lenient and non-gating; the app stores no audio/transcripts.
 3. **Desktop Keyboard First Ergonomics**:
    - `1`, `2`, `3`, `4`: Select MCQ options or grade SM-2 cards (Again, Hard, Good, Easy).
    - `Space` / `Enter`: Reveal cards, advance lessons, check answers.
@@ -146,10 +150,10 @@ In-page views: lessons and atlas details are rendered by `AppShell.tsx` (`Lesson
 ## 7. Performance & Resource Optimization Highlights
 
 1. **100% Pre-rendered Static Site Generation (SSG)**:
-   - The app ships 6 static routes (`/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`). Lessons (188 unique lessons across 500 per-lesson payloads) and atlas families (37 atlas families across the four atlases) are client-rendered overlays, not server-rendered lesson pages.
-   - Opening, changing or closing an overlay replaces the current history entry with a short query URL, including the learning language (for example `/?lesson=1&lang=de`, `/atlas?family=th_to_d&lang=de`, `/atlas?master=1&lang=de`). Copied links and reloads restore that state. Cross-tab opens push one normal tab entry; Back traverses actual top-level tab history and Forward restores the overlay in its URL. Legacy `/trail/...` and `/atlas/...` links still redirect to matching views.
+   - The app ships 6 static routes (`/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`), plus canonical `/trail/<lang>/<id>` lesson reference pages with introductions, patterns, vocabulary and outcomes. Lessons (188 unique lessons across 500 per-lesson payloads) and atlas families (37 atlas families across four atlases) retain instant practice/reference overlays.
+   - Overlays replace the current history entry with language-explicit query URLs; copied links and reloads restore them. Canonical lesson pages carry `LearningResource` data and appear in the sitemap; robots points to it. Builds regenerate ignored `public/data/` distribution files from committed content, rather than storing those copies in git.
 2. **Shift Alignment Memoization**:
-   - `alignShiftPair` in `src/lib/shift-annotator.ts` uses an in-memory `Map` cache to avoid redundant letter alignment work.
+   - `alignShiftPair` aligns whole spellings before highlighting known correspondences, handles double shifts and uses a bounded 500-entry cache. Twenty golden alignments pin the actual highlighted spans, including V/F→B and Y/GH→G/CH.
 3. **Storage I/O Deduplication & Cookie Guard**:
    - `saveState` in `src/lib/store/persistence.ts` checks `lastSerialized` to prevent redundant writes to `localStorage` and `document.cookie`.
    - Cookie storage is size-gated (lean payload written only if it URL-encodes to ≤ 2048 bytes) with a minimal fallback to prevent cookie truncation and HTTP request header bloat.

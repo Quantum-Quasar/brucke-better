@@ -73,5 +73,5 @@ if (!suggestionsPath) {
     generatedBy: "bun scripts/generate-frequency.ts",
     sources: Object.fromEntries(FREQUENCY_LANGUAGES.map((lang) => [lang, { url: frequencySourceUrl(lang), sha256: FREQUENCY_CHECKSUMS[lang], forms: 50_000 }])),
   };
-  fs.writeFileSync(path.join(root, "public/data/frequency-provenance.json"), `${JSON.stringify(provenance, null, 2)}\n`);
+  fs.writeFileSync(path.join(root, "src/data/frequency-provenance.json"), `${JSON.stringify(provenance, null, 2)}\n`);
 }

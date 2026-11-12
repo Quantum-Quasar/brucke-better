@@ -69,6 +69,8 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
             </div>
 
             <div className="flex items-center gap-2">
+              <button type="button" onClick={controller.buryCurrent} className="min-h-11 px-3 text-sm text-[var(--sub-color)]" title="Hide through today; returns tomorrow">Bury today</button>
+              <button type="button" onClick={controller.suspendCurrent} className="min-h-11 px-3 text-sm text-[var(--sub-color)]" title="Hide until you resume it in Manage cards">Suspend</button>
               <button
                 type="button"
                 tabIndex={-1}

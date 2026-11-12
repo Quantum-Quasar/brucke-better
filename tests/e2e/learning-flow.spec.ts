@@ -6,7 +6,7 @@ const STORAGE_KEY = "brucke_app_state_v1";
 async function seed(page: Page, patch: Record<string, unknown> = {}) {
   await page.addInitScript(([key, value]) => {
     if (!localStorage.getItem(key)) localStorage.setItem(key, value);
-  }, [STORAGE_KEY, JSON.stringify({ hasCompletedOnboarding: true, settings: { showKeyTips: false, posturePrimerSeen: true }, ...patch })]);
+  }, [STORAGE_KEY, JSON.stringify({ hasCompletedOnboarding: true, settings: { showKeyTips: false, posturePrimerSeen: true, voiceGuidanceDismissed: ["de", "fr", "es", "nl"] }, ...patch })]);
 }
 
 async function progress(page: Page) {

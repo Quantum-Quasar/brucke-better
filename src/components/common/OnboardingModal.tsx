@@ -1,9 +1,5 @@
 "use client";
 
-// Three-step intro: pick a language, see the core sound-law idea, then start.
-// Everything else (notation, pillars, posture) is taught in context inside the
-// first lesson instead of gating the first German word behind six screens.
-
 import React, { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import {
@@ -22,6 +18,8 @@ import { FONT_LIST } from "@/data/fonts";
 import { ShiftPair } from "@/components/common/ShiftPair";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
+import { focusOpener } from "@/lib/focus-return";
+import { LearningPreferences } from "@/components/common/LearningPreferences";
 
 export const OnboardingModal: React.FC = () => {
   const isOpen = useAppStore((s) => s.isOnboardingOpen);
@@ -64,6 +62,7 @@ export const OnboardingModal: React.FC = () => {
   useDialogFocus({
     open: isOpen,
     containerRef: dialogRef,
+    returnFocus: focusOpener,
     onEscape: closeOnboarding,
   });
 
@@ -110,8 +109,9 @@ export const OnboardingModal: React.FC = () => {
     if (!isOpen) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (target?.closest("[data-onboarding-local-keys], input, select, textarea")) return;
       if (e.key === "ArrowRight" || (e.key === "Enter" && !e.shiftKey)) {
-        const target = e.target as HTMLElement | null;
         if (e.key === "Enter" && target?.closest("button, a, input, select, textarea")) return;
         e.preventDefault();
         if (step < TOTAL_STEPS - 1) {
@@ -298,6 +298,8 @@ export const OnboardingModal: React.FC = () => {
                 </h2>
                 <p className="text-sm text-[var(--sub-color)] leading-relaxed">{intro.ready.body}</p>
               </div>
+              {isAvailable && <LearningPreferences languageId={effectiveLanguageId} topicCount={topicCount} />}
+
 
               <div className="p-4 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 text-sm font-mono text-[var(--sub-color)] space-y-2">
                 <div className="flex items-center gap-2 text-[var(--main-color)] font-bold text-xs uppercase tracking-wider">

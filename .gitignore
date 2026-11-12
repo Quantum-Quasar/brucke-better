@@ -12,6 +12,7 @@ dist
 .vercel
 .turbo
 *.tsbuildinfo
+public/data/
 
 # ===== test / audit output =====
 test-results

@@ -21,6 +21,7 @@ import { trimCompendium } from "../src/lib/lesson-payload";
 import { buildWordEntityMaps } from "../src/lib/word-entities-core";
 import type { CompendiumData, Lesson, LessonIndexEntry, ShiftFamily } from "../src/lib/types";
 import frequencyRanks from "../src/data/frequency-ranks.json";
+import frequencyProvenance from "../src/data/frequency-provenance.json";
 import { withFrequencyMetadata } from "./lib/frequency-payload";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -42,8 +43,8 @@ const LANGUAGES: LanguageSource[] = [
 
 function writeJson(file: string, value: unknown): number {
   fs.mkdirSync(path.dirname(file), { recursive: true });
-  const json = JSON.stringify(value);
-  fs.writeFileSync(file, `${json}\n`);
+  const json = `${JSON.stringify(value)}\n`;
+  fs.writeFileSync(file, json);
   return Buffer.byteLength(json);
 }
 
@@ -56,6 +57,7 @@ function lessonIndexEntry(lesson: Lesson): LessonIndexEntry {
     phase: lesson.phase,
     spineStory: lesson.spineStory,
     label: lesson.label,
+    exerciseCount: lesson.exercises.length,
     shift_categories: lesson.shift_categories,
     word_ids: lesson.word_ids,
     table_word_ids: lesson.table_word_ids,
@@ -77,49 +79,59 @@ function shiftNameEntries(compendium: CompendiumData) {
   }));
 }
 
-const shiftNames: Record<string, Array<{ id: string; symbol: string; name: string }>> = {};
-let totalBytes = 0;
-let lessonPayloads = 0;
+export function exportClientData(
+  outDir = OUT_DIR,
+  shiftNamesPath = SHIFT_NAMES_PATH,
+  exerciseCountsPath = path.join(path.dirname(shiftNamesPath), "lesson-exercise-counts.json")
+) {
+  const shiftNames: Record<string, Array<{ id: string; symbol: string; name: string }>> = {};
+  const exerciseCounts: Record<string, Record<number, number>> = {};
+  let totalBytes = 0;
+  let lessonPayloads = 0;
 
-for (const language of LANGUAGES) {
-  const ranks = frequencyRanks[language.id as keyof typeof frequencyRanks];
-  const compendium = withFrequencyMetadata(language.compendium, ranks);
-  const entities = buildWordEntityMaps(language.id, compendium, language.lessons).entities;
-  // wordList is derived in the client; dailyInsights stays because the master
-  // web uses it for expression nodes (French/Spanish carry an empty list).
-  const { wordList: _wordList, ...payload } = compendium;
-  totalBytes += writeJson(path.join(OUT_DIR, language.id, "compendium.json"), payload);
-  totalBytes += writeJson(
-    path.join(OUT_DIR, language.id, "lesson-index.json"),
-    language.lessons.map(lessonIndexEntry)
-  );
-  // One small file per lesson: the in-page lesson view fetches exactly the
-  // lesson it opens plus the words it can render.
-  for (const lesson of language.lessons) {
-    totalBytes += writeJson(
-      path.join(OUT_DIR, language.id, "lessons", `${lesson.id}.json`),
-      { lesson, compendium: trimCompendium(compendium, lesson, entities) }
+  for (const language of LANGUAGES) {
+    exerciseCounts[language.id] = Object.fromEntries(
+      language.lessons.map((lesson) => [lesson.id, lesson.exercises.length])
     );
-    lessonPayloads += 1;
-  }
-  // Lesson ids can move (reading stories live on the spine now); drop payloads
-  // for ids that no longer exist so a stale file is never shipped.
-  const lessonDir = path.join(OUT_DIR, language.id, "lessons");
-  const wanted = new Set(language.lessons.map((lesson) => `${lesson.id}.json`));
-  if (fs.existsSync(lessonDir)) {
-    for (const name of fs.readdirSync(lessonDir)) {
-      if (name.endsWith(".json") && !wanted.has(name)) {
-        fs.unlinkSync(path.join(lessonDir, name));
+    const ranks = frequencyRanks[language.id as keyof typeof frequencyRanks];
+    const compendium = withFrequencyMetadata(language.compendium, ranks);
+    const entities = buildWordEntityMaps(language.id, compendium, language.lessons).entities;
+    // wordList is derived in the client; dailyInsights stays for expression nodes.
+    const { wordList: _wordList, ...payload } = compendium;
+    totalBytes += writeJson(path.join(outDir, language.id, "compendium.json"), payload);
+    totalBytes += writeJson(
+      path.join(outDir, language.id, "lesson-index.json"),
+      language.lessons.map(lessonIndexEntry)
+    );
+    for (const lesson of language.lessons) {
+      totalBytes += writeJson(
+        path.join(outDir, language.id, "lessons", `${lesson.id}.json`),
+        { lesson, compendium: trimCompendium(compendium, lesson, entities) }
+      );
+      lessonPayloads += 1;
+    }
+    // Remove obsolete lesson ids rather than shipping stale course payloads.
+    const lessonDir = path.join(outDir, language.id, "lessons");
+    const wanted = new Set(language.lessons.map((lesson) => `${lesson.id}.json`));
+    if (fs.existsSync(lessonDir)) {
+      for (const name of fs.readdirSync(lessonDir)) {
+        if (name.endsWith(".json") && !wanted.has(name)) {
+          fs.unlinkSync(path.join(lessonDir, name));
+        }
       }
     }
+    shiftNames[language.id] = shiftNameEntries(language.compendium);
   }
-  shiftNames[language.id] = shiftNameEntries(language.compendium);
+
+  totalBytes += writeJson(path.join(outDir, "frequency-provenance.json"), frequencyProvenance);
+  writeJson(shiftNamesPath, shiftNames);
+  writeJson(exerciseCountsPath, exerciseCounts);
+  return { languages: LANGUAGES.length, lessonPayloads, totalBytes };
 }
 
-// Small enough to stay in the client graph; keeps diagnosis copy independent
-// of the fetched compendium.
-writeJson(SHIFT_NAMES_PATH, shiftNames);
-
-console.log(
-  `exported ${LANGUAGES.length} languages and ${lessonPayloads} lesson payloads to public/data (${(totalBytes / 1024).toFixed(0)} KB)`
-);
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const { languages, lessonPayloads, totalBytes } = exportClientData();
+  console.log(
+    `exported ${languages} languages and ${lessonPayloads} lesson payloads to public/data (${(totalBytes / 1024).toFixed(0)} KB)`
+  );
+}

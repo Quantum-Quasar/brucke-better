@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { ArrowLeft, BookOpen, Info, Search } from "lucide-react";
 import { ConstellationWeb } from "@/components/atlas/ConstellationWeb";
 import { BranchDrillModal } from "@/components/atlas/BranchDrillModal";
-import { ShiftPair } from "@/components/common/ShiftPair";
+import { AtlasVocabularyTable } from "@/components/atlas/AtlasVocabularyTable";
 import { useAppStore } from "@/lib/store";
 import { useViewStore, EMPTY_ROSTER_POSITION } from "@/lib/view-store";
 import { getLanguageDefinition } from "@/data/languages";
@@ -36,6 +36,7 @@ export function ConstellationDetailClient({
   onBack,
 }: ConstellationDetailClientProps) {
   const [isDrillOpen, setIsDrillOpen] = useState(false);
+  const [view, setView] = useState<"visual" | "table">("visual");
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const setActiveLanguage = useAppStore((s) => s.setActiveLanguage);
   const roster = useViewStore((s) => s.rosterByFamily[familyId] ?? EMPTY_ROSTER_POSITION);
@@ -247,16 +248,26 @@ export function ConstellationDetailClient({
           </p>
         </div>
       </div>
-
-      {/* Web Constellation (Desktop) & List (Mobile) */}
-      <ConstellationWeb
-        family={family}
-        data={data}
-        onPracticeBranch={() => setIsDrillOpen(true)}
-      />
+      <div className="flex flex-wrap items-center gap-2" role="group" aria-label="Constellation view">
+        <button type="button" aria-pressed={view === "visual"} onClick={() => setView("visual")} className="min-h-11 rounded border border-[var(--sub-color)]/30 px-4 text-xs font-mono">
+          Visual view
+        </button>
+        <button type="button" aria-pressed={view === "table"} onClick={() => setView("table")} className="min-h-11 rounded border border-[var(--sub-color)]/30 px-4 text-xs font-mono">
+          Table view
+        </button>
+      </div>
+      {view === "visual" ? (
+        <ConstellationWeb family={family} data={data} onPracticeBranch={() => setIsDrillOpen(true)} />
+      ) : (
+        <button type="button" onClick={() => setIsDrillOpen(true)} className="min-h-11 rounded bg-[var(--main-color)] px-4 text-xs font-mono font-bold text-[var(--bg-color)]">
+          practice this branch (5 questions) →
+        </button>
+      )}
 
       {/* Philological & Historical Linguistics Deep-Dive */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <details className="rounded-lg border border-[var(--sub-color)]/20 p-4">
+        <summary className="cursor-pointer text-xs font-mono text-[var(--sub-color)]">Optional: history and literature</summary>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4">
         <div className="p-4 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-2">
           <div className="flex items-center gap-1.5 text-xs font-mono text-[var(--main-color)] font-semibold">
             <Info className="w-3.5 h-3.5" /> historical linguistics
@@ -285,11 +296,12 @@ export function ConstellationDetailClient({
           </div>
         </div>
       </div>
+      </details>
 
       {/* Full Word Roster */}
       <div className="space-y-3 pt-2">
         <h2 className="text-base font-bold text-[var(--text-color)] flex items-center justify-between font-mono">
-          <span>Participating Vocabulary</span>
+          <span>Participating Vocabulary — table</span>
           <span className="text-xs text-[var(--sub-color)] font-normal">{words.length} words</span>
         </h2>
 
@@ -298,6 +310,7 @@ export function ConstellationDetailClient({
             <Search className="w-3.5 h-3.5 text-[var(--sub-color)] absolute left-3 top-1/2 -translate-y-1/2" />
             <input
               type="text"
+              aria-label="Filter constellation vocabulary"
               value={roster.query}
               onChange={(event) => {
                 setRosterPosition(familyId, { query: event.target.value, visible: 60 });
@@ -335,23 +348,7 @@ export function ConstellationDetailClient({
           </p>
         )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2.5">
-          {rosterWords.map((word) => (
-            <div
-              key={word.id}
-              className="p-2.5 rounded bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20"
-            >
-              <ShiftPair
-                english={word.english_cognate}
-                german={word.target_word}
-                gender={word.gender}
-                rule={word.shift_rule}
-                wordId={word.id}
-                className="w-full justify-between"
-              />
-            </div>
-          ))}
-        </div>
+        <AtlasVocabularyTable words={rosterWords} caption={`${family.name}: English, ${getLanguageDefinition(activeLanguageId).name}, shift and example sentence. Showing ${rosterWords.length} of ${filteredWords.length} words; use the filter or show more to reach every word.`} />
       </div>
 
       {/* 5-Question Branch Practice Drill Modal */}

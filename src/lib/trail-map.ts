@@ -11,10 +11,9 @@ import type { LessonProgress, LessonStar, TopicCluster, TrailBranch, TrailGate }
 // bundle from data/french/curriculum-fr.ts via the language-content registry.
 //
 // Graph rules:
-//   · a node is unlocked when ANY adjacent node is completed (Baba OR-join),
-//     except the first node, which is always unlocked
-//   · the spine core(n)—core(n+1) is the only required sequence; sprigs and
-//     branches hang off cores, so every side lesson can be skipped
+//   · each required spine node needs every earlier core/story completed
+//   · sprigs and branches unlock outward from their attachment, never backward
+//   · side lessons remain optional; gates additionally require stars and a pass
 //
 // Layout rules (bottom → top, like climbing a trail):
 //   · topic 1 sits at the bottom, so the map starts where a learner starts
@@ -149,23 +148,29 @@ export function buildTrailEdgePairs(data: TrailData = GERMAN_TRAIL_DATA): TrailE
   return edges;
 }
 
-const buildAdjacency = (edges: TrailEdge[]) => {
-  const map = new Map<number, number[]>();
-  for (const { a, b } of edges) {
-    if (!map.has(a)) map.set(a, []);
-    if (!map.has(b)) map.set(b, []);
-    map.get(a)!.push(b);
-    map.get(b)!.push(a);
+/** Directed prerequisites; decorative undirected edges must never grant access. */
+export function buildTrailPrerequisites(data: TrailData = GERMAN_TRAIL_DATA): Map<number, number | null> {
+  const prerequisites = new Map<number, number | null>();
+  const spine = spineNodeIds(data.topics);
+  spine.forEach((id, index) => prerequisites.set(id, index === 0 ? null : spine[index - 1]));
+  for (const topic of data.topics) {
+    for (const sprig of topic.sprigs) prerequisites.set(sprig.id, topic.core.id);
   }
-  return map;
-};
+  for (const branch of data.branches) {
+    let previous = branch.attach;
+    for (const lesson of branch.lessons) {
+      prerequisites.set(lesson.id, previous);
+      previous = lesson.id;
+    }
+  }
+  return prerequisites;
+}
 
 const GERMAN_EDGES = buildTrailEdgePairs(GERMAN_TRAIL_DATA);
 
 /** Unique undirected edge pairs of the German trail (legacy export, German-bound). */
 export const TRAIL_EDGE_PAIRS: TrailEdge[] = GERMAN_EDGES;
 
-const GERMAN_ADJACENCY = buildAdjacency(GERMAN_EDGES);
 
 /**
  * Full layout for a given canvas width. Deterministic — same width, same map.
@@ -266,7 +271,7 @@ export function buildTrailLayout(width: number, data: TrailData = GERMAN_TRAIL_D
     }
 
     for (const branch of data.branches) {
-      if (branch.attach !== topic.core.id) continue;
+      if (branch.attach !== topic.core.id && !topic.sprigs.some((lesson) => lesson.id === branch.attach) && !(topic.stories ?? []).some((lesson) => lesson.id === branch.attach)) continue;
       // branches tuck into a side pocket below the cluster (sprigs own the flanks)
       const sprigSides = topic.sprigs.map((_, j) => (j % 2 === 0 ? -1 : 1));
       const side = sprigSides.filter((s) => s === 1).length <= sprigSides.filter((s) => s === -1).length ? 1 : -1;
@@ -325,11 +330,13 @@ export function buildTrailLayout(width: number, data: TrailData = GERMAN_TRAIL_D
   const nodeById = new Map(nodes.map((n) => [n.id, n]));
   const gates: GateMarker[] = [];
   for (const gate of data.gates) {
-    const topic = data.topics.find((t) => t.id === gate.afterTopic);
+    const topicIndex = data.topics.findIndex((topic) => topic.id === gate.afterTopic);
+    const topic = data.topics[topicIndex];
     const stories = topic?.stories ?? [];
-    const lowerId = stories.length > 0 ? stories[stories.length - 1].id : gate.afterTopic;
-    const a = nodeById.get(lowerId);
-    const b = nodeById.get(gate.afterTopic + 1);
+    const lowerId = stories.length > 0 ? stories[stories.length - 1].id : topic?.core.id;
+    const upperId = data.topics[topicIndex + 1]?.core.id;
+    const a = lowerId === undefined ? undefined : nodeById.get(lowerId);
+    const b = upperId === undefined ? undefined : nodeById.get(upperId);
     if (!a || !b) continue;
     const midX = (a.x + a.w / 2 + b.x + b.w / 2) / 2 - GATE_W / 2;
     const midY = (a.y + a.h / 2 + b.y + b.h / 2) / 2 - GATE_H / 2;
@@ -425,21 +432,42 @@ export function getTrailState(
 ): TrailState {
   const completedSet = new Set(completed);
   const view = new Map<number, NodeView>();
+  const topicByLesson = new Map<number, number>();
+  for (const topic of data.topics) {
+    for (const lesson of [topic.core, ...(topic.stories ?? []), ...topic.sprigs]) {
+      topicByLesson.set(lesson.id, topic.id);
+    }
+  }
+  for (const branch of data.branches) {
+    const topicId = topicByLesson.get(branch.attach);
+    if (topicId !== undefined) {
+      for (const lesson of branch.lessons) topicByLesson.set(lesson.id, topicId);
+    }
+  }
   const fallback: Array<Pick<TrailNode, "id" | "kind" | "topicId">> = [
     ...data.topics.flatMap((t) => [
       { id: t.core.id, kind: "core" as const, topicId: t.id },
       ...(t.stories ?? []).map((s) => ({ id: s.id, kind: "story" as const, topicId: t.id })),
       ...t.sprigs.map((s) => ({ id: s.id, kind: "sprig" as const, topicId: t.id })),
     ]),
-    ...data.branches.flatMap((b) => b.lessons.map((l) => ({ id: l.id, kind: "branch" as const, topicId: b.attach }))),
+    ...data.branches.flatMap((b) => b.lessons.map((l) => ({ id: l.id, kind: "branch" as const, topicId: topicByLesson.get(l.id) ?? b.attach }))),
   ];
   const allNodes = nodes ?? fallback;
 
   const gates = data.gates;
   const edgePairs = buildTrailEdgePairs(data);
-  const adjacency = data === GERMAN_TRAIL_DATA ? GERMAN_ADJACENCY : buildAdjacency(edgePairs);
+  const prerequisites = buildTrailPrerequisites(data);
+  const prerequisiteCache = new Map<number, boolean>();
+  const prerequisitesComplete = (id: number): boolean => {
+    const cached = prerequisiteCache.get(id);
+    if (cached !== undefined) return cached;
+    const previous = prerequisites.get(id);
+    const ready = previous === null || (previous !== undefined && completedSet.has(previous) && prerequisitesComplete(previous));
+    prerequisiteCache.set(id, ready);
+    return ready;
+  };
 
-  // Both the region stars and the checkpoint pass are required.
+  // Required spine completion, region stars and a checkpoint pass all matter.
   const topicById = new Map(allNodes.map((n) => [n.id, n.topicId]));
   const gateViews = new Map<number, GateView>();
   const passedGates = new Set(passedGateIds);
@@ -450,7 +478,10 @@ export function getTrailState(
       return t !== undefined && t >= fromTopic && t <= toTopic;
     }).length;
     const passed = passedGates.has(gate.id);
-    gateViews.set(gate.id, { open: regionStars >= gate.requiredStars && passed, passed, stars: regionStars, fromTopic, toTopic });
+    const spineComplete = data.topics
+      .filter((topic) => topic.id <= gate.afterTopic)
+      .every((topic) => [topic.core, ...(topic.stories ?? [])].every((lesson) => completedSet.has(lesson.id)));
+    gateViews.set(gate.id, { open: spineComplete && regionStars >= gate.requiredStars && passed, passed, stars: regionStars, fromTopic, toTopic });
   });
   // the first closed gate at or before a node's topic blocks it (the spine is strict,
   // so a closed gate locks everything beyond it)
@@ -470,7 +501,7 @@ export function getTrailState(
       ? "completed"
       : blocked
       ? "locked"
-      : node.id === FIRST_NODE_ID || (adjacency.get(node.id) ?? []).some((n) => completedSet.has(n))
+      : prerequisitesComplete(node.id)
       ? "available"
       : "locked";
     view.set(node.id, {
@@ -494,7 +525,7 @@ export function getTrailState(
   const gateBoundaryLower = (topicId: number) => {
     const topic = data.topics.find((t) => t.id === topicId);
     const stories = topic?.stories ?? [];
-    return stories.length > 0 ? stories[stories.length - 1].id : topicId;
+    return stories.length > 0 ? stories[stories.length - 1].id : topic?.core.id;
   };
   for (const { a, b } of edgePairs) {
     const sa = view.get(a)?.status ?? "locked";
@@ -502,7 +533,8 @@ export function getTrailState(
     const crossesClosedGate = gates.some((g) => {
       if (gateViews.get(g.id)!.open) return false;
       const lower = gateBoundaryLower(g.afterTopic);
-      const upper = g.afterTopic + 1;
+      const topicIndex = data.topics.findIndex((topic) => topic.id === g.afterTopic);
+      const upper = data.topics[topicIndex + 1]?.core.id;
       return (a === lower && b === upper) || (b === lower && a === upper);
     });
     if (crossesClosedGate) continue;

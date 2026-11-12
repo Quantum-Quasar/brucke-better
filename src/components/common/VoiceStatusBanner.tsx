@@ -31,21 +31,21 @@ export const VoiceStatusBanner: React.FC<VoiceStatusBannerProps> = ({
 
   useEffect(() => {
     setMounted(true);
+    setDismissed(false);
     const refresh = () => setStatus(detectLanguageVoice(language.ttsLocale));
-    refresh();
-    // Voices load asynchronously on Chrome/Linux/Android; re-check after a short tick and onvoiceschanged
-    const timer = setTimeout(refresh, 350);
     const unsub = subscribeVoiceChanges(refresh);
-    return () => {
-      clearTimeout(timer);
-      unsub();
-    };
+    refresh();
+    return unsub;
   }, [language.ttsLocale]);
 
   if (!mounted || !status || dismissed) return null;
 
   if (status.hasLanguageVoice && !showWhenAvailable) {
     return null;
+  }
+
+  if (status.supported && !status.voicesLoaded) {
+    return showWhenAvailable ? <p role="status" className={`text-xs text-[var(--sub-color)] ${className}`}>Checking {status.languageName} system voices…</p> : null;
   }
 
   const listeningOff = isListeningSkipped(listeningSkippedUntil);
@@ -95,7 +95,7 @@ export const VoiceStatusBanner: React.FC<VoiceStatusBannerProps> = ({
           <AlertCircle className="w-4 h-4 text-[var(--error-color)] shrink-0 mt-0.5" />
           <div className="space-y-1">
             <div className="font-bold text-[var(--error-color)]">
-              No {status.languageName} ({status.requestedLocale}) speech voice detected on this device
+              {status.supported ? `No ${status.languageName} speech voice detected on this device` : "Speech audio unavailable in this browser"}
             </div>
             <p className="text-[var(--sub-color)] leading-relaxed">{status.warningMessage}</p>
           </div>

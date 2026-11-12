@@ -121,6 +121,11 @@ export interface AppState {
   passGate: (gateId: number) => void;
   setLessonProgress: (lessonId: number, progress: LessonProgress) => void;
   recordReview: (wordId: string, grade: ReviewGrade) => void;
+  suspendCard: (wordId: string, suspended: boolean) => void;
+  buryCard: (wordId: string) => void;
+  unburyCard: (wordId: string) => void;
+  beginCardRelearn: (wordId: string, lessonId: number) => void;
+  resumeCardAfterRelearn: (wordId: string) => void;
   recordSentenceFailure: (lessonId: number, exercise: ExerciseItem, languageId: string) => void;
   recordSentenceReview: (cardId: string, grade: ReviewGrade, languageId: string) => void;
   /**

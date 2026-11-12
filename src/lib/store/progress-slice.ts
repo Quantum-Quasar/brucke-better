@@ -160,8 +160,14 @@ export const createProgressSlice: StoreSlice<"setActiveLanguage" | "markWordExpl
           : opts?.nextLessonId !== undefined
             ? Math.max(s.currentLessonId, opts.nextLessonId)
             : Math.max(s.currentLessonId, lessonId + 1);
-      if (completed === s.completedLessons && s.currentLessonId >= nextLesson && nextStars === s.lessonStars) return s;
-      const next = { ...s, completedLessons: completed, currentLessonId: nextLesson, lessonStars: nextStars };
+      let srsCards = s.srsCards;
+      for (const [id, card] of Object.entries(s.srsCards)) {
+        if (!card.relearnRequired || card.relearnLessonId !== lessonId || card.relearnLessonCompleted) continue;
+        if (srsCards === s.srsCards) srsCards = { ...s.srsCards };
+        srsCards[id] = { ...card, relearnLessonCompleted: true };
+      }
+      if (completed === s.completedLessons && s.currentLessonId >= nextLesson && nextStars === s.lessonStars && srsCards === s.srsCards) return s;
+      const next = { ...s, completedLessons: completed, currentLessonId: nextLesson, lessonStars: nextStars, srsCards };
       saveState(next);
       return next;
     });

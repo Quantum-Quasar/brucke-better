@@ -6,6 +6,7 @@ import { useAppStore } from "@/lib/store";
 import { FONT_LIST, ensureFontLoaded, type FontMeta } from "@/data/fonts";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
+import { focusOpener } from "@/lib/focus-return";
 
 import { RECOMMENDED_FONTS, filterPickerFonts, type FontPickerTab } from "@/components/common/font-picker";
 
@@ -30,6 +31,7 @@ export const FontSelectorModal: React.FC = () => {
     open: isOpen,
     containerRef: dialogRef,
     initialFocusRef: searchInputRef,
+    returnFocus: focusOpener,
     onEscape: closeFontSelector,
   });
 

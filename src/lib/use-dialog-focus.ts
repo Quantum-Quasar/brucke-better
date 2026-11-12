@@ -15,6 +15,15 @@ const FOCUSABLE_SELECTOR = [
 ].join(",");
 
 const dialogStack: HTMLElement[] = [];
+const nonBlockingDialogs = new WeakSet<HTMLElement>();
+
+export function hasBlockingKeyboardDialog(owner?: HTMLElement | null): boolean {
+  for (let index = dialogStack.length - 1; index >= 0; index--) {
+    const dialog = dialogStack[index];
+    if (!nonBlockingDialogs.has(dialog)) return dialog !== owner;
+  }
+  return false;
+}
 
 // Nested dialogs share one page-scroll lock, restored when the last closes.
 let scrollLocks = 0;
@@ -65,12 +74,14 @@ function getFocusableElements(container: HTMLElement): HTMLElement[] {
   );
 }
 
-function focusElement(element: HTMLElement | null) {
+function focusElement(element: Element | null) {
   if (!element || !element.isConnected) return;
+  const focusable = element as HTMLElement | SVGElement;
+  if (typeof focusable.focus !== "function") return;
   try {
-    element.focus({ preventScroll: true });
+    focusable.focus({ preventScroll: true });
   } catch {
-    element.focus();
+    focusable.focus();
   }
 }
 
@@ -84,6 +95,9 @@ export interface DialogFocusOptions {
   initialFocusRef?: RefObject<HTMLElement | null>;
   onEscape?: () => void;
   restoreFocus?: boolean;
+  /** Prefer the element remembered when the dialog's opener event fired. */
+  returnFocus?: () => Element | null;
+  blocksGlobalShortcuts?: boolean;
   /**
    * Let a dialog opt out of Escape for specific events. The lesson overlay
    * uses this so Escape inside an input still reaches the lesson's own handler
@@ -102,7 +116,9 @@ export function useDialogFocus({
   initialFocusRef,
   onEscape,
   restoreFocus = true,
+  returnFocus,
   shouldHandleEscape,
+  blocksGlobalShortcuts = true,
 }: DialogFocusOptions) {
   const onEscapeRef = useRef(onEscape);
   onEscapeRef.current = onEscape;
@@ -114,10 +130,11 @@ export function useDialogFocus({
     const container = containerRef.current;
     if (!container) return;
 
-    const previouslyFocused = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const previouslyFocused = document.activeElement instanceof Element ? document.activeElement : null;
     const hadTabIndex = container.hasAttribute("tabindex");
     if (!hadTabIndex) container.setAttribute("tabindex", "-1");
     dialogStack.push(container);
+    if (!blocksGlobalShortcuts) nonBlockingDialogs.add(container);
 
     const focusFirst = () => {
       const preferred = initialFocusRef?.current;
@@ -179,14 +196,16 @@ export function useDialogFocus({
 
       const index = dialogStack.lastIndexOf(container);
       if (index !== -1) dialogStack.splice(index, 1);
+      nonBlockingDialogs.delete(container);
 
       if (!hadTabIndex) container.removeAttribute("tabindex");
-      if (restoreFocus && previouslyFocused?.isConnected) {
+      const returnTarget = returnFocus?.() ?? previouslyFocused;
+      if (restoreFocus && returnTarget?.isConnected) {
         window.setTimeout(() => {
-          const focusIsStillInADialog = dialogStack.some((dialog) => dialog.contains(previouslyFocused));
-          if (!dialogStack.length || focusIsStillInADialog) focusElement(previouslyFocused);
+          const focusIsStillInADialog = dialogStack.some((dialog) => dialog.contains(returnTarget));
+          if (!dialogStack.length || focusIsStillInADialog) focusElement(returnTarget);
         }, 0);
       }
     };
-  }, [open, containerRef, initialFocusRef, restoreFocus]);
+  }, [open, containerRef, initialFocusRef, restoreFocus, returnFocus, blocksGlobalShortcuts]);
 }

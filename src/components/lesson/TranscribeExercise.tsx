@@ -21,6 +21,7 @@ import { affirmationFor } from "@/lib/shift-diagnosis";
 import { getLanguageDefinition } from "@/data/languages";
 import { useAppStore } from "@/lib/store";
 import { soundEngine } from "@/lib/sound";
+import { hasBlockingKeyboardDialog } from "@/lib/use-dialog-focus";
 import type { ExerciseDiagnosis, ExerciseItem } from "@/lib/types";
 
 interface TranscribeExerciseProps {
@@ -162,7 +163,7 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
   // the morpheme_tiles / syntax_builder key plumbing).
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.isComposing || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (e.defaultPrevented || hasBlockingKeyboardDialog() || e.isComposing || e.ctrlKey || e.metaKey || e.altKey) return;
       if (settings.quickRestart === "esc" && e.key === "Escape") {
         e.preventDefault();
         resetCurrentExercise();

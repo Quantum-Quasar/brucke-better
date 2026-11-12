@@ -235,6 +235,15 @@ html[data-contrast="increased"].light {
   contain-intrinsic-size: auto 480px;
 }
 
+.trail-section:focus-within {
+  content-visibility: visible;
+}
+
+.atlas-graph-node:focus-visible .atlas-focus-ring {
+  stroke: var(--text-color);
+  stroke-width: 3px;
+}
+
 /* One-time soft pop when a node becomes available */
 @keyframes trail-node-pop {
   from {
@@ -251,8 +260,7 @@ html[data-contrast="increased"].light {
   *,
   ::before,
   ::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
+    animation: none !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }

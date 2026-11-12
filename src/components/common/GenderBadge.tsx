@@ -30,10 +30,13 @@ export const GenderBadge: React.FC<GenderBadgeProps> = React.memo(({
 
   return (
     <span
+      role="img"
+      aria-label={`${info.article}: ${info.label} grammatical gender`}
       title={`Grammatical Gender: ${info.article} (${info.label})`}
       className={`inline-flex items-center gap-1.5 font-mono uppercase rounded-md border transition-transform ${info.badgeClass} ${sizeClasses} ${className}`}
     >
       <span
+        aria-hidden="true"
         className="w-1.5 h-1.5 rounded-full shrink-0 animate-pulse"
         style={{ backgroundColor: info.dotColor }}
       />

@@ -7,12 +7,15 @@ import { useBackDismiss } from "@/lib/use-back-dismiss";
 import type { TrailNode, NodeStatus, GateView, NodeGateInfo, GateMarker } from "@/lib/trail-map";
 import { loadLesson } from "@/lib/content-client";
 import { hasPassedGateAssessment, scoreGateAnswers, selectGateQuestion, type GateQuestion } from "@/lib/gate-assessment";
+import { focusOpener } from "@/lib/focus-return";
+import { LessonEffort } from "@/components/common/LessonEffort";
 
 interface LessonNodeDrawerProps {
   node: TrailNode;
   view: { status: NodeStatus; star?: "gold" | "purple"; gate?: NodeGateInfo };
   hasProgress: boolean;
-  /** titles of the adjacent lessons that can unlock this node */
+  exerciseCount?: number;
+  /** Required lessons that unlock this node. */
   unlockHint: string | null;
   onClose: () => void;
   onStart: (lessonId: number) => void;
@@ -32,6 +35,7 @@ export const LessonNodeDrawer: React.FC<LessonNodeDrawerProps> = ({
   view,
   hasProgress,
   unlockHint,
+  exerciseCount,
   onClose,
   onStart,
 }) => {
@@ -43,6 +47,7 @@ export const LessonNodeDrawer: React.FC<LessonNodeDrawerProps> = ({
     open: true,
     containerRef: dialogRef,
     initialFocusRef: closeRef,
+    returnFocus: focusOpener,
     onEscape: onClose,
   });
 
@@ -86,6 +91,8 @@ export const LessonNodeDrawer: React.FC<LessonNodeDrawerProps> = ({
             {node.blurb ?? node.plan}
           </p>
 
+          {exerciseCount !== undefined && <LessonEffort exerciseCount={exerciseCount} />}
+
           {/* status block */}
           {status === "completed" ? (
             <div className="p-3 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--main-color)]/30 flex items-center gap-2.5 text-xs font-mono">
@@ -125,7 +132,7 @@ export const LessonNodeDrawer: React.FC<LessonNodeDrawerProps> = ({
                     <Lock className="w-3.5 h-3.5" /> locked
                   </span>
                   <p className="text-[var(--sub-color)] leading-relaxed">
-                    {unlockHint ?? "Complete an adjacent lesson on the map to unlock this one."}
+                    {unlockHint ?? "Complete the earlier main-path lessons to unlock this one."}
                   </p>
                 </>
               )}
@@ -188,6 +195,7 @@ export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, languageId, 
     open: true,
     containerRef: dialogRef,
     initialFocusRef: closeRef,
+    returnFocus: focusOpener,
     onEscape: onClose,
   });
 

@@ -25,7 +25,7 @@ const DECK_IDS: ReadonlySet<string> = new Set([
   "everything",
 ]);
 const LEARNED_FILTERS: ReadonlySet<string> = new Set(["all", "learned", "new"]);
-const SESSION_SIZES: ReadonlySet<number> = new Set([10, 20, 50, 0]);
+const SESSION_SIZES: ReadonlySet<number> = new Set([5, 10, 20, 0]);
 const REVIEW_MODES: ReadonlySet<string> = new Set(["flashcard", "mcq", "tiles", "typing"]);
 const MASTERY_STATES: ReadonlySet<string> = new Set([
   "unexplored",
@@ -105,6 +105,12 @@ function parseCard(raw: unknown): SRSCard | null {
   };
   const guessed = finite(raw.guessed, 0, 1_000_000);
   if (guessed !== null) card.guessed = Math.floor(guessed);
+  if (typeof raw.suspended === "boolean") card.suspended = raw.suspended;
+  if (typeof raw.buriedUntil === "string" && /^\d{4}-\d{2}-\d{2}$/.test(raw.buriedUntil)) card.buriedUntil = raw.buriedUntil;
+  if (typeof raw.relearnRequired === "boolean") card.relearnRequired = raw.relearnRequired;
+  if (typeof raw.relearnLapses === "number") card.relearnLapses = integer(raw.relearnLapses, 0, card.lapses, 0);
+  if (typeof raw.relearnLessonId === "number") card.relearnLessonId = integer(raw.relearnLessonId, 0, 10000, 0);
+  if (typeof raw.relearnLessonCompleted === "boolean") card.relearnLessonCompleted = raw.relearnLessonCompleted;
   return card;
 }
 
@@ -118,7 +124,7 @@ function parseSnapshot(raw: unknown): ReviewSnapshot | null {
       : typeof raw.mastery === "string" && MASTERY_STATES.has(raw.mastery)
       ? (raw.mastery as MasteryState)
       : null;
-  return { card, mastery };
+  return { card, mastery, ...(typeof raw.version === "string" ? { version: raw.version } : {}) };
 }
 
 /** Validate a raw sessionStorage payload; a bad snapshot is discarded whole. */
@@ -177,7 +183,7 @@ export function parseReviewSession(raw: string | null, progressResetAt = 0, prog
     sessionSize:
       typeof parsed.sessionSize === "number" && SESSION_SIZES.has(parsed.sessionSize)
         ? (parsed.sessionSize as SessionSize)
-        : 20,
+        : 10,
     shuffleSession: typeof parsed.shuffleSession === "boolean" ? parsed.shuffleSession : true,
     sessionCards,
     sessionEpoch: integer(parsed.sessionEpoch, 0, 1_000_000, 0),

@@ -35,6 +35,14 @@ describe("review session snapshots", () => {
     expect(parseReviewSession(JSON.stringify(SNAPSHOT))).toEqual(SNAPSHOT);
   });
 
+  it("preserves exclusion metadata and undo versions instead of reviving old cards on resume", () => {
+    const card = { ...CARD, suspended: true, buriedUntil: "2026-11-12", lapses: 7, relearnRequired: true, relearnLapses: 2, relearnLessonId: 3, relearnLessonCompleted: false };
+    const snapshot = { ...SNAPSHOT, sessionCards: [card], preGradeSnapshots: { arm: { card, mastery: "mastered", version: "0000000000000002:tab" } } };
+    const parsed = parseReviewSession(JSON.stringify(snapshot));
+    expect(parsed?.sessionCards[0]).toEqual(card);
+    expect(parsed?.preGradeSnapshots.arm).toEqual(snapshot.preGradeSnapshots.arm);
+  });
+
   it("rejects sessions from before a progress reset", () => {
     const beforeReset = JSON.stringify({ ...SNAPSHOT, progressResetAt: 100 });
     expect(parseReviewSession(beforeReset, 100)).not.toBeNull();
@@ -73,7 +81,7 @@ describe("review session snapshots", () => {
     expect(parsed!.currentIndex).toBe(0);
     expect(parsed!.sessionGrades).toEqual([null]);
     expect(parsed!.learnedFilter).toBe("all");
-    expect(parsed!.sessionSize).toBe(20);
+    expect(parsed!.sessionSize).toBe(10);
     expect(parsed!.reviewMode).toBe("flashcard");
     expect(parsed!.sessionStats.reviewed).toBe(0);
     expect(parsed!.sessionStats.correct).toBe(2);

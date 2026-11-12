@@ -15,6 +15,8 @@ export interface AnnotatedShiftPair {
 const SHIFT_RULES_PATTERNS = [
   // German High German Consonant Shift patterns
   { en: "th", de: "d", label: "TH → D" },
+  { en: "pp", de: "pf", label: "P → PF" },
+  { en: "pp", de: "ff", label: "P → FF" },
   { en: "p", de: "pf", label: "P → PF" },
   { en: "p", de: "ff", label: "P → FF" },
   { en: "p", de: "f", label: "P → F" },
@@ -62,12 +64,27 @@ export function getAlignCacheSize(): number {
   return alignCache.size;
 }
 
-function sliceSegments(word: string, idx: number, len: number): TextSegment[] {
-  const segs: TextSegment[] = [];
-  if (idx > 0) segs.push({ text: word.slice(0, idx), isChanged: false });
-  segs.push({ text: word.slice(idx, idx + len), isChanged: true });
-  if (idx + len < word.length) segs.push({ text: word.slice(idx + len), isChanged: false });
-  return segs;
+interface AlignmentStep {
+  enStart: number;
+  deStart: number;
+  enLength: number;
+  deLength: number;
+  rule?: (typeof SHIFT_RULES_PATTERNS)[number];
+}
+
+function segmentsFromSteps(word: string, steps: AlignmentStep[], side: "en" | "de"): TextSegment[] {
+  const segments: TextSegment[] = [];
+  for (const step of steps) {
+    const length = side === "en" ? step.enLength : step.deLength;
+    if (!length) continue;
+    const start = side === "en" ? step.enStart : step.deStart;
+    const text = word.slice(start, start + length);
+    const isChanged = Boolean(step.rule);
+    const last = segments.at(-1);
+    if (last && last.isChanged === isChanged) last.text += text;
+    else segments.push({ text, isChanged });
+  }
+  return segments.length ? segments : [{ text: word, isChanged: false }];
 }
 
 export function alignShiftPair(english: string, german: string, fallbackRule?: string): AnnotatedShiftPair {
@@ -75,45 +92,61 @@ export function alignShiftPair(english: string, german: string, fallbackRule?: s
   const cached = alignCache.get(cacheKey);
   if (cached) return cached;
 
-  const enLower = english.toLowerCase();
-  const deLower = german.toLowerCase();
+  const en = english.toLowerCase();
+  const de = german.toLowerCase();
+  const width = de.length + 1;
+  const costs = new Float64Array((en.length + 1) * width).fill(Infinity);
+  const previous: (AlignmentStep | undefined)[] = new Array(costs.length);
+  costs[0] = 0;
 
-  const rules = fallbackRule
-    ? [
-        ...SHIFT_RULES_PATTERNS.filter((r) => r.label.toLowerCase() === fallbackRule.toLowerCase() || fallbackRule.toLowerCase().includes(r.label.toLowerCase())),
-        ...SHIFT_RULES_PATTERNS.filter((r) => r.label.toLowerCase() !== fallbackRule.toLowerCase() && !fallbackRule.toLowerCase().includes(r.label.toLowerCase())),
-      ]
-    : SHIFT_RULES_PATTERNS;
-
-  for (const rule of rules) {
-    const enIdx = enLower.indexOf(rule.en);
-    const deIdx = deLower.indexOf(rule.de);
-
-    if (enIdx !== -1 && deIdx !== -1) {
-      const result: AnnotatedShiftPair = {
-        englishSegments: sliceSegments(english, enIdx, rule.en.length),
-        germanSegments: sliceSegments(german, deIdx, rule.de.length),
-        shiftRule: fallbackRule || rule.label,
+  // Align the whole pair before highlighting: finding two substrings anywhere
+  // can attach a correspondence to unrelated positions, or miss a second shift.
+  for (let i = 0; i <= en.length; i++) {
+    for (let j = 0; j <= de.length; j++) {
+      const cost = costs[i * width + j];
+      const offer = (enLength: number, deLength: number, extra: number, rule?: AlignmentStep["rule"]) => {
+        const destination = (i + enLength) * width + j + deLength;
+        if (cost + extra < costs[destination]) {
+          costs[destination] = cost + extra;
+          previous[destination] = { enStart: i, deStart: j, enLength, deLength, rule };
+        }
       };
-      if (alignCache.size >= MAX_ALIGN_CACHE) {
-        const oldestKey = alignCache.keys().next().value;
-        if (oldestKey) alignCache.delete(oldestKey);
+      if (i < en.length && j < de.length) offer(1, 1, en[i] === de[j] ? 0 : 3);
+      if (i < en.length) offer(1, 0, 3);
+      if (j < de.length) offer(0, 1, 3);
+      for (const rule of SHIFT_RULES_PATTERNS) {
+        if (!en.startsWith(rule.en, i) || !de.startsWith(rule.de, j)) continue;
+        const suffix = ["tion", "ty", "ous", "or", "our"].includes(rule.en);
+        if (suffix && (i + rule.en.length !== en.length || j + rule.de.length !== de.length)) continue;
+        offer(rule.en.length, rule.de.length, 1, rule);
       }
-      alignCache.set(cacheKey, result);
-      return result;
     }
   }
 
-  // Fallback: No obvious single consonant shift (e.g. direct cognate)
-  const fallbackResult: AnnotatedShiftPair = {
-    englishSegments: [{ text: english, isChanged: false }],
-    germanSegments: [{ text: german, isChanged: false }],
-    shiftRule: fallbackRule || "Cognate",
+  const steps: AlignmentStep[] = [];
+  let i = en.length;
+  let j = de.length;
+  while (i || j) {
+    const step = previous[i * width + j]!;
+    steps.push(step);
+    i = step.enStart;
+    j = step.deStart;
+  }
+  steps.reverse();
+  // Without any shared anchor, a spelling resemblance is not useful evidence.
+  const anchored = steps.some((step) => !step.rule && step.enLength === 1 && step.deLength === 1 &&
+    en[step.enStart] === de[step.deStart]);
+  if (!anchored) for (const step of steps) step.rule = undefined;
+  const labels = [...new Set(steps.flatMap((step) => step.rule ? [step.rule.label] : []))];
+  const result: AnnotatedShiftPair = {
+    englishSegments: segmentsFromSteps(english, steps, "en"),
+    germanSegments: segmentsFromSteps(german, steps, "de"),
+    shiftRule: fallbackRule || labels.join(" · ") || "Cognate",
   };
   if (alignCache.size >= MAX_ALIGN_CACHE) {
     const oldestKey = alignCache.keys().next().value;
     if (oldestKey) alignCache.delete(oldestKey);
   }
-  alignCache.set(cacheKey, fallbackResult);
-  return fallbackResult;
+  alignCache.set(cacheKey, result);
+  return result;
 }

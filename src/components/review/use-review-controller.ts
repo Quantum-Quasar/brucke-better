@@ -6,7 +6,7 @@ import { useBackDismiss } from "@/lib/use-back-dismiss";
 import { useAppStore } from "@/lib/store";
 import { useAppNavigation } from "@/lib/app-navigation";
 import { readReviewSession } from "@/lib/review-session";
-import { getDueCards, localDateKey, type ReviewGrade } from "@/lib/srs";
+import { getDueCards, isReviewable, needsRelearn, localDateKey, type ReviewGrade } from "@/lib/srs";
 import { DECK_CAPABILITIES, ALL_FAMILIES_ID, getAtlasFamilyWordIds, resolveCardReviewMode, filterByLearned, getRecentLessonWordIds, rankWeakestCards, sortDueCards, type LearnedFilter, type SessionSize, type ReviewDeckType } from "@/lib/review-decks";
 import { generateMCQOptions, generateWordTiles } from "@/lib/review-modes";
 import { getAtlasFamilies, getAtlasFamily } from "@/lib/atlas-families";
@@ -15,12 +15,13 @@ import { getLanguageDefinition, type LanguageDefinition } from "@/data/languages
 import { buildWordEntityMaps } from "@/lib/word-entities-core";
 import type { CompendiumData, LessonIndexEntry, MasteryState, ReviewMode, ShiftFamily, SRSCard, WordEntity } from "@/lib/types";
 import type { ReviewSnapshot } from "@/lib/store/types";
-import { useDialogFocus } from "@/lib/use-dialog-focus";
+import { hasBlockingKeyboardDialog, useDialogFocus } from "@/lib/use-dialog-focus";
 import type { CustomizationSettings } from "@/data/settings";
 import { useReviewAnswers } from "./use-review-answers";
 import { createReviewGrading, EMPTY_SESSION_STATS, blankSessionGrades, type ReviewSessionStats, type SessionGrades } from "./review-grading";
 import { useReviewLifecycle } from "./use-review-lifecycle";
 import { orderReviewDeck } from "./review-deck-ordering";
+import { buildTeachingLessonMap } from "@/lib/teaching-lessons";
 type DeckType = ReviewDeckType;
 
 /** Sentinel select value meaning "every family" / "every domain". */
@@ -42,6 +43,15 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
   const [restoredReview] = useState(() => readReviewSession(activeLanguageId, progressResetAt, progressResetActor));
   const restoredFamilies = getAtlasFamilies(data);
   const [mounted, setMounted] = useState(false);
+  const [today, setToday] = useState(localDateKey);
+  useEffect(() => {
+    const midnight = new Date();
+    midnight.setHours(24, 0, 0, 0);
+    const refresh = () => setToday(localDateKey());
+    const timer = window.setTimeout(refresh, midnight.getTime() - Date.now() + 50);
+    window.addEventListener("focus", refresh);
+    return () => { window.clearTimeout(timer); window.removeEventListener("focus", refresh); };
+  }, [today]);
   const [activeDeck, setActiveDeck] = useState<DeckType | null>(restoredReview?.activeDeck ?? null);
   // Seeded from the active compendium's first atlas family: German, French and
   // Spanish each have their own family ids, so a hard-coded German id left the
@@ -55,11 +65,14 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
   const [selectedDomainId, setSelectedDomainId] = useState<string>(
     restoredReview?.selectedDomainId ?? ""
   );
-  // Scope + size for the open-ended decks (shift family, domain, everything)
+  // The saved preference caps every vocabulary deck, not only discovery decks.
   const [learnedFilter, setLearnedFilter] = useState<LearnedFilter>(
     restoredReview?.learnedFilter ?? "all"
   );
-  const [sessionSize, setSessionSize] = useState<SessionSize>(restoredReview?.sessionSize ?? 20);
+  const sessionSize = useAppStore((s) => s.settings.reviewSessionLimit);
+  const setSessionSize: Dispatch<SetStateAction<SessionSize>> = (value) => {
+    useAppStore.getState().updateSetting("reviewSessionLimit", typeof value === "function" ? value(sessionSize) : value);
+  };
   const [shuffleSession, setShuffleSession] = useState(restoredReview?.shuffleSession ?? true);
   const [sessionCards, setSessionCards] = useState<SRSCard[]>(restoredReview?.sessionCards ?? []);
   /**
@@ -135,6 +148,20 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
   const recordReview = useAppStore((s) => s.recordReview);
   const restoreSrsCard = useAppStore((s) => s.restoreSrsCard);
 
+  // Durable card controls win over disposable sessionStorage and old tab snapshots.
+  useEffect(() => {
+    if (!activeDeck) return;
+    const retained = sessionCards.map((card, index) => ({ card, index }))
+      .filter(({ card }) => isReviewable(srsCards[card.word_id] ?? card, today));
+    if (retained.length === sessionCards.length) return;
+    setSessionCards(retained.map(({ card }) => card));
+    setSessionGrades(retained.map(({ index }) => sessionGrades[index] ?? null));
+    setCurrentIndex(retained.filter(({ index }) => index < currentIndex).length);
+    setIsRevealed(false);
+    setSessionEpoch((epoch) => epoch + 1);
+    if (!retained.length || !retained.some(({ index }) => index >= currentIndex)) setActiveDeck(null);
+  }, [srsCards, activeDeck, sessionCards, sessionGrades, currentIndex, today]);
+
   const completedLessons = useAppStore((s) => s.completedLessons);
   const hasAnyCards = Object.keys(srsCards).length > 0;
 
@@ -158,7 +185,7 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
     data.compounds.slice(0, 2).map((c) => c.compound.toLowerCase()).join(", ") || "compound words";
   const trapExamples =
     data.falseFriends.slice(0, 2).map((f) => f.german_word.toLowerCase()).join(", ") || "false friends";
-  const weakestCards = useMemo(() => rankWeakestCards(srsCards), [srsCards]);
+  const weakestCards = useMemo(() => rankWeakestCards(srsCards, Infinity, today), [srsCards, today]);
 
   /** Fresh un-seen SM-2 card, so a word with no history is still reviewable. */
   const blankCard = useCallback(
@@ -198,7 +225,7 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
     [activeLanguageId, data, lessons]
   );
   const allWordsMap: Record<string, WordEntity> = wordEntityMaps.entities;
-  const dueCards = useMemo(() => sortDueCards(getDueCards(srsCards), allWordsMap), [srsCards, allWordsMap]);
+  const dueCards = useMemo(() => sortDueCards(getDueCards(srsCards, today), allWordsMap), [srsCards, allWordsMap, today]);
 
   const compoundCards: SRSCard[] = useMemo(() => {
     const fallback = (): SRSCard => ({
@@ -234,9 +261,10 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
         compoundCards.map((card) => ({ id: card.word_id, card })),
         learnedFilter,
         wordMastery,
-        srsCards
+        srsCards,
+        today
       ).map((entry) => entry.card),
-    [compoundCards, learnedFilter, wordMastery, srsCards]
+    [compoundCards, learnedFilter, wordMastery, srsCards, today]
   );
 
   const sentenceEntities: WordEntity[] = wordEntityMaps.sentences;
@@ -244,6 +272,7 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
   const sentenceCards: SRSCard[] = useMemo(() => {
     const completedSet = new Set(completedLessons);
     const filtered = sentenceEntities.filter((s) => {
+      if (!isReviewable(srsCards[s.id], today)) return false;
       const lessonNum = Number(s.id.replace("sentence_", ""));
       const isLearned =
         completedSet.has(lessonNum) ||
@@ -255,12 +284,13 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
       return true;
     });
     return filtered.map((s) => blankCard(s.id));
-  }, [sentenceEntities, completedLessons, wordMastery, srsCards, learnedFilter, blankCard]);
+  }, [sentenceEntities, completedLessons, wordMastery, srsCards, learnedFilter, blankCard, today]);
 
   const articleEntities: WordEntity[] = wordEntityMaps.articles;
 
   const articleCards: SRSCard[] = useMemo(() => {
     const filtered = articleEntities.filter((a) => {
+      if (!isReviewable(srsCards[a.id], today)) return false;
       const baseWordId = a.id.replace(/^article_/, "");
       const isLearned =
         wordMastery[baseWordId] === "encountered" ||
@@ -274,7 +304,7 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
       return true;
     });
     return filtered.map((a) => blankCard(a.id));
-  }, [articleEntities, wordMastery, srsCards, learnedFilter, blankCard]);
+  }, [articleEntities, wordMastery, srsCards, learnedFilter, blankCard, today]);
 
   // Thematic domain decks: the full compendium sliced by each word's domain.
   // Deliberately NOT gated by encounter history — every word in the compendium
@@ -350,9 +380,10 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
         ids.map((id) => ({ id })),
         learnedFilter,
         wordMastery,
-        srsCards
+        srsCards,
+        today
       ).map((w) => w.id),
-    [learnedFilter, wordMastery, srsCards]
+    [learnedFilter, wordMastery, srsCards, today]
   );
 
   /**
@@ -395,12 +426,12 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
         completedLessons,
         3,
         new Set(data.wordList.map((w) => w.id))
-      ),
-    [lessons, completedLessons, data]
+      ).filter((id) => isReviewable(srsCards[id], today)),
+    [lessons, completedLessons, data, srsCards, today]
   );
   const learnedCards = useMemo(
-    () => filterByLearned(data.wordList, "learned", wordMastery, srsCards).map((word) => blankCard(word.id)),
-    [data.wordList, wordMastery, srsCards, blankCard]
+    () => filterByLearned(data.wordList, "learned", wordMastery, srsCards, today).map((word) => blankCard(word.id)),
+    [data.wordList, wordMastery, srsCards, blankCard, today]
   );
 
   // 1-Click direct deck start
@@ -426,7 +457,7 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
       sentenceCards, articleCards, blankCard, sessionSize, shuffleSession,
       shiftIds: () => shiftWordIds(selectedShiftId), domainIds: () => domainWordIds(selectedDomainId),
       everythingIds: () => scopeIds(data.wordList.map((word) => word.id)),
-    }, customCards);
+    }, customCards?.map((card) => srsCards[card.word_id] ?? card));
     setSessionCards(cards);
     setSessionGrades(blankSessionGrades(cards.length));
   };
@@ -532,13 +563,16 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
   //   - Revealed: 1-4 grades, Space/Enter quick-advances with auto-grade or Good (4)
   useEffect(() => {
     const handleGlobalKeyDown = (e: KeyboardEvent) => {
-      if (e.getModifierState) {
-        setIsCapsLock(e.getModifierState("CapsLock"));
-      }
+      if (e.defaultPrevented || hasBlockingKeyboardDialog(isModeSelectorOpen ? modeDialogRef.current : undefined)) return;
+      const editable = e.target instanceof Element && e.target.closest("input, textarea, select, [contenteditable='true']");
+      if (editable && e.target !== inputRef.current) return;
+      if (e.target === inputRef.current && isRevealed && !["Escape", "Enter"].includes(e.key)) return;
+      if (e.getModifierState) setIsCapsLock(e.getModifierState("CapsLock"));
 
       // Quick restart hotkey
       if (
         activeDeck &&
+        !isModeSelectorOpen &&
         settings.quickRestart === "esc" &&
         e.key === "Escape" &&
         isRevealed
@@ -731,7 +765,7 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
   ]);
 
   const masteredCount = Object.values(wordMastery).filter((m) => m === "mastered").length;
-  const activeCount = Object.keys(srsCards).length - masteredCount;
+  const activeCount = Object.values(srsCards).filter((card) => isReviewable(card)).length;
 
   // Store-derived counts are only trustworthy after hydration. Render the same
   // "0 / nothing to review" state on the server and on the first client pass so
@@ -746,7 +780,12 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
   const sentenceCount = mounted ? sentenceCards.length : 0;
   const articleCount = mounted ? articleCards.length : 0;
   const compoundCount = mounted ? scopedCompoundCards.length : 0;
+  const teachingLessons = useMemo(() => buildTeachingLessonMap(lessons), [lessons]);
   return {
+    managedCards: mounted ? Object.values(srsCards).filter((card) => card.suspended || needsRelearn(card) || (card.buriedUntil && card.buriedUntil >= localDateKey())) : [],
+    allWordsMap, wordLesson: teachingLessons,
+    suspendCurrent: () => { if (currentCard) useAppStore.getState().suspendCard(currentCard.word_id, true); },
+    buryCurrent: () => { if (currentCard) useAppStore.getState().buryCard(currentCard.word_id); },
     learnedCount: mounted ? learnedCards.length : 0,
     recallSource, mounted, language, activeDeck, hasAnyCards, completedLessons, activeLanguageId, lessons, openLesson,
     masteredCount, activeCount, dueCards, hasSeenGenderIntro, reviewMode, setReviewMode, setPreferredReviewMode, setIsModeSelectorOpen,
@@ -765,6 +804,11 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
 type StateSetter<T> = Dispatch<SetStateAction<T>>;
 
 export interface ReviewController extends Pick<ReviewHubProps, "activeLanguageId" | "data" | "lessons"> {
+  managedCards: SRSCard[];
+  allWordsMap: Record<string, WordEntity>;
+  wordLesson: Map<string, number[]>;
+  suspendCurrent: () => void;
+  buryCurrent: () => void;
   language: LanguageDefinition;
   mounted: boolean;
   activeDeck: DeckType | null;

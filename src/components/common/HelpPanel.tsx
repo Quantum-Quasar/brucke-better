@@ -7,6 +7,7 @@ import { useAppStore } from "@/lib/store";
 import { useViewStore } from "@/lib/view-store";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
+import { focusOpener } from "@/lib/focus-return";
 
 interface HelpPanelProps {
   open: boolean;
@@ -74,7 +75,7 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({ open, onClose }) => {
 
   useBackDismiss(open, onClose);
 
-  useDialogFocus({ open, containerRef: dialogRef, onEscape: onClose });
+  useDialogFocus({ open, containerRef: dialogRef, returnFocus: focusOpener, onEscape: onClose });
 
   if (!open) return null;
 

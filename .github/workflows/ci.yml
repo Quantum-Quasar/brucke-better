@@ -5,6 +5,14 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  contents: read
+
+# Production builds never infer localhost. Browser tests still serve locally;
+# metadata uses the explicit public deployment origin.
+env:
+  NEXT_PUBLIC_SITE_URL: https://brucke-ten.vercel.app
+
 jobs:
   verify:
     runs-on: ubuntu-latest
@@ -39,10 +47,10 @@ jobs:
       - name: Build
         run: bun run build
 
-      # `build` re-runs parse-data. If the committed generated artifacts differ,
-      # someone hand-edited them (or the markdown changed without a re-parse).
-      - name: Generated data is committed in sync
-        run: git diff --exit-code -- src/data/compendium.json src/data/insights.json
+      # Distribution payloads are ignored; committed source/compact metadata
+      # must still agree with their generators.
+      - name: Generated source metadata is committed in sync
+        run: git diff --exit-code -- src/data/compendium.json src/data/insights.json src/data/shift-names.json src/data/lesson-exercise-counts.json
 
   e2e:
     runs-on: ubuntu-latest

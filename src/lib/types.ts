@@ -98,6 +98,14 @@ export interface SRSCard {
   last_reviewed: string | null;
   /** TM-6: how many times the learner answered correctly but flagged "I guessed" */
   guessed?: number;
+  suspended?: boolean;
+  /** Local calendar day through which this card stays buried (inclusive). */
+  buriedUntil?: string;
+  relearnRequired?: boolean;
+  /** Lifetime lapses at the last explicit relearn resumption. */
+  relearnLapses?: number;
+  relearnLessonId?: number;
+  relearnLessonCompleted?: boolean;
 }
 
 /** A failed sentence process, scheduled independently from words and mastery. */
@@ -458,6 +466,7 @@ export interface LessonIndexEntry {
   label?: string;
   shift_categories: string[];
   word_ids: string[];
+  exerciseCount: number;
   table_word_ids: string[];
   summary: {
     use_example: { german: string; english: string };

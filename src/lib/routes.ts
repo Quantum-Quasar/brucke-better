@@ -1,6 +1,6 @@
 /**
- * Canonical language-scoped lesson URL. Kept for legacy/shared links,
- * middle-click targets and the redirect layer; in-app opens use view state.
+ * Crawlable language-scoped lesson page. In-app clicks use instant view state;
+ * shared links and modifier-clicks render the authored lesson overview.
  */
 export function lessonHref(languageId: string, lessonId: number): string {
   return `/trail/${languageId}/${lessonId}`;

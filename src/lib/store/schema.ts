@@ -229,6 +229,12 @@ export function importSrsCards(raw: unknown, base: Record<string, SRSCard>): Rec
 export function normalizeSettings(raw: unknown, fallback: CustomizationSettings): CustomizationSettings {
   const source = isPlausibleStateObject(raw) ? raw : {};
   return {
+    reviewSessionLimit: [5, 10, 20, 0].includes(source.reviewSessionLimit as number) ? source.reviewSessionLimit as CustomizationSettings["reviewSessionLimit"] : fallback.reviewSessionLimit,
+    learningGoal: oneOf(source.learningGoal, ["travel", "work", "exam", "fun"] as const, fallback.learningGoal),
+    dailyMinutes: [5, 10, 20, 30].includes(source.dailyMinutes as number) ? source.dailyMinutes as CustomizationSettings["dailyMinutes"] : fallback.dailyMinutes,
+    placementTopic: typeof source.placementTopic === "number" && Number.isInteger(source.placementTopic) && source.placementTopic > 0 ? source.placementTopic : fallback.placementTopic,
+    microphonePractice: coerceBoolean(source.microphonePractice, fallback.microphonePractice),
+    voiceGuidanceDismissed: Array.isArray(source.voiceGuidanceDismissed) ? [...new Set(source.voiceGuidanceDismissed.filter((id): id is string => typeof id === "string" && id.length > 0 && id.length <= 200))] : fallback.voiceGuidanceDismissed,
     quickRestart: oneOf(source.quickRestart, ["off", "esc"] as const, fallback.quickRestart),
     lazyMode: coerceBoolean(source.lazyMode, fallback.lazyMode),
     capitalizationTolerance: coerceBoolean(source.capitalizationTolerance, fallback.capitalizationTolerance),
@@ -454,5 +460,12 @@ function sanitizeImportedSrsCard(raw: unknown, fallbackId: string): SRSCard | nu
   };
   const guessed = clampNum(raw.guessed, 0, 1_000_000);
   if (guessed !== null) card.guessed = Math.floor(guessed);
+  if (typeof raw.suspended === "boolean") card.suspended = raw.suspended;
+  if (typeof raw.buriedUntil === "string" && /^\d{4}-\d{2}-\d{2}$/.test(raw.buriedUntil)) card.buriedUntil = raw.buriedUntil;
+  if (typeof raw.relearnRequired === "boolean") card.relearnRequired = raw.relearnRequired;
+  const relearnLapses = clampNum(raw.relearnLapses, 0, card.lapses);
+  if (relearnLapses !== null) card.relearnLapses = Math.floor(relearnLapses);
+  if (typeof raw.relearnLessonId === "number" && Number.isInteger(raw.relearnLessonId) && raw.relearnLessonId >= 0) card.relearnLessonId = raw.relearnLessonId;
+  if (typeof raw.relearnLessonCompleted === "boolean") card.relearnLessonCompleted = raw.relearnLessonCompleted;
   return card;
 }

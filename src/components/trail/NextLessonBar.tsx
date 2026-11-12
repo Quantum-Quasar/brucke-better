@@ -7,12 +7,15 @@ import { useViewStore } from "@/lib/view-store";
 import { useAppNavigation } from "@/lib/app-navigation";
 import { useCourseRecommendation } from "@/lib/use-course-recommendation";
 import { prefetchLesson } from "@/lib/content-client";
+import { getLessonExerciseCount } from "@/lib/lesson-effort";
+import { LessonEffort } from "@/components/common/LessonEffort";
 
 export function NextLessonBar() {
   const languageId = useAppStore((s) => s.activeLanguageId);
   const progress = useAppStore((s) => s.lessonProgress);
   const completed = useAppStore((s) => s.completedLessons);
   const { ready, state, trailData, nextLesson, forwardLesson, continueAhead } = useCourseRecommendation(languageId);
+  const exerciseCount = nextLesson ? getLessonExerciseCount(languageId, nextLesson.id) : undefined;
   const { openLesson } = useAppNavigation();
   const startRef = useRef<HTMLButtonElement>(null);
 
@@ -50,6 +53,7 @@ export function NextLessonBar() {
       <div className="min-w-0 flex-1 px-2">
         <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--sub-color)]">{missed ? "Pick up a missed lesson" : "Up next"}</p>
         <p className="truncate text-sm font-semibold text-[var(--text-color)]" title={title}>{title}</p>
+        {exerciseCount !== undefined && <LessonEffort exerciseCount={exerciseCount} />}
       </div>
       {missed && forwardLesson && (
         <button type="button" onClick={() => { const id = continueAhead(); if (id) openLesson(languageId, id); }} className="min-h-11 shrink-0 rounded-lg px-2 text-xs text-[var(--sub-color)] hover:text-[var(--text-color)] focus-visible:outline-2 focus-visible:outline-[var(--main-color)]" title={`Keep earlier lessons skipped and open ${forwardLesson.title}`}>

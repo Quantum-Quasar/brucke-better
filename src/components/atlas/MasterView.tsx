@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, Share2 } from "lucide-react";
 import { MasterConstellation } from "@/components/atlas/MasterConstellation";
 
 export function MasterView({ onBack }: { onBack: () => void }) {
+  const [view, setView] = useState<"visual" | "table">("visual");
   useEffect(() => {
     const previous = document.title;
     const next = "Master Web — Brücke";
@@ -16,7 +17,7 @@ export function MasterView({ onBack }: { onBack: () => void }) {
 
   return (
     <div className="relative h-[calc(100dvh-125px-env(safe-area-inset-bottom))] font-sans overflow-hidden">
-      <MasterConstellation />
+      <MasterConstellation view={view} />
 
       {/* Always-visible caption: the web is a poster, not a mystery screen. */}
       <div className="absolute top-3 left-3 right-3 sm:right-auto z-10 sm:max-w-sm">
@@ -40,6 +41,10 @@ export function MasterView({ onBack }: { onBack: () => void }) {
             <span className="text-[10px] font-mono text-[var(--sub-color)]/80">
               drag to explore · pinch or +/− to zoom
             </span>
+          </div>
+          <div className="flex items-center gap-2 text-xs font-mono" role="group" aria-label="Master web view">
+            <button type="button" aria-pressed={view === "visual"} onClick={() => setView("visual")} className="min-h-11 rounded border border-[var(--sub-color)]/30 px-3">Visual view</button>
+            <button type="button" aria-pressed={view === "table"} onClick={() => setView("table")} className="min-h-11 rounded border border-[var(--sub-color)]/30 px-3">Table view</button>
           </div>
         </div>
       </div>

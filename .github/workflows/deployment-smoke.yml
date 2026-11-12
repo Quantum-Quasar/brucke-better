@@ -1,0 +1,62 @@
+name: Deployed preview and staging smoke
+
+on:
+  deployment_status:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deployment-smoke-${{ github.event.deployment.id }}
+  cancel-in-progress: true
+
+jobs:
+  smoke:
+    if: github.event.deployment_status.state == 'success' && github.event.repository.fork == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      DEPLOYMENT_SMOKE_ORIGINS: ${{ vars.DEPLOYMENT_SMOKE_ORIGINS }}
+    steps:
+      # Deployment refs may contain untrusted PR code. Execute only trusted
+      # default-branch tooling; never checkout the event's ref or SHA.
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: 1.4.4
+
+      # Validate before dependency installation or any browser/network traffic.
+      # The event URL is parsed from JSON, never interpolated into shell code.
+      - name: Validate trusted deployment origin
+        id: deployment
+        run: |
+          url="$(bun scripts/resolve-deployment-url.ts)"
+          printf 'url=%s\n' "$url" >> "$GITHUB_OUTPUT"
+
+      - name: Install trusted default-branch dependencies
+        run: bun install --frozen-lockfile --ignore-scripts
+
+      - name: Install Playwright Chromium
+        run: bunx playwright install --with-deps chromium
+
+      # No repository/environment secrets, protection-bypass tokens, deployment
+      # credentials, PR checkout, or write token are supplied to this job.
+      - name: Smoke deployed application
+        run: bunx playwright test tests/e2e/deployment-smoke.spec.ts
+        env:
+          PLAYWRIGHT_BASE_URL: ${{ steps.deployment.outputs.url }}
+          PLAYWRIGHT_DEPLOYMENT_SMOKE: "1"
+          CI: "true"
+
+      - name: Upload failure screenshots
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployment-smoke-${{ github.event.deployment.id }}
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7

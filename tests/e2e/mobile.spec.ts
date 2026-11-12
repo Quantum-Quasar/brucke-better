@@ -13,6 +13,11 @@ async function waitForApp(page: Page) {
 }
 
 async function openLesson(page: Page) {
+  await page.addInitScript((key) => {
+    const state = JSON.parse(localStorage.getItem(key) ?? "{}");
+    state.settings = { ...state.settings, voiceGuidanceDismissed: ["de", "fr", "es", "nl"] };
+    localStorage.setItem(key, JSON.stringify(state));
+  }, STORAGE_KEY);
   await page.goto("/?lang=de&lesson=1");
   await page.waitForSelector('[role="dialog"][aria-label^="Lesson"]', { timeout: 120_000 });
   await waitForApp(page);

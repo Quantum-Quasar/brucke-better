@@ -11,6 +11,7 @@ import { useAppStore } from "@/lib/store";
 import { soundEngine } from "@/lib/sound";
 import { getLanguageDefinition } from "@/data/languages";
 import { arrangeTilesDeterministically } from "./exercise-tiles";
+import { hasBlockingKeyboardDialog } from "@/lib/use-dialog-focus";
 import type { LessonTwist } from "@/lib/types";
 
 interface TwistCardProps {
@@ -48,7 +49,7 @@ export const TwistCard: React.FC<TwistCardProps> = ({ twist, onDone }) => {
   // keeps its native Enter activation; the shortcut must not override it.
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "Enter") return;
+      if (e.key !== "Enter" || e.defaultPrevented || hasBlockingKeyboardDialog() || e.isComposing) return;
       const target = e.target;
       if (
         target instanceof HTMLElement &&

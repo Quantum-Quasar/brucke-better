@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { matchingPairForKey } from "@/lib/matching";
 import type { ClassicExerciseController } from "./classic-exercise-types";
+import { hasBlockingKeyboardDialog } from "@/lib/use-dialog-focus";
 
 export function useClassicKeyboard(controller: ClassicExerciseController, onDeselect: () => void) {
   useEffect(() => {
@@ -14,6 +15,7 @@ export function useClassicKeyboard(controller: ClassicExerciseController, onDese
       handleSelectEnglish, handleSelectGerman, displayGermanPairs,
     } = controller;
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.defaultPrevented || hasBlockingKeyboardDialog()) return;
       setIsCapsLock(event.getModifierState("CapsLock"));
       if (event.isComposing || event.ctrlKey || event.metaKey || event.altKey) return;
       if (settings.quickRestart === "esc" && event.key === "Escape") {

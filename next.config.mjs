@@ -33,11 +33,6 @@ const nextConfig = {
     // Keep legacy links working; the client retains a shareable query URL.
     return [
       {
-        source: "/trail/:lang/:id",
-        destination: "/?lang=:lang&lesson=:id",
-        permanent: false,
-      },
-      {
         source: "/trail/:id",
         destination: "/?lesson=:id",
         permanent: false,

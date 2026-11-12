@@ -12,7 +12,7 @@ const SEED = JSON.stringify({
   hasCompletedOnboarding: true,
   isOnboardingOpen: false,
   seenIntroLanguages: ["de"],
-  settings: { posturePrimerSeen: true, showPostureCues: true, listeningSkippedUntil: 0 },
+  settings: { posturePrimerSeen: true, showPostureCues: true, listeningSkippedUntil: 0, voiceGuidanceDismissed: ["de", "fr", "es", "nl"] },
 });
 
 async function seed(page: Page) {
@@ -319,10 +319,21 @@ test("the listening drill plays audio and one skip silences it for 15 minutes", 
   expect(remaining).toBeLessThanOrEqual(15 * 60 * 1000);
 
   await page.reload();
-  // the open view is not restored after a reload; re-open the lesson and
-  // confirm the persisted listening skip still silences the drill
-  await page.goto("/trail/1003");
   await expect(page.getByText(/listening off for/i).first()).toBeVisible();
+
+  // Closing the tab must not clear the environmental pause.
+  const reopened = await page.context().newPage();
+  await page.close();
+  await reopened.goto("/?lesson=1003&lang=de");
+  await expect(reopened.getByText(/listening off for/i).first()).toBeVisible();
+  expect((await readAppState(reopened))?.settings?.listeningSkippedUntil).toBe(skippedUntil);
+
+  // Reopening after expiry must not restart a fresh 15-minute window.
+  await reopened.clock.install({ time: new Date(Number(skippedUntil) + 1) });
+  await reopened.reload();
+  await expect(reopened.getByRole("heading", { name: lessonById(1003).title, exact: true }).first()).toBeVisible();
+  await expect(reopened.getByText(/listening off for/i)).toHaveCount(0);
+  expect((await readAppState(reopened))?.settings?.listeningSkippedUntil).toBe(skippedUntil);
 });
 
 test("the 30-second detour trough fires mid-lesson, ungraded and skippable", async ({ page }) => {

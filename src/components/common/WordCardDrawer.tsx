@@ -18,6 +18,7 @@ import { buildWordEntityMaps, lookupWordEntity } from "@/lib/word-entities-core"
 import { lessonHref } from "@/lib/routes";
 import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
+import { focusOpener } from "@/lib/focus-return";
 
 export const WordCardDrawer: React.FC = () => {
   const activeWordId = useAppStore((s) => s.activeWordDrawerId);
@@ -49,6 +50,7 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
   useDialogFocus({
     open: true,
     containerRef: dialogRef,
+    returnFocus: focusOpener,
     onEscape: closeDrawer,
   });
 

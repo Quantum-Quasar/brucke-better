@@ -11,10 +11,10 @@ run by hand.
 
 | Script | Run via | What it does |
 | --- | --- | --- |
-| `parse-compendium.ts` | `bun run parse-data` | **The one script that must run before `next build`.** Parses [`word_connections.md`](../word_connections.md) into `src/data/compendium.json` and `src/data/insights.json`. |
-| `export-client-data.ts` | `bun run export-data` | Exports each language's compendium, compact lesson index and one payload per lesson (`lesson` + its trimmed compendium) to `public/data/<lang>/`, plus the generated `src/data/shift-names.json`. `dev` and `build` run it automatically. |
+| `parse-compendium.ts` | `bun run parse-data` | Regenerates the committed German source snapshots `src/data/compendium.json` and `src/data/insights.json` from [`word_connections.md`](../word_connections.md), before export in production builds. |
+| `export-client-data.ts` | `bun run export-data` | Exports each language's compendium, compact lesson index (including exercise counts) and one trimmed payload per lesson to ignored `public/data/<lang>/`, plus frequency attribution. Regenerates committed `src/data/shift-names.json` and `lesson-exercise-counts.json`; these tiny manifests let navigation show names/effort without fetching a course index. `dev`, `build` and `test` run it automatically. |
 | `append-words.mjs` | `bun scripts/append-words.mjs <json…>` | Batch-appends word records to §2 of `word_connections.md` (numbered after the current max; dedupes by German headword). Run `parse-data` afterwards. |
-| `generate-frequency.ts` | `bun scripts/generate-frequency.ts` | Fetches pinned FrequencyWords/OpenSubtitles lists, verifies SHA-256 checksums, and writes compact exact-form rank subsets plus CC BY-SA provenance. Run when the vocabulary inventory changes, not during every build. |
+| `generate-frequency.ts` | `bun scripts/generate-frequency.ts` | Fetches pinned FrequencyWords/OpenSubtitles lists, verifies SHA-256 checksums, and writes committed `src/data/frequency-ranks.json` and `src/data/frequency-provenance.json`. Run when the vocabulary inventory changes, then run `export-data` to publish both the ranks and attribution. No corpus download happens in ordinary builds. |
 
 `word_connections.md` is the hand-maintained source of truth for every word,
 shift family, compound, trap, and insight. `compendium.json` is **generated** —
@@ -32,9 +32,18 @@ second hardcoded copy.
 
 The parse pipeline is **German-only**. French, Spanish and Dutch are typed modules in
 `src/data/<lang>/` (see [`docs/courses.md`](../docs/courses.md)); `export-client-data.ts`
-is what writes all four languages' payloads to `public/data/<lang>/`. The `public/data/**`
-files are tracked in git, but CI's "generated data in sync" step only diffs
-`compendium.json` and `insights.json`.
+is what writes all four languages' payloads to `public/data/<lang>/`. The entire
+`public/data/` directory is generated and ignored, not a second content source.
+Keep `word_connections.md`, the committed German compendium/insights, typed sibling
+language modules, lesson sources and frequency rank/provenance sources in git.
+CI's source-sync check diffs the compendium/insights and both compact metadata manifests.
+
+A fresh checkout needs `bun run export-data` before commands that serve public
+assets directly. `bun run dev`, `bun run build` and `bun run test` already do this;
+CI also generates assets after installing dependencies. Exporting uses committed
+local sources, creates missing directories and requires no network. The export
+boundary tests additionally generate their own temporary output from an empty
+directory, so direct Vitest runs do not depend on previously built payloads.
 
 Lesson authoring is per-file (`src/data/lessons/<id>.ts` for German;
 `src/data/<language>/lessons/<id>.ts` for the sibling courses). Ordered aggregates
@@ -46,7 +55,8 @@ Missing forms stay `null`; ranks describe subtitle surface forms, not lemma freq
 or general usefulness. Author candidates can be ranked with
 `bun scripts/generate-frequency.ts --suggestions=words.json --language=de`;
 the input is an array such as `[{"target_word":"Wasser"}]`. Attribution and source
-limits live in `public/data/frequency-provenance.json`.
+limits are committed in `src/data/frequency-provenance.json` and published by every
+export to `public/data/frequency-provenance.json`.
 
 ## Audits
 
@@ -65,6 +75,59 @@ summary is `title drift: 0 | teaser flags: 0`.
 | `audit-teasers.ts` | Lesson title drift and `curiosity_teaser` chaining: each teaser must point at the next node in trail order. |
 | `audit-recurrence.ts` | Assessed German retrieval by word, lesson and exercise type. `--strict` enforces two distinct lessons; `--all`/`--json` expose the map. Declarations, banks, hints, duplicate surfaces and ungraded twists do not count. The same helper is enforced by `curriculum-recurrence.test.ts` in CI. |
 | `contrast-audit.ts` | One-off fixer for theme contrast. Walks all themes and nudges failing colors' lightness while preserving hue and saturation, then regenerates `POPULAR_THEMES` from the passing set. The WCAG thresholds are *enforced* by `src/tests/themes.test.ts`, so this is only needed when adding or editing a theme. |
+| `audit-public-assets.ts` | Raw-byte inventory of every public asset, grouped by data, sounds, fonts and language, with a complete per-file JSON report via `bun run audit:assets --json`. See the request audit below. |
+
+### Public asset inventory and request audit
+
+Run `bun run export-data && bun run audit:assets` for the current inventory, or
+`bun run audit:assets --json` for every file's raw byte count. Missing generated
+data is an error, not a misleading zero-byte result. This script does not fetch,
+delete or rewrite assets. File count is the number of available asset URLs, **not**
+the number of requests made at startup; raw disk bytes are not gzip/Brotli transfer
+bytes and exclude Next's separately built JavaScript/CSS.
+
+One-time inventory after regenerating this change's distribution payloads:
+
+| Public group | Files / available URLs | Raw bytes |
+| --- | ---: | ---: |
+| All `public/` | 711 | 16,938,345 |
+| `data/` | 509 | 7,047,086 |
+| `sounds/` | 155 | 5,374,430 |
+| `webfonts/` | 42 | 4,417,824 |
+| Other public files | 5 | 99,005 |
+
+Data comprises German 3,524,917 bytes / 181 files, French 1,405,985 / 125,
+Spanish 1,383,199 / 125, Dutch 730,593 / 77, and 2,592 bytes of frequency
+attribution. The largest individual public asset is Iosevka (1,494,892 bytes);
+it is not a default font. Regenerate and rerun the audit when content changes.
+
+Source inspection establishes the following request boundaries; these are not
+claims that every file was downloaded in a browser session:
+
+- **Data:** `src/lib/content-client.ts` only fetches the requested language and
+  payload, with an in-memory promise cache and build-versioned URLs. One lesson
+  uses one trimmed lesson payload, not the whole course; review requests that
+  language's compendium and lesson index. Intent prefetches use the same cache.
+  Lesson 1 fetches a trimmed lesson vocabulary payload, not the full compendium.
+  Export and client-loader tests pin this boundary.
+- **Sounds:** `src/lib/sound.ts` does not download packs at module import.
+  Hydration arms a first-interaction listener, then fetches only the selected
+  click pack's `1.wav` (Cherry MX Black ABS: 34,634 bytes). Further variations
+  load during playback; an error cue loads when played. Explicit pack changes
+  preload that selected primary sample. No unused packs were deleted.
+  `sound.test.ts` guards the interaction gate and one-shot preload.
+- **Fonts:** only Lexend Deca and Roboto Mono have baseline rules in
+  `src/app/globals.css` (25,888 and 37,632 bytes). A CSS declaration alone does
+  not fetch a font until rendered text uses it. `src/data/fonts.ts` injects
+  other families only when selected or previewed. `FontSelectorModal.tsx`
+  previews one hovered/focused choice; downloading every preview requires the
+  explicit “Load all previews” action. `fonts.test.ts` pins single-family
+  injection. The complete legacy `fonts.css` catalog is not imported by layout.
+- **Offline:** `public/sw.js` installs only the offline page, manifest and two
+  app icons. Fonts, sounds, data and Next assets enter the bounded cache only
+  after requests (including already-requested bootstrap assets). There is no
+  whole-course, sound-pack or font-catalog precache. Service-worker behavior
+  and versioned deployment hashes are unchanged by making data build-generated.
 
 ## Output
 

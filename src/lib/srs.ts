@@ -15,6 +15,16 @@ export function localDateKey(date = new Date()): string {
   return `${yyyy}-${mm}-${dd}`;
 }
 
+export const LEECH_LAPSES = 5;
+
+export function needsRelearn(card: SRSCard): boolean {
+  return card.relearnRequired === true || card.lapses - (card.relearnLapses ?? 0) >= LEECH_LAPSES;
+}
+
+export function isReviewable(card: SRSCard | undefined, today = localDateKey()): boolean {
+  return !card || (!card.suspended && !(card.buriedUntil && card.buriedUntil >= today) && !needsRelearn(card));
+}
+
 export function createInitialCard(word_id: string): SRSCard {
   // Meeting a word in a lesson is its first exposure, so — like a first
   // "Good" grade (interval 1) — its earliest scheduled review is tomorrow.
@@ -92,13 +102,13 @@ export function getDueCards(cards: Record<string, SRSCard>, today = localDateKey
   // break the review queue at boot — the store's normaliser drops them, but
   // state can also be seeded by callers/tests
   return Object.values(cards).filter(
-    (c) => c && typeof c.due_date === "string" && c.due_date <= today
+    (c) => c && typeof c.due_date === "string" && c.due_date <= today && isReviewable(c, today)
   );
 }
 
 export function getWeakestCards(cards: Record<string, SRSCard>, limit = 15): SRSCard[] {
   return Object.values(cards)
-    .filter((c) => c && typeof c.lapses === "number" && c.lapses > 0)
+    .filter((c) => c && typeof c.lapses === "number" && c.lapses > 0 && isReviewable(c))
     .sort((a, b) => b.lapses - a.lapses)
     .slice(0, limit);
 }
@@ -110,6 +120,6 @@ export function getCardsByShift(
 ): SRSCard[] {
   return Object.values(cards).filter((c) => {
     const word = words[c.word_id];
-    return word && word.sound_shift_ids.includes(shiftId);
+    return isReviewable(c) && word && word.sound_shift_ids.includes(shiftId);
   });
 }

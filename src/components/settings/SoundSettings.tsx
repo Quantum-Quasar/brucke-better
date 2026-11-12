@@ -2,7 +2,7 @@
 
 import { useAppStore } from "@/lib/store";
 import { SettingItem } from "./SettingItem";
-import { Keyboard, ShieldAlert, Volume2, VolumeX, Play } from "lucide-react";
+import { Keyboard, Mic, ShieldAlert, Volume2, VolumeX, Play } from "lucide-react";
 import { VoiceStatusBanner } from "@/components/common/VoiceStatusBanner";
 import { SOUND_CLICK_OPTIONS, SOUND_ERROR_OPTIONS, soundEngine } from "@/lib/sound";
 import { SegButton } from "./SegButton";
@@ -30,6 +30,25 @@ export function SoundSettings({ matches, sectionVisible, normalizedQuery }: {
           {(!normalizedQuery || /voice|tts|speech/i.test(normalizedQuery)) && (
             <VoiceStatusBanner showWhenAvailable />
           )}
+
+          <SettingItem
+            id="microphone-practice"
+            icon={Mic}
+            title="optional microphone practice"
+            description="Show a speaking practice button on conversation replies. Starting it requests microphone permission; your browser's speech provider may process audio online. Never required for completion."
+            matchesSearch={matches(["microphone", "mic", "speaking", "pronunciation", "speech", "sound"])}
+          >
+            <label className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                checked={settings.microphonePractice}
+                onChange={(event) => updateSetting("microphonePractice", event.target.checked)}
+                aria-label="Enable optional microphone practice"
+                className="accent-[var(--main-color)]"
+              />
+              <span>{settings.microphonePractice ? "on" : "off"}</span>
+            </label>
+          </SettingItem>
 
           {/* sound volume */}
           <SettingItem

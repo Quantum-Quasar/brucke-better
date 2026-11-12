@@ -135,6 +135,7 @@ export default function AtlasPage() {
             {atlasTitle}
           </h1>
           <p className="text-xs sm:text-sm text-[var(--sub-color)] mt-0.5">{atlasSub}</p>
+          <p className="text-xs text-[var(--sub-color)] mt-2">Open any family for a visual web, an English–{language.name} vocabulary table with examples, and a five-question practice drill.</p>
         </div>
 
         {/* Search / Filter input */}
@@ -143,6 +144,7 @@ export default function AtlasPage() {
           <Search className="w-3.5 h-3.5 text-[var(--sub-color)] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
+            aria-label={`Filter ${familyWord}`}
             value={filterQuery}
             onChange={(e) => setFilterQuery(e.target.value)}
             placeholder={`Filter ${familyWord}...`}

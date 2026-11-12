@@ -1,7 +1,7 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { LESSONS } from "../../src/data/lessons";
 import { EXERCISE_CAPABILITIES, type ExerciseItem, type ExerciseType } from "../../src/lib/types";
-import { activateWithKeyboard, readLearningProgress, seedReturningLearner, tabTo } from "./product-quality-helpers";
+import { activateWithKeyboard, expectModalKeysIsolated, readLearningProgress, seedReturningLearner, tabTo } from "./product-quality-helpers";
 import { writeFile } from "node:fs/promises";
 
 const lessonOne = LESSONS.find((lesson) => lesson.id === 1)!;
@@ -26,12 +26,6 @@ async function continueFeedback(page: Page) {
   await expect(feedback).toBeHidden();
 }
 
-async function enterPractice(page: Page) {
-  await activateWithKeyboard(page, page.getByRole("button", { name: /^next: pattern/i }));
-  await activateWithKeyboard(page, page.getByRole("button", { name: /^next: transformation table/i }));
-  await activateWithKeyboard(page, page.getByRole("button", { name: /^start exercises/i }));
-}
-
 test.use({ viewport: { width: 1280, height: 900 }, serviceWorkers: "block" });
 
 test("keyboard-only: a fresh learner finishes every Lesson 1 exercise from the homepage", async ({ page }) => {
@@ -41,7 +35,24 @@ test("keyboard-only: a fresh learner finishes every Lesson 1 exercise from the h
   await expect(page.locator("html")).toHaveAttribute("data-app-ready", "true");
   await activateWithKeyboard(page, page.getByRole("button", { name: `Start next recommended lesson: ${lessonOne.title}`, exact: true }));
   await expect(page.getByRole("dialog", { name: "Lesson 1", exact: true })).toBeVisible();
-  await enterPractice(page);
+  await activateWithKeyboard(page, page.getByRole("button", { name: /^next: pattern/i }));
+  await activateWithKeyboard(page, page.getByRole("button", { name: /^next: transformation table/i }));
+  const startPractice = page.getByRole("button", { name: /^start exercises/i });
+  const wordDetails = page.getByRole("button", { name: /^View etymology and details for / }).first();
+  const drawer = page.getByRole("dialog").filter({ has: page.getByRole("button", { name: "Close word drawer", exact: true }) });
+  const tableProgress = (await readLearningProgress(page)).lessonProgress[1];
+  await expectModalKeysIsolated(
+    page,
+    () => activateWithKeyboard(page, wordDetails),
+    drawer,
+    drawer.getByRole("button", { name: "Close word drawer", exact: true }),
+    async () => {
+      await expect(startPractice).toBeVisible();
+      await expect(page.getByRole("group", { name: lessonOne.exercises[0].prompt, exact: true })).toBeHidden();
+      expect((await readLearningProgress(page)).lessonProgress[1]).toEqual(tableProgress);
+    },
+  );
+  await activateWithKeyboard(page, startPractice);
 
   for (const exercise of lessonOne.exercises) {
     await test.step(`${exercise.id}: ${exercise.type}`, async () => {

@@ -29,6 +29,7 @@ export function SubviewOverlay({
     open: true,
     containerRef: panelRef,
     onEscape: onClose,
+    blocksGlobalShortcuts: false,
     shouldHandleEscape: (event) => {
       const target = event.target;
       // Inside a text field, Escape belongs to the lesson (restart/lose input),

@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterAll } from "vitest";
-import { FONT_LIST, DEFAULT_FONT, applyFont, FONTS_BY_ID, filterFonts } from "@/data/fonts";
+import { FONT_LIST, DEFAULT_FONT, applyFont, ensureFontLoaded, FONTS_BY_ID, filterFonts } from "@/data/fonts";
 import { useAppStore } from "@/lib/store";
 
 describe("Monkeytype Fonts Architecture & Engine", () => {
@@ -49,6 +49,28 @@ describe("Monkeytype Fonts Architecture & Engine", () => {
     applyFont("Lexend_Deca");
     expect((document.documentElement.style as any)["--font-app"]).toContain("Lexend_Deca");
     expect((document.documentElement as any)["data-font"]).toBe("Lexend_Deca");
+  });
+
+  it("injects only the explicitly previewed font, once, without loading other families", () => {
+    const styles: Array<{ id: string; textContent: string }> = [];
+    const mockDocument = document as unknown as {
+      head: { appendChild: (style: { id: string; textContent: string }) => void };
+      getElementById: (id: string) => unknown;
+      createElement: () => { id: string; textContent: string };
+    };
+    mockDocument.head = { appendChild: (style) => { styles.push(style); } };
+    mockDocument.getElementById = (id) => styles.find((style) => style.id === id);
+    mockDocument.createElement = () => ({ id: "", textContent: "" });
+
+    expect(styles).toEqual([]);
+    ensureFontLoaded(DEFAULT_FONT);
+    ensureFontLoaded("Comic_Sans_MS");
+    expect(styles).toEqual([]);
+    ensureFontLoaded("Sarabun");
+    ensureFontLoaded("Sarabun");
+    expect(styles).toHaveLength(1);
+    expect(styles[0].textContent).toContain("/webfonts/Sarabun-Bold.woff2");
+    expect(styles[0].textContent).not.toContain("/webfonts/JetBrainsMono-Regular.woff2");
   });
 
   it("searches across all fonts regardless of category tab when query is entered", () => {

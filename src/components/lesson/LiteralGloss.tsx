@@ -14,6 +14,7 @@ import { evaluateAnswerAccuracy } from "@/lib/letter-diff";
 import { affirmationFor } from "@/lib/shift-diagnosis";
 import { useAppStore } from "@/lib/store";
 import { soundEngine } from "@/lib/sound";
+import { hasBlockingKeyboardDialog } from "@/lib/use-dialog-focus";
 import type { ExerciseItem } from "@/lib/types";
 
 interface LiteralGlossProps {
@@ -122,6 +123,7 @@ export const LiteralGloss: React.FC<LiteralGlossProps> = ({
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || hasBlockingKeyboardDialog() || e.isComposing || e.ctrlKey || e.metaKey || e.altKey) return;
       if (settings.quickRestart === "esc" && e.key === "Escape") {
         e.preventDefault();
         resetCurrentExercise();

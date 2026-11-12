@@ -5,6 +5,7 @@ import { GenderGuideBanner } from "@/components/common/GenderGuideBanner";
 import { SESSION_SIZES, ALL_FAMILIES_ID as ALL_ID, type LearnedFilter } from "@/lib/review-decks";
 import { useCourseRecommendation } from "@/lib/use-course-recommendation";
 import type { ReviewController } from "./use-review-controller";
+import { ReviewCardManagement } from "./ReviewCardManagement";
 
 export function ReviewDeckSelector({ controller }: { controller: ReviewController }) {
   const { activeLanguageId, openLesson, dueCount, requestDeckStart, hasAnyCards, hasSeenGenderIntro, learnedFilter, setLearnedFilter, sessionSize, setSessionSize, shuffleSession, setShuffleSession, familyNoun, selectedShiftId, setSelectedShiftId, allFamilyWordIds, atlasFamilies, selectedShiftFamily, shiftCount, selectedDomainId, setSelectedDomainId, data, domainGroups, domainCount, weakestCount, recentCount, compoundExamples, trapExamples, compoundCount, language, sentenceCount, articleCount, everythingTotal } = controller;
@@ -12,6 +13,11 @@ export function ReviewDeckSelector({ controller }: { controller: ReviewControlle
   const { nextLesson } = useCourseRecommendation(activeLanguageId);
   return (
           <div className="space-y-6">
+            <fieldset className="flex flex-wrap items-center gap-2 rounded-lg border border-[var(--sub-color)]/20 p-4">
+              <legend className="px-1 text-sm font-semibold">Review session length</legend>
+              {SESSION_SIZES.map((size) => <button key={size} type="button" aria-pressed={sessionSize === size} onClick={() => setSessionSize(size)} className={`min-h-11 rounded border px-4 text-sm ${sessionSize === size ? "border-[var(--main-color)] bg-[var(--main-color)] text-[var(--bg-color)]" : "border-[var(--sub-color)]/30 text-[var(--text-color)]"}`}>{size === 0 ? "All" : size}</button>)}
+              <p className="w-full text-sm text-[var(--sub-color)]">Applies to every vocabulary deck. The separate failed-sentence process queue has its own 15-item cap.</p>
+            </fieldset>
             <section aria-label="Your next practice" className="grid gap-3 sm:grid-cols-3">
               <div className="rounded-lg border border-[var(--main-color)]/30 bg-[var(--sub-alt-color)] p-4 space-y-3">
                 <h2 className="font-semibold text-[var(--text-color)]">Continue your lesson</h2>
@@ -22,7 +28,7 @@ export function ReviewDeckSelector({ controller }: { controller: ReviewControlle
               </div>
               <div className="rounded-lg border border-[var(--sub-color)]/20 bg-[var(--sub-alt-color)] p-4 space-y-3">
                 <h2 className="font-semibold text-[var(--text-color)]">Review what you learned</h2>
-                <p className="text-sm text-[var(--sub-color)]">{learnedCount ? `${learnedCount} learned words · up to 20 per session` : "Finish a lesson to add your first words."}</p>
+                <p className="text-sm text-[var(--sub-color)]">{learnedCount ? `${learnedCount} learned words · ${sessionSize ? `up to ${sessionSize}` : "all"} per session` : "Finish a lesson to add your first words."}</p>
                 <button type="button" disabled={learnedCount === 0} onClick={() => requestDeckStart("learned")} className="min-h-11 rounded border border-[var(--sub-color)]/30 px-3 text-sm font-semibold text-[var(--text-color)] hover:border-[var(--main-color)] disabled:opacity-40">Review learned words</button>
               </div>
               <div className="rounded-lg border border-[var(--sub-color)]/20 bg-[var(--sub-alt-color)] p-4 space-y-3">
@@ -63,6 +69,7 @@ export function ReviewDeckSelector({ controller }: { controller: ReviewControlle
 
           {/* Gender guide after the due action; compact-only once dismissed. */}
           {hasAnyCards && !hasSeenGenderIntro && <GenderGuideBanner />}
+          <ReviewCardManagement controller={controller} />
 
           <details className="space-y-4">
             <summary className="min-h-11 cursor-pointer text-sm font-semibold text-[var(--text-color)]">More practice options</summary>
@@ -93,22 +100,6 @@ export function ReviewDeckSelector({ controller }: { controller: ReviewControlle
               ))}
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[var(--sub-color)]">session</span>
-              {SESSION_SIZES.map((n) => (
-                <button
-                  key={n}
-                  type="button"
-                  aria-pressed={sessionSize === n}
-                  onClick={() => setSessionSize(n)}
-                  className={`min-h-11 px-3 py-1 rounded-lg border transition cursor-pointer ${
-                    sessionSize === n
-                      ? "bg-[var(--main-color)] text-[var(--bg-color)] border-[var(--main-color)] font-bold"
-                      : "bg-[var(--bg-color)] text-[var(--text-color)] border-[var(--sub-color)]/20 hover:border-[var(--main-color)]/40"
-                  }`}
-                >
-                  {n === 0 ? "all" : n}
-                </button>
-              ))}
               <label className="flex items-center gap-1.5 ml-2 text-[var(--text-color)] cursor-pointer">
                 <input
                   type="checkbox"
@@ -120,7 +111,7 @@ export function ReviewDeckSelector({ controller }: { controller: ReviewControlle
               </label>
             </div>
             <p className="text-[var(--sub-color)] lg:ml-auto">
-              applies to {familyNoun}, domain and everything.
+              word scope applies to {familyNoun}, domain and everything; session length applies to all decks.
             </p>
           </div>
 

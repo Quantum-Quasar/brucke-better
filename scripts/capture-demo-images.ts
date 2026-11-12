@@ -1,12 +1,24 @@
 import { chromium, type Browser, type BrowserContext, type Page } from "@playwright/test";
 import path from "path";
 import fs from "fs";
+import { resolveSiteUrl } from "../src/lib/site-url";
 
-const BASE_URL = "https://brucke-ten.vercel.app";
-const CHROMIUM_PATH = "/home/shaurya/.cache/ms-playwright/chromium-1234/chrome-linux64/chrome";
-const OUT_DIR = path.resolve("./demo-images");
+const BASE_URL = (() => {
+  try {
+    return resolveSiteUrl({
+      siteUrl: process.env.DEMO_BASE_URL || process.env.PLAYWRIGHT_BASE_URL || "http://localhost:3000",
+    }).origin;
+  } catch (cause) {
+    throw new Error("DEMO_BASE_URL (or PLAYWRIGHT_BASE_URL) must be an HTTP(S) origin without credentials, a path, query or fragment.", { cause });
+  }
+})();
+const CHROMIUM_PATH = process.env.CHROMIUM_PATH;
+const OUT_DIR = path.resolve(process.env.DEMO_OUTPUT_DIR || "./demo-images");
 const STORAGE_KEY = "brucke_app_state_v1";
 
+if (CHROMIUM_PATH && !fs.existsSync(CHROMIUM_PATH)) {
+  throw new Error(`CHROMIUM_PATH does not exist: ${CHROMIUM_PATH}. Unset it to use Playwright's bundled Chromium (bunx playwright install chromium).`);
+}
 if (!fs.existsSync(OUT_DIR)) {
   fs.mkdirSync(OUT_DIR, { recursive: true });
 }
@@ -815,8 +827,10 @@ async function main() {
   const startTime = Date.now();
 
   const browser = await chromium.launch({
-    executablePath: CHROMIUM_PATH,
+    ...(CHROMIUM_PATH ? { executablePath: CHROMIUM_PATH } : {}),
     headless: true,
+  }).catch((cause: unknown) => {
+    throw new Error("Cannot launch Chromium. Run `bunx playwright install chromium`, or set CHROMIUM_PATH to an installed browser executable.", { cause });
   });
 
   try {
@@ -831,10 +845,13 @@ async function main() {
     const duration = ((Date.now() - startTime) / 1000).toFixed(1);
     console.log(`\n🎉 Swarm complete! All 46 screenshots captured in ${duration}s into ${OUT_DIR}`);
   } catch (err) {
-    console.error("Swarm failed:", err);
+    throw new Error(`Demo capture failed against ${BASE_URL}. Check DEMO_BASE_URL and ensure the app is running.`, { cause: err });
   } finally {
     await browser.close();
   }
 }
 
-main().catch(console.error);
+main().catch((error: unknown) => {
+  console.error(error);
+  process.exitCode = 1;
+});

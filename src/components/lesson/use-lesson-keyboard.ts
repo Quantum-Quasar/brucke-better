@@ -2,12 +2,14 @@
 
 import { useEffect } from "react";
 import type { LessonSession } from "./lesson-session-types";
+import { hasBlockingKeyboardDialog } from "@/lib/use-dialog-focus";
 
 type KeyboardOptions = Pick<LessonSession, "currentSegment" | "retryQueue" | "isLessonFinished" | "goToNextLesson" | "preview" | "markSegmentDone" | "startPractice" | "handleCompleteAll" | "setCurrentSegment">;
 export function useLessonKeyboard({ currentSegment, retryQueue, isLessonFinished, goToNextLesson, preview, markSegmentDone, startPractice, handleCompleteAll, setCurrentSegment }: KeyboardOptions) {
   // Global keyboard navigation across lesson reading segments (Hook, Pattern, Table, Summary)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.defaultPrevented || e.isComposing || e.ctrlKey || e.metaKey || e.altKey || hasBlockingKeyboardDialog()) return;
       const active = document.activeElement as HTMLElement | null;
       const isInput =
         active instanceof HTMLInputElement ||

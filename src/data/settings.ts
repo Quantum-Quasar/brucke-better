@@ -4,6 +4,12 @@ export type ConfidenceMode = "off" | "on";
 export type ShowCharBar = "always" | "on_focus" | "off";
 
 export interface CustomizationSettings {
+  reviewSessionLimit: 5 | 10 | 20 | 0;
+  learningGoal: "travel" | "work" | "exam" | "fun";
+  dailyMinutes: 5 | 10 | 20 | 30;
+  placementTopic: number;
+  microphonePractice: boolean;
+  voiceGuidanceDismissed: string[];
   // Behavior & Tolerance
   quickRestart: QuickRestart;
   lazyMode: boolean; // umlaut tolerance
@@ -36,6 +42,12 @@ export interface CustomizationSettings {
 }
 
 export const DEFAULT_SETTINGS: CustomizationSettings = {
+  reviewSessionLimit: 10,
+  learningGoal: "fun",
+  dailyMinutes: 10,
+  placementTopic: 1,
+  microphonePractice: false,
+  voiceGuidanceDismissed: [],
   quickRestart: "off",
   lazyMode: false,
   capitalizationTolerance: false,

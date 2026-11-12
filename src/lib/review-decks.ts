@@ -7,6 +7,7 @@ import type { CompendiumData, MasteryState, ReviewMode, SRSCard, WordEntity } fr
 import { shuffleArray } from "./review-modes";
 import { getAtlasFamilies, getAtlasFamily } from "./atlas-families";
 import { compareFrequencyRanks } from "./frequency";
+import { isReviewable, localDateKey } from "./srs";
 
 /** Sentinel select value meaning "every atlas family". */
 export const ALL_FAMILIES_ID = "all";
@@ -28,7 +29,7 @@ export function getAtlasFamilyWordIds(data: CompendiumData, familyId: string): s
 export type LearnedFilter = "all" | "learned" | "new";
 
 /** Session size choices; 0 = the whole deck. */
-export const SESSION_SIZES = [10, 20, 50, 0] as const;
+export const SESSION_SIZES = [5, 10, 20, 0] as const;
 export type SessionSize = (typeof SESSION_SIZES)[number];
 
 export type ReviewDeckType =
@@ -152,10 +153,10 @@ export function filterByLearned<T extends { id: string }>(
   words: T[],
   filter: LearnedFilter,
   wordMastery: Record<string, MasteryState>,
-  srsCards: Record<string, SRSCard>
+  srsCards: Record<string, SRSCard>,
+  today = localDateKey()
 ): T[] {
-  if (filter === "all") return words;
-  return words.filter((w) => isWordLearned(w.id, wordMastery, srsCards) === (filter === "learned"));
+  return words.filter((w) => isReviewable(srsCards[w.id], today) && (filter === "all" || isWordLearned(w.id, wordMastery, srsCards) === (filter === "learned")));
 }
 
 /**
@@ -194,9 +195,9 @@ export function sortDueCards(cards: SRSCard[], words: Readonly<Record<string, Pi
  * then low ease. Includes guessed-but-never-lapsed words, which the plain
  * lapses filter missed.
  */
-export function rankWeakestCards(cards: Record<string, SRSCard>, limit = 15): SRSCard[] {
+export function rankWeakestCards(cards: Record<string, SRSCard>, limit = Infinity, today = localDateKey()): SRSCard[] {
   return Object.values(cards)
-    .filter((c) => c.lapses > 0 || (c.guessed ?? 0) > 0)
+    .filter((c) => isReviewable(c, today) && (c.lapses > 0 || (c.guessed ?? 0) > 0))
     .sort(
       (a, b) =>
         b.lapses - a.lapses ||

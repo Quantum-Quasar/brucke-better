@@ -1,8 +1,3 @@
-// ponytail: native browser speech synthesis with zero external dependencies
-// Automatically selects the active language's TTS locale (de-DE, fr-FR, es-ES)
-// and detects when the device/OS (e.g. Linux without speech-dispatcher voices or
-// Android without a language pack) lacks a matching voice for that language.
-
 import { useAppStore } from "./store";
 import { getLanguageDefinition } from "@/data/languages";
 
@@ -15,183 +10,111 @@ export interface VoiceAvailability {
   voiceLang: string | null;
   requestedLocale: string;
   languageName: string;
-  /** Non-null when speech synthesis is missing or no voice exists for the target language. */
   warningMessage: string | null;
 }
 
-let cachedVoices: SpeechSynthesisVoice[] = [];
+export const VOICE_LOAD_WAIT_MS = 2500;
 const voiceListeners = new Set<() => void>();
+const voiceStates = new WeakMap<SpeechSynthesis, { settled: boolean }>();
+const activeUtterances = new Set<SpeechSynthesisUtterance>();
 
 function notifyVoiceListeners() {
-  for (const fn of voiceListeners) {
-    try {
-      fn();
-    } catch {}
-  }
+  for (const listener of voiceListeners) listener();
 }
 
-if (typeof window !== "undefined" && "speechSynthesis" in window) {
-  try {
-    cachedVoices = window.speechSynthesis.getVoices();
-    window.speechSynthesis.onvoiceschanged = () => {
-      try {
-        cachedVoices = window.speechSynthesis.getVoices();
-        notifyVoiceListeners();
-      } catch {}
-    };
-  } catch {}
+function getSynthesis(): SpeechSynthesis | null {
+  return typeof window !== "undefined" ? window.speechSynthesis ?? null : null;
+}
+
+function observeVoices(synthesis: SpeechSynthesis) {
+  const existing = voiceStates.get(synthesis);
+  if (existing) return existing;
+  const state = { settled: false };
+  voiceStates.set(synthesis, state);
+  // Keep listening after the initial deadline: mobile voice packs may arrive later.
+  synthesis.addEventListener?.("voiceschanged", () => {
+    state.settled = true;
+    notifyVoiceListeners();
+  });
+  setTimeout(() => {
+    state.settled = true;
+    notifyVoiceListeners();
+  }, VOICE_LOAD_WAIT_MS);
+  return state;
 }
 
 export function subscribeVoiceChanges(listener: () => void): () => void {
+  const synthesis = getSynthesis();
+  if (synthesis) observeVoices(synthesis);
   voiceListeners.add(listener);
-  return () => {
-    voiceListeners.delete(listener);
-  };
+  return () => { voiceListeners.delete(listener); };
 }
 
-const activeUtterances = new Set<SpeechSynthesisUtterance>();
-
 function resolveDefaultLocale(): string {
-  try {
-    const activeId =
-      typeof useAppStore?.getState === "function"
-        ? useAppStore.getState().activeLanguageId
-        : "de";
-    return getLanguageDefinition(activeId || "de").ttsLocale || "de-DE";
-  } catch {
-    return "de-DE";
-  }
+  return getLanguageDefinition(useAppStore.getState().activeLanguageId).ttsLocale;
 }
 
 function resolveLanguageName(locale: string): string {
-  const prefix = locale.slice(0, 2).toLowerCase();
-  if (prefix === "nl") return "Dutch";
-  if (prefix === "fr") return "French";
-  if (prefix === "es") return "Spanish";
-  return "German";
+  const language = locale.slice(0, 2).toLowerCase();
+  const names: Record<string, string> = { de: "German", fr: "French", es: "Spanish", nl: "Dutch" };
+  return names[language] ?? locale;
 }
 
-function findLanguageVoice(voices: SpeechSynthesisVoice[], locale: string) {
-  const normalized = locale.replace(/_/g, "-").toLowerCase();
+export function findLanguageVoice(voices: readonly SpeechSynthesisVoice[], locale: string) {
+  const normalize = (value: string) => value.replace(/_/g, "-").toLowerCase();
+  const normalized = normalize(locale);
   const language = normalized.split("-")[0];
-  const exact = voices.find((voice) => voice.lang.replace(/_/g, "-").toLowerCase() === normalized);
-  const fallback = voices.find((voice) => voice.lang.replace(/_/g, "-").toLowerCase().split("-")[0] === language);
-  return { exact, voice: exact ?? fallback };
+  const exact = voices.find((voice) => normalize(voice.lang) === normalized);
+  const regional = voices.find((voice) => normalize(voice.lang).split("-")[0] === language);
+  return { exact, voice: exact ?? regional };
 }
 
-/**
- * Inspects the browser's Web Speech API to check whether a voice for `locale`
- * (e.g. "de-DE", "fr-FR", "es-ES") is actually installed on this device.
- * Many Linux setups (Chromium/Firefox without speech-dispatcher voices) and some
- * Android profiles have no German/French/Spanish voice installed.
- */
-export function detectLanguageVoice(locale?: string): VoiceAvailability {
-  const effectiveLocale = locale || resolveDefaultLocale();
-  const languageName = resolveLanguageName(effectiveLocale);
-
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-    return {
-      supported: false,
-      voicesLoaded: false,
-      hasLanguageVoice: false,
-      isExactLocale: false,
-      voiceName: null,
-      voiceLang: null,
-      requestedLocale: effectiveLocale,
-      languageName,
-      warningMessage: `Speech synthesis is not available in this browser. You can use "Skip listening" on audio exercises.`,
-    };
+export function detectLanguageVoice(locale = resolveDefaultLocale()): VoiceAvailability {
+  const synthesis = getSynthesis();
+  const base: VoiceAvailability = {
+    supported: Boolean(synthesis), voicesLoaded: false, hasLanguageVoice: false,
+    isExactLocale: false, voiceName: null, voiceLang: null,
+    requestedLocale: locale, languageName: resolveLanguageName(locale), warningMessage: null,
+  };
+  if (!synthesis) {
+    return { ...base, warningMessage: 'Speech synthesis is unavailable in this browser. Use text-only practice or "Skip listening" on audio exercises.' };
   }
-
-  let voices: SpeechSynthesisVoice[] = [];
+  const state = observeVoices(synthesis);
+  let voices: SpeechSynthesisVoice[];
   try {
-    voices = cachedVoices.length > 0 ? cachedVoices : window.speechSynthesis.getVoices();
+    voices = synthesis.getVoices();
   } catch {
-    voices = [];
+    return { ...base, voicesLoaded: true, warningMessage: "This browser could not load system speech voices. You can continue with text-only practice." };
   }
-
-  const { exact: exactVoice, voice: chosen } = findLanguageVoice(voices, effectiveLocale);
-
-  if (voices.length === 0) {
-    return {
-      supported: true,
-      voicesLoaded: false,
-      hasLanguageVoice: false,
-      isExactLocale: false,
-      voiceName: null,
-      voiceLang: null,
-      requestedLocale: effectiveLocale,
-      languageName,
-      warningMessage: `No ${languageName} (${effectiveLocale}) speech voice was detected on this device. On Linux, install speech-dispatcher + espeak-ng (or piper-tts); on Android, install the ${languageName} voice pack in System Settings → Text-to-speech output.`,
-    };
-  }
-
-  if (!chosen) {
-    return {
-      supported: true,
-      voicesLoaded: true,
-      hasLanguageVoice: false,
-      isExactLocale: false,
-      voiceName: null,
-      voiceLang: null,
-      requestedLocale: effectiveLocale,
-      languageName,
-      warningMessage: `Your device has ${voices.length} speech ${voices.length === 1 ? "voice" : "voices"} installed, but none for ${languageName} (${effectiveLocale}). On Linux/Android without a ${languageName} voice pack, audio may sound wrong or stay silent — install a ${languageName} system TTS voice or use "Skip listening".`,
-    };
-  }
-
+  const { exact, voice } = findLanguageVoice(voices, locale);
+  const loaded = Boolean(voice) || state.settled;
   return {
-    supported: true,
-    voicesLoaded: true,
-    hasLanguageVoice: true,
-    isExactLocale: Boolean(exactVoice),
-    voiceName: chosen.name,
-    voiceLang: chosen.lang,
-    requestedLocale: effectiveLocale,
-    languageName,
-    warningMessage: null,
+    ...base, voicesLoaded: loaded, hasLanguageVoice: Boolean(voice),
+    isExactLocale: Boolean(exact), voiceName: voice?.name ?? null, voiceLang: voice?.lang ?? null,
+    warningMessage: loaded && !voice
+      ? `No ${base.languageName} speech voice was detected. Browser fallback audio may sound wrong or stay silent. Install a ${base.languageName} system voice, then reopen the browser, or use "Skip listening".`
+      : null,
   };
 }
 
-/**
- * Plays target-language pronunciation using the native Web Speech API.
- * Comfortable 0.92x rate for clear phoneme perception.
- */
-export function playTargetAudio(text: string, locale?: string): boolean {
-  if (typeof window === "undefined" || !("speechSynthesis" in window)) {
-    return false;
-  }
-
+/** Native target-language pronunciation; a regional voice is a valid match. */
+export function playTargetAudio(text: string, locale = resolveDefaultLocale()): boolean {
+  const synthesis = getSynthesis();
+  const cleanText = text.replace(/^[[(].*?[)\]]\s*/, "").trim();
+  if (!synthesis || !cleanText) return false;
   try {
-    const effectiveLocale = locale || resolveDefaultLocale();
-    window.speechSynthesis.cancel();
+    synthesis.cancel();
     activeUtterances.clear();
-    if (window.speechSynthesis.paused) {
-      window.speechSynthesis.resume();
-    }
-    const cleanText = text.replace(/^[[(].*?[)\]]\s*/, "").trim();
-    if (!cleanText) return false;
-
+    if (synthesis.paused) synthesis.resume();
     const utterance = new SpeechSynthesisUtterance(cleanText);
-    utterance.lang = effectiveLocale;
+    utterance.lang = locale;
     utterance.rate = 0.92;
-    utterance.pitch = 1.0;
-
-    const voices = cachedVoices.length > 0 ? cachedVoices : window.speechSynthesis.getVoices();
-    const { voice } = findLanguageVoice(voices, effectiveLocale);
-    if (voice) {
-      utterance.voice = voice;
-    }
-
+    utterance.pitch = 1;
+    const { voice } = findLanguageVoice(synthesis.getVoices(), locale);
+    if (voice) utterance.voice = voice;
     activeUtterances.add(utterance);
-    utterance.onend = () => {
-      activeUtterances.delete(utterance);
-    };
-    utterance.onerror = () => {
-      activeUtterances.delete(utterance);
-    };
-
-    window.speechSynthesis.speak(utterance);
+    utterance.onend = utterance.onerror = () => { activeUtterances.delete(utterance); };
+    synthesis.speak(utterance);
     return true;
   } catch {
     return false;

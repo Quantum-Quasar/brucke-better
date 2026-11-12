@@ -7,6 +7,7 @@ import { useViewStore } from "@/lib/view-store";
 import { useCompendium } from "@/lib/content-client";
 import { EMPTY_COMPENDIUM } from "@/data/empty-compendium";
 import { buildMasterGraph, type MasterNode } from "@/lib/master-graph";
+import { AtlasVocabularyTable } from "./AtlasVocabularyTable";
 
 const WIDTH = 2600;
 const HEIGHT = 2000;
@@ -41,7 +42,7 @@ function NodeShape({ kind, x = 0, y = 0 }: { kind: MasterNode["kind"]; x?: numbe
   }
 }
 
-export const MasterConstellation: React.FC = () => {
+export const MasterConstellation: React.FC<{ view?: "visual" | "table" }> = ({ view = "visual" }) => {
   const [mounted, setMounted] = React.useState(false);
   React.useEffect(() => setMounted(true), []);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
@@ -67,6 +68,8 @@ export const MasterConstellation: React.FC = () => {
   zoomRef.current = zoom;
   const [selectedNode, setSelectedNode] = React.useState<MasterNode | null>(null);
 
+  const [query, setQuery] = React.useState("");
+  const [visible, setVisible] = React.useState(60);
   const fitZoom = () => {
     const el = scrollRef.current;
     if (!el) return 1;
@@ -92,7 +95,7 @@ export const MasterConstellation: React.FC = () => {
       current.scrollTop = (current.scrollHeight - current.clientHeight) / 2;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [graph]);
+  }, [graph, view]);
 
   // Restore the remembered labelled node once the graph exists.
   React.useEffect(() => {
@@ -113,7 +116,7 @@ export const MasterConstellation: React.FC = () => {
     el.scrollLeft = centreX * zoom - el.clientWidth / 2;
     el.scrollTop = centreY * zoom - el.clientHeight / 2;
     prevZoomRef.current = zoom;
-  }, [zoom]);
+  }, [zoom, view]);
 
   // Pinch-to-zoom while keeping native one-finger panning. touch-action is
   // restricted to pan gestures on the container, so the browser does not
@@ -152,7 +155,7 @@ export const MasterConstellation: React.FC = () => {
       el.removeEventListener("touchend", onTouchEnd);
       el.removeEventListener("touchcancel", onTouchEnd);
     };
-  }, [activeLanguageId, graph, setMasterPosition]);
+  }, [activeLanguageId, graph, setMasterPosition, view]);
 
   const selectNode = (node: MasterNode | null) => {
     setSelectedNode(node);
@@ -227,6 +230,36 @@ export const MasterConstellation: React.FC = () => {
     );
   }
 
+  if (view === "table") {
+    const needle = query.trim().toLowerCase();
+    const words = data.wordList.filter((word) => !needle || `${word.target_word} ${word.english_meaning} ${word.english_cognate}`.toLowerCase().includes(needle));
+    const otherNodes = graph.nodes.filter((node) => node.kind !== "word" && (!needle || `${node.label} ${node.sub}`.toLowerCase().includes(needle)));
+    return (
+      <div className="absolute inset-0 overflow-auto px-3 pt-48 sm:pt-52 pb-6 space-y-4">
+        <label className="block text-xs font-mono">
+          Filter master web
+          <input value={query} onChange={(event) => { setQuery(event.target.value); setVisible(60); }} className="mt-2 block min-h-11 w-full rounded border border-[var(--sub-color)]/30 bg-[var(--bg-color)] px-3" />
+        </label>
+        <AtlasVocabularyTable words={words.slice(0, visible)} caption={`Master web vocabulary: showing ${Math.min(visible, words.length)} of ${words.length} words.`} />
+        <h2 className="text-sm font-bold">Phrases, compounds, false friends and expressions</h2>
+        <ul className="space-y-2">
+          {otherNodes.slice(0, visible).map((node) => (
+            <li key={node.id}>
+              <button type="button" onClick={() => selectNode(node)} className="min-h-11 w-full rounded border border-[var(--sub-color)]/25 p-3 text-left text-xs">
+                <span className="font-bold">{KIND_LABEL[node.kind]}: {node.label}</span>
+                <span className="block pt-1 text-[var(--sub-color)]">{node.sub}</span>
+              </button>
+            </li>
+          ))}
+        </ul>
+        {(words.length > visible || otherNodes.length > visible) && (
+          <button type="button" onClick={() => setVisible((count) => count + 60)} className="min-h-11 rounded border border-[var(--sub-color)]/30 px-4 text-xs font-mono">show 60 more</button>
+        )}
+        {selectedNode && <p role="status" className="text-xs">{selectedNode.label}: {selectedNode.sub}</p>}
+      </div>
+    );
+  }
+
   const counts = { word: 0, phrase: 0, compound: 0, falsefriend: 0, insight: 0 };
   for (const node of graph.nodes) counts[node.kind]++;
 
@@ -268,8 +301,9 @@ export const MasterConstellation: React.FC = () => {
                   return (
                     <g
                       key={node.id}
-                      className="cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--main-color)]"
+                      className="atlas-graph-node cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--main-color)]"
                       tabIndex={0}
+                      onFocus={() => scrollRef.current?.scrollTo({ left: node.x * zoom - scrollRef.current.clientWidth / 2, top: node.y * zoom - scrollRef.current.clientHeight / 2, behavior: "auto" })}
                       role="button"
                       aria-label={node.sub ? `${node.label} — ${node.sub}` : node.label}
                       onClick={() => node.wordId && openWordDrawer(node.wordId)}
@@ -281,7 +315,7 @@ export const MasterConstellation: React.FC = () => {
                       }}
                     >
                       {/* Invisible hit target: the visible dot is only ~8px. */}
-                      <circle cx={Math.round(node.x)} cy={Math.round(node.y)} r={22 / zoom} fill="transparent" />
+                      <circle className="atlas-focus-ring" vectorEffect="non-scaling-stroke" cx={Math.round(node.x)} cy={Math.round(node.y)} r={22 / zoom} fill="transparent" />
                       <circle
                         cx={Math.round(node.x)}
                         cy={Math.round(node.y)}
@@ -309,8 +343,9 @@ export const MasterConstellation: React.FC = () => {
                   <g
                     key={node.id}
                     aria-label={`${node.kind}: ${node.label}${node.sub ? ` — ${node.sub}` : ""}`}
-                    className="cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--main-color)]"
+                    className="atlas-graph-node cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--main-color)]"
                     tabIndex={0}
+                    onFocus={() => scrollRef.current?.scrollTo({ left: node.x * zoom - scrollRef.current.clientWidth / 2, top: node.y * zoom - scrollRef.current.clientHeight / 2, behavior: "auto" })}
                     role="button"
                     onClick={() => selectNode(node)}
                     onKeyDown={(event) => {
@@ -320,7 +355,7 @@ export const MasterConstellation: React.FC = () => {
                       }
                     }}
                   >
-                    <circle cx={Math.round(node.x)} cy={Math.round(node.y)} r={22 / zoom} fill="transparent" />
+                    <circle className="atlas-focus-ring" vectorEffect="non-scaling-stroke" cx={Math.round(node.x)} cy={Math.round(node.y)} r={22 / zoom} fill="transparent" />
                     <NodeShape kind={node.kind} x={Math.round(node.x)} y={Math.round(node.y)} />
                     {zoom >= LABEL_MIN_ZOOM && (
                       <text

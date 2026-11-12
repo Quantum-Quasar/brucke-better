@@ -41,7 +41,7 @@ async function seedAppState(page: Page, state: Record<string, unknown> = {}) {
         window.localStorage.setItem(key, value);
       }
     },
-    [STORAGE_KEY, JSON.stringify({ hasCompletedOnboarding: true, settings: { showKeyTips: true }, ...state })] as const
+    [STORAGE_KEY, JSON.stringify({ hasCompletedOnboarding: true, settings: { showKeyTips: true, voiceGuidanceDismissed: ["de", "fr", "es", "nl"] }, ...state })] as const
   );
 }
 
@@ -189,8 +189,8 @@ test.describe("browser smoke", () => {
         },
       });
       await page.goto("/trail/1");
-      await page.getByRole("button", { name: /\d+ komm/ }).click();
-      await page.getByRole("button", { name: /\d+ en/ }).click();
+      await page.getByRole("button", { name: "komm", exact: true }).click();
+      await page.getByRole("button", { name: "en", exact: true }).click();
       await page.getByRole("button", { name: /verify/i }).click();
       await expect(page.getByText("sound shift breakdown")).toBeVisible();
       expect((await readAppState(page)).lessonProgress["1"].retryExerciseIds).toEqual(["l1_e1"]);
@@ -350,8 +350,12 @@ test.describe("browser smoke", () => {
   });
 });
 
-test("language-scoped lesson URL opens the named course in-page", async ({ page }) => {
+test("canonical lesson reference starts the named course in-page and survives reload", async ({ page }) => {
+  await seedAppState(page);
   await page.goto("/trail/fr/1");
+  await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
+  await expect(page).toHaveURL(/\/trail\/fr\/1$/);
+  await page.getByRole("link", { name: "Start lesson practice", exact: true }).first().click();
   await expect(page.getByRole("button", { name: /next: pattern/i })).toBeVisible();
   await expect(page.locator("header")).toContainText(/french through english/i, {
     timeout: 15_000,
