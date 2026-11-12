@@ -10,6 +10,7 @@ import { useViewStore, EMPTY_ROSTER_POSITION } from "@/lib/view-store";
 import { getLanguageDefinition } from "@/data/languages";
 import { useCompendium } from "@/lib/content-client";
 import { getAtlasFamily, UNSHIFTED_FAMILY_ID } from "@/lib/atlas-families";
+import { wordWithArticle } from "@/lib/gender";
 
 interface ConstellationDetailClientProps {
   familyId: string;
@@ -172,7 +173,7 @@ export function ConstellationDetailClient({
                         →
                       </span>
                       <span className="text-[var(--text-color)] font-semibold truncate">
-                        {word.gender ? `${word.gender} ${word.target_word}` : word.target_word}
+                        {wordWithArticle(word.gender, word.target_word, ownerLanguage.id)}
                       </span>
                     </li>
                   ))}

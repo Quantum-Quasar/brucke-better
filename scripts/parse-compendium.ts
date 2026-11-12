@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import type { CompendiumData, WordEntity, ShiftFamily, Gender } from "../src/lib/types";
+import { HOOK_PROBLEM_HINT, twinHookProblems } from "../src/lib/english-hooks";
 
 type ParsedCompendium = Omit<CompendiumData, "wordList">;
 
@@ -141,6 +142,8 @@ export function parseCompendium(content: string): ParsedCompendium {
       sound_shift_ids.push(pattern);
     }
     if (Object.hasOwn(ablautVerbs, id) && !sound_shift_ids.includes("strong_verbs_ablaut")) sound_shift_ids.push("strong_verbs_ablaut");
+    const hookProblems = twinHookProblems(cols[2]);
+    if (hookProblems.length) fail(line, `${id}: ${hookProblems.join("; ")} — ${HOOK_PROBLEM_HINT}`);
     words[id] = {
       id, target_word: rawGerman, english_cognate: clean(cols[2]), english_meaning: clean(cols[2]),
       gender, ipa: cols[4], sound_shift_ids,

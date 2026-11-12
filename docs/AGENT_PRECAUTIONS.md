@@ -45,6 +45,10 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 - **Applies when:** writing German text into `.ts` source files.
 - **Action:** write ä/ö/ü/ß as literal characters. `\u00df`-style escapes are valid TS but break plain-text audits, greps, and diff review (`stra\u00dfe` once masked a word-id mismatch).
 
+### 1.6 Article lemmas carry no gender of their own
+- **Applies when:** adding or editing a row for a word that *is* the article — `der`, `die`, `das`, French `le`/`la`, Spanish `el`/`la`, Dutch `de`/`het`.
+- **Action:** put `-` in the gender column. Every display, atlas and audio path composes its text as article + word, so a self-referential gender prints and speaks "der der" (and the learner hears it too). **Known incident:** rows 41–43 gave `das`/`die`/`der` their own gender, which shipped `der der — the / he` into `TRAIL.md` and into `speechSynthesis`. `src/tests/gender.test.ts` now fails on any compendium word whose gender equals its own target word. Compose such strings with `wordWithArticle()` (`src/lib/gender.ts`), never `${gender} ${word}` — it also handles French elision (`l'heure`).
+
 ---
 
 ## 2. Connections — applies when you add words or write hooks
@@ -60,6 +64,11 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 ### 2.3 Keep review learner-facing
 - **Applies when:** deciding what content work to investigate or delegate.
 - **Action:** focus on wrong German, unclear teaching, untaught vocabulary and exercises that cannot be completed or grade correct answers as wrong. Do not commission etymology research, source collection or verification reports. Language correctness and fair answer grading still matter.
+
+### 2.4 A twin hook must name a word the learner already owns
+- **Applies when:** writing or editing any twin claim — a `(twin: X)` annotation in a compendium cognate cell, a matching-pair label, an exercise `meaning`, a twist prompt.
+- **Action:** the English twin may only be a form inside `src/data/english-hook-words.json` (the top 5,000 forms of the pinned English subtitle list) and must not be qualified `archaic`/`obsolete`/`dialect`. `bun run parse-data` fails a violating row with its source line; `src/tests/english-hooks.test.ts` sweeps every authored string. A rare twin (`hight`, `ridge`, `welkin`, `knuckle`) moves into the derivation, the `explanation` or a `footnotes` entry: the connection is kept, the hook stays on the modern word. Regenerate the list with `bun scripts/generate-english-hook-words.ts` only when the limit or the pinned revision changes.
+- **Known incident:** Lesson 5071's hook, subtitle and one graded exercise were built on `hight` (dead since Shakespeare) and lesson 10's table leaned on `Rücken (twin: ridge)` / `Schlüssel (twin: slot)` — the "you already own this" promise fails when the English word itself has to be learned first.
 
 ---
 

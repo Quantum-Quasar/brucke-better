@@ -89,7 +89,7 @@ const lesson: Lesson = {
         },
         {
           "id": "kb5",
-          "english": "bone (twin: knuckle)",
+          "english": "bone",
           "german": "Knochen"
         },
         {
@@ -114,7 +114,7 @@ const lesson: Lesson = {
         }
       ],
       "target_answer": "Milch, Buch, suchen, sprechen, Knochen, riechen, Koch, Wir können brechen, Der Apfel ist weich und reif",
-      "meaning": "milk; book; to seek; to speak; bone (twin: knuckle); to smell; cook (the person); We can break; The apple is soft and ripe",
+      "meaning": "milk; book; to seek; to speak; bone; to smell; cook (the person); We can break; The apple is soft and ripe",
       "shift_hint": "K → CH",
       "explanation": "English softened the k in beseech and speech; German softened it in every one of these words — the cook's own title, Koch, wears the shift on its face."
     },

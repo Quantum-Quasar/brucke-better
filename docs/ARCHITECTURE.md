@@ -202,6 +202,9 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   by client code. Exact normalized forms get ranks; missing forms, sentence and
   article-drill entities remain unranked. Frequency breaks equal due-date/ease ties only.
   Review lifecycle, ordering, grading and answer entry have separate modules.
+  The same pinned revision also yields `src/data/english-hook-words.json`: the English
+  forms a hook may name as a twin the learner already owns, checked by
+  `src/lib/english-hooks.ts`, the compendium parser and `english-hooks.test.ts`.
 
 ## 7. Personalisation, audio, settings
 

@@ -11,6 +11,7 @@ import { DECK_CAPABILITIES, ALL_FAMILIES_ID, getAtlasFamilyWordIds, resolveCardR
 import { generateMCQOptions, generateWordTiles } from "@/lib/review-modes";
 import { getAtlasFamilies, getAtlasFamily } from "@/lib/atlas-families";
 import { playTargetAudio } from "@/lib/audio";
+import { wordWithArticle } from "@/lib/gender";
 import { getLanguageDefinition, type LanguageDefinition } from "@/data/languages";
 import { buildWordEntityMaps } from "@/lib/word-entities-core";
 import type { CompendiumData, LessonIndexEntry, MasteryState, ReviewMode, ShiftFamily, SRSCard, WordEntity } from "@/lib/types";
@@ -714,7 +715,7 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
         if (e.key === "r" || e.key === "R" || e.key === "a" || e.key === "A") {
           e.preventDefault();
           if (currentWord) {
-            const spoken = currentWord.gender ? `${currentWord.gender} ${currentWord.target_word}` : currentWord.target_word;
+            const spoken = wordWithArticle(currentWord.gender, currentWord.target_word, language.id);
             playTargetAudio(spoken, language.ttsLocale);
           }
           return;

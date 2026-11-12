@@ -86,6 +86,7 @@ The North Star governs every derivation, compound note and lesson hook: connecti
 - No etymology research or verification pass, mandatory citations, source quotas, or lists of claims awaiting verification. Say less instead.
 - Use sound patterns as helpful recognition aids, not universal rules. Do not force a word into a pattern or add root reconstructions and loan-chain detail to justify it.
 - Keep German meanings, spelling, grammar, pronunciation and answer grading correct. IPA should represent standard pronunciation; if unsure, flag the pronunciation for review rather than inventing it.
+- **The twin word must be one the learner already owns.** The English side of a twin claim — a `(twin: …)` annotation in a compendium cognate cell, a matching-pair label, an exercise `meaning`, a twist prompt — may only name a form inside `src/data/english-hook-words.json` (the top 5,000 forms of the pinned English subtitle list). An archaic, dialect or otherwise rare twin (`hight`, `ridge`, `welkin`) is a footnote, not a hook: name it in the derivation, the `explanation`, or a `footnotes` entry, and keep the hook on the modern word. `bun run parse-data` fails on a violating row with its source line, and `src/tests/english-hooks.test.ts` sweeps every authored string.
 
 ## SOURCING STRATEGY
 
@@ -98,7 +99,7 @@ The North Star governs every derivation, compound note and lesson hook: connecti
 Before writing, read `src/data/lessons/1.ts` and `src/data/lessons/4.ts` completely — they are the register standard.
 
 - **Second person, confident, playful.** Never academic, never cutesy. Prefer short, clear teaching over scholarly footnotes.
-- **The hook** opens with a familiar connection or useful situation. Keep it brief and point at what the learner will be able to do; footnotes are not required.
+- **The hook** opens with a familiar connection or useful situation, and every English word it leans on is one the learner already owns (the twin rule above). Keep it brief and point at what the learner will be able to do; footnotes are not required.
 - **The pattern** gives a clear explanation with 4–6 worked examples in flowing prose. Use English comparisons only when they make the German easier. Do not add technical history or fill `linguist_note` just to justify a connection.
 - **The transformation table** lists 4–8 `table_word_ids` that support the lesson's pattern or practical vocabulary.
 - **The 5 exercises** escalate: recognize → match → select the rule → produce → assemble a sentence. Each `explanation` teaches even on review. Wrong answers feed the retry queue and a flawless run earns a purple star, so exercises must be exactly solvable from the lesson's own content.

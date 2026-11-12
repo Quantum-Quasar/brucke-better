@@ -1,3 +1,4 @@
+import { wordWithArticle } from "@/lib/gender";
 import type {
   CompendiumData,
   ExerciseItem,
@@ -92,10 +93,6 @@ function withDistractors(answer: string, extra = 2): string[] {
   return bank;
 }
 
-function displayWord(word: CompendiumData["words"][string]): string {
-  return word.gender ? `${word.gender} ${word.target_word}` : word.target_word;
-}
-
 function wrongSwap(sentence: string): string {
   if (/\bde\s/.test(sentence)) return sentence.replace(/\bde\s/, "het ");
   if (/\bhet\s/.test(sentence)) return sentence.replace(/\bhet\s/, "de ");
@@ -145,7 +142,7 @@ export function buildDutchLesson(
   const pairs: MatchingPairItem[] = words.slice(0, 6).map((word, index) => ({
     id: `p${index + 1}`,
     english: word.english_meaning,
-    german: displayWord(word),
+    german: wordWithArticle(word.gender, word.target_word, "nl"),
   }));
 
   const [first, second, third, fourth = spec.sentences[0]] = spec.sentences;

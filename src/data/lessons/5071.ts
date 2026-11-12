@@ -4,7 +4,7 @@ const lesson: Lesson = {
   "id": 5071,
   "slug": "first-introductions",
   "title": "First Introductions",
-  "subtitle": "ich heiße ↔ hight, ich komme aus, ich wohne — the first sentences Germans actually speak",
+  "subtitle": "ich heiße, ich komme aus, ich wohne — the first sentences Germans actually speak",
   "phase": 1,
   "shift_categories": [],
   "word_ids": [
@@ -42,14 +42,14 @@ const lesson: Lesson = {
     "eventuell"
   ],
   "hook": {
-    "title": "Hight: the Verb You Already Owned",
-    "content": "Every German course opens with ich heiße — and the verb is an heirloom. Heißen descends from Proto-Germanic *haitaną, 'to call, to be called', and English wore the same verb until Shakespeare's day: archaic hight meant 'is called' — 'a city hight Rome'. Sir Gawain is hight so; your name is heißt so. The rest of the introduction kit is equally old: ich komme aus England (come, already yours), ich wohne in Berlin (the live/reside verb — no English twin, an honest memorize), ich bin zwanzig Jahre alt (and Jahr is the exact twin of year). Four formulas, all cognate-tested, and you can introduce yourself for a full minute.",
+    "title": "Four Formulas You Already Half-Know",
+    "content": "Every German course opens with ich heiße, and the introduction kit around it is more yours than it looks. Ich komme aus England — come is kommen. Ich bin zwanzig Jahre alt — Jahr is the exact twin of year, and alt is old. Ich wohne in Berlin is the one honest stranger: wohnen has no English twin, so learn it as the reside verb. Take the four formulas as phrases, say them out loud, and you can introduce yourself for a full minute.",
     "footnotes": [
       {
         "interest": true,
         "marker": "1",
-        "title": "behest: the Command Sibling",
-        "content": "Heißen's family survives in English 'behest' — a bidding or command, literally a 'be-called'. The king's behest is what he calls you to do. Same *haitaną root as heißen, hight, and German Heißt du...?"
+        "title": "hight: heißen's Archaic Sibling",
+        "content": "Heißen descends from Proto-Germanic *haitaną, 'to call, to be called'. English wore the same verb until Shakespeare's day: archaic hight meant 'was called' — 'a city hight Rome' — and the family also survives in behest, a bidding or command. None of that is modern English, so file it under old books; the phrase to own is ich heiße."
       }
     ]
   },
@@ -98,7 +98,7 @@ const lesson: Lesson = {
       ],
       "target_answer": "Ich heiße, Ich komme aus, Ich wohne in, Ich bin zwanzig Jahre alt, Das Öl ist in der Tüte, Herr Braun wohnt hier",
       "meaning": "my name is, I come from, I live in, I am twenty years old, the oil is in the bag, Mister Braun lives here",
-      "explanation": "heißen = to be called (hight's twin); wohnen = to reside, with wo as its first syllable; jahr = the year you count yourself in. The age formula is word-for-word English — years old = Jahre alt. The nouns arrive next: Herr in front of the surname, die Fabrik where you work, das Gymnasium where you studied, die Rente, der Dom, die Art, die Kaution and eventuell already in your pocket."
+      "explanation": "heißen = to be called; wohnen = to reside, with wo as its first syllable; jahr = the year you count yourself in. The age formula is word-for-word English — years old = Jahre alt. The nouns arrive next: Herr in front of the surname, die Fabrik where you work, das Gymnasium where you studied, die Rente, der Dom, die Art, die Kaution and eventuell already in your pocket."
     },
     {
       "id": "l5071_e2",
@@ -117,16 +117,16 @@ const lesson: Lesson = {
     {
       "id": "l5071_e3",
       "type": "shift_select",
-      "prompt": "Which archaic English word is the twin of 'heiße'?",
+      "prompt": "'Wie _____ du?' — asking a friend's name:",
       "options": [
-        "hest",
-        "hot",
-        "hallowed",
-        "hight"
+        "heiße",
+        "heißt",
+        "heiß",
+        "heißen"
       ],
-      "target_answer": "hight",
-      "meaning": "heißen ↔ hight = to be called",
-      "explanation": "'A city hight Rome' = 'a city is called Rome' — same *haitaną, same meaning, one s worn away."
+      "target_answer": "heißt",
+      "meaning": "Wie heißt du? = What is your name? (how are you called)",
+      "explanation": "The du-form wears -t: ich heiße, du heißt. The polite Wie heißen Sie? keeps the -en — both ask the name by way of the calling verb."
     },
     {
       "id": "l5071_e4",
@@ -146,7 +146,7 @@ const lesson: Lesson = {
         {
           "word": "heiße",
           "translation": "am called",
-          "note": "ich heiße = my name is — the hight twin"
+          "note": "ich heiße = my name is — literally 'I am called'"
         },
         {
           "word": "aus",
@@ -170,16 +170,16 @@ const lesson: Lesson = {
     }
   ],
   "summary": {
-    "outcome": "Introduce yourself with heiße, komme aus, wohne in and the age formula — and explain the heißen/hight twin.",
+    "outcome": "Introduce yourself with heiße, komme aus, wohne in and the age formula, and know which of the formulas are old English twins (kommen/come, Jahr/year, alt/old).",
     "use_example": {
       "german": "Ich heiße Anna. Ich komme aus England, und ich wohne in Berlin.",
       "english": "My name is Anna. I come from England, and I live in Berlin."
     },
-    "takeaway": "heißen ↔ hight ('to be called'), kommen aus (origins), wohnen in (residence), Jahre alt (age, word for word) — the whole first minute is cognate-built.",
+    "takeaway": "ich heiße (my name is), kommen aus (origins: come), wohnen in (residence), Jahre alt (age: year, word for word) — most of your first minute is cognate-built.",
     "curiosity_teaser": "Next: the alphabet — W is 'veh', V is 'fow', Z is 'tsett', and buchstabieren spells your name out loud."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"We be called (twin: hight) here today\"",
+    "prompt": "Without looking back — build in German: \"We be called here today\"",
     "target_answer": "Wir heißen heute hier",
     "word_bank": [
       "Wir",

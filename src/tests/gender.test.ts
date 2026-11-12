@@ -1,6 +1,43 @@
 import { describe, it, expect } from "vitest";
-import { getGenderInfo } from "@/lib/gender";
+import { getGenderInfo, wordWithArticle } from "@/lib/gender";
 import { compendium as data } from "@/data/compendium";
+import { LANGUAGES } from "@/data/languages";
+import { getLanguageContent } from "@/data/language-content";
+import { getWordEntityMap } from "./word-entity-fixtures";
+
+describe("Article prefixing never doubles the article", () => {
+  it("keeps no compendium word gendered as the word it already is", () => {
+    // word_connections.md rows 41-43 gave das/die/der self-referential gender,
+    // which shipped "der der — the / he" into TRAIL.md and spoke "der der".
+    for (const { id: languageId } of LANGUAGES) {
+      const compendium = getLanguageContent(languageId).compendium;
+      if (!compendium) continue;
+      for (const word of compendium.wordList) {
+        if (!word.gender) continue;
+        expect(word.target_word.toLowerCase(), `${languageId}/${word.id}`).not.toBe(word.gender.toLowerCase());
+      }
+    }
+  });
+
+  it("composes the printed/spoken form once, elided where the language elides", () => {
+    expect(wordWithArticle("der", "Tisch", "de")).toBe("der Tisch");
+    expect(wordWithArticle("der", "der", "de")).toBe("der");
+    expect(wordWithArticle("die", "die", "de")).toBe("die");
+    expect(wordWithArticle("le", "le", "fr")).toBe("le");
+    expect(wordWithArticle("le", "ami", "fr")).toBe("l'ami");
+    expect(wordWithArticle("la", "heure", "fr")).toBe("l'heure");
+    expect(wordWithArticle(null, "haben", "de")).toBe("haben");
+  });
+
+  it("never yields a doubled article for any generated review card", () => {
+    for (const { id: languageId } of LANGUAGES) {
+      for (const word of Object.values(getWordEntityMap(languageId))) {
+        const form = wordWithArticle(word.gender, word.target_word, languageId);
+        expect(form, `${languageId}: ${word.id}`).not.toMatch(/^(der|die|das|le|la|el|de|het)\s+\1\b/i);
+      }
+    }
+  });
+});
 
 describe("Grammatical Gender Engine & Color Coding", () => {
   it("maps der to masculine azure blue metadata", () => {

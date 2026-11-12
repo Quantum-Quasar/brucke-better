@@ -12,7 +12,7 @@ import { isModifiedClick, useAppNavigation } from "@/lib/app-navigation";
 import { GenderBadge } from "@/components/common/GenderBadge";
 import { playTargetAudio } from "@/lib/audio";
 import { getLanguageDefinition } from "@/data/languages";
-import { displayArticle } from "@/lib/gender";
+import { wordWithArticle } from "@/lib/gender";
 import { useCompendium, useLessonIndex } from "@/lib/content-client";
 import { buildWordEntityMaps, lookupWordEntity } from "@/lib/word-entities-core";
 import { lessonHref } from "@/lib/routes";
@@ -123,14 +123,8 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
     );
   }
 
-  // le/la collapse to l' before a vowel — speak the elided form the French do
-  const spokenArticle = word.gender ? displayArticle(word.gender, word.target_word, activeLanguageId) : null;
-  const spokenWord =
-    spokenArticle === null
-      ? word.target_word
-      : spokenArticle.endsWith("'")
-        ? `${spokenArticle}${word.target_word}`
-        : `${spokenArticle} ${word.target_word}`;
+  // le/la collapse to l' before a vowel — the helper speaks the elided form
+  const spokenWord = wordWithArticle(word.gender, word.target_word, activeLanguageId);
 
   const shiftFamily = word.sound_shift_ids[0] ? data.shifts[word.sound_shift_ids[0]] : null;
   const lessonId = wordEntityMaps.wordLesson[word.id];

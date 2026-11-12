@@ -5,6 +5,7 @@ import { ExampleSentence } from "@/components/common/ExampleSentence";
 import { ShiftPair } from "@/components/common/ShiftPair";
 import { computeLetterDiff } from "@/lib/letter-diff";
 import { playTargetAudio } from "@/lib/audio";
+import { wordWithArticle } from "@/lib/gender";
 import type { ReviewMode } from "@/lib/types";
 import type { ReviewController } from "./use-review-controller";
 import { ReviewAnswerEntry } from "./ReviewAnswerEntry";
@@ -197,7 +198,7 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
                   <button
                     type="button"
                     onClick={() => {
-                      const spoken = currentWord.gender ? `${currentWord.gender} ${currentWord.target_word}` : currentWord.target_word;
+                      const spoken = wordWithArticle(currentWord.gender, currentWord.target_word, language.id);
                       playTargetAudio(spoken, language.ttsLocale);
                     }}
                     className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[var(--sub-alt-color)] hover:bg-[var(--main-color)]/10 text-[var(--main-color)] border border-[var(--sub-color)]/20 text-xs font-mono transition cursor-pointer"

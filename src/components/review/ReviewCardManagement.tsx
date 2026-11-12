@@ -39,7 +39,7 @@ export function ReviewCardManagement({ controller }: { controller: ReviewControl
             <p className="text-sm text-[var(--sub-color)]">This dictionary card has no teaching lesson. Relearn from its meaning and example instead.</p>
             {!started ? <button type="button" className={buttonClass} onClick={() => beginRelearn(card.word_id, 0)}>Relearn this card</button> : <div className="space-y-2">
               <p>{word?.english_meaning}</p>
-              <p>{word?.gender ? `${word.gender} ` : ""}{word?.context_phrase}</p>
+              <p>{word?.context_phrase}</p>
               <p className="text-sm text-[var(--sub-color)]">{word?.context_translation}</p>
               <button type="button" className={buttonClass} onClick={() => resumeRelearn(card.word_id)}>I reviewed the meaning and example — resume</button>
             </div>}

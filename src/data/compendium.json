@@ -597,7 +597,7 @@
       "target_word": "das",
       "english_cognate": "that / the",
       "english_meaning": "that / the",
-      "gender": "das",
+      "gender": null,
       "ipa": "/das/",
       "sound_shift_ids": [
         "th_to_d",
@@ -614,7 +614,7 @@
       "target_word": "die",
       "english_cognate": "the / she / they",
       "english_meaning": "the / she / they",
-      "gender": "die",
+      "gender": null,
       "ipa": "/diː/",
       "sound_shift_ids": [
         "th_to_d"
@@ -630,7 +630,7 @@
       "target_word": "der",
       "english_cognate": "the / he",
       "english_meaning": "the / he",
-      "gender": "der",
+      "gender": null,
       "ipa": "/deːɐ̯/",
       "sound_shift_ids": [
         "th_to_d"
@@ -5472,8 +5472,8 @@
     "herbst": {
       "id": "herbst",
       "target_word": "Herbst",
-      "english_cognate": "autumn (twin: harvest)",
-      "english_meaning": "autumn (twin: harvest)",
+      "english_cognate": "autumn",
+      "english_meaning": "autumn",
       "gender": "der",
       "ipa": "/hɛʁpst/",
       "sound_shift_ids": [
@@ -5558,8 +5558,8 @@
     "wolke": {
       "id": "wolke",
       "target_word": "Wolke",
-      "english_cognate": "cloud (archaic twin: welkin)",
-      "english_meaning": "cloud (archaic twin: welkin)",
+      "english_cognate": "cloud",
+      "english_meaning": "cloud",
       "gender": "die",
       "ipa": "/ˈvɔlkə/",
       "sound_shift_ids": [],
@@ -6164,8 +6164,8 @@
     "kopf": {
       "id": "kopf",
       "target_word": "Kopf",
-      "english_cognate": "head (archaic twin: cop)",
-      "english_meaning": "head (archaic twin: cop)",
+      "english_cognate": "head",
+      "english_meaning": "head",
       "gender": "der",
       "ipa": "/kɔpf/",
       "sound_shift_ids": [],
@@ -6206,8 +6206,8 @@
     "hals": {
       "id": "hals",
       "target_word": "Hals",
-      "english_cognate": "neck (obsolete twin: heals)",
-      "english_meaning": "neck (obsolete twin: heals)",
+      "english_cognate": "neck",
+      "english_meaning": "neck",
       "gender": "der",
       "ipa": "/hals/",
       "sound_shift_ids": [],
@@ -6220,8 +6220,8 @@
     "rücken": {
       "id": "rücken",
       "target_word": "Rücken",
-      "english_cognate": "back (twin: ridge)",
-      "english_meaning": "back (twin: ridge)",
+      "english_cognate": "back",
+      "english_meaning": "back",
       "gender": "der",
       "ipa": "/ˈʁʏkn̩/",
       "sound_shift_ids": [],
@@ -6234,8 +6234,8 @@
     "bauch": {
       "id": "bauch",
       "target_word": "Bauch",
-      "english_cognate": "belly (dialect twin: bouk)",
-      "english_meaning": "belly (dialect twin: bouk)",
+      "english_cognate": "belly",
+      "english_meaning": "belly",
       "gender": "der",
       "ipa": "/baʊ̯x/",
       "sound_shift_ids": [],
@@ -6248,8 +6248,8 @@
     "magen": {
       "id": "magen",
       "target_word": "Magen",
-      "english_cognate": "stomach (twin: maw)",
-      "english_meaning": "stomach (twin: maw)",
+      "english_cognate": "stomach",
+      "english_meaning": "stomach",
       "gender": "der",
       "ipa": "/ˈmaːɡən/",
       "sound_shift_ids": [],
@@ -6304,8 +6304,8 @@
     "knochen": {
       "id": "knochen",
       "target_word": "Knochen",
-      "english_cognate": "bone (twin: knuckle)",
-      "english_meaning": "bone (twin: knuckle)",
+      "english_cognate": "bone",
+      "english_meaning": "bone",
       "gender": "der",
       "ipa": "/ˈknɔxn̩/",
       "sound_shift_ids": [
@@ -6378,8 +6378,8 @@
     "krank": {
       "id": "krank",
       "target_word": "krank",
-      "english_cognate": "sick (twin: crank)",
-      "english_meaning": "sick (twin: crank)",
+      "english_cognate": "sick",
+      "english_meaning": "sick",
       "gender": null,
       "ipa": "/kʁaŋk/",
       "sound_shift_ids": [],
@@ -6532,8 +6532,8 @@
     "kleid": {
       "id": "kleid",
       "target_word": "Kleid",
-      "english_cognate": "dress (twin: cloth)",
-      "english_meaning": "dress (twin: cloth)",
+      "english_cognate": "dress",
+      "english_meaning": "dress",
       "gender": "das",
       "ipa": "/klaɪ̯t/",
       "sound_shift_ids": [
@@ -6548,8 +6548,8 @@
     "hose": {
       "id": "hose",
       "target_word": "Hose",
-      "english_cognate": "trousers (twin: hose)",
-      "english_meaning": "trousers (twin: hose)",
+      "english_cognate": "trousers",
+      "english_meaning": "trousers",
       "gender": "die",
       "ipa": "/ˈhoːzə/",
       "sound_shift_ids": [],
@@ -6646,8 +6646,8 @@
     "gürtel": {
       "id": "gürtel",
       "target_word": "Gürtel",
-      "english_cognate": "belt (twin: girdle)",
-      "english_meaning": "belt (twin: girdle)",
+      "english_cognate": "belt",
+      "english_meaning": "belt",
       "gender": "der",
       "ipa": "/ˈɡʏʁtəl/",
       "sound_shift_ids": [],
@@ -6786,8 +6786,8 @@
     "nähe": {
       "id": "nähe",
       "target_word": "Nähe",
-      "english_cognate": "nearness (twin: nigh)",
-      "english_meaning": "nearness (twin: nigh)",
+      "english_cognate": "nearness",
+      "english_meaning": "nearness",
       "gender": "die",
       "ipa": "/ˈnɛːə/",
       "sound_shift_ids": [],
@@ -6828,8 +6828,8 @@
     "mitte": {
       "id": "mitte",
       "target_word": "Mitte",
-      "english_cognate": "middle (twin: mid)",
-      "english_meaning": "middle (twin: mid)",
+      "english_cognate": "middle",
+      "english_meaning": "middle",
       "gender": "die",
       "ipa": "/ˈmɪtə/",
       "sound_shift_ids": [],
@@ -7240,8 +7240,8 @@
     "gurke": {
       "id": "gurke",
       "target_word": "Gurke",
-      "english_cognate": "cucumber (twin: gherkin)",
-      "english_meaning": "cucumber (twin: gherkin)",
+      "english_cognate": "cucumber",
+      "english_meaning": "cucumber",
       "gender": "die",
       "ipa": "/ˈɡʊrkə/",
       "sound_shift_ids": [],
@@ -7352,8 +7352,8 @@
     "schmecken": {
       "id": "schmecken",
       "target_word": "schmecken",
-      "english_cognate": "to taste (twin: smack)",
-      "english_meaning": "to taste (twin: smack)",
+      "english_cognate": "to taste",
+      "english_meaning": "to taste",
       "gender": null,
       "ipa": "/ˈʃmɛkn̩/",
       "sound_shift_ids": [],
@@ -7506,8 +7506,8 @@
     "stunde": {
       "id": "stunde",
       "target_word": "Stunde",
-      "english_cognate": "hour (archaic twin: stound)",
-      "english_meaning": "hour (archaic twin: stound)",
+      "english_cognate": "hour",
+      "english_meaning": "hour",
       "gender": "die",
       "ipa": "/ˈʃtʊndə/",
       "sound_shift_ids": [],
@@ -7755,8 +7755,8 @@
     "zimmer": {
       "id": "zimmer",
       "target_word": "Zimmer",
-      "english_cognate": "room (twin: timber)",
-      "english_meaning": "room (twin: timber)",
+      "english_cognate": "room",
+      "english_meaning": "room",
       "gender": "das",
       "ipa": "/ˈt͡sɪmɐ/",
       "sound_shift_ids": [
@@ -7801,8 +7801,8 @@
     "stuhl": {
       "id": "stuhl",
       "target_word": "Stuhl",
-      "english_cognate": "chair (twin: stool)",
-      "english_meaning": "chair (twin: stool)",
+      "english_cognate": "chair",
+      "english_meaning": "chair",
       "gender": "der",
       "ipa": "/ʃtuːl/",
       "sound_shift_ids": [],
@@ -7815,8 +7815,8 @@
     "wand": {
       "id": "wand",
       "target_word": "Wand",
-      "english_cognate": "wall (twin: wand)",
-      "english_meaning": "wall (twin: wand)",
+      "english_cognate": "wall",
+      "english_meaning": "wall",
       "gender": "die",
       "ipa": "/vant/",
       "sound_shift_ids": [],
@@ -7885,8 +7885,8 @@
     "schlüssel": {
       "id": "schlüssel",
       "target_word": "Schlüssel",
-      "english_cognate": "key (twin: slot)",
-      "english_meaning": "key (twin: slot)",
+      "english_cognate": "key",
+      "english_meaning": "key",
       "gender": "der",
       "ipa": "/ˈʃlʏsl̩/",
       "sound_shift_ids": [],
@@ -7983,8 +7983,8 @@
     "lesen": {
       "id": "lesen",
       "target_word": "lesen",
-      "english_cognate": "to read (archaic twin: lease, gather)",
-      "english_meaning": "to read (archaic twin: lease, gather)",
+      "english_cognate": "to read",
+      "english_meaning": "to read",
       "gender": null,
       "ipa": "/ˈleːzn̩/",
       "sound_shift_ids": [],
@@ -8153,8 +8153,8 @@
     "hund": {
       "id": "hund",
       "target_word": "Hund",
-      "english_cognate": "dog (twin: hound)",
-      "english_meaning": "dog (twin: hound)",
+      "english_cognate": "dog",
+      "english_meaning": "dog",
       "gender": "der",
       "ipa": "/hʊnt/",
       "sound_shift_ids": [],
@@ -8167,8 +8167,8 @@
     "vogel": {
       "id": "vogel",
       "target_word": "Vogel",
-      "english_cognate": "bird (twin: fowl)",
-      "english_meaning": "bird (twin: fowl)",
+      "english_cognate": "bird",
+      "english_meaning": "bird",
       "gender": "der",
       "ipa": "/ˈfoːɡəl/",
       "sound_shift_ids": [],
@@ -8195,8 +8195,8 @@
     "schwein": {
       "id": "schwein",
       "target_word": "Schwein",
-      "english_cognate": "pig (twin: swine)",
-      "english_meaning": "pig (twin: swine)",
+      "english_cognate": "pig",
+      "english_meaning": "pig",
       "gender": "das",
       "ipa": "/ʃvaɪ̯n/",
       "sound_shift_ids": [],
@@ -8293,8 +8293,8 @@
     "wald": {
       "id": "wald",
       "target_word": "Wald",
-      "english_cognate": "forest (twin: weald)",
-      "english_meaning": "forest (twin: weald)",
+      "english_cognate": "forest",
+      "english_meaning": "forest",
       "gender": "der",
       "ipa": "/valt/",
       "sound_shift_ids": [],
@@ -8363,8 +8363,8 @@
     "herr": {
       "id": "herr",
       "target_word": "Herr",
-      "english_cognate": "mister / lord (twin: hoar)",
-      "english_meaning": "mister / lord (twin: hoar)",
+      "english_cognate": "mister / lord",
+      "english_meaning": "mister / lord",
       "gender": "der",
       "ipa": "/hɛr/",
       "sound_shift_ids": [],
@@ -8677,8 +8677,8 @@
     "leer": {
       "id": "leer",
       "target_word": "leer",
-      "english_cognate": "empty (twin: leer)",
-      "english_meaning": "empty (twin: leer)",
+      "english_cognate": "empty",
+      "english_meaning": "empty",
       "gender": null,
       "ipa": "/leːɐ̯/",
       "sound_shift_ids": [],
@@ -8733,8 +8733,8 @@
     "traurig": {
       "id": "traurig",
       "target_word": "traurig",
-      "english_cognate": "sad (twin: dreary)",
-      "english_meaning": "sad (twin: dreary)",
+      "english_cognate": "sad",
+      "english_meaning": "sad",
       "gender": null,
       "ipa": "/ˈtʁaʊ̯ʁɪç/",
       "sound_shift_ids": [
@@ -8791,8 +8791,8 @@
     "froh": {
       "id": "froh",
       "target_word": "froh",
-      "english_cognate": "glad (twin: frolic)",
-      "english_meaning": "glad (twin: frolic)",
+      "english_cognate": "glad",
+      "english_meaning": "glad",
       "gender": null,
       "ipa": "/fʁoː/",
       "sound_shift_ids": [],
@@ -8861,8 +8861,8 @@
     "stolz": {
       "id": "stolz",
       "target_word": "stolz",
-      "english_cognate": "proud (twin: stout)",
-      "english_meaning": "proud (twin: stout)",
+      "english_cognate": "proud",
+      "english_meaning": "proud",
       "gender": null,
       "ipa": "/ʃtɔlt͡s/",
       "sound_shift_ids": [],
@@ -9057,8 +9057,8 @@
     "heißen": {
       "id": "heißen",
       "target_word": "heißen",
-      "english_cognate": "to be called (twin: hight)",
-      "english_meaning": "to be called (twin: hight)",
+      "english_cognate": "to be called",
+      "english_meaning": "to be called",
       "gender": null,
       "ipa": "/ˈhaɪ̯sən/",
       "sound_shift_ids": [],
@@ -9087,8 +9087,8 @@
     "freuen": {
       "id": "freuen",
       "target_word": "freuen",
-      "english_cognate": "to rejoice / be glad (twin: frolic)",
-      "english_meaning": "to rejoice / be glad (twin: frolic)",
+      "english_cognate": "to rejoice / be glad",
+      "english_meaning": "to rejoice / be glad",
       "gender": null,
       "ipa": "/ˈfʁɔʏən/",
       "sound_shift_ids": [],

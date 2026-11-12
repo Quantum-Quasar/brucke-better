@@ -15,6 +15,7 @@ run by hand.
 | `export-client-data.ts` | `bun run export-data` | Exports each language's compendium, compact lesson index (including exercise counts) and one trimmed payload per lesson to ignored `public/data/<lang>/`, plus frequency attribution. Regenerates committed `src/data/shift-names.json` and `lesson-exercise-counts.json`; these tiny manifests let navigation show names/effort without fetching a course index. `dev`, `build` and `test` run it automatically. |
 | `append-words.mjs` | `bun scripts/append-words.mjs <json…>` | Batch-appends word records to §2 of `word_connections.md` (numbered after the current max; dedupes by German headword). Run `parse-data` afterwards. |
 | `generate-frequency.ts` | `bun scripts/generate-frequency.ts` | Fetches pinned FrequencyWords/OpenSubtitles lists, verifies SHA-256 checksums, and writes committed `src/data/frequency-ranks.json` and `src/data/frequency-provenance.json`. Run when the vocabulary inventory changes, then run `export-data` to publish both the ranks and attribution. No corpus download happens in ordinary builds. |
+| `generate-english-hook-words.ts` | `bun scripts/generate-english-hook-words.ts` | Verifies the pinned English OpenSubtitles list's SHA-256 and writes committed `src/data/english-hook-words.json` — the English forms a lesson hook may name as a twin the learner already owns. Run only when the hook-word limit or pinned revision changes; no build touches the network. |
 
 `word_connections.md` is the hand-maintained source of truth for every word,
 shift family, compound, trap, and insight. `compendium.json` is **generated** —
@@ -57,6 +58,14 @@ or general usefulness. Author candidates can be ranked with
 the input is an array such as `[{"target_word":"Wasser"}]`. Attribution and source
 limits are committed in `src/data/frequency-provenance.json` and published by every
 export to `public/data/frequency-provenance.json`.
+
+The English side of a twin claim — a `(twin: …)` annotation in a compendium cognate
+cell, a pair label, an exercise `meaning`, a twist prompt — must be a word the learner
+already owns. `scripts/generate-english-hook-words.ts` pins that list
+(`src/data/english-hook-words.json`, the top 5,000 forms of the English subtitle list);
+`scripts/parse-compendium.ts` fails on a violating row with its source line and
+`src/tests/english-hooks.test.ts` sweeps every authored string. Rare or archaic twins
+belong in the derivation, `explanation` or `footnotes`, never in the hook slot.
 
 ## Audits
 

@@ -81,7 +81,7 @@ const lesson: Lesson = {
         },
         {
           "id": "ec5",
-          "english": "grandchild (twin: ankle)",
+          "english": "grandchild",
           "german": "der Enkel"
         },
         {
@@ -111,7 +111,7 @@ const lesson: Lesson = {
         }
       ],
       "target_answer": "der Großvater, die Großmutter, der Onkel, die Tante, der Enkel, mein Vater und meine Mutter, mein Sohn und meine Schwester, meine Eltern, mein Opa, meine Geschwister",
-      "meaning": "grandfather (big-father); grandmother (big-mother); uncle (French loan like English uncle); aunt (French loan like English aunt); grandchild (twin: ankle); my father and my mother; my son and my sister; my parents; my grandpa; my siblings",
+      "meaning": "grandfather (big-father); grandmother (big-mother); uncle (French loan like English uncle); aunt (French loan like English aunt); grandchild; my father and my mother; my son and my sister; my parents; my grandpa; my siblings",
       "explanation": "Compounds (Groß+vater), shared French loans (Onkel, Tante) and one fossil (Enkel ↔ ankle) — the clan in five words."
     },
     {

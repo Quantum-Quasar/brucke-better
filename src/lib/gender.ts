@@ -125,3 +125,20 @@ export function displayArticle(
   }
   return info.article;
 }
+
+/**
+ * The word as a learner should read it or hear it: article in front, elided
+ * where the language elides (l'ami), and never doubled when the word *is* the
+ * article itself — "der der" is a typo the learner reads as noise.
+ */
+export function wordWithArticle(
+  gender: Gender | string | null | undefined,
+  targetWord: string,
+  languageId: string
+): string {
+  const word = targetWord.trim();
+  const article = displayArticle(gender, word, languageId);
+  if (!article) return word;
+  if (article.replace(/'$/, "").toLowerCase() === word.toLowerCase()) return word;
+  return article.endsWith("'") ? `${article}${word}` : `${article} ${word}`;
+}

@@ -7,6 +7,7 @@ import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
 import { GenderBadge } from "@/components/common/GenderBadge";
 import { playTargetAudio } from "@/lib/audio";
+import { wordWithArticle } from "@/lib/gender";
 import type { Gender } from "@/lib/types";
 
 interface ShiftPairProps {
@@ -102,7 +103,7 @@ export const ShiftPair: React.FC<ShiftPairProps> = React.memo(({
         type="button"
         onClick={(e) => {
           e.stopPropagation();
-          const spoken = gender ? `${gender} ${german}` : german;
+          const spoken = wordWithArticle(gender, german, activeLanguageId);
           playTargetAudio(spoken, ttsLocale);
         }}
         className="p-1 rounded text-[var(--sub-color)] hover:text-[var(--main-color)] hover:bg-[var(--sub-alt-color)] transition cursor-pointer"

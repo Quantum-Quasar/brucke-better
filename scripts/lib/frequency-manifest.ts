@@ -12,3 +12,18 @@ export const FREQUENCY_CHECKSUMS: Record<FrequencyLanguage, string> = {
 export function frequencySourceUrl(language: FrequencyLanguage): string {
   return `https://raw.githubusercontent.com/hermitdave/FrequencyWords/${FREQUENCY_REVISION}/content/2018/${language}/${language}_50k.txt`;
 }
+
+/**
+ * English is deliberately *not* a `FrequencyLanguage`: its pinned list only ranks
+ * English hook words, deciding which "twin" a lesson may name as already-known.
+ * Keeping it out of `FREQUENCY_LANGUAGES` stops English ranks leaking into the
+ * course payloads or any other exported vocabulary artifact.
+ */
+export const ENGLISH_FREQUENCY_CHECKSUM = "5351ff405b1126ef555791dd4d9798a48e3e9a501a9fc481a9da957752cfb458";
+
+/** How many of the ranked English forms a lesson hook may treat as already known. */
+export const ENGLISH_HOOK_WORD_LIMIT = 5000;
+
+export function englishFrequencySourceUrl(): string {
+  return `https://raw.githubusercontent.com/hermitdave/FrequencyWords/${FREQUENCY_REVISION}/content/2018/en/en_50k.txt`;
+}

@@ -474,7 +474,7 @@ export const TRAIL_BRANCHES: TrailBranch[] = [
     title: "First Words, First Spoken",
     blurb: "Your first spoken German: saying who you are, where you're from — and the alphabet.",
     lessons: [
-      { ...shell(5071, "First Introductions", "ich heiße ↔ archaic hight 'to be called'; ich komme aus; ich wohne; ich bin N Jahre alt — introduction sentences from taught cognates."), authored: true },
+      { ...shell(5071, "First Introductions", "ich heiße (my name is); ich komme aus; ich wohne; ich bin N Jahre alt — introduction sentences built from English twins the learner already owns: kommen/come, Jahr/year, alt/old."), authored: true },
       { ...shell(5072, "The Alphabet & buchstabieren", "Das deutsche Alphabet: W = 'veh', V = 'fow', J = 'yot', Z = 'tsett', ß = 'Eszett' — and buchstabieren, the -ieren verb for spelling your name."), authored: true },
     ],
   },

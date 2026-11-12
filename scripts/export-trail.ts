@@ -10,6 +10,7 @@ import path from "path";
 import { TOPICS, TRAIL_GATES, TRAIL_BRANCHES, TOTAL_TOPICS } from "../src/data/curriculum";
 import { LESSONS } from "../src/data/lessons";
 import { compendium } from "../src/data/compendium";
+import { wordWithArticle } from "../src/lib/gender";
 
 const SHIFT_BADGES: Record<string, string> = {
   th_to_d: "TH → D",
@@ -60,7 +61,7 @@ function lessonSection(id: number, kind: "core" | "story" | "sprig" | "branch"):
   const words = lesson.table_word_ids
     .map((wid) => compendium.words[wid])
     .filter(Boolean)
-    .map((w) => `${w.gender ? `${w.gender} ` : ""}${w.target_word} — *${w.english_cognate}*`);
+    .map((w) => `${wordWithArticle(w.gender, w.target_word, "de")} — *${w.english_cognate}*`);
   if (words.length) line(`**Table:** ${words.join(" · ")}`);
   line();
 }
