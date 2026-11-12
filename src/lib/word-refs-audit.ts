@@ -37,7 +37,8 @@ function stemOf(id: string): string {
 }
 
 const stems = new Set<string>();
-for (const id of compendiumIds) stems.add(stemOf(id));
+// derive stems from the displayed headword: an id may carry a "#noun" sense tag
+for (const word of Object.values(compendium.words)) stems.add(stemOf(word.target_word.toLowerCase()));
 
 // Inflected forms whose letters drift too far from the stem for prefix matching:
 // du-forms with vowel change (kannst, willst, hilft, hast), ablaut participles

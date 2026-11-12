@@ -3,7 +3,7 @@ import { compendium as data } from "../data/compendium";
 import { getWordEntity } from "./word-entity-fixtures";
 import { TOTAL_COMPENDIUM_WORDS } from "../lib/types";
 import fs from "node:fs";
-import { parseCompendium } from "../../scripts/parse-compendium";
+import { analyzeCompendium, parseCompendium, renderDigest } from "../../scripts/parse-compendium";
 
 describe("Compendium parser rejects data loss", () => {
   const source = fs.readFileSync(new URL("../../word_connections.md", import.meta.url), "utf8");
@@ -104,5 +104,66 @@ describe("Brücke Compendium Data Integrity", () => {
         expect(data.words[wid]).toBeDefined();
       }
     }
+  });
+});
+
+describe("Compendium ids and table invariants", () => {
+  const source = fs.readFileSync(new URL("../../word_connections.md", import.meta.url), "utf8");
+  const inventoryCount = Number(source.match(/## 2\..*?\(All (\d+) Words\)/)![1]);
+
+  function withWordRow(cell: string, gender = "-"): string {
+    const row = `| ${inventoryCount + 1} | **${cell}** | test | ${gender} | /tɛst/ | \`Direct Cognate\` | Test. *("Test.")* | test | food |`;
+    return source
+      .replace("\n\n---\n\n## 3.", `\n${row}\n\n---\n\n## 3.`)
+      .replace(/(## 2\..*?\(All )\d+( Words\))/, `$1${inventoryCount + 1}$2`);
+  }
+
+  it("parses the shipped source with no issues at all", () => {
+    const { compendium, issues } = analyzeCompendium(source);
+    expect(issues).toEqual([]);
+    expect(compendium).not.toBeNull();
+  });
+
+  it("reports the slug under which the digest is generated, and keeps it in sync", () => {
+    const { compendium } = analyzeCompendium(source);
+    const digest = fs.readFileSync(new URL("../../src/data/compendium-digest.md", import.meta.url), "utf8");
+    expect(digest).toBe(renderDigest(compendium!));
+  });
+
+  it("refuses a second sense of an existing headword until the row is tagged", () => {
+    expect(() => parseCompendium(withWordRow("Essen"))).toThrow(
+      /duplicate id: essen .*needs its own sense tag \(#noun, #verb, #adj, #adv\)/
+    );
+    expect(() => parseCompendium(withWordRow("Essen#nounish"))).toThrow(/unknown id suffix/);
+  });
+
+  it("gives a tagged second sense its own id and keeps the bare display headword", () => {
+    const { compendium } = analyzeCompendium(withWordRow("Essen#noun", "das (n)"));
+    expect(compendium!.words["essen"]!.target_word).toBe("essen");
+    expect(compendium!.words["essen#noun"]).toMatchObject({ id: "essen#noun", target_word: "Essen", gender: "das" });
+  });
+
+  it("rejects a sense tag that is not needed", () => {
+    expect(() => parseCompendium(withWordRow("Testwort#noun"))).toThrow(/unnecessary id suffix/);
+  });
+
+  it("rejects a domain outside the Review Hub vocabulary", () => {
+    const row = `| ${inventoryCount + 1} | **Testwort** | test | - | /tɛst/ | \`Direct Cognate\` | Test. *("Test.")* | test | fodd |`;
+    const broken = source
+      .replace("\n\n---\n\n## 3.", `\n${row}\n\n---\n\n## 3.`)
+      .replace(/(## 2\..*?\(All )\d+( Words\))/, `$1${inventoryCount + 1}$2`);
+    expect(() => parseCompendium(broken)).toThrow(/unknown domain: fodd/);
+  });
+
+  it("reports every bad row in one run, with line numbers", () => {
+    const broken = withWordRow("Essen").replace(
+      /^\| 103 \| \*\*essen\*\*.*$/m,
+      '| 103 | **essen** | to eat | - | /t/ | `t_to_s_ss_z` | X *("X")* | x | fodd |'
+    );
+    const { issues } = analyzeCompendium(broken);
+    const domains = issues.filter((issue) => issue.message.includes("unknown domain"));
+    expect(domains).toHaveLength(1);
+    expect(issues.length).toBeGreaterThan(1);
+    for (const issue of issues) expect(issue.line).toBeGreaterThan(0);
   });
 });

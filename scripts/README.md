@@ -11,9 +11,9 @@ run by hand.
 
 | Script | Run via | What it does |
 | --- | --- | --- |
-| `parse-compendium.ts` | `bun run parse-data` | Regenerates the committed German source snapshots `src/data/compendium.json` and `src/data/insights.json` from [`word_connections.md`](../word_connections.md), before export in production builds. |
+| `parse-compendium.ts` | `bun run parse-data` | Regenerates the committed German source snapshots `src/data/compendium.json` and `src/data/insights.json`, plus the one-line-per-word review index `src/data/compendium-digest.md`, from [`word_connections.md`](../word_connections.md), before export in production builds. |
 | `export-client-data.ts` | `bun run export-data` | Exports each language's compendium, compact lesson index (including exercise counts) and one trimmed payload per lesson to ignored `public/data/<lang>/`, plus frequency attribution. Regenerates committed `src/data/shift-names.json` and `lesson-exercise-counts.json`; these tiny manifests let navigation show names/effort without fetching a course index. `dev`, `build` and `test` run it automatically. |
-| `append-words.mjs` | `bun scripts/append-words.mjs <json…>` | Batch-appends word records to §2 of `word_connections.md` (numbered after the current max; dedupes by German headword). Run `parse-data` afterwards. |
+| `append-words.mjs` | `bun scripts/append-words.mjs <json…>` | Batch-appends word records to §2 of `word_connections.md` (numbered after the current max; dedupes by German headword; keeps the section inventory count honest). A record may carry `"sense": "noun"` to teach a second sense of an existing headword as `Essen#noun` (id `essen#noun`), and any bad record aborts the whole batch before a byte is written. Run `parse-data` afterwards. |
 | `generate-frequency.ts` | `bun scripts/generate-frequency.ts` | Fetches pinned FrequencyWords/OpenSubtitles lists, verifies SHA-256 checksums, and writes committed `src/data/frequency-ranks.json` and `src/data/frequency-provenance.json`. Run when the vocabulary inventory changes, then run `export-data` to publish both the ranks and attribution. No corpus download happens in ordinary builds. |
 | `generate-english-hook-words.ts` | `bun scripts/generate-english-hook-words.ts` | Verifies the pinned English OpenSubtitles list's SHA-256 and writes committed `src/data/english-hook-words.json` — the English forms a lesson hook may name as a twin the learner already owns. Run only when the hook-word limit or pinned revision changes; no build touches the network. |
 
@@ -37,7 +37,7 @@ is what writes all four languages' payloads to `public/data/<lang>/`. The entire
 `public/data/` directory is generated and ignored, not a second content source.
 Keep `word_connections.md`, the committed German compendium/insights, typed sibling
 language modules, lesson sources and frequency rank/provenance sources in git.
-CI's source-sync check diffs the compendium/insights and both compact metadata manifests.
+CI's source-sync check diffs the compendium/insights, the compendium digest and both compact metadata manifests.
 
 A fresh checkout needs `bun run export-data` before commands that serve public
 assets directly. `bun run dev`, `bun run build` and `bun run test` already do this;
@@ -78,6 +78,7 @@ summary is `title drift: 0 | teaser flags: 0`.
 
 | Script | What it checks |
 | --- | --- |
+| `check-compendium.ts` | **Fast table preflight** (`bun run check:compendium`): parses `word_connections.md` in memory and prints *every* row-level issue with its source line — column counts, duplicate ids, unknown shift ids, unknown domains, bad id-sense tags, inventory drift. Writes nothing, so it is safe before a batch and on save; `bun run test` enforces the same checks and `.githooks/pre-commit` calls it when the table is staged. |
 | `audit-vocab-balance.ts` | Vocabulary legality and campaign bookkeeping — that exercise-surface tokens resolve to words introduced *before* the lesson that uses them, with an explicit allowlist for pre-existing drift. Also the authority for the "unique taught words" figure quoted in the docs. |
 | `audit-wording.ts` | **No cargo-cult repetition.** Blocks `explanation` strings, prose sentences, and prompt formulas copy-pasted between neighbouring lessons, while an allowlist protects widget labels that are *meant* to stay identical. |
 | `audit-word-refs.ts` | Word-reference integrity — every lesson/exercise token reference resolves; exits 1 on failure. |
@@ -155,3 +156,6 @@ claims that every file was downloaded in a browser session:
   `package.json` if it is required for the build to succeed.
 - If a new script becomes a correctness gate, move the assertion into
   `src/tests/` instead — a manual audit script that nobody runs is not a guard.
+  `check-compendium.ts` is a thin CLI over the parser's own checks (`analyzeCompendium`),
+  pinned by `src/tests/compendium.test.ts`; a new table rule belongs there, never in a
+  second regex copy that drifts.

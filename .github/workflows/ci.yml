@@ -50,7 +50,7 @@ jobs:
       # Distribution payloads are ignored; committed source/compact metadata
       # must still agree with their generators.
       - name: Generated source metadata is committed in sync
-        run: git diff --exit-code -- src/data/compendium.json src/data/insights.json src/data/shift-names.json src/data/lesson-exercise-counts.json
+        run: git diff --exit-code -- src/data/compendium.json src/data/insights.json src/data/compendium-digest.md src/data/shift-names.json src/data/lesson-exercise-counts.json
 
   e2e:
     runs-on: ubuntu-latest

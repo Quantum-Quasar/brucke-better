@@ -1,0 +1,13 @@
+#!/bin/sh
+# Fast compendium preflight: only when the vocabulary table itself is staged.
+# Enable once per clone with: git config core.hooksPath .githooks
+staged=$(git diff --cached --name-only --diff-filter=ACMR)
+case "$staged" in
+  *word_connections.md*) ;;
+  *) exit 0 ;;
+esac
+if ! command -v bun >/dev/null 2>&1; then
+  echo "pre-commit: bun not found; skipping compendium check" >&2
+  exit 0
+fi
+bun scripts/check-compendium.ts

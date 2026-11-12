@@ -5,6 +5,7 @@
   "private": true,
   "scripts": {
     "parse-data": "bun run scripts/parse-compendium.ts",
+    "check:compendium": "bun run scripts/check-compendium.ts",
     "export-data": "bun run scripts/export-client-data.ts",
     "audit:assets": "bun run scripts/audit-public-assets.ts",
     "trail": "bun run scripts/export-trail.ts",

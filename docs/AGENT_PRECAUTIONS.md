@@ -29,17 +29,36 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 - **Action:** rows require exactly 9 nonempty columns: `| # | **German** | cognate | der (m)/die (f)/das (n)/- | /IPA/ | `shift_id` | Phrase *("Translation.")* | Derivation | domain |`. Missing cells, malformed translations, duplicate ids/numbers, unknown shift ids and missing sections fail parsing with source line diagnostics before either output is written. Shift ids must be exact comma-separated members (`th_to_d`, `d_to_t`, `p_to_pf_f`, `t_to_s_ss_z`, `k_to_ch`, `v_to_b`, `y_gh_to_g_ch`, `latin_ieren`, `strong_verbs_ablaut`) or `Direct Cognate`. Section 1's four labeled prose fields are parsed from the markdown; ids, symbols and display names stay stable.
 - **Known incident:** a row with the article inside the German word cell (`**das Gift** (trap)`) produced the id `das gift` and silently broke every lesson referencing `gift`.
 
-### 1.2 Word ids are the German word lowercased — check for duplicates
-- **Applies when:** adding ANY new word.
-- **Action:** `grep -i "word" word_connections.md` before writing the row. The id is the German word lowercased; a duplicate id silently overwrites the earlier entry and only surfaces as a mysterious count mismatch (a previous run added `bekommen` twice and the parser emitted 310 rows for 311).
+### 1.2 Word ids: the German word lowercased, one sense per id
+- **Applies when:** adding ANY new word, or a second sense of a headword that already exists.
+- **Action:** you do not choose the id. It is derived from the §2 German cell by
+  `parseWordIdCell` in [`src/lib/word-id.ts`](../src/lib/word-id.ts): the headword lowercased,
+  plus an optional `#noun` / `#verb` / `#adj` / `#adv` sense tag. The tag is written **in the cell**
+  (`**Essen#noun**` → id `essen#noun`, displayed word `Essen`) and is stripped from the display form.
+  The parser enforces both directions in code: a duplicate **without** a tag fails with
+  `duplicate id: essen — taken: essen; "Essen" needs its own sense tag`, and a tag on a headword with no
+  other row fails with `unnecessary id suffix`. The bare id belongs to the row that got there first —
+  so `essen` (verb) keeps its id, its lesson references and its learners' stored `wordMastery` /
+  `srsCards` progress when `das Essen` is added later. §3–§5 ids do not take tags.
+- **Never** rewrite an existing id to "make it consistent": ids are keys in `compendium.json`, in
+  lesson `word_ids`, and in `localStorage`. A rename silently detaches review progress (and only the
+  loud `audit-word-refs` failure stops the lesson half).
+- **Known incidents:** a row with the article inside the German cell (`**das Gift** (trap)`) produced
+  the id `das gift` and broke every reference to `gift` — the parser now rejects the article in the cell.
+  `bekommen` was once added twice and the parser shipped 310 rows for 311 — duplicate ids are now a
+  hard parse error with the source line, not a silent overwrite (the old "check for duplicates first"
+  advice here was written when they were silent; `parse-data`/`check:compendium` still catch it earlier
+  than CI).
+- **Ids are keys, not URLs.** Never interpolate one into a `href`, a query string, a CSS selector or a
+  filename: the `#` would truncate it. Display `target_word` instead.
 
 ### 1.3 Count sync happens ONCE, at the end of a content run
 - **Applies when:** you are adding words across multiple batches.
-- **Action:** do NOT update the §2 header (`All N Words`), the inventory block, or `TOTAL_COMPENDIUM_WORDS` in `src/lib/types.ts` per batch. Sync all of them once, to the true final count, at the very end (also `WORD_COUNTS.de` / `COURSE_COUNTS.de` in `src/data/word-counts.ts`, which `languages.test.ts` pins to the data, and the counts quoted in the README files, which `docs-sync.test.ts` pins). Per-batch syncing causes test churn and wasted context. (The count test in `compendium.test.ts` is deliberately tolerant — `≥ TOTAL_COMPENDIUM_WORDS` — do not "fix" it back to strict equality without syncing.)
+- **Action:** the §2 header (`All N Words`) is owned by `scripts/append-words.mjs`, which rewrites it on every successful append — never hand-edit that number. Do NOT update the inventory block or `TOTAL_COMPENDIUM_WORDS` in `src/lib/types.ts` per batch. Sync those once, to the true final count, at the very end (also `WORD_COUNTS.de` / `COURSE_COUNTS.de` in `src/data/word-counts.ts`, which `languages.test.ts` pins to the data, and the counts quoted in the README files, which `docs-sync.test.ts` pins). Per-batch syncing causes test churn and wasted context. (The count test in `compendium.test.ts` is deliberately tolerant — `≥ TOTAL_COMPENDIUM_WORDS` — do not "fix" it back to strict equality without syncing.)
 
 ### 1.4 Section regexes vs. section headers
 - **Applies when:** editing any `##` section header in `word_connections.md`.
-- **Action:** the parser regexes are count-agnostic (`All \d+ Words`), so they won't break — but the headers must still be updated to the true count at final sync, and `compendium.test.ts` asserts 32 compounds / 16 false friends / 28 insights. If you add §3/§4/§5 rows, update those headers AND the test expectations deliberately — never silently.
+- **Action:** the parser regexes are count-agnostic (`All \d+ Words`), so they won't break — but the headers must still be updated to the true count at final sync, and `compendium.test.ts` asserts 32 compounds / 16 false friends / 28 insights. `bun run parse-data` also regenerates `src/data/compendium-digest.md`, the one-line-per-word review index of that table; nothing else writes it. If you add §3/§4/§5 rows, update those headers AND the test expectations deliberately — never silently.
 
 ### 1.5 Real Unicode, not escape sequences
 - **Applies when:** writing German text into `.ts` source files.
@@ -48,6 +67,21 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 ### 1.6 Article lemmas carry no gender of their own
 - **Applies when:** adding or editing a row for a word that *is* the article — `der`, `die`, `das`, French `le`/`la`, Spanish `el`/`la`, Dutch `de`/`het`.
 - **Action:** put `-` in the gender column. Every display, atlas and audio path composes its text as article + word, so a self-referential gender prints and speaks "der der" (and the learner hears it too). **Known incident:** rows 41–43 gave `das`/`die`/`der` their own gender, which shipped `der der — the / he` into `TRAIL.md` and into `speechSynthesis`. `src/tests/gender.test.ts` now fails on any compendium word whose gender equals its own target word. Compose such strings with `wordWithArticle()` (`src/lib/gender.ts`), never `${gender} ${word}` — it also handles French elision (`l'heure`).
+
+### 1.7 Fast table preflight — `bun run check:compendium`
+- **Applies when:** you are about to touch §2, or have just touched it.
+- **Action:** run `bun run check:compendium` first and last. It parses the table in
+  memory, writes nothing, and prints **every** row-level issue with its source line in one run
+  (`word_connections.md:178: unknown domain: fodd (…)`) instead of the parser's first-error
+  throw — so a 40-row batch is one fix pass, not forty. The identical checks run in
+  `bun run test` (`src/tests/compendium.test.ts`), so this script cannot drift from the guard.
+- **Hook:** `.githooks/pre-commit` runs it only when `word_connections.md` is staged. It is repo-local,
+  not global; enable it once per clone with `git config core.hooksPath .githooks`.
+  A commit that fails the hook means the table is broken, not that the hook is.
+- **Do not** add a second validator (a VS Code task, a watcher, an ad-hoc regex in a PR review):
+  `analyzeCompendium` in `scripts/parse-compendium.ts` is the single authority, and every duplicate of
+  its rules is a future disagreement.
+
 
 ---
 
@@ -163,9 +197,15 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 - **Applies when:** writing your final summary.
 - **Action:** list (1) content added with ids, (2) words added, (3) structural changes, (4) learner-facing issues needing human review, (5) validation results, (6) what you deliberately did not do and why. Do not require etymology sources, verification flags or a ledger of rejected connections. "Done and verified" is only claimed when it is.
 
-### 6.3 Subagents are for reading and research, not writing
+### 6.3 Only the aggregate is single-writer
 - **Applies when:** the task is big enough to parallelize.
-- **Action:** fan out learner-facing analysis to subagents, but file writes stay with the main agent. Lesson aggregates are ordered and single-writer. Do not delegate etymology research or verification.
+- **Action:** fan out learner-facing analysis to subagents, and let each write its own file. Lesson
+  aggregates are ordered, so the main agent is the only one that adds the import and array entry to
+  `src/data/lessons.ts`. Do not delegate etymology research or verification.
+- **Word batches:** a subagent may author a JSON batch in the `append-words.mjs` input shape; that is
+  data, not a shared file. Only the main agent runs `scripts/append-words.mjs`, once, with every batch
+  path in the same invocation — dedupe and id claiming are global to that run, so two parallel appends
+  of `essen` / `Essen#noun` would each pass and collide later. Then `bun run check:compendium`.
 
 ---
 
