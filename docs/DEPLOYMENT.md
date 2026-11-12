@@ -90,22 +90,6 @@ also generate these ignored outputs. No network fetch is needed for generation.
 The app has no accounts, server database, or cloud TTS. Progress is local to the
 browser; deployment is hosting plus the required production public URL.
 
-## Portable demo captures
-
-Start the app, install Chromium once, then capture:
-
-```bash
-bunx playwright install chromium
-DEMO_BASE_URL=http://localhost:3000 bun scripts/capture-demo-images.ts
-```
-
-`DEMO_BASE_URL` accepts an HTTP(S) origin (defaults to `PLAYWRIGHT_BASE_URL`, then
-`http://localhost:3000`). `DEMO_OUTPUT_DIR` selects the output directory (default
-`./demo-images`). Playwright's bundled Chromium is used by default; optionally
-set `CHROMIUM_PATH` to an existing browser executable. Invalid configuration,
-missing browsers, connection failures and capture errors exit nonzero with
-actionable diagnostics.
-
 ## Installation, offline cache and backups
 
 Serve over HTTPS for service workers (localhost is allowed for development

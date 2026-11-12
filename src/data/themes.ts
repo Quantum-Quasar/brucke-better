@@ -16,9 +16,6 @@ export interface MonkeytypeTheme {
   subAlt: string;
   text: string;
   error: string;
-  errorExtra: string;
-  colorfulError?: string;
-  colorfulErrorExtra?: string;
 }
 
 export interface ThemeMeta extends MonkeytypeTheme {
@@ -36,9 +33,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#2e343d",
     "text": "#e9ecf0",
     "error": "#da3333",
-    "errorExtra": "#791717",
-    "colorfulError": "#c5da33",
-    "colorfulErrorExtra": "#849224"
   },
   "9009": {
     "bg": "#eeebe2",
@@ -48,9 +42,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#d3cfc1",
     "text": "#080909",
     "error": "#c87e74",
-    "errorExtra": "#a56961",
-    "colorfulError": "#c87e74",
-    "colorfulErrorExtra": "#a56961"
   },
   "80s_after_dark": {
     "bg": "#1b1d36",
@@ -60,9 +51,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#17182c",
     "text": "#e1e7ec",
     "error": "#fffb85",
-    "errorExtra": "#fffb85",
-    "colorfulError": "#fffb85",
-    "colorfulErrorExtra": "#fffb85"
   },
   "aether": {
     "bg": "#101820",
@@ -72,9 +60,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#292136",
     "text": "#eedaea",
     "error": "#ff5253",
-    "errorExtra": "#e3002b",
-    "colorfulError": "#ff5253",
-    "colorfulErrorExtra": "#e3002b"
   },
   "alduin": {
     "bg": "#1c1c1c",
@@ -84,9 +69,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#242424",
     "text": "#f5f3ed",
     "error": "#af5f5f",
-    "errorExtra": "#4d2113",
-    "colorfulError": "#af5f5f",
-    "colorfulErrorExtra": "#4d2113"
   },
   "alpine": {
     "bg": "#6c687f",
@@ -96,9 +78,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#77738c",
     "text": "#ffffff",
     "error": "#e32b2b",
-    "errorExtra": "#a62626",
-    "colorfulError": "#e32b2b",
-    "colorfulErrorExtra": "#a62626"
   },
   "anti_hero": {
     "bg": "#00002e",
@@ -108,9 +87,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#060548",
     "text": "#f1deef",
     "error": "#8fecff",
-    "errorExtra": "#558cab",
-    "colorfulError": "#8fecff",
-    "colorfulErrorExtra": "#558cab"
   },
   "arch": {
     "bg": "#0c0d11",
@@ -120,9 +96,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#171a25",
     "text": "#f6f5f5",
     "error": "#ff4754",
-    "errorExtra": "#b02a33",
-    "colorfulError": "#ff4754",
-    "colorfulErrorExtra": "#b02a33"
   },
   "aurora": {
     "bg": "#011926",
@@ -132,9 +105,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#000c13",
     "text": "#fff",
     "error": "#b94da1",
-    "errorExtra": "#9b3a76",
-    "colorfulError": "#b94da1",
-    "colorfulErrorExtra": "#9b3a76"
   },
   "beach": {
     "bg": "#ffeead",
@@ -144,9 +114,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#f7dc8f",
     "text": "#4f685b",
     "error": "#ff6f69",
-    "errorExtra": "#ff6f69",
-    "colorfulError": "#ff6f69",
-    "colorfulErrorExtra": "#ff6f69"
   },
   "bento": {
     "bg": "#2d394d",
@@ -156,9 +123,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#263041",
     "text": "#fffaf8",
     "error": "#ee2a3a",
-    "errorExtra": "#f04040",
-    "colorfulError": "#fc2032",
-    "colorfulErrorExtra": "#f04040"
   },
   "bingsu": {
     "bg": "#b8a7aa",
@@ -168,9 +132,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#ab989e",
     "text": "#3d313b",
     "error": "#921341",
-    "errorExtra": "#640b2c",
-    "colorfulError": "#921341",
-    "colorfulErrorExtra": "#640b2c"
   },
   "bliss": {
     "bg": "#262727",
@@ -180,9 +141,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#343231",
     "text": "#fff",
     "error": "#bd4141",
-    "errorExtra": "#883434",
-    "colorfulError": "#bd4141",
-    "colorfulErrorExtra": "#883434"
   },
   "blue_dolphin": {
     "bg": "#003950",
@@ -192,9 +150,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#014961",
     "text": "#82eaff",
     "error": "#ffbde6",
-    "errorExtra": "#ff8188",
-    "colorfulError": "#d1a5fd",
-    "colorfulErrorExtra": "#ff8188"
   },
   "blueberry_dark": {
     "bg": "#212b42",
@@ -204,9 +159,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1b2334",
     "text": "#91b4d5",
     "error": "#df4576",
-    "errorExtra": "#d996ac",
-    "colorfulError": "#df4576",
-    "colorfulErrorExtra": "#d996ac"
   },
   "blueberry_light": {
     "bg": "#dae0f5",
@@ -216,9 +168,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#c1c7df",
     "text": "#455666",
     "error": "#df4576",
-    "errorExtra": "#d996ac",
-    "colorfulError": "#df4576",
-    "colorfulErrorExtra": "#d996ac"
   },
   "botanical": {
     "bg": "#7b9c98",
@@ -228,9 +177,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#72908d",
     "text": "#18262a",
     "error": "#f6c9b4",
-    "errorExtra": "#f59a71",
-    "colorfulError": "#f6c9b4",
-    "colorfulErrorExtra": "#f59a71"
   },
   "bouquet": {
     "bg": "#173f35",
@@ -240,9 +186,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1f4e43",
     "text": "#e9e0d2",
     "error": "#d44729",
-    "errorExtra": "#8f2f19",
-    "colorfulError": "#d44729",
-    "colorfulErrorExtra": "#8f2f19"
   },
   "breeze": {
     "bg": "#e8d5c4",
@@ -252,9 +195,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#f6e6da",
     "text": "#1b4c5e",
     "error": "#7d67a9",
-    "errorExtra": "#9f3e6d",
-    "colorfulError": "#f9f871",
-    "colorfulErrorExtra": "#67dfa1"
   },
   "bushido": {
     "bg": "#242933",
@@ -264,9 +204,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1c222d",
     "text": "#f6f0e9",
     "error": "#ec4c56",
-    "errorExtra": "#9b333a",
-    "colorfulError": "#ecdc4c",
-    "colorfulErrorExtra": "#bdb03d"
   },
   "cafe": {
     "bg": "#ceb18d",
@@ -276,9 +213,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#bba180",
     "text": "#14120f",
     "error": "#c82931",
-    "errorExtra": "#ac1823",
-    "colorfulError": "#c82931",
-    "colorfulErrorExtra": "#ac1823"
   },
   "camping": {
     "bg": "#faf1e4",
@@ -288,9 +222,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#e7dccb",
     "text": "#3c403b",
     "error": "#ad4f4e",
-    "errorExtra": "#7e3a39",
-    "colorfulError": "#ad4f4e",
-    "colorfulErrorExtra": "#7e3a39"
   },
   "carbon": {
     "bg": "#313131",
@@ -300,9 +231,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#2b2b2b",
     "text": "#f5e6c8",
     "error": "#e72d2d",
-    "errorExtra": "#7e2a33",
-    "colorfulError": "#e72d2d",
-    "colorfulErrorExtra": "#7e2a33"
   },
   "catppuccin": {
     "bg": "#1e1e2e",
@@ -312,9 +240,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#181825",
     "text": "#cdd6f4",
     "error": "#f38ba8",
-    "errorExtra": "#eba0ac",
-    "colorfulError": "#f38ba8",
-    "colorfulErrorExtra": "#eba0ac"
   },
   "chaos_theory": {
     "bg": "#141221",
@@ -324,9 +249,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1e1d2f",
     "text": "#dde5ed",
     "error": "#fd77d7",
-    "errorExtra": "#b03c47",
-    "colorfulError": "#ff5869",
-    "colorfulErrorExtra": "#b03c47"
   },
   "cheesecake": {
     "bg": "#fdf0d5",
@@ -336,9 +258,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#f3e2bf",
     "text": "#3a3335",
     "error": "#5cf074",
-    "errorExtra": "#5cf074",
-    "colorfulError": "#5cf074",
-    "colorfulErrorExtra": "#5cf074"
   },
   "cherry_blossom": {
     "bg": "#323437",
@@ -348,9 +267,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#2d2f31",
     "text": "#d1d0c5",
     "error": "#ca4754",
-    "errorExtra": "#d32738",
-    "colorfulError": "#ec182d",
-    "colorfulErrorExtra": "#6e0c16"
   },
   "comfy": {
     "bg": "#4a5b6e",
@@ -360,9 +276,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#425366",
     "text": "#f5efee",
     "error": "#c9465e",
-    "errorExtra": "#c9465e",
-    "colorfulError": "#c9465e",
-    "colorfulErrorExtra": "#c9465e"
   },
   "copper": {
     "bg": "#442f29",
@@ -372,9 +285,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#50362e",
     "text": "#e7e0de",
     "error": "#a32424",
-    "errorExtra": "#ec0909",
-    "colorfulError": "#a32424",
-    "colorfulErrorExtra": "#ec0909"
   },
   "creamsicle": {
     "bg": "#ff9869",
@@ -384,9 +294,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#fe8954",
     "text": "#40401c",
     "error": "#6a0dad",
-    "errorExtra": "#6a0dad",
-    "colorfulError": "#6a0dad",
-    "colorfulErrorExtra": "#6a0dad"
   },
   "cy_red": {
     "bg": "#6e2626",
@@ -396,9 +303,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#3f1616",
     "text": "#ffaaaa",
     "error": "#919fd9",
-    "errorExtra": "#4d5d9e",
-    "colorfulError": "#919fd9",
-    "colorfulErrorExtra": "#4d5d9e"
   },
   "cyberspace": {
     "bg": "#181c18",
@@ -408,9 +312,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#131613",
     "text": "#c2fbe1",
     "error": "#ff5f5f",
-    "errorExtra": "#d22a2a",
-    "colorfulError": "#ff5f5f",
-    "colorfulErrorExtra": "#d22a2a"
   },
   "dark": {
     "bg": "#111",
@@ -420,9 +321,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#191919",
     "text": "#eee",
     "error": "#da3333",
-    "errorExtra": "#791717",
-    "colorfulError": "#da3333",
-    "colorfulErrorExtra": "#791717"
   },
   "dark_magic_girl": {
     "bg": "#091f2c",
@@ -432,9 +330,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#071823",
     "text": "#a288d9",
     "error": "#e45c96",
-    "errorExtra": "#e45c96",
-    "colorfulError": "#00b398",
-    "colorfulErrorExtra": "#e45c96"
   },
   "dark_note": {
     "bg": "#1f1f1f",
@@ -444,9 +339,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#141414",
     "text": "#d2dff4",
     "error": "#ff0000",
-    "errorExtra": "#588498",
-    "colorfulError": "#ff0000",
-    "colorfulErrorExtra": "#588498"
   },
   "darling": {
     "bg": "#fec8cd",
@@ -456,9 +348,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#f2babd",
     "text": "#545454",
     "error": "#2e7dde",
-    "errorExtra": "#2e7dde",
-    "colorfulError": "#2e7dde",
-    "colorfulErrorExtra": "#2e7dde"
   },
   "deku": {
     "bg": "#058b8c",
@@ -468,9 +357,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#098586",
     "text": "#090703",
     "error": "#b63530",
-    "errorExtra": "#530e0e",
-    "colorfulError": "#ddca1f",
-    "colorfulErrorExtra": "#8f8610"
   },
   "desert_oasis": {
     "bg": "#fff2d5",
@@ -480,9 +366,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#eddebc",
     "text": "#332800",
     "error": "#76bb40",
-    "errorExtra": "#4e7a27",
-    "colorfulError": "#76bb40",
-    "colorfulErrorExtra": "#4e7a27"
   },
   "dev": {
     "bg": "#1b2028",
@@ -492,9 +375,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#151a21",
     "text": "#ccccb5",
     "error": "#b81b2c",
-    "errorExtra": "#84131f",
-    "colorfulError": "#b81b2c",
-    "colorfulErrorExtra": "#84131f"
   },
   "diner": {
     "bg": "#537997",
@@ -504,9 +384,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#4d6f8b",
     "text": "#fdfdfc",
     "error": "#ad5145",
-    "errorExtra": "#7e2a33",
-    "colorfulError": "#ad5145",
-    "colorfulErrorExtra": "#7e2a33"
   },
   "dino": {
     "bg": "#ffffff",
@@ -516,9 +393,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#cafad8",
     "text": "#1d221f",
     "error": "#ff5f5f",
-    "errorExtra": "#d22a2a",
-    "colorfulError": "#ff5f5f",
-    "colorfulErrorExtra": "#d22a2a"
   },
   "discord": {
     "bg": "#313338",
@@ -528,9 +402,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#2b2d31",
     "text": "#dcdee3",
     "error": "#df4f4b",
-    "errorExtra": "#df4f4b",
-    "colorfulError": "#df4f4b",
-    "colorfulErrorExtra": "#df4f4b"
   },
   "dmg": {
     "bg": "#dadbdc",
@@ -540,9 +411,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#bec1d2",
     "text": "#414141",
     "error": "#ae185e",
-    "errorExtra": "#93335c",
-    "colorfulError": "#80a053",
-    "colorfulErrorExtra": "#306230"
   },
   "dollar": {
     "bg": "#e4e4d4",
@@ -552,9 +420,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#cbd0bf",
     "text": "#545955",
     "error": "#d60000",
-    "errorExtra": "#f68484",
-    "colorfulError": "#ca4754",
-    "colorfulErrorExtra": "#7e2a33"
   },
   "dots": {
     "bg": "#121520",
@@ -564,9 +429,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1b1e2c",
     "text": "#fff",
     "error": "#da3333",
-    "errorExtra": "#791717",
-    "colorfulError": "#da3333",
-    "colorfulErrorExtra": "#791717"
   },
   "dracula": {
     "bg": "#282a36",
@@ -576,9 +438,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#20222c",
     "text": "#f8f8f2",
     "error": "#ff5555",
-    "errorExtra": "#f1fa8c",
-    "colorfulError": "#ff5555",
-    "colorfulErrorExtra": "#f1fa8c"
   },
   "drowning": {
     "bg": "#191826",
@@ -588,9 +447,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1e1f2f",
     "text": "#9393a7",
     "error": "#be555f",
-    "errorExtra": "#7e2a33",
-    "colorfulError": "#be555f",
-    "colorfulErrorExtra": "#7e2a33"
   },
   "dualshot": {
     "bg": "#737373",
@@ -600,9 +456,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#646464",
     "text": "#f9f9f9",
     "error": "#c82931",
-    "errorExtra": "#ac1823",
-    "colorfulError": "#c82931",
-    "colorfulErrorExtra": "#ac1823"
   },
   "earthsong": {
     "bg": "#292521",
@@ -612,9 +465,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1d1b18",
     "text": "#e6c7a8",
     "error": "#7e2a33",
-    "errorExtra": "#ff645a",
-    "colorfulError": "#7e2a33",
-    "colorfulErrorExtra": "#ff645a"
   },
   "everblush": {
     "bg": "#141b1e",
@@ -624,9 +474,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#232a2d",
     "text": "#dadada",
     "error": "#e57474",
-    "errorExtra": "#ef7e7e",
-    "colorfulError": "#e57474",
-    "colorfulErrorExtra": "#ef7e7e"
   },
   "evil_eye": {
     "bg": "#0084c2",
@@ -636,9 +483,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#087cbf",
     "text": "#040404",
     "error": "#ca4754",
-    "errorExtra": "#7e2a33",
-    "colorfulError": "#ca4754",
-    "colorfulErrorExtra": "#7e2a33"
   },
   "ez_mode": {
     "bg": "#0068c6",
@@ -648,9 +492,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#005bac",
     "text": "#ffffff",
     "error": "#4ddb47",
-    "errorExtra": "#42ba3b",
-    "colorfulError": "#4ddb47",
-    "colorfulErrorExtra": "#42ba3b"
   },
   "fire": {
     "bg": "#0f0000",
@@ -660,9 +501,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#200a0a",
     "text": "#ffffff",
     "error": "#2f3cb6",
-    "errorExtra": "#434a8f",
-    "colorfulError": "#2f3cb6",
-    "colorfulErrorExtra": "#434a8f"
   },
   "fledgling": {
     "bg": "#3b363f",
@@ -672,9 +510,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#332e38",
     "text": "#e6d5d3",
     "error": "#f52443",
-    "errorExtra": "#bd001c",
-    "colorfulError": "#ff0a2f",
-    "colorfulErrorExtra": "#000000"
   },
   "fleuriste": {
     "bg": "#c6b294",
@@ -684,9 +519,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#b4a389",
     "text": "#091914",
     "error": "#990000",
-    "errorExtra": "#8a1414",
-    "colorfulError": "#a63a3a",
-    "colorfulErrorExtra": "#bd4c4c"
   },
   "floret": {
     "bg": "#00272c",
@@ -696,9 +528,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#173033",
     "text": "#e5e5e5",
     "error": "#8a4000",
-    "errorExtra": "#00708d",
-    "colorfulError": "#8a4000",
-    "colorfulErrorExtra": "#628b96"
   },
   "froyo": {
     "bg": "#e1dacb",
@@ -708,9 +537,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#d3cdc1",
     "text": "#565858",
     "error": "#f28578",
-    "errorExtra": "#d56558",
-    "colorfulError": "#f28578",
-    "colorfulErrorExtra": "#d56558"
   },
   "frozen_llama": {
     "bg": "#9bf2ea",
@@ -720,9 +546,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#7fe7dd",
     "text": "#5d5d5d",
     "error": "#e42629",
-    "errorExtra": "#e42629",
-    "colorfulError": "#e42629",
-    "colorfulErrorExtra": "#e42629"
   },
   "fruit_chew": {
     "bg": "#d6d3d6",
@@ -732,9 +555,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#cabfca",
     "text": "#282528",
     "error": "#bd2621",
-    "errorExtra": "#a62626",
-    "colorfulError": "#bd2621",
-    "colorfulErrorExtra": "#a62626"
   },
   "fundamentals": {
     "bg": "#727474",
@@ -744,9 +564,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#666868",
     "text": "#fafafa",
     "error": "#5e477c",
-    "errorExtra": "#413157",
-    "colorfulError": "#5e477c",
-    "colorfulErrorExtra": "#413157"
   },
   "future_funk": {
     "bg": "#2e1a47",
@@ -756,9 +573,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#27173c",
     "text": "#f7f2ea",
     "error": "#f04e98",
-    "errorExtra": "#bd1c66",
-    "colorfulError": "#f04e98",
-    "colorfulErrorExtra": "#bd1c66"
   },
   "github": {
     "bg": "#212830",
@@ -768,9 +582,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#141b23",
     "text": "#ccdae6",
     "error": "#c23e3a",
-    "errorExtra": "#c23e3a",
-    "colorfulError": "#c23e3a",
-    "colorfulErrorExtra": "#c23e3a"
   },
   "godspeed": {
     "bg": "#eae4cf",
@@ -780,9 +591,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#ded9c9",
     "text": "#5d5e61",
     "error": "#ca4754",
-    "errorExtra": "#7e2a33",
-    "colorfulError": "#ca4754",
-    "colorfulErrorExtra": "#7e2a33"
   },
   "graen": {
     "bg": "#303c36",
@@ -792,9 +600,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#36453c",
     "text": "#b8ac9d",
     "error": "#601420",
-    "errorExtra": "#5f0715",
-    "colorfulError": "#601420",
-    "colorfulErrorExtra": "#5f0715"
   },
   "grand_prix": {
     "bg": "#36475c",
@@ -804,9 +609,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#42536b",
     "text": "#c1c7d7",
     "error": "#fc5727",
-    "errorExtra": "#fc5727",
-    "colorfulError": "#fc5727",
-    "colorfulErrorExtra": "#fc5727"
   },
   "grape": {
     "bg": "#2c003e",
@@ -816,9 +618,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1f002d",
     "text": "#fff",
     "error": "#ff4081",
-    "errorExtra": "#bf2054",
-    "colorfulError": "#ff4081",
-    "colorfulErrorExtra": "#bf2054"
   },
   "gruvbox_dark": {
     "bg": "#282828",
@@ -828,9 +627,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#212121",
     "text": "#ebdbb2",
     "error": "#fb4934",
-    "errorExtra": "#cc241d",
-    "colorfulError": "#cc241d",
-    "colorfulErrorExtra": "#9d0006"
   },
   "gruvbox_light": {
     "bg": "#fbf1c7",
@@ -840,9 +636,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#daceae",
     "text": "#3c3836",
     "error": "#cc241d",
-    "errorExtra": "#9d0006",
-    "colorfulError": "#cc241d",
-    "colorfulErrorExtra": "#9d0006"
   },
   "hammerhead": {
     "bg": "#030613",
@@ -852,9 +645,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#0a1928",
     "text": "#e2f1f5",
     "error": "#e32b2b",
-    "errorExtra": "#a62626",
-    "colorfulError": "#e32b2b",
-    "colorfulErrorExtra": "#a62626"
   },
   "hanok": {
     "bg": "#d8d2c3",
@@ -864,9 +654,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#cdc0af",
     "text": "#393b3b",
     "error": "#ca4754",
-    "errorExtra": "#7e2a33",
-    "colorfulError": "#ca4754",
-    "colorfulErrorExtra": "#7e2a33"
   },
   "hedge": {
     "bg": "#415e31",
@@ -876,9 +663,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#38502a",
     "text": "#f7f1d6",
     "error": "#ca3d3f",
-    "errorExtra": "#782832",
-    "colorfulError": "#e76f51",
-    "colorfulErrorExtra": "#f4a261"
   },
   "honey": {
     "bg": "#f2aa00",
@@ -888,9 +672,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#e19e00",
     "text": "#463f10",
     "error": "#df3333",
-    "errorExtra": "#6d1f1f",
-    "colorfulError": "#df3333",
-    "colorfulErrorExtra": "#6d1f1f"
   },
   "horizon": {
     "bg": "#1c1e26",
@@ -900,9 +681,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#17181f",
     "text": "#bbbbbb",
     "error": "#d55170",
-    "errorExtra": "#ff3d3d",
-    "colorfulError": "#d55170",
-    "colorfulErrorExtra": "#d55170"
   },
   "husqy": {
     "bg": "#000000",
@@ -912,9 +690,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1e001e",
     "text": "#ebd7ff",
     "error": "#da3333",
-    "errorExtra": "#791717",
-    "colorfulError": "#da3333",
-    "colorfulErrorExtra": "#791717"
   },
   "iceberg_dark": {
     "bg": "#161821",
@@ -924,9 +699,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#232531",
     "text": "#c6c8d1",
     "error": "#e27878",
-    "errorExtra": "#e2a478",
-    "colorfulError": "#e27878",
-    "colorfulErrorExtra": "#e2a478"
   },
   "iceberg_light": {
     "bg": "#e8e9ec",
@@ -936,9 +708,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#ccceda",
     "text": "#33374c",
     "error": "#cc517a",
-    "errorExtra": "#cc3768",
-    "colorfulError": "#cc517a",
-    "colorfulErrorExtra": "#cc3768"
   },
   "incognito": {
     "bg": "#0e0e0e",
@@ -948,9 +717,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#151515",
     "text": "#c6c6c6",
     "error": "#e44545",
-    "errorExtra": "#e44545",
-    "colorfulError": "#b13535",
-    "colorfulErrorExtra": "#b13535"
   },
   "ishtar": {
     "bg": "#202020",
@@ -960,9 +726,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#272727",
     "text": "#fae1c3",
     "error": "#bb1e10",
-    "errorExtra": "#791717",
-    "colorfulError": "#c5da33",
-    "colorfulErrorExtra": "#849224"
   },
   "iv_clover": {
     "bg": "#a0a0a0",
@@ -972,9 +735,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#bebebe",
     "text": "#3b2d3b",
     "error": "#937173",
-    "errorExtra": "#987678",
-    "colorfulError": "#ad8d60",
-    "colorfulErrorExtra": "#b7976a"
   },
   "iv_spade": {
     "bg": "#0c0c0c",
@@ -984,9 +744,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#121212",
     "text": "#d3c2c3",
     "error": "#9d7b7d",
-    "errorExtra": "#a78587",
-    "colorfulError": "#b7976a",
-    "colorfulErrorExtra": "#c1a174"
   },
   "joker": {
     "bg": "#1a0e25",
@@ -996,9 +753,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#14081f",
     "text": "#e9e2f5",
     "error": "#e32b2b",
-    "errorExtra": "#a62626",
-    "colorfulError": "#e32b2b",
-    "colorfulErrorExtra": "#a62626"
   },
   "laser": {
     "bg": "#221b44",
@@ -1008,9 +762,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1e173b",
     "text": "#dbe7e8",
     "error": "#a8d400",
-    "errorExtra": "#668000",
-    "colorfulError": "#a8d400",
-    "colorfulErrorExtra": "#668000"
   },
   "lavender": {
     "bg": "#ada6c2",
@@ -1020,9 +771,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#a19bb9",
     "text": "#2f2a41",
     "error": "#ca4754",
-    "errorExtra": "#7e2a33",
-    "colorfulError": "#ca4754",
-    "colorfulErrorExtra": "#7e2a33"
   },
   "leather": {
     "bg": "#a86948",
@@ -1032,9 +780,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#a66847",
     "text": "#0a0600",
     "error": "#ca4754",
-    "errorExtra": "#7e2a33",
-    "colorfulError": "#ca4754",
-    "colorfulErrorExtra": "#7e2a33"
   },
   "lil_dragon": {
     "bg": "#ebe1ef",
@@ -1044,9 +789,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#dac7e2",
     "text": "#212b43",
     "error": "#f794ca",
-    "errorExtra": "#f279c2",
-    "colorfulError": "#f794ca",
-    "colorfulErrorExtra": "#f279c2"
   },
   "lilac_mist": {
     "bg": "#fffbfe",
@@ -1056,9 +798,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#ecdcee",
     "text": "#5c2954",
     "error": "#ff6f69",
-    "errorExtra": "#ff6f69",
-    "colorfulError": "#bc7fc0",
-    "colorfulErrorExtra": "#bc41b1"
   },
   "lime": {
     "bg": "#7c878e",
@@ -1068,9 +807,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#737d82",
     "text": "#0c1116",
     "error": "#ea4221",
-    "errorExtra": "#7e2a33",
-    "colorfulError": "#ea4221",
-    "colorfulErrorExtra": "#7e2a33"
   },
   "luna": {
     "bg": "#221c35",
@@ -1080,9 +816,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#2f2346",
     "text": "#ffe3eb",
     "error": "#efc050",
-    "errorExtra": "#c5972c",
-    "colorfulError": "#efc050",
-    "colorfulErrorExtra": "#c5972c"
   },
   "macroblank": {
     "bg": "#b2d2c8",
@@ -1092,9 +825,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#c6ddd3",
     "text": "#490909",
     "error": "#c13117",
-    "errorExtra": "#fff5f5",
-    "colorfulError": "#fff5f5",
-    "colorfulErrorExtra": "#ffe9c2"
   },
   "magic_girl": {
     "bg": "#ffffff",
@@ -1104,9 +834,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#f2f2f2",
     "text": "#007c65",
     "error": "#ffe495",
-    "errorExtra": "#e45c96",
-    "colorfulError": "#ffe485",
-    "colorfulErrorExtra": "#e45c96"
   },
   "mashu": {
     "bg": "#2b2b2c",
@@ -1116,9 +843,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#27242c",
     "text": "#f1e2e4",
     "error": "#d44729",
-    "errorExtra": "#8f2f19",
-    "colorfulError": "#d44729",
-    "colorfulErrorExtra": "#8f2f19"
   },
   "matcha_moccha": {
     "bg": "#523525",
@@ -1128,9 +852,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#422b1e",
     "text": "#ecddcc",
     "error": "#fb4934",
-    "errorExtra": "#cc241d",
-    "colorfulError": "#fb4934",
-    "colorfulErrorExtra": "#cc241d"
   },
   "material": {
     "bg": "#263238",
@@ -1140,9 +861,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#2e3c43",
     "text": "#e6edf3",
     "error": "#fb4934",
-    "errorExtra": "#cc241d",
-    "colorfulError": "#fb4934",
-    "colorfulErrorExtra": "#cc241d"
   },
   "matrix": {
     "bg": "#000000",
@@ -1152,9 +870,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#032000",
     "text": "#d1ffcd",
     "error": "#da3333",
-    "errorExtra": "#791717",
-    "colorfulError": "#da3333",
-    "colorfulErrorExtra": "#791717"
   },
   "menthol": {
     "bg": "#00c18c",
@@ -1164,9 +879,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#17ae7d",
     "text": "#323232",
     "error": "#e03c3c",
-    "errorExtra": "#b12525",
-    "colorfulError": "#e03c3c",
-    "colorfulErrorExtra": "#b12525"
   },
   "metaverse": {
     "bg": "#232323",
@@ -1176,9 +888,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1d1d1d",
     "text": "#e8e8e8",
     "error": "#da3333",
-    "errorExtra": "#791717",
-    "colorfulError": "#d7da33",
-    "colorfulErrorExtra": "#737917"
   },
   "metropolis": {
     "bg": "#0f1f2c",
@@ -1188,9 +897,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#0b1822",
     "text": "#e4edf1",
     "error": "#d44729",
-    "errorExtra": "#8f2f19",
-    "colorfulError": "#d44729",
-    "colorfulErrorExtra": "#8f2f19"
   },
   "mexican": {
     "bg": "#f8ad34",
@@ -1200,9 +906,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#f9b951",
     "text": "#4c4c4c",
     "error": "#da3333",
-    "errorExtra": "#791717",
-    "colorfulError": "#da3333",
-    "colorfulErrorExtra": "#791717"
   },
   "miami": {
     "bg": "#f35588",
@@ -1212,9 +915,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#db4979",
     "text": "#1c1317",
     "error": "#fff591",
-    "errorExtra": "#b9b269",
-    "colorfulError": "#fff591",
-    "colorfulErrorExtra": "#b9b269"
   },
   "miami_nights": {
     "bg": "#18181a",
@@ -1224,9 +924,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#0f0f10",
     "text": "#fff",
     "error": "#fff591",
-    "errorExtra": "#b6af68",
-    "colorfulError": "#fff591",
-    "colorfulErrorExtra": "#b6af68"
   },
   "midnight": {
     "bg": "#0b0e13",
@@ -1236,9 +933,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#141a24",
     "text": "#9fadc6",
     "error": "#c27070",
-    "errorExtra": "#c28b70",
-    "colorfulError": "#c27070",
-    "colorfulErrorExtra": "#c28b70"
   },
   "milkshake": {
     "bg": "#ffffff",
@@ -1248,9 +942,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#ddeff3",
     "text": "#212b43",
     "error": "#f19dac",
-    "errorExtra": "#e58c9d",
-    "colorfulError": "#f19dac",
-    "colorfulErrorExtra": "#e58c9d"
   },
   "mint": {
     "bg": "#05385b",
@@ -1260,9 +951,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#07324e",
     "text": "#edf5e1",
     "error": "#f35588",
-    "errorExtra": "#a3385a",
-    "colorfulError": "#f35588",
-    "colorfulErrorExtra": "#a3385a"
   },
   "mizu": {
     "bg": "#afcbdd",
@@ -1272,9 +960,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#9fc1d4",
     "text": "#1a2633",
     "error": "#bf616a",
-    "errorExtra": "#793e44",
-    "colorfulError": "#bf616a",
-    "colorfulErrorExtra": "#793e44"
   },
   "modern_dolch": {
     "bg": "#2d2e30",
@@ -1284,9 +969,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#242527",
     "text": "#e3e6eb",
     "error": "#d36a7b",
-    "errorExtra": "#994154",
-    "colorfulError": "#d36a7b",
-    "colorfulErrorExtra": "#994154"
   },
   "modern_dolch_light": {
     "bg": "#dbdbdb",
@@ -1296,9 +978,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#e8e8e8",
     "text": "#454545",
     "error": "#ea8a9a",
-    "errorExtra": "#e0556d",
-    "colorfulError": "#ea8a9a",
-    "colorfulErrorExtra": "#e0556d"
   },
   "modern_ink": {
     "bg": "#ffffff",
@@ -1308,9 +987,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#ececec",
     "text": "#000000",
     "error": "#d70000",
-    "errorExtra": "#b00000",
-    "colorfulError": "#000000",
-    "colorfulErrorExtra": "#000000"
   },
   "monokai": {
     "bg": "#272822",
@@ -1320,9 +996,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1f201b",
     "text": "#e2e2dc",
     "error": "#f92672",
-    "errorExtra": "#fd971f",
-    "colorfulError": "#f92672",
-    "colorfulErrorExtra": "#fd971f"
   },
   "moonlight": {
     "bg": "#191f28",
@@ -1332,9 +1005,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#141a22",
     "text": "#ccccb5",
     "error": "#b81b2c",
-    "errorExtra": "#84131f",
-    "colorfulError": "#b81b2c",
-    "colorfulErrorExtra": "#84131f"
   },
   "mountain": {
     "bg": "#0f0f0f",
@@ -1344,9 +1014,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1a1a1a",
     "text": "#e7e7e7",
     "error": "#ac8c8c",
-    "errorExtra": "#c49ea0",
-    "colorfulError": "#aca98a",
-    "colorfulErrorExtra": "#c4c19e"
   },
   "mr_sleeves": {
     "bg": "#d1d7da",
@@ -1356,9 +1023,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#bfcbd1",
     "text": "#1d1d1d",
     "error": "#bf6464",
-    "errorExtra": "#793e44",
-    "colorfulError": "#8fadc9",
-    "colorfulErrorExtra": "#667c91"
   },
   "ms_cupcakes": {
     "bg": "#ffffff",
@@ -1368,9 +1032,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#edf8fa",
     "text": "#0a282f",
     "error": "#a4dd32",
-    "errorExtra": "#90bd34",
-    "colorfulError": "#a4dd32",
-    "colorfulErrorExtra": "#87b330"
   },
   "muted": {
     "bg": "#525252",
@@ -1380,9 +1041,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#494949",
     "text": "#b1e4e3",
     "error": "#edc1cd",
-    "errorExtra": "#edc1cd",
-    "colorfulError": "#edc1cd",
-    "colorfulErrorExtra": "#edc1cd"
   },
   "nautilus": {
     "bg": "#132237",
@@ -1392,9 +1050,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#0e1a29",
     "text": "#1cbaac",
     "error": "#da3333",
-    "errorExtra": "#791717",
-    "colorfulError": "#da3333",
-    "colorfulErrorExtra": "#791717"
   },
   "nebula": {
     "bg": "#212135",
@@ -1404,9 +1059,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#191928",
     "text": "#878a8a",
     "error": "#ca4754",
-    "errorExtra": "#7e2a33",
-    "colorfulError": "#ca4754",
-    "colorfulErrorExtra": "#7e2a33"
   },
   "night_runner": {
     "bg": "#212121",
@@ -1416,9 +1068,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1a1a1a",
     "text": "#e8e8e8",
     "error": "#da3333",
-    "errorExtra": "#791717",
-    "colorfulError": "#da3333",
-    "colorfulErrorExtra": "#791717"
   },
   "nord": {
     "bg": "#242933",
@@ -1428,9 +1077,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#2e3440",
     "text": "#d8dee9",
     "error": "#bf616a",
-    "errorExtra": "#793e44",
-    "colorfulError": "#bf616a",
-    "colorfulErrorExtra": "#793e44"
   },
   "nord_light": {
     "bg": "#eceff4",
@@ -1440,9 +1086,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#d8dee9",
     "text": "#3f6968",
     "error": "#bf616a",
-    "errorExtra": "#793e44",
-    "colorfulError": "#bf616a",
-    "colorfulErrorExtra": "#793e44"
   },
   "norse": {
     "bg": "#242425",
@@ -1452,9 +1095,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#303333",
     "text": "#ccc2b1",
     "error": "#7e2a2a",
-    "errorExtra": "#771d1d",
-    "colorfulError": "#ca4754",
-    "colorfulErrorExtra": "#7e2a33"
   },
   "oblivion": {
     "bg": "#313231",
@@ -1464,9 +1104,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#3a3b3b",
     "text": "#f7f5f1",
     "error": "#dd452e",
-    "errorExtra": "#9e3423",
-    "colorfulError": "#dd452e",
-    "colorfulErrorExtra": "#9e3423"
   },
   "olive": {
     "bg": "#e9e5cc",
@@ -1476,9 +1113,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#d4cfbc",
     "text": "#373731",
     "error": "#cf2f2f",
-    "errorExtra": "#a22929",
-    "colorfulError": "#cf2f2f",
-    "colorfulErrorExtra": "#a22929"
   },
   "olivia": {
     "bg": "#1c1b1d",
@@ -1488,9 +1122,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#262223",
     "text": "#f2efed",
     "error": "#bf616a",
-    "errorExtra": "#793e44",
-    "colorfulError": "#e03d4e",
-    "colorfulErrorExtra": "#aa2f3b"
   },
   "onedark": {
     "bg": "#2f343f",
@@ -1500,9 +1131,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#262b34",
     "text": "#98c379",
     "error": "#e06c75",
-    "errorExtra": "#d62436",
-    "colorfulError": "#d62436",
-    "colorfulErrorExtra": "#ff0019"
   },
   "our_theme": {
     "bg": "#ce1226",
@@ -1512,9 +1140,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#9f1020",
     "text": "#ffffff",
     "error": "#fcd116",
-    "errorExtra": "#fcd116",
-    "colorfulError": "#1672fc",
-    "colorfulErrorExtra": "#1672fc"
   },
   "pale_nimbus": {
     "bg": "#433e4c",
@@ -1524,9 +1149,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#694f5e",
     "text": "#feffdb",
     "error": "#ff5c5c",
-    "errorExtra": "#ff0000",
-    "colorfulError": "#ff3874",
-    "colorfulErrorExtra": "#c2386f"
   },
   "paper": {
     "bg": "#eeeeee",
@@ -1536,9 +1158,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#dddddd",
     "text": "#444444",
     "error": "#d70000",
-    "errorExtra": "#d70000",
-    "colorfulError": "#d70000",
-    "colorfulErrorExtra": "#d70000"
   },
   "passion_fruit": {
     "bg": "#7c2142",
@@ -1548,9 +1167,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#833c5e",
     "text": "#ffffff",
     "error": "#deb80b",
-    "errorExtra": "#deb80b",
-    "colorfulError": "#deb80b",
-    "colorfulErrorExtra": "#deb80b"
   },
   "pastel": {
     "bg": "#e0b2bd",
@@ -1560,9 +1176,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#d29fab",
     "text": "#483d49",
     "error": "#ff6961",
-    "errorExtra": "#c23b22",
-    "colorfulError": "#ff6961",
-    "colorfulErrorExtra": "#c23b22"
   },
   "peach_blossom": {
     "bg": "#292929",
@@ -1572,9 +1185,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#2a363b",
     "text": "#fecea8",
     "error": "#ff6961",
-    "errorExtra": "#e84a5f",
-    "colorfulError": "#ff6961",
-    "colorfulErrorExtra": "#e84a5f"
   },
   "peaches": {
     "bg": "#e0d7c1",
@@ -1584,9 +1194,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#e2caaf",
     "text": "#5f4c41",
     "error": "#ff6961",
-    "errorExtra": "#c23b22",
-    "colorfulError": "#ff6961",
-    "colorfulErrorExtra": "#c23b22"
   },
   "phantom": {
     "bg": "#001",
@@ -1596,9 +1203,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#24283b",
     "text": "#c0caf5",
     "error": "#f7768e",
-    "errorExtra": "#db4b4b",
-    "colorfulError": "#ff7a93",
-    "colorfulErrorExtra": "#ff9e64"
   },
   "pink_lemonade": {
     "bg": "#f6d992",
@@ -1608,9 +1212,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#f6cc93",
     "text": "#5d5d28",
     "error": "#ff6f69",
-    "errorExtra": "#ff6f69",
-    "colorfulError": "#ff6f69",
-    "colorfulErrorExtra": "#ff6f69"
   },
   "pulse": {
     "bg": "#181818",
@@ -1620,9 +1221,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#121212",
     "text": "#e5f4f4",
     "error": "#da3333",
-    "errorExtra": "#791717",
-    "colorfulError": "#da3333",
-    "colorfulErrorExtra": "#791717"
   },
   "purpleish": {
     "bg": "#1e1e32",
@@ -1632,9 +1230,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#181829",
     "text": "#a3a3cc",
     "error": "#ff6666",
-    "errorExtra": "#ff6666",
-    "colorfulError": "#ff6666",
-    "colorfulErrorExtra": "#ff6666"
   },
   "rainbow_trail": {
     "bg": "#f5f5f5",
@@ -1644,9 +1239,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#e0e0e0",
     "text": "#1f1f1f",
     "error": "#ff0008",
-    "errorExtra": "#ff0008",
-    "colorfulError": "#ff0008",
-    "colorfulErrorExtra": "#ff0008"
   },
   "red_dragon": {
     "bg": "#1a0b0c",
@@ -1656,9 +1248,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#0e0506",
     "text": "#777c7d",
     "error": "#771b1f",
-    "errorExtra": "#591317",
-    "colorfulError": "#771b1f",
-    "colorfulErrorExtra": "#591317"
   },
   "red_samurai": {
     "bg": "#84202c",
@@ -1668,9 +1257,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#751d26",
     "text": "#e2dad0",
     "error": "#33bbda",
-    "errorExtra": "#176b79",
-    "colorfulError": "#33bbda",
-    "colorfulErrorExtra": "#176779"
   },
   "repose_dark": {
     "bg": "#2f3338",
@@ -1680,9 +1266,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#3a3c3d",
     "text": "#d6d2bc",
     "error": "#ff4a59",
-    "errorExtra": "#c43c53",
-    "colorfulError": "#ff4a59",
-    "colorfulErrorExtra": "#c43c53"
   },
   "repose_light": {
     "bg": "#efead0",
@@ -1692,9 +1275,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#dbd6c4",
     "text": "#333538",
     "error": "#c43c53",
-    "errorExtra": "#a52632",
-    "colorfulError": "#c43c53",
-    "colorfulErrorExtra": "#a52632"
   },
   "retro": {
     "bg": "#dad3c1",
@@ -1704,9 +1284,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#c8c3b3",
     "text": "#1d1b17",
     "error": "#bf616a",
-    "errorExtra": "#793e44",
-    "colorfulError": "#bf616a",
-    "colorfulErrorExtra": "#793e44"
   },
   "retrocast": {
     "bg": "#07737a",
@@ -1716,9 +1293,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1d8086",
     "text": "#ffffff",
     "error": "#ff585d",
-    "errorExtra": "#c04455",
-    "colorfulError": "#ff585d",
-    "colorfulErrorExtra": "#c04455"
   },
   "rgb": {
     "bg": "#111",
@@ -1728,9 +1302,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1a1a1a",
     "text": "#eee",
     "error": "#eee",
-    "errorExtra": "#b3b3b3",
-    "colorfulError": "#eee",
-    "colorfulErrorExtra": "#b3b3b3"
   },
   "rose_pine": {
     "bg": "#1f1d27",
@@ -1740,9 +1311,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#282533",
     "text": "#e0def4",
     "error": "#eb6f92",
-    "errorExtra": "#ebbcba",
-    "colorfulError": "#eb6f92",
-    "colorfulErrorExtra": "#ebbcba"
   },
   "rose_pine_dawn": {
     "bg": "#fffaf3",
@@ -1752,9 +1320,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#f0e9df",
     "text": "#286983",
     "error": "#b4637a",
-    "errorExtra": "#d7827e",
-    "colorfulError": "#b4637a",
-    "colorfulErrorExtra": "#d7827e"
   },
   "rose_pine_moon": {
     "bg": "#2a273f",
@@ -1764,9 +1329,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#211f32",
     "text": "#e0def4",
     "error": "#eb6f92",
-    "errorExtra": "#ebbcba",
-    "colorfulError": "#eb6f92",
-    "colorfulErrorExtra": "#ebbcba"
   },
   "rudy": {
     "bg": "#1a2b3e",
@@ -1776,9 +1338,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#152231",
     "text": "#c9c8bf",
     "error": "#bf616a",
-    "errorExtra": "#793e44",
-    "colorfulError": "#bf616a",
-    "colorfulErrorExtra": "#793e44"
   },
   "ryujinscales": {
     "bg": "#081426",
@@ -1788,9 +1347,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#040e1d",
     "text": "#ffe4bc",
     "error": "#ca4754",
-    "errorExtra": "#7e2a33",
-    "colorfulError": "#ca4754",
-    "colorfulErrorExtra": "#7e2a33"
   },
   "serika": {
     "bg": "#e1e1e3",
@@ -1800,9 +1356,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#d1d3d8",
     "text": "#323437",
     "error": "#da3333",
-    "errorExtra": "#791717",
-    "colorfulError": "#da3333",
-    "colorfulErrorExtra": "#791717"
   },
   "serika_dark": {
     "bg": "#323437",
@@ -1812,9 +1365,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#2c2e31",
     "text": "#d1d0c5",
     "error": "#ca4754",
-    "errorExtra": "#7e2a33",
-    "colorfulError": "#ca4754",
-    "colorfulErrorExtra": "#7e2a33"
   },
   "sewing_tin": {
     "bg": "#241963",
@@ -1824,9 +1374,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#2a277a",
     "text": "#ffffff",
     "error": "#c6915e",
-    "errorExtra": "#c6915e",
-    "colorfulError": "#c6915e",
-    "colorfulErrorExtra": "#c6915e"
   },
   "sewing_tin_light": {
     "bg": "#ffffff",
@@ -1836,9 +1383,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#c8cedf",
     "text": "#2d2076",
     "error": "#f2ce83",
-    "errorExtra": "#f2ce83",
-    "colorfulError": "#f2ce83",
-    "colorfulErrorExtra": "#f2ce83"
   },
   "shadow": {
     "bg": "#000",
@@ -1848,9 +1392,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#171717",
     "text": "#eee",
     "error": "#fff",
-    "errorExtra": "#d8d8d8",
-    "colorfulError": "#fff",
-    "colorfulErrorExtra": "#d8d8d8"
   },
   "shoko": {
     "bg": "#ced7e0",
@@ -1860,9 +1401,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#b7cada",
     "text": "#3b4c58",
     "error": "#bf616a",
-    "errorExtra": "#793e44",
-    "colorfulError": "#bf616a",
-    "colorfulErrorExtra": "#793e44"
   },
   "slambook": {
     "bg": "#fffdde",
@@ -1872,9 +1410,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#c6dce4",
     "text": "#13005a",
     "error": "#f900bf",
-    "errorExtra": "#ce1212",
-    "colorfulError": "#ce1212",
-    "colorfulErrorExtra": "#3ec70b"
   },
   "snes": {
     "bg": "#bfbec2",
@@ -1884,9 +1419,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#b5b0c2",
     "text": "#2e2e2e",
     "error": "#ca4754",
-    "errorExtra": "#7e2a33",
-    "colorfulError": "#ca4754",
-    "colorfulErrorExtra": "#7e2a33"
   },
   "soaring_skies": {
     "bg": "#fff9f2",
@@ -1896,9 +1428,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#e5ddd4",
     "text": "#1d1e1e",
     "error": "#fb5745",
-    "errorExtra": "#b03c30",
-    "colorfulError": "#fb5745",
-    "colorfulErrorExtra": "#b03c30"
   },
   "solarized_dark": {
     "bg": "#002b36",
@@ -1908,9 +1437,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#00222b",
     "text": "#3094da",
     "error": "#d33682",
-    "errorExtra": "#9b225c",
-    "colorfulError": "#d33682",
-    "colorfulErrorExtra": "#9b225c"
   },
   "solarized_light": {
     "bg": "#fdf6e3",
@@ -1920,9 +1446,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#e2d8be",
     "text": "#181819",
     "error": "#d33682",
-    "errorExtra": "#9b225c",
-    "colorfulError": "#d33682",
-    "colorfulErrorExtra": "#9b225c"
   },
   "solarized_osaka": {
     "bg": "#00141a",
@@ -1932,9 +1455,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#00222b",
     "text": "#eee8d5",
     "error": "#dc322f",
-    "errorExtra": "#9b225c",
-    "colorfulError": "#d33682",
-    "colorfulErrorExtra": "#9b225c"
   },
   "sonokai": {
     "bg": "#2c2e34",
@@ -1944,9 +1464,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#232429",
     "text": "#e2e2e3",
     "error": "#fc5d7c",
-    "errorExtra": "#ecac6a",
-    "colorfulError": "#fc5d7c",
-    "colorfulErrorExtra": "#ecac6a"
   },
   "spiderman": {
     "bg": "#0d1219",
@@ -1956,9 +1473,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#0b1c2e",
     "text": "#f0f0f0",
     "error": "#0476f2",
-    "errorExtra": "#0353a8",
-    "colorfulError": "#0476f2",
-    "colorfulErrorExtra": "#0353a8"
   },
   "stealth": {
     "bg": "#010203",
@@ -1968,9 +1482,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#121212",
     "text": "#737f87",
     "error": "#e25303",
-    "errorExtra": "#73280c",
-    "colorfulError": "#e25303",
-    "colorfulErrorExtra": "#73280c"
   },
   "strawberry": {
     "bg": "#f37f83",
@@ -1980,9 +1491,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#ef6e77",
     "text": "#303015",
     "error": "#fcd23f",
-    "errorExtra": "#d7ae1e",
-    "colorfulError": "#fcd23f",
-    "colorfulErrorExtra": "#d7ae1e"
   },
   "striker": {
     "bg": "#124883",
@@ -1992,9 +1500,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#104176",
     "text": "#d6dbd9",
     "error": "#fb4934",
-    "errorExtra": "#cc241d",
-    "colorfulError": "#fb4934",
-    "colorfulErrorExtra": "#cc241d"
   },
   "suisei": {
     "bg": "#3b4a62",
@@ -2004,9 +1509,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#313e55",
     "text": "#dbdeeb",
     "error": "#ed2939",
-    "errorExtra": "#ce122c",
-    "colorfulError": "#ed2939",
-    "colorfulErrorExtra": "#ce122c"
   },
   "sunset": {
     "bg": "#211e24",
@@ -2016,9 +1518,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#161319",
     "text": "#f4e0c9",
     "error": "#66a1ff",
-    "errorExtra": "#376ca4",
-    "colorfulError": "#66a1ff",
-    "colorfulErrorExtra": "#376ca4"
   },
   "superuser": {
     "bg": "#262a33",
@@ -2028,9 +1527,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1f232c",
     "text": "#e5f7ef",
     "error": "#ff5f5f",
-    "errorExtra": "#d22a2a",
-    "colorfulError": "#ff5f5f",
-    "colorfulErrorExtra": "#d22a2a"
   },
   "sweden": {
     "bg": "#0058a3",
@@ -2040,9 +1536,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#024f8e",
     "text": "#ffffff",
     "error": "#e74040",
-    "errorExtra": "#a22f2f",
-    "colorfulError": "#f56674",
-    "colorfulErrorExtra": "#e33546"
   },
   "tangerine": {
     "bg": "#ffede0",
@@ -2052,9 +1545,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#fdd3bf",
     "text": "#3d1705",
     "error": "#7fb500",
-    "errorExtra": "#5f8700",
-    "colorfulError": "#7fb500",
-    "colorfulErrorExtra": "#5f8700"
   },
   "taro": {
     "bg": "#b3baff",
@@ -2064,9 +1554,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#a3a7df",
     "text": "#130f1a",
     "error": "#ffe23e",
-    "errorExtra": "#fff1c3",
-    "colorfulError": "#ffe23e",
-    "colorfulErrorExtra": "#fff1c3"
   },
   "terminal": {
     "bg": "#191a1b",
@@ -2076,9 +1563,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#141516",
     "text": "#e7eae0",
     "error": "#a61717",
-    "errorExtra": "#731010",
-    "colorfulError": "#a61717",
-    "colorfulErrorExtra": "#731010"
   },
   "terra": {
     "bg": "#0c100e",
@@ -2088,9 +1572,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#0f1d18",
     "text": "#f0edd1",
     "error": "#d3ca78",
-    "errorExtra": "#89844d",
-    "colorfulError": "#d3ca78",
-    "colorfulErrorExtra": "#89844d"
   },
   "terrazzo": {
     "bg": "#f1e5da",
@@ -2100,9 +1581,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#e3d3c6",
     "text": "#023e3b",
     "error": "#a01034",
-    "errorExtra": "#a01034",
-    "colorfulError": "#a01034",
-    "colorfulErrorExtra": "#a01034"
   },
   "terror_below": {
     "bg": "#0b1e1a",
@@ -2112,9 +1590,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#041715",
     "text": "#dceae5",
     "error": "#bf616a",
-    "errorExtra": "#793e44",
-    "colorfulError": "#bf616a",
-    "colorfulErrorExtra": "#793e44"
   },
   "tiramisu": {
     "bg": "#cfc6b9",
@@ -2124,9 +1599,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#d0bca7",
     "text": "#68463c",
     "error": "#e9632d",
-    "errorExtra": "#e9632d",
-    "colorfulError": "#e9632d",
-    "colorfulErrorExtra": "#e9632d"
   },
   "trackday": {
     "bg": "#464d66",
@@ -2136,9 +1608,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#3d4359",
     "text": "#cfcfcf",
     "error": "#e44e4e",
-    "errorExtra": "#fd3f3f",
-    "colorfulError": "#ff2e2e",
-    "colorfulErrorExtra": "#bb2525"
   },
   "trance": {
     "bg": "#00021b",
@@ -2148,9 +1617,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#18214c",
     "text": "#fff",
     "error": "#02d3b0",
-    "errorExtra": "#3f887c",
-    "colorfulError": "#02d3b0",
-    "colorfulErrorExtra": "#3f887c"
   },
   "tron_orange": {
     "bg": "#0d1c1c",
@@ -2160,9 +1626,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#15211f",
     "text": "#ffffff",
     "error": "#ff0000",
-    "errorExtra": "#ff0000",
-    "colorfulError": "#ff0000",
-    "colorfulErrorExtra": "#ff0000"
   },
   "vaporwave": {
     "bg": "#a4a7ea",
@@ -2172,9 +1635,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#989bd9",
     "text": "#453045",
     "error": "#573ca9",
-    "errorExtra": "#3d2b77",
-    "colorfulError": "#28cafe",
-    "colorfulErrorExtra": "#25a9ce"
   },
   "vesper": {
     "bg": "#101010",
@@ -2184,9 +1644,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1c1c1c",
     "text": "#ffffff",
     "error": "#ff8080",
-    "errorExtra": "#b25959",
-    "colorfulError": "#ff8080",
-    "colorfulErrorExtra": "#b25959"
   },
   "vesper_light": {
     "bg": "#ffffff",
@@ -2196,9 +1653,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#fff8f4",
     "text": "#000000",
     "error": "#ed2839",
-    "errorExtra": "#ff6c72",
-    "colorfulError": "#ed2839",
-    "colorfulErrorExtra": "#ff6c72"
   },
   "viridescent": {
     "bg": "#2c3333",
@@ -2208,9 +1662,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#232828",
     "text": "#e9f5db",
     "error": "#ff4646",
-    "errorExtra": "#ab2f2f",
-    "colorfulError": "#bd4141",
-    "colorfulErrorExtra": "#883434"
   },
   "voc": {
     "bg": "#190618",
@@ -2220,9 +1671,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#2c0c28",
     "text": "#eeeae4",
     "error": "#af3735",
-    "errorExtra": "#7e2a29",
-    "colorfulError": "#af3735",
-    "colorfulErrorExtra": "#7e2a29"
   },
   "vscode": {
     "bg": "#1e1e1e",
@@ -2232,9 +1680,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#191919",
     "text": "#d4d4d4",
     "error": "#f44747",
-    "errorExtra": "#f44747",
-    "colorfulError": "#f44747",
-    "colorfulErrorExtra": "#f44747"
   },
   "watermelon": {
     "bg": "#1f4437",
@@ -2244,9 +1689,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#244d3f",
     "text": "#cdc6bc",
     "error": "#c82931",
-    "errorExtra": "#ac1823",
-    "colorfulError": "#c82931",
-    "colorfulErrorExtra": "#ac1823"
   },
   "wavez": {
     "bg": "#1c292f",
@@ -2256,9 +1698,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#1b3238",
     "text": "#e9efe6",
     "error": "#ca4754",
-    "errorExtra": "#7e2a33",
-    "colorfulError": "#ca4754",
-    "colorfulErrorExtra": "#7e2a33"
   },
   "witch_girl": {
     "bg": "#f3dbda",
@@ -2268,9 +1707,6 @@ export const THEMES: Record<string, MonkeytypeTheme> = {
     "subAlt": "#e7c8be",
     "text": "#435d52",
     "error": "#b29a91",
-    "errorExtra": "#b29a91",
-    "colorfulError": "#b29a91",
-    "colorfulErrorExtra": "#b29a91"
   }
 };
 export function isColorDark(color: string): boolean {
@@ -2348,9 +1784,6 @@ export function applyTheme(themeId: string): void {
     root.style.setProperty("--sub-alt-color", theme.subAlt);
     root.style.setProperty("--text-color", theme.text);
     root.style.setProperty("--error-color", theme.error);
-    root.style.setProperty("--error-extra-color", theme.errorExtra);
-    root.style.setProperty("--colorful-error-color", theme.colorfulError || theme.error);
-    root.style.setProperty("--colorful-error-extra-color", theme.colorfulErrorExtra || theme.errorExtra);
   }
 
   syncThemeColor(theme.bg);
@@ -2386,9 +1819,6 @@ export function applyTheme(themeId: string): void {
             "--sub-alt-color": theme.subAlt,
             "--text-color": theme.text,
             "--error-color": theme.error,
-            "--error-extra-color": theme.errorExtra,
-            "--colorful-error-color": theme.colorfulError || theme.error,
-            "--colorful-error-extra-color": theme.colorfulErrorExtra || theme.errorExtra,
           },
           scheme: isDark ? "dark" : "light",
         })

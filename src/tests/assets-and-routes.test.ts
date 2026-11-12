@@ -9,26 +9,11 @@ import { compendium } from "../data/compendium";
 const ROOT_DIR = path.resolve(__dirname, "../..");
 const WEBFONTS_DIR = path.resolve(ROOT_DIR, "public/webfonts");
 const SOUNDS_DIR = path.resolve(ROOT_DIR, "public/sounds");
-const FONTS_CSS_PATH = path.resolve(ROOT_DIR, "src/app/fonts.css");
 
 describe("Filesystem Assets & Dynamic Routes Integrity", () => {
   describe("Physical Font Files & CSS Declarations", () => {
     it("contains all 43 font definitions in FONT_LIST", () => {
       expect(FONT_LIST).toHaveLength(43);
-    });
-
-    it("verifies that fonts.css exists and declares @font-face rules for custom fonts", () => {
-      expect(fs.existsSync(FONTS_CSS_PATH)).toBe(true);
-      const fontsCss = fs.readFileSync(FONTS_CSS_PATH, "utf-8");
-
-      const customFonts = FONT_LIST.filter((f) => !f.systemFont);
-      expect(customFonts.length).toBeGreaterThanOrEqual(39);
-
-      for (const font of customFonts) {
-        // fonts.css must reference either the font id or font family name
-        const hasFontName = fontsCss.includes(font.name) || fontsCss.includes(font.id);
-        expect(hasFontName, `Expected fonts.css to declare font ${font.name}`).toBe(true);
-      }
     });
 
     it("verifies that custom webfont files exist in public/webfonts and have non-zero size", () => {

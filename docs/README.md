@@ -193,7 +193,6 @@ src/
 │   ├── review/           # Multi-modal SRS Review Hub
 │   ├── settings/ about/  # Settings & About (linked from the bottom dock)
 │   ├── error.tsx         # Global error boundary (client)
-│   ├── fonts.css         # @font-face declarations over public/webfonts
 │   ├── globals.css       # Tailwind v4 entry + theme CSS custom properties
 │   └── layout.tsx        # App layout, global shell, TopNav + BottomNav
 ├── components/

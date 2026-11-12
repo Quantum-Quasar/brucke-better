@@ -132,7 +132,7 @@ claims that every file was downloaded in a browser session:
   other families only when selected or previewed. `FontSelectorModal.tsx`
   previews one hovered/focused choice; downloading every preview requires the
   explicit “Load all previews” action. `fonts.test.ts` pins single-family
-  injection. The complete legacy `fonts.css` catalog is not imported by layout.
+  injection.
 - **Offline:** `public/sw.js` installs only the offline page, manifest and two
   app icons. Fonts, sounds, data and Next assets enter the bounded cache only
   after requests (including already-requested bootstrap assets). There is no
@@ -144,7 +144,6 @@ claims that every file was downloaded in a browser session:
 | Script | Run via | What it writes |
 | --- | --- | --- |
 | `export-trail.ts` | `bun run trail` | Writes `TRAIL.md` at the repo root — the German trail in reading order. Run it after any lesson or teaser change. |
-| `capture-demo-images.ts` | `bun scripts/capture-demo-images.ts` | Captures seeded demo screenshots into `demo-images/`. Run by hand; it hardcodes a deployed URL and a machine-specific Chromium path, so edit those first. |
 
 ---
 
