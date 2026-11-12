@@ -8,7 +8,6 @@ import { consciousnessLineFor, CONSCIOUSNESS_EVERY } from "../data/consciousness
 import { SOUND_IMPORTS, soundImportSpellings, soundImportsPresentIn } from "../data/sound-imports";
 import { DEFAULT_SETTINGS } from "../data/settings";
 import type { ExerciseItem } from "../lib/types";
-import { COLD_OPEN_FORBIDDEN } from "../lib/types";
 import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
@@ -16,6 +15,7 @@ import { resolve } from "node:path";
 const trailOrder = flattenTrailNodes().map((n) => n.id);
 const lessonIndex = new Map(LESSONS.map((l) => [l.id, l]));
 const trailIndex = new Map(trailOrder.map((id, i) => [id, i]));
+const COLD_OPEN_FORBIDDEN = ["derive", "reverse_cognate", "transcribe", "literal_gloss", "dictation", "family_matrix", "variant_english", "pronoun_compression", "spoken_turn_reply"];
 
 describe("TM-6: the dictation exercise", () => {
   it("plays audio the learner must write down, and never opens a lesson", () => {

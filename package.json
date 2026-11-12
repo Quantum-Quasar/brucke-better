@@ -15,7 +15,7 @@
     "test": "bun run export-data && vitest run",
     "test:e2e": "playwright test",
     "test:product": "PLAYWRIGHT_PRODUCTION=1 PLAYWRIGHT_WEB_SERVER='bun run start' playwright test product-quality.spec.ts",
-    "lint": "eslint . && oxlint -c .oxlintrc.json src tests",
+    "lint": "oxlint -c .oxlintrc.json src tests scripts next.config.mjs postcss.config.mjs playwright.config.ts vitest.config.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -26,16 +26,11 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
-    "@next/eslint-plugin-next": "^16.4.5",
     "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^26.4.1",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
-    "eslint": "^10.14.0",
-    "eslint-plugin-react-hooks": "^7.1.1",
-    "globals": "^17.13.0",
     "oxlint": "1.40.0",
     "postcss": "^8.5.28",
     "tailwindcss": "^4.3.3",

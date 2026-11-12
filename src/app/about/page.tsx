@@ -1,4 +1,3 @@
-import React from "react";
 import Link from "next/link";
 import { ArrowLeft, BookOpen, Compass, ExternalLink, RotateCcw, Sliders } from "lucide-react";
 import type { Metadata } from "next";

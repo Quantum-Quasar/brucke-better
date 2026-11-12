@@ -1,14 +1,14 @@
 "use client";
 
-import React, { useState, useMemo, useEffect, useRef } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { X, Check } from "lucide-react";
 import { ExerciseWidget } from "@/components/lesson/ExerciseWidgets";
 import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
 import { generateMCQOptions, generateWordTiles } from "@/lib/review-modes";
 import type { CompendiumData, ShiftFamily, ExerciseItem } from "@/lib/types";
-import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
+import { ModalDialog } from "@/components/common/ModalDialog";
 
 interface BranchDrillModalProps {
   family: ShiftFamily;
@@ -22,17 +22,11 @@ export const BranchDrillModal: React.FC<BranchDrillModalProps> = ({ family, data
   const [score, setScore] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
   const [currentQuestionFailed, setCurrentQuestionFailed] = useState(false);
-  const dialogRef = useRef<HTMLDivElement>(null);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
 
   useBackDismiss(isOpen, onClose);
 
-  useDialogFocus({
-    open: isOpen,
-    containerRef: dialogRef,
-    onEscape: onClose,
-  });
 
   // The modal stays mounted between openings (it only returns null while
   // closed), so a fresh open must start a fresh run instead of resuming the
@@ -145,11 +139,8 @@ export const BranchDrillModal: React.FC<BranchDrillModalProps> = ({ family, data
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75">
+    <ModalDialog onClose={onClose} aria-labelledby="branch-drill-title" className="open:flex items-center justify-center p-3 sm:p-4 bg-black/75">
       <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
         aria-labelledby="branch-drill-title"
         className="relative w-full max-w-lg max-h-[calc(100dvh-1.5rem)] overflow-y-auto overscroll-contain bg-[var(--bg-color)] border border-[var(--sub-color)]/30 rounded-lg shadow-2xl p-5 pb-safe space-y-5 font-sans text-[var(--text-color)]"
       >
@@ -216,6 +207,6 @@ export const BranchDrillModal: React.FC<BranchDrillModalProps> = ({ family, data
           </div>
         )}
       </div>
-    </div>
+    </ModalDialog>
   );
 };

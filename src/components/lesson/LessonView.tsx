@@ -4,7 +4,7 @@
 // the lesson index validates the id, one small payload supplies the lesson and
 // its trimmed compendium, and the curriculum supplies lock/next state.
 
-import React, { useEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { ArrowLeft } from "lucide-react";
 import { LessonDetailClient } from "@/components/lesson/LessonDetailClient";
 import { useLesson, useLessonIndex } from "@/lib/content-client";

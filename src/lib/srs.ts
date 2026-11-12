@@ -1,6 +1,6 @@
 // ponytail: standard SM-2 algorithm with word-level isolation
 
-import type { SRSCard, WordEntity } from "./types";
+import type { SRSCard } from "./types";
 
 export type ReviewGrade = 1 | 3 | 4 | 5; // 1 = Again, 3 = Hard, 4 = Good, 5 = Easy
 
@@ -104,22 +104,4 @@ export function getDueCards(cards: Record<string, SRSCard>, today = localDateKey
   return Object.values(cards).filter(
     (c) => c && typeof c.due_date === "string" && c.due_date <= today && isReviewable(c, today)
   );
-}
-
-export function getWeakestCards(cards: Record<string, SRSCard>, limit = 15): SRSCard[] {
-  return Object.values(cards)
-    .filter((c) => c && typeof c.lapses === "number" && c.lapses > 0 && isReviewable(c))
-    .sort((a, b) => b.lapses - a.lapses)
-    .slice(0, limit);
-}
-
-export function getCardsByShift(
-  cards: Record<string, SRSCard>,
-  words: Record<string, WordEntity>,
-  shiftId: string
-): SRSCard[] {
-  return Object.values(cards).filter((c) => {
-    const word = words[c.word_id];
-    return isReviewable(c) && word && word.sound_shift_ids.includes(shiftId);
-  });
 }

@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { getLanguageDefinition } from "@/data/languages";
 import { detectLanguageVoice, subscribeVoiceChanges, type VoiceAvailability } from "@/lib/audio";
 import { useAppStore } from "@/lib/store";
-import { useDialogFocus } from "@/lib/use-dialog-focus";
+import { ModalDialog } from "@/components/common/ModalDialog";
 import { VoiceStatusBanner } from "./VoiceStatusBanner";
 
 export function voiceInstallInstructions(platform: string, language: string): string[] {
@@ -37,14 +37,12 @@ export function VoiceGuidanceSheet({ languageId }: { languageId: string }) {
   const dismissed = useAppStore((s) => s.settings.voiceGuidanceDismissed);
   const updateSetting = useAppStore((s) => s.updateSetting);
   const [status, setStatus] = useState<VoiceAvailability | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
   const continueRef = useRef<HTMLButtonElement>(null);
   const open = !dismissed.includes(languageId) && Boolean(status && !status.hasLanguageVoice && (!status.supported || status.voicesLoaded));
   const close = () => {
     const current = useAppStore.getState().settings.voiceGuidanceDismissed;
     if (!current.includes(languageId)) updateSetting("voiceGuidanceDismissed", [...current, languageId]);
   };
-  useDialogFocus({ open, containerRef, initialFocusRef: continueRef, onEscape: close });
 
   useEffect(() => {
     const refresh = () => setStatus(detectLanguageVoice(language.ttsLocale));
@@ -63,8 +61,8 @@ export function VoiceGuidanceSheet({ languageId }: { languageId: string }) {
   const platform = navigator.userAgent + (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.platform) ? " iPad" : "");
   const instructions = voiceInstallInstructions(platform, language.name);
   return (
-    <div className="fixed inset-0 z-[120] bg-black/60 flex items-end sm:items-center justify-center p-3">
-      <div ref={containerRef} role="dialog" aria-modal="true" aria-labelledby="voice-guide-title" aria-describedby="voice-guide-description" className="w-full max-w-lg max-h-[85dvh] overflow-y-auto rounded-xl border border-[var(--main-color)]/30 bg-[var(--bg-color)] text-[var(--text-color)] p-5 space-y-4 font-mono">
+    <ModalDialog onClose={close} initialFocusRef={continueRef} aria-labelledby="voice-guide-title" aria-describedby="voice-guide-description" className="open:flex items-end sm:items-center justify-center bg-black/60 p-3 z-[120]">
+      <div className="w-full max-w-lg max-h-[85dvh] overflow-y-auto rounded-xl border border-[var(--main-color)]/30 bg-[var(--bg-color)] text-[var(--text-color)] p-5 space-y-4 font-mono">
         <h2 id="voice-guide-title" className="text-lg font-bold">Your {language.name} lesson voice</h2>
         <p id="voice-guide-description" className="text-sm">Pronunciation uses your browser’s system speech voices. Microphone access is not needed to listen. This one-time guide helps when a voice for your language is missing.</p>
         <VoiceStatusBanner showWhenAvailable allowSkipListening />
@@ -73,6 +71,6 @@ export function VoiceGuidanceSheet({ languageId }: { languageId: string }) {
         <p className="text-sm">You can continue without audio. Listening exercises offer a temporary text-only mode; missing voices never block learning.</p>
         <button ref={continueRef} type="button" onClick={close} className="w-full rounded-lg px-4 py-3 bg-[var(--main-color)] text-[var(--bg-color)] font-bold">Continue to lesson</button>
       </div>
-    </div>
+    </ModalDialog>
   );
-}
+};

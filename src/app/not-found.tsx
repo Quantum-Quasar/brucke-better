@@ -1,4 +1,3 @@
-import React from "react";
 import Link from "next/link";
 import { Compass, Home } from "lucide-react";
 import type { Metadata } from "next";

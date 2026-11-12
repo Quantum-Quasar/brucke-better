@@ -71,7 +71,7 @@ test.describe("French, Spanish and Dutch courses", () => {
     );
     await page.getByRole("button", { name: /60-second intro/i }).click();
 
-    const dialog = page.locator('div[aria-label="Brücke introduction"]');
+    const dialog = page.locator('dialog[aria-label="Brücke introduction"]');
     await expect(dialog).toBeVisible({ timeout: 45_000 });
     await expect(dialog.getByRole("heading", { name: /which language do you want to learn/i })).toBeVisible();
 

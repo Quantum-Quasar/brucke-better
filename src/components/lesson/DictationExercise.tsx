@@ -11,21 +11,18 @@
 // minutes and degrades this one into an ordinary typed production exercise (text
 // shown, audio still available if they want it). Never a penalty, never a blocker.
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Volume2, EarOff, Lightbulb, Quote, Sparkles } from "lucide-react";
 import { ProductionAnswerInput } from "./inputs/ProductionAnswerInput";
 import { VoiceStatusBanner } from "@/components/common/VoiceStatusBanner";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
-import { gradeExerciseAttempt } from "@/lib/exercise-grading";
 import { playTargetAudio } from "@/lib/audio";
-import { getLanguageDefinition } from "@/data/languages";
 import { useAppStore } from "@/lib/store";
-import { soundEngine } from "@/lib/sound";
-import { hasBlockingKeyboardDialog } from "@/lib/use-dialog-focus";
+import { hasBlockingKeyboardDialog } from "@/components/common/ModalDialog";
 import { LISTENING_SKIP_MS, isListeningSkipped } from "@/lib/listening";
-import { affirmationFor } from "@/lib/shift-diagnosis";
-import type { ExerciseDiagnosis, ExerciseItem } from "@/lib/types";
+import { useProductionAttempt } from "./use-production-attempt";
+import type { ExerciseItem } from "@/lib/types";
 
 interface DictationExerciseProps {
   exercise: ExerciseItem;
@@ -48,34 +45,53 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
   onPurpleForfeit,
   onFlagGuessed,
 }) => {
-  const [userInput, setUserInput] = useState("");
   const [replaysUsed, setReplaysUsed] = useState(0);
-  const [cuesRevealed, setCuesRevealed] = useState(0);
-  const [status, setStatus] = useState<"idle" | "correct" | "almost" | "incorrect">("idle");
-  const [sheetVariant, setSheetVariant] = useState<"exact" | "almost">("exact");
-  const [verifiedAttemptText, setVerifiedAttemptText] = useState("");
-  const [acceptedTarget, setAcceptedTarget] = useState(exercise.target_answer);
-  const [almostWarningNote, setAlmostWarningNote] = useState<string | undefined>(undefined);
-  const [feedbackNote, setFeedbackNote] = useState<string | null>(null);
-  const [showErrorSheet, setShowErrorSheet] = useState(false);
-  const [showSuccessSheet, setShowSuccessSheet] = useState(false);
-  const [failedAttemptText, setFailedAttemptText] = useState("");
-  const [failedDiagnosis, setFailedDiagnosis] = useState<ExerciseDiagnosis | undefined>(undefined);
-
-  const inputRef = useRef<HTMLInputElement>(null);
-  // one keypress must never verify twice (Enter fires the input handler, then the
-  // window fallback, unless the first verify already advanced the card)
-  const verifyingRef = useRef(false);
-  const tolerance = useAppStore((s) => s.tolerance);
-  const settings = useAppStore((s) => s.settings);
   const skipListeningFor = useAppStore((s) => s.skipListeningFor);
-  const activeLanguageId = useAppStore((s) => s.activeLanguageId);
-  const language = getLanguageDefinition(activeLanguageId);
+  const {
+    inputRef,
+    settings,
+    language,
+    affirmation,
+    userInput,
+    setUserInput,
+    cuesRevealed,
+    cues,
+    target,
+    status,
+    sheetVariant,
+    feedbackNote,
+    setFeedbackNote,
+    verifiedAttemptText,
+    acceptedTarget,
+    almostWarningNote,
+    showErrorSheet,
+    showSuccessSheet,
+    failedAttemptText,
+    failedDiagnosis,
+    resetCurrentExercise,
+    revealNextCue,
+    handleVerify,
+    handleSuccessContinue,
+    handleErrorContinue,
+  } = useProductionAttempt({
+    exercise,
+    isRetry,
+    onSuccess,
+    onError,
+    onQueueRetry,
+    onPurpleForfeit,
+    emptyMessage: "Write down what you heard before checking.",
+    exactMessage: "Spot On! Perfect.",
+    guardDuplicateVerify: true,
+    focusDelayMs: 80,
+    onReset: () => setReplaysUsed(
+      // The autoplay that opens the card is a hearing; count it against the budget.
+      isListeningSkipped(useAppStore.getState().settings.listeningSkippedUntil) ? 0 : 1
+    ),
+  });
 
   const spoken = exercise.spoken ?? exercise.target_answer;
-  const target = exercise.target_answer.trim();
   const replayBudget = exercise.replays ?? 2;
-  const cues = exercise.cues ?? [];
   const listeningOff = isListeningSkipped(settings.listeningSkippedUntil);
 
   const play = () => {
@@ -83,36 +99,6 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
     playTargetAudio(spoken);
     setReplaysUsed((n) => n + 1);
   };
-
-  const resetCurrentExercise = () => {
-    verifyingRef.current = false;
-    setUserInput("");
-    // the autoplay that opens the card is a hearing — count it against the budget
-    // (when listening is skipped, no autoplay happens and the count stays 0)
-    setReplaysUsed(
-      isListeningSkipped(useAppStore.getState().settings.listeningSkippedUntil) ? 0 : 1
-    );
-    setCuesRevealed(0);
-    setStatus("idle");
-    setSheetVariant("exact");
-    setVerifiedAttemptText("");
-    setAlmostWarningNote(undefined);
-    setFeedbackNote(null);
-    setShowErrorSheet(false);
-    setShowSuccessSheet(false);
-    setFailedAttemptText("");
-    setFailedDiagnosis(undefined);
-    setTimeout(() => {
-      if (!isListeningSkipped(useAppStore.getState().settings.listeningSkippedUntil)) {
-        inputRef.current?.focus({ preventScroll: true });
-      }
-    }, 80);
-  };
-
-  useEffect(() => {
-    resetCurrentExercise();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exercise.id]);
 
   // Autoplay once when the card opens and listening is available — the ear leads.
   // `resetCurrentExercise` already counts that first hearing; the functional update
@@ -126,58 +112,6 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
     return () => clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exercise.id, listeningOff]);
-
-  const revealNextCue = () => {
-    if (cuesRevealed >= cues.length) return;
-    onPurpleForfeit?.();
-    setCuesRevealed((n) => n + 1);
-  };
-
-
-  const handleVerify = () => {
-    if (verifyingRef.current) return;
-    inputRef.current?.blur();
-    const answerToCheck = userInput.trim();
-    if (!answerToCheck) {
-      setFeedbackNote("Write down what you heard before checking.");
-      return;
-    }
-    verifyingRef.current = true;
-
-    const evalOptions = {
-      umlautTolerance: Boolean(settings.lazyMode ?? tolerance.umlautTolerance),
-      capitalizationTolerance: Boolean(settings.capitalizationTolerance ?? tolerance.capitalizationTolerance),
-    };
-    const graded = gradeExerciseAttempt(exercise, [answerToCheck], { ...evalOptions, languageId: activeLanguageId }, isRetry);
-    const evaluation = graded.result;
-    setAcceptedTarget(graded.target);
-
-    if (evaluation.accuracy === "exact" || evaluation.accuracy === "almost") {
-      setStatus(evaluation.accuracy === "exact" ? "correct" : "almost");
-      setSheetVariant(evaluation.accuracy === "exact" ? "exact" : "almost");
-      setVerifiedAttemptText(answerToCheck);
-      setAlmostWarningNote(evaluation.warningNote);
-      setFeedbackNote(
-        evaluation.accuracy === "exact"
-          ? "Spot On! Perfect."
-          : evaluation.warningNote || `Almost right! Note standard spelling: "${target}"`
-      );
-      setShowSuccessSheet(true);
-      if (graded.queueRetry) onQueueRetry?.();
-      // the parent advances from the success sheet's onContinue, so the sheet
-      // (correct spelling + meaning) actually paints before the widget unmounts
-      return;
-    }
-
-    setStatus("incorrect");
-    setFailedAttemptText(answerToCheck);
-    setFailedDiagnosis(graded.diagnosis);
-    void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
-    onError(graded.errorType);
-    onQueueRetry?.();
-    if (cuesRevealed < cues.length) setCuesRevealed((n) => n + 1);
-    setShowErrorSheet(true);
-  };
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -210,27 +144,6 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userInput, showErrorSheet, showSuccessSheet, settings, cuesRevealed]);
-
-  const affirmation = affirmationFor(exercise.affirmation, exercise.shift_hint);
-
-  // Success and failure both hand control back to the parent only from the sheet's
-  // onContinue, so the feedback is actually seen (the parent keys the widget on the
-  // practice/retry index and would unmount it on an immediate advance).
-  const handleSuccessContinue = () => {
-    setShowSuccessSheet(false);
-    onSuccess();
-  };
-
-  const handleErrorContinue = () => {
-    setShowErrorSheet(false);
-    if (isRetry) {
-      // stay on this item for another attempt; it is already in the queue
-      resetCurrentExercise();
-    } else {
-      // the miss is already queued for reinforcement — advance the initial run
-      onSuccess();
-    }
-  };
 
   return (
     <div className="p-6 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--main-color)]/25 space-y-5 shadow-lg font-mono">

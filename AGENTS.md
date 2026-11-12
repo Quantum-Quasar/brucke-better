@@ -108,7 +108,7 @@ bun run dev                # dev server :3000
 bun run export-data        # per-language payloads -> public/data/ (dev/build run it)
 bun run build              # parse-data + export-data + next build (production SSG)
 bun run test               # vitest — every file in src/tests/ (see docs-sync for the pinned count)
-bun run lint               # eslint + oxlint
+bun run lint               # oxlint
 bun run typecheck          # tsc --noEmit
 bun run test:e2e           # playwright smoke suite (tests/e2e/)
 bun run trail              # scripts/export-trail.ts -> TRAIL.md

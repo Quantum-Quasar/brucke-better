@@ -115,172 +115,23 @@ export interface SentenceCard extends Omit<SRSCard, "word_id" | "guessed"> {
   exerciseId: string;
 }
 
-export type ExerciseType =
-  | "morpheme_tiles"
-  | "matching_pairs"
-  | "shift_select"
-  | "syntax_builder"
-  | "derive"
-  | "reverse_cognate"
-  | "transcribe"
-  | "literal_gloss"
-  | "dictation"
-  | "family_matrix"
-  | "variant_english"
-  | "pronoun_compression"
-  | "spoken_turn_reply";
+export const EXERCISE_TYPES = [
+  "morpheme_tiles",
+  "matching_pairs",
+  "shift_select",
+  "syntax_builder",
+  "derive",
+  "reverse_cognate",
+  "transcribe",
+  "literal_gloss",
+  "dictation",
+  "family_matrix",
+  "variant_english",
+  "pronoun_compression",
+  "spoken_turn_reply",
+] as const;
 
-export interface ExerciseCapabilitySpec {
-  type: ExerciseType;
-  label: string;
-  /** Which review modes correspond to or can practice this exercise's skill */
-  supportedReviewModes: ReviewMode[];
-  /** Whether this exercise type is allowed as exercise[0] (cold open) of a lesson */
-  allowColdOpen: boolean;
-  /** Whether this exercise demands active target-language production */
-  isProduction: boolean;
-  /** Whether this exercise plays spoken audio as part of its prompt */
-  hasAudio: boolean;
-  /** Whether retryVariant can shuffle its options/tiles/chips on retry */
-  supportsRetryShuffle: boolean;
-}
-
-/**
- * Single declarative registry where every exercise type declares its supported
- * modes, cold-open eligibility, production status, and audio/retry behavior.
- */
-export const EXERCISE_CAPABILITIES: Record<ExerciseType, ExerciseCapabilitySpec> = {
-  morpheme_tiles: {
-    type: "morpheme_tiles",
-    label: "morpheme assembly",
-    supportedReviewModes: ["tiles", "flashcard"],
-    allowColdOpen: true,
-    isProduction: false,
-    hasAudio: false,
-    supportsRetryShuffle: true,
-  },
-  matching_pairs: {
-    type: "matching_pairs",
-    label: "cognate matching",
-    supportedReviewModes: ["mcq", "flashcard"],
-    allowColdOpen: true,
-    isProduction: false,
-    hasAudio: false,
-    supportsRetryShuffle: true,
-  },
-  shift_select: {
-    type: "shift_select",
-    label: "shift recognition",
-    supportedReviewModes: ["mcq", "flashcard"],
-    allowColdOpen: true,
-    isProduction: false,
-    hasAudio: false,
-    supportsRetryShuffle: true,
-  },
-  syntax_builder: {
-    type: "syntax_builder",
-    label: "sentence builder",
-    supportedReviewModes: ["tiles", "mcq", "typing"],
-    allowColdOpen: true,
-    isProduction: false,
-    hasAudio: false,
-    supportsRetryShuffle: true,
-  },
-  derive: {
-    type: "derive",
-    label: "rule application",
-    supportedReviewModes: ["typing", "tiles", "mcq", "flashcard"],
-    allowColdOpen: false,
-    isProduction: true,
-    hasAudio: false,
-    supportsRetryShuffle: false,
-  },
-  reverse_cognate: {
-    type: "reverse_cognate",
-    label: "reverse cognate",
-    supportedReviewModes: ["typing", "mcq", "flashcard"],
-    allowColdOpen: false,
-    isProduction: true,
-    hasAudio: false,
-    supportsRetryShuffle: false,
-  },
-  transcribe: {
-    type: "transcribe",
-    label: "transcribe the thought",
-    supportedReviewModes: ["typing", "tiles", "mcq", "flashcard"],
-    allowColdOpen: false,
-    isProduction: true,
-    hasAudio: false,
-    supportsRetryShuffle: true,
-  },
-  literal_gloss: {
-    type: "literal_gloss",
-    label: "direct translation",
-    supportedReviewModes: ["mcq"],
-    allowColdOpen: false,
-    isProduction: false,
-    hasAudio: false,
-    supportsRetryShuffle: true,
-  },
-  dictation: {
-    type: "dictation",
-    label: "listen and write",
-    supportedReviewModes: ["typing", "tiles"],
-    allowColdOpen: false,
-    isProduction: true,
-    hasAudio: true,
-    supportsRetryShuffle: false,
-  },
-  family_matrix: {
-    type: "family_matrix",
-    label: "the family grid",
-    supportedReviewModes: ["typing", "mcq"],
-    allowColdOpen: false,
-    isProduction: true,
-    hasAudio: false,
-    supportsRetryShuffle: false,
-  },
-  variant_english: {
-    type: "variant_english",
-    label: "every way to say it",
-    supportedReviewModes: ["mcq"],
-    allowColdOpen: false,
-    isProduction: false,
-    hasAudio: false,
-    supportsRetryShuffle: true,
-  },
-  pronoun_compression: {
-    type: "pronoun_compression",
-    label: "compress the clause",
-    supportedReviewModes: ["tiles", "typing", "mcq"],
-    allowColdOpen: false,
-    isProduction: true,
-    hasAudio: false,
-    supportsRetryShuffle: true,
-  },
-  spoken_turn_reply: {
-    type: "spoken_turn_reply",
-    label: "question & answer turn",
-    supportedReviewModes: ["typing", "tiles", "mcq"],
-    allowColdOpen: false,
-    isProduction: true,
-    hasAudio: true,
-    supportsRetryShuffle: true,
-  },
-};
-
-export const PRODUCTION_TYPES: ExerciseType[] = (
-  Object.values(EXERCISE_CAPABILITIES) as ExerciseCapabilitySpec[]
-)
-  .filter((spec) => spec.isProduction)
-  .map((spec) => spec.type);
-
-/** Types that must never open a lesson — derived directly from EXERCISE_CAPABILITIES. */
-export const COLD_OPEN_FORBIDDEN: ExerciseType[] = (
-  Object.values(EXERCISE_CAPABILITIES) as ExerciseCapabilitySpec[]
-)
-  .filter((spec) => !spec.allowColdOpen)
-  .map((spec) => spec.type);
+export type ExerciseType = (typeof EXERCISE_TYPES)[number];
 
 export interface MatchingPairItem {
   id: string;
@@ -320,7 +171,6 @@ export interface ExerciseItem {
   vocab_hints?: VocabHint[];
   options?: string[]; // For shift_select, literal_gloss, or multiple choice
   tile_options?: string[]; // For morpheme_tiles
-  target_tiles?: string[]; // For morpheme_tiles assembly
   matching_pairs?: MatchingPairItem[]; // For matching_pairs cards
   word_bank?: string[]; // For syntax_builder / transcribe chips
   explanation?: string;

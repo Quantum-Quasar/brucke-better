@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { ArrowLeft, BookOpen, Info, Search } from "lucide-react";
 import { ConstellationWeb } from "@/components/atlas/ConstellationWeb";
 import { BranchDrillModal } from "@/components/atlas/BranchDrillModal";

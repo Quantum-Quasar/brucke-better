@@ -5,8 +5,8 @@
 // state without any router round-trip. It is a modal dialog: focus is trapped,
 // Escape closes it, and the lesson's input-level Escape still wins.
 
-import React, { useEffect, useRef, useState } from "react";
-import { useDialogFocus } from "@/lib/use-dialog-focus";
+import React, { useEffect, useState } from "react";
+import { ModalDialog } from "@/components/common/ModalDialog";
 
 interface SubviewOverlayProps {
   label: string;
@@ -22,26 +22,7 @@ export function SubviewOverlay({
   dockClearance = false,
   children,
 }: SubviewOverlayProps) {
-  const panelRef = useRef<HTMLDivElement>(null);
   const [top, setTop] = useState(56);
-
-  useDialogFocus({
-    open: true,
-    containerRef: panelRef,
-    onEscape: onClose,
-    blocksGlobalShortcuts: false,
-    shouldHandleEscape: (event) => {
-      const target = event.target;
-      // Inside a text field, Escape belongs to the lesson (restart/lose input),
-      // not to the overlay.
-      return !(
-        target instanceof HTMLInputElement ||
-        target instanceof HTMLTextAreaElement ||
-        target instanceof HTMLSelectElement ||
-        (target instanceof HTMLElement && target.isContentEditable)
-      );
-    },
-  });
 
   // The app header is sticky, but its offset changes when the storage banner
   // is visible or the underlying document scrolls. Measure it instead of
@@ -75,16 +56,24 @@ export function SubviewOverlay({
   }, []);
 
   return (
-    <div
-      ref={panelRef}
-      role="dialog"
-      aria-modal="true"
+    <ModalDialog
+      onClose={onClose}
       aria-label={label}
-      tabIndex={-1}
-      style={{ top }}
-      className="safe-x fixed inset-x-0 bottom-0 z-30 overflow-y-auto overscroll-contain bg-[var(--bg-color)] outline-none"
+      blocksGlobalShortcuts={false}
+      shouldHandleEscape={(event) => {
+        const target = event.target;
+        // Inside a text field, Escape belongs to the lesson (restart/lose input).
+        return !(
+          target instanceof HTMLInputElement ||
+          target instanceof HTMLTextAreaElement ||
+          target instanceof HTMLSelectElement ||
+          (target instanceof HTMLElement && target.isContentEditable)
+        );
+      }}
+      style={{ top, height: "auto" }}
+      className="safe-x open:block z-30 overflow-y-auto overscroll-contain bg-[var(--bg-color)] outline-none"
     >
       <div className={dockClearance ? "pb-28" : "pb-safe-lg"}>{children}</div>
-    </div>
+    </ModalDialog>
   );
 }

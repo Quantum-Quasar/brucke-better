@@ -13,7 +13,6 @@ import { isModifiedClick } from "@/lib/app-navigation";
 import { captureScroll } from "@/lib/scroll-memory";
 import { getLanguageDefinition } from "@/data/languages";
 import { getWordCount } from "@/data/word-counts";
-import { rememberFocusOpener } from "@/lib/focus-return";
 
 const GOLD_STAR = "#eab308";
 const PURPLE_STAR = "#a78bfa";
@@ -170,7 +169,7 @@ export const TopNav: React.FC = () => {
 
           <button
             type="button"
-            onClick={() => { rememberFocusOpener(); setHelpOpen(true); }}
+            onClick={() => setHelpOpen(true)}
             className="inline-flex min-h-11 min-w-11 items-center justify-center gap-1 rounded px-2.5 py-2 text-[var(--sub-color)] transition hover:bg-[var(--sub-alt-color)] hover:text-[var(--text-color)] cursor-pointer"
             title="Help and shortcuts"
             aria-label="Open help and shortcuts"

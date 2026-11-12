@@ -117,15 +117,6 @@ const TOP_PAD = 54;
 const BOTTOM_PAD = 64;
 const ANCHOR_H = 20;
 
-export const nodeSize = (kind: NodeKind) =>
-  kind === "core"
-    ? { w: CORE_W, h: CORE_H }
-    : kind === "story"
-    ? { w: STORY_W, h: STORY_H }
-    : kind === "sprig"
-    ? { w: SPRIG_W, h: SPRIG_H }
-    : { w: BRANCH_W, h: BRANCH_H };
-
 const clampX = (x: number, w: number, width: number) => Math.min(Math.max(x, EDGE_PAD), width - EDGE_PAD - w);
 
 /** Unique undirected edge pairs of the trail graph (id-space only, layout-free). */
@@ -166,10 +157,8 @@ export function buildTrailPrerequisites(data: TrailData = GERMAN_TRAIL_DATA): Ma
   return prerequisites;
 }
 
-const GERMAN_EDGES = buildTrailEdgePairs(GERMAN_TRAIL_DATA);
 
 /** Unique undirected edge pairs of the German trail (legacy export, German-bound). */
-export const TRAIL_EDGE_PAIRS: TrailEdge[] = GERMAN_EDGES;
 
 
 /**
@@ -568,7 +557,3 @@ const gateRegion = (gates: TrailGate[], index: number): { fromTopic: number; toT
   fromTopic: index === 0 ? 1 : gates[index - 1].afterTopic + 1,
   toTopic: gates[index].afterTopic,
 });
-
-/** The same full-course order used by recommendations and lesson continuation. */
-export const trailNodeOrder = (data: TrailData = GERMAN_TRAIL_DATA): number[] =>
-  orderedTrailLessons(data.topics, data.branches).map((lesson) => lesson.id);

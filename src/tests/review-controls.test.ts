@@ -1,4 +1,5 @@
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { MemoryStorage } from "./storage-fixture";
 import { DEFAULT_SETTINGS } from "../data/settings";
 import { useAppStore } from "../lib/store";
 import { loadSavedState, persistenceRuntime } from "../lib/store/persistence";
@@ -10,14 +11,6 @@ import { filterByLearned, rankWeakestCards, SESSION_SIZES, type ReviewDeckType }
 import { orderReviewDeck } from "../components/review/review-deck-ordering";
 import { prepareSentenceSession } from "../lib/sentence-review";
 import type { ExerciseItem, SRSCard } from "../lib/types";
-
-class MemoryStorage {
-  private values = new Map<string, string>();
-  getItem(key: string) { return this.values.get(key) ?? null; }
-  setItem(key: string, value: string) { this.values.set(key, String(value)); }
-  removeItem(key: string) { this.values.delete(key); }
-  clear() { this.values.clear(); }
-}
 
 const originalTimezone = process.env.TZ;
 

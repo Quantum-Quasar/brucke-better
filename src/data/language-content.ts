@@ -17,10 +17,8 @@ import { dutchCompendium } from "./dutch/compendium-nl";
 import { NL_LESSONS } from "./dutch/lessons-nl";
 import { getCurriculum } from "./curriculum-registry";
 import { getInsights } from "./insights-registry";
-import { EMPTY_COMPENDIUM } from "./empty-compendium";
 import type { CompendiumData, DailyInsight, Lesson } from "@/lib/types";
 import type { TrailBranch, TrailGate, TopicCluster } from "@/lib/types";
-import { DEFAULT_LANGUAGE_ID } from "./languages";
 
 /** A compendium-shaped bundle with nothing in it (for coming-soon languages). */
 export { EMPTY_COMPENDIUM } from "./empty-compendium";
@@ -78,24 +76,3 @@ const CONTENT_MAP: Record<string, LanguageContent> = {
 export function getLanguageContent(languageId: string): LanguageContent {
   return CONTENT_MAP[languageId] ?? EMPTY_CONTENT;
 }
-
-/**
- * Compendium bundle for a language id — the empty bundle when nothing is authored.
- * Thin accessor over getLanguageContent() for tools that only need word/shift data.
- */
-export function getCompendium(languageId: string): CompendiumData {
-  const content = getLanguageContent(languageId);
-  return content.compendium ?? EMPTY_COMPENDIUM;
-}
-
-/** Total vocabulary words across the language's compendium (0 when unavailable). */
-export function getTotalWordCount(languageId: string): number {
-  const content = getLanguageContent(languageId);
-  if (!content.compendium) return 0;
-  return Object.keys(content.compendium.words).length;
-}
-
-/** Convenience for the default (German) content, for German-specific tooling. */
-export const DEFAULT_CONTENT: LanguageContent = getLanguageContent(DEFAULT_LANGUAGE_ID);
-
-export { getNextPlayableLessonIdFor } from "./curriculum-registry";

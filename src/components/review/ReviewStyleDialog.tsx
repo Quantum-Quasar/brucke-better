@@ -1,19 +1,19 @@
 "use client";
 
 import type { ReviewController } from "./use-review-controller";
+import { ModalDialog } from "@/components/common/ModalDialog";
 
 export function ReviewStyleDialog({ controller }: { controller: ReviewController }) {
   const { isModeSelectorOpen, modeDialogRef, selectReviewStyle, reviewMode, effectiveReviewMode, language, rememberPreference, setRememberPreference, setIsModeSelectorOpen } = controller;
   return <>
       {isModeSelectorOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 animate-in fade-in duration-150">
-          <div
-            ref={modeDialogRef}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="review-style-title"
-            className="w-full max-w-xl max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl p-6 sm:p-8 space-y-6"
-          >
+        <ModalDialog
+          ref={modeDialogRef}
+          onClose={() => setIsModeSelectorOpen(false)}
+          aria-labelledby="review-style-title"
+          className="open:flex items-center justify-center p-4 bg-black/80 animate-in fade-in duration-150"
+        >
+          <div className="w-full max-w-xl max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl p-6 sm:p-8 space-y-6">
             <div className="space-y-1">
               <span className="text-xs font-mono text-[var(--main-color)] uppercase tracking-widest font-semibold">
                 review style
@@ -175,7 +175,7 @@ export function ReviewStyleDialog({ controller }: { controller: ReviewController
               </button>
             </div>
           </div>
-        </div>
+        </ModalDialog>
       )}
   </>;
 }

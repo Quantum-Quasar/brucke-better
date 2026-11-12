@@ -9,20 +9,15 @@
 // the purple star — cues are help, and help is honest (guidebook §4.2, Turkish
 // analysis: let the learner come in "at the moment their memory is jogged").
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Sparkles, Lightbulb, Quote } from "lucide-react";
 import { ProductionAnswerInput } from "./inputs/ProductionAnswerInput";
 import { ProductionAnswerActions } from "./ProductionAnswerActions";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
-import { arrangeTilesDeterministically } from "./exercise-tiles";
-import { gradeExerciseAttempt } from "@/lib/exercise-grading";
-import { affirmationFor } from "@/lib/shift-diagnosis";
-import { getLanguageDefinition } from "@/data/languages";
-import { useAppStore } from "@/lib/store";
-import { soundEngine } from "@/lib/sound";
-import { hasBlockingKeyboardDialog } from "@/lib/use-dialog-focus";
-import type { ExerciseDiagnosis, ExerciseItem } from "@/lib/types";
+import { useProductionAttempt } from "./use-production-attempt";
+import { hasBlockingKeyboardDialog } from "@/components/common/ModalDialog";
+import type { ExerciseItem } from "@/lib/types";
 
 interface TranscribeExerciseProps {
   exercise: ExerciseItem;
@@ -45,119 +40,48 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
   onPurpleForfeit,
   onFlagGuessed,
 }) => {
-  const [userInput, setUserInput] = useState("");
   const [showIdeaParts, setShowIdeaParts] = useState(false);
-  const [cuesRevealed, setCuesRevealed] = useState(0);
-  const [status, setStatus] = useState<"idle" | "correct" | "almost" | "incorrect">("idle");
-  const [sheetVariant, setSheetVariant] = useState<"exact" | "almost">("exact");
-  const [verifiedAttemptText, setVerifiedAttemptText] = useState("");
-  const [acceptedTarget, setAcceptedTarget] = useState(exercise.target_answer);
-  const [almostWarningNote, setAlmostWarningNote] = useState<string | undefined>(undefined);
-  const [feedbackNote, setFeedbackNote] = useState<string | null>(null);
-  const [showErrorSheet, setShowErrorSheet] = useState(false);
-  const [showSuccessSheet, setShowSuccessSheet] = useState(false);
-  const [failedAttemptText, setFailedAttemptText] = useState("");
-  const [failedDiagnosis, setFailedDiagnosis] = useState<ExerciseDiagnosis | undefined>(undefined);
-
-  const inputRef = useRef<HTMLInputElement>(null);
-  const tolerance = useAppStore((s) => s.tolerance);
-  const settings = useAppStore((s) => s.settings);
-  const activeLanguageId = useAppStore((s) => s.activeLanguageId);
-  const language = getLanguageDefinition(activeLanguageId);
-
-  const cues = exercise.cues ?? [];
-  const wordBank = React.useMemo(() => {
-    const cleaned = (exercise.word_bank || []).map((w) => w.replace(/[.,!?;:]+$/, ""));
-    return arrangeTilesDeterministically(cleaned, `${exercise.id}#wb`, exercise.target_answer);
-  }, [exercise.word_bank, exercise.id, exercise.target_answer]);
-  const target = exercise.target_answer.trim();
-
-  const resetCurrentExercise = () => {
-    setUserInput("");
-    setShowIdeaParts(false);
-    setCuesRevealed(0);
-    setStatus("idle");
-    setSheetVariant("exact");
-    setVerifiedAttemptText("");
-    setAlmostWarningNote(undefined);
-    setFeedbackNote(null);
-    setShowErrorSheet(false);
-    setShowSuccessSheet(false);
-    setFailedAttemptText("");
-    setFailedDiagnosis(undefined);
-    setTimeout(() => inputRef.current?.focus(), 50);
-  };
-
-  useEffect(() => {
-    resetCurrentExercise();
-  }, [exercise.id]);
-
-  const insertWord = (word: string) => {
-    if (status === "correct" || status === "almost") return;
-    void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
-    setFeedbackNote(null);
-    setUserInput((prev) => {
-      if (!prev) return word;
-      return prev.endsWith(" ") ? prev + word : `${prev} ${word}`;
-    });
-    setTimeout(() => inputRef.current?.focus(), 0);
-  };
-
-  const revealNextCue = () => {
-    if (cuesRevealed >= cues.length) return;
-    onPurpleForfeit?.();
-    setCuesRevealed((n) => n + 1);
-  };
-
-
-  const handleVerify = () => {
-    inputRef.current?.blur();
-    const answerToCheck = userInput.trim();
-
-    if (!answerToCheck) {
-      setFeedbackNote("Please enter or select an answer before verifying.");
-      return;
-    }
-
-    const evalOptions = {
-      umlautTolerance: Boolean(settings.lazyMode ?? tolerance.umlautTolerance),
-      capitalizationTolerance: Boolean(settings.capitalizationTolerance ?? tolerance.capitalizationTolerance),
-    };
-    const graded = gradeExerciseAttempt(exercise, [answerToCheck], { ...evalOptions, languageId: activeLanguageId }, isRetry, wordBank);
-    const evaluation = graded.result;
-    setAcceptedTarget(graded.target);
-
-    if (evaluation.accuracy === "exact") {
-      setStatus("correct");
-      setFeedbackNote("Spot On! Perfect.");
-      setSheetVariant("exact");
-      setVerifiedAttemptText(answerToCheck);
-      setAlmostWarningNote(undefined);
-      setShowSuccessSheet(true);
-      return;
-    }
-
-    if (evaluation.accuracy === "almost") {
-      setStatus("almost");
-      setFeedbackNote(evaluation.warningNote || `Almost right! Note standard spelling: "${target}"`);
-      setSheetVariant("almost");
-      setVerifiedAttemptText(answerToCheck);
-      setAlmostWarningNote(evaluation.warningNote);
-      setShowSuccessSheet(true);
-      if (graded.queueRetry) onQueueRetry?.();
-      return;
-    }
-
-    setStatus("incorrect");
-    void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
-    onError(graded.errorType);
-    onQueueRetry?.();
-    setFailedAttemptText(answerToCheck);
-    setFailedDiagnosis(graded.diagnosis);
-    // a failed attempt brings the next rung of the ladder (never retroactively graded)
-    if (cuesRevealed < cues.length) setCuesRevealed((n) => n + 1);
-    setShowErrorSheet(true);
-  };
+  const {
+    inputRef,
+    settings,
+    language,
+    wordBank,
+    cues,
+    target,
+    affirmation,
+    userInput,
+    setUserInput,
+    cuesRevealed,
+    status,
+    sheetVariant,
+    feedbackNote,
+    setFeedbackNote,
+    setStatus,
+    verifiedAttemptText,
+    acceptedTarget,
+    almostWarningNote,
+    showErrorSheet,
+    showSuccessSheet,
+    failedAttemptText,
+    failedDiagnosis,
+    resetCurrentExercise,
+    insertWord,
+    revealNextCue,
+    handleVerify,
+    handleSuccessContinue,
+    handleErrorContinue,
+  } = useProductionAttempt({
+    exercise,
+    isRetry,
+    onSuccess,
+    onError,
+    onQueueRetry,
+    onPurpleForfeit,
+    emptyMessage: "Please enter or select an answer before verifying.",
+    exactMessage: "Spot On! Perfect.",
+    onReset: () => setShowIdeaParts(false),
+    focusPreventScroll: false,
+  });
 
   // 1–9 inserts bank words while the learner is not typing; Enter verifies (matches
   // the morpheme_tiles / syntax_builder key plumbing).
@@ -197,7 +121,6 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [userInput, status, showErrorSheet, showSuccessSheet, wordBank, settings, cuesRevealed, cues.length]);
 
-  const affirmation = affirmationFor(exercise.affirmation, exercise.shift_hint);
 
   return (
     <div className="p-6 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--main-color)]/25 space-y-5 shadow-lg font-mono">
@@ -355,17 +278,7 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
           shiftRule={exercise.shift_hint}
           explanation={exercise.explanation}
           diagnosis={failedDiagnosis}
-          onContinue={() => {
-            setShowErrorSheet(false);
-            setStatus("idle");
-            setFeedbackNote(null);
-            if (isRetry) {
-              setUserInput("");
-              setTimeout(() => inputRef.current?.focus(), 50);
-            } else {
-              onSuccess();
-            }
-          }}
+          onContinue={handleErrorContinue}
         />
       )}
 
@@ -381,12 +294,7 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
           userAttempt={verifiedAttemptText}
           warningNote={almostWarningNote}
           affirmation={affirmation}
-          onContinue={() => {
-            setShowSuccessSheet(false);
-            setStatus("idle");
-            setFeedbackNote(null);
-            onSuccess();
-          }}
+          onContinue={handleSuccessContinue}
         />
       )}
     </div>

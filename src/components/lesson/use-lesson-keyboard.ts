@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import type { LessonSession } from "./lesson-session-types";
-import { hasBlockingKeyboardDialog } from "@/lib/use-dialog-focus";
+import { hasBlockingKeyboardDialog } from "@/components/common/ModalDialog";
 
 type KeyboardOptions = Pick<LessonSession, "currentSegment" | "retryQueue" | "isLessonFinished" | "goToNextLesson" | "preview" | "markSegmentDone" | "startPractice" | "handleCompleteAll" | "setCurrentSegment">;
 export function useLessonKeyboard({ currentSegment, retryQueue, isLessonFinished, goToNextLesson, preview, markSegmentDone, startPractice, handleCompleteAll, setCurrentSegment }: KeyboardOptions) {

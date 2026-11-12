@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { TOPICS, TRAIL_BRANCHES, TOTAL_TOPICS, flattenTrailNodes, getNextPlayableLessonId } from "../data/curriculum";
+import { TOPICS, TRAIL_BRANCHES, TOTAL_TOPICS, flattenTrailNodes } from "../data/curriculum";
 import { spineNodeIds } from "../data/curriculum-core";
 import { getCurriculum } from "../data/curriculum-registry";
 import { LESSONS } from "../data/lessons";
@@ -7,7 +7,6 @@ import {
   buildTrailEdgePairs,
   buildTrailLayout,
   getTrailState,
-  trailNodeOrder,
   FIRST_NODE_ID,
 } from "../lib/trail-map";
 import { useAppStore } from "../lib/store";
@@ -57,12 +56,6 @@ describe("Curriculum structure", () => {
     }
   });
 
-  it("continues through sprigs and attached branches before advancing topics", () => {
-    expect(getNextPlayableLessonId(1)).toBe(101);
-    expect(getNextPlayableLessonId(101)).toBe(102);
-    expect(getNextPlayableLessonId(103)).toBe(5071);
-    expect(getNextPlayableLessonId(5071)).toBe(5072);
-  });
 });
 
 describe("Trail graph", () => {
@@ -300,9 +293,9 @@ describe("Trail layout", () => {
 
   it("contains every curriculum node exactly once", () => {
     const layout = buildTrailLayout(640);
-    const order = trailNodeOrder();
-    expect(layout.nodes).toHaveLength(order.length);
-    expect(new Set(layout.nodes.map((n) => n.id)).size).toBe(order.length);
+    const nodes = flattenTrailNodes();
+    expect(layout.nodes).toHaveLength(nodes.length);
+    expect(new Set(layout.nodes.map((n) => n.id)).size).toBe(nodes.length);
   });
 });
 

@@ -13,7 +13,6 @@ import { NextLessonBar } from "./NextLessonBar";
 import { LessonNodeDrawer, GateDrawer } from "./LessonNodeDrawer";
 import { prefetchLesson } from "@/lib/content-client";
 import { getLessonExerciseCount } from "@/lib/lesson-effort";
-import { rememberFocusOpener } from "@/lib/focus-return";
 import { TrailMapNode, GOLD_STAR } from "./TrailMapNode";
 
 
@@ -76,7 +75,6 @@ export const TrailMap: React.FC = () => {
   const selectedNodeId = trailPosition.nodeId;
   const selectedGateId = trailPosition.gateId;
   const selectNode = useCallback((node: TrailNode) => {
-    rememberFocusOpener();
     prefetchLesson(activeLanguageId, node.id);
     setTrailPosition(activeLanguageId, { nodeId: node.id, gateId: null });
   }, [activeLanguageId, setTrailPosition]);
@@ -368,8 +366,7 @@ export const TrailMap: React.FC = () => {
               key={gate.id}
               type="button"
               onClick={() => {
-                rememberFocusOpener();
-                setTrailPosition(activeLanguageId, { gateId: gate.id, nodeId: null });
+                            setTrailPosition(activeLanguageId, { gateId: gate.id, nodeId: null });
               }}
               aria-label={`${gate.title} star gate: ${stars} of ${gate.requiredStars} stars in topics ${gv?.fromTopic}–${gv?.toTopic} — ${open ? "open" : "closed"}`}
               title={`${gate.title} — ${stars}/${gate.requiredStars}★`}

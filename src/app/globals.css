@@ -34,36 +34,15 @@
   --text-color: #f5f3ed;
   --error-color: #af5f5f;
 
-  /* German grammatical gender semantic tokens */
-  --color-der: #569cd6;
-  --color-die: #e06c75;
-  --color-das: #98c379;
-
-  /* System fallbacks & compatibility */
-  --bg-canvas: var(--bg-color);
-  --bg-surface: var(--sub-alt-color);
-  --bg-surface-elevated: var(--sub-alt-color);
-  --border-subtle: color-mix(in srgb, var(--sub-color) 25%, transparent);
-  --border-strong: color-mix(in srgb, var(--sub-color) 45%, transparent);
-  --text-main: var(--text-color);
-  --text-muted: var(--sub-color);
-  --text-dim: color-mix(in srgb, var(--sub-color) 70%, transparent);
-  --color-amber: var(--main-color);
-  --color-cyan: var(--main-color);
-  --color-sage: var(--color-das);
-  --color-coral: var(--error-color);
 }
 
 @theme {
-  --color-bg: var(--bg-color);
-  --color-main: var(--main-color);
-  --color-caret: var(--caret-color);
-  --color-sub: var(--sub-color);
-  --color-sub-alt: var(--sub-alt-color);
-  --color-text: var(--text-color);
-  --color-error: var(--error-color);
   --font-mono: "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   --font-sans: "Lexend Deca", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+dialog::backdrop {
+  background: transparent;
 }
 
 body {
@@ -184,11 +163,6 @@ html[data-contrast="increased"].light {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--sub-color);
-}
-
-/* Tabular figures for data tables, metrics, and progress */
-.tabular-nums {
-  font-variant-numeric: tabular-nums;
 }
 
 /* Keycap styling inspired by Monkeytype commandline & shortcuts */

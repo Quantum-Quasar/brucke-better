@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useRef, useState } from "react";
-import { useDialogFocus } from "@/lib/use-dialog-focus";
+import React, { useState } from "react";
+import { ModalDialog } from "@/components/common/ModalDialog";
 import { ArrowRight, BookOpen, Check, GitBranch, Info, Lock, Sparkles, Star, X } from "lucide-react";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
 import type { TrailNode, NodeStatus, GateView, NodeGateInfo, GateMarker } from "@/lib/trail-map";
 import { loadLesson } from "@/lib/content-client";
 import { hasPassedGateAssessment, scoreGateAnswers, selectGateQuestion, type GateQuestion } from "@/lib/gate-assessment";
-import { focusOpener } from "@/lib/focus-return";
 import { LessonEffort } from "@/components/common/LessonEffort";
 
 interface LessonNodeDrawerProps {
@@ -39,32 +38,17 @@ export const LessonNodeDrawer: React.FC<LessonNodeDrawerProps> = ({
   onClose,
   onStart,
 }) => {
-  const dialogRef = useRef<HTMLDivElement | null>(null);
-  const closeRef = useRef<HTMLButtonElement | null>(null);
   useBackDismiss(true, onClose);
 
-  useDialogFocus({
-    open: true,
-    containerRef: dialogRef,
-    initialFocusRef: closeRef,
-    returnFocus: focusOpener,
-    onEscape: onClose,
-  });
 
   const { status, star } = view;
   const playable = node.authored && status !== "locked";
 
   return (
-    <div className="fixed inset-0 z-50">
+    <ModalDialog onClose={onClose} aria-label={node.title} className="open:block z-50">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" onClick={onClose} aria-hidden />
 
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label={node.title}
-        className="absolute inset-x-0 bottom-0 sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-[440px] max-h-[82dvh] overflow-y-auto overscroll-contain rounded-t-2xl sm:rounded-2xl bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl"
-      >
+      <div className="absolute inset-x-0 bottom-0 sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-[440px] max-h-[82dvh] overflow-y-auto overscroll-contain rounded-t-2xl sm:rounded-2xl bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl">
         <div className="safe-x p-5 pb-safe sm:p-6 space-y-4">
           {/* header */}
           <div className="flex items-start justify-between gap-3">
@@ -76,7 +60,6 @@ export const LessonNodeDrawer: React.FC<LessonNodeDrawerProps> = ({
               <h2 className="text-lg font-bold text-[var(--text-color)] tracking-tight leading-snug">{node.title}</h2>
             </div>
             <button
-              ref={closeRef}
               type="button"
               onClick={onClose}
               className="shrink-0 inline-flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
@@ -166,7 +149,7 @@ export const LessonNodeDrawer: React.FC<LessonNodeDrawerProps> = ({
           )}
         </div>
       </div>
-    </div>
+    </ModalDialog>
   );
 };
 
@@ -187,17 +170,8 @@ interface GateDrawerProps {
 
 /** Checkpoint drawer explaining why a star gate sits where it sits. */
 export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, languageId, lessons, reached, onPass, onClose }) => {
-  const dialogRef = useRef<HTMLDivElement | null>(null);
-  const closeRef = useRef<HTMLButtonElement | null>(null);
   useBackDismiss(true, onClose);
 
-  useDialogFocus({
-    open: true,
-    containerRef: dialogRef,
-    initialFocusRef: closeRef,
-    returnFocus: focusOpener,
-    onEscape: onClose,
-  });
 
   const pct = Math.min(100, Math.round((view.stars / gate.requiredStars) * 100));
   const [questions, setQuestions] = useState<GateQuestion[]>([]);
@@ -237,15 +211,9 @@ export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, languageId, 
   };
 
   return (
-    <div className="fixed inset-0 z-50">
+    <ModalDialog onClose={onClose} aria-label={gate.title} className="open:block z-50">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-[2px]" onClick={onClose} aria-hidden />
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label={gate.title}
-        className="absolute inset-x-0 bottom-0 sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-[440px] max-h-[82dvh] overflow-y-auto overscroll-contain rounded-t-2xl sm:rounded-2xl bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl"
-      >
+      <div className="absolute inset-x-0 bottom-0 sm:inset-x-auto sm:bottom-auto sm:left-1/2 sm:top-1/2 sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-[440px] max-h-[82dvh] overflow-y-auto overscroll-contain rounded-t-2xl sm:rounded-2xl bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl">
         <div className="safe-x p-5 pb-safe sm:p-6 space-y-4">
           <div className="flex items-start justify-between gap-3">
             <div className="space-y-1 min-w-0">
@@ -256,7 +224,6 @@ export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, languageId, 
               <h2 className="text-lg font-bold text-[var(--text-color)] tracking-tight leading-snug">{gate.title}</h2>
             </div>
             <button
-              ref={closeRef}
               type="button"
               onClick={onClose}
               className="shrink-0 inline-flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 text-[var(--sub-color)] hover:text-[var(--text-color)] transition cursor-pointer"
@@ -353,6 +320,6 @@ export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, languageId, 
           )}
         </div>
       </div>
-    </div>
+    </ModalDialog>
   );
 };

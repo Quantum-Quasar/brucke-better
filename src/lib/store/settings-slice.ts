@@ -4,7 +4,6 @@ import { applyAppearanceSettings, applyTheme } from "../theme-runtime";
 import { applyFont } from "@/data/fonts";
 import { DEFAULT_SETTINGS } from "@/data/settings";
 import { soundEngine } from "../sound";
-import { clearFocusOpener, rememberFocusOpener } from "../focus-return";
 import { SAFE_THEME_ID, SAFE_FONT_ID } from "./schema";
 
 export const createSettingsSlice: StoreSlice<"updateSetting" | "resetSettings" | "setTheme" | "openThemeSelector" | "closeThemeSelector" | "setFont" | "openFontSelector" | "closeFontSelector" | "completeOnboarding" | "openOnboarding" | "closeOnboarding" | "dismissGenderIntro" | "openGenderIntro" | "setPreferredReviewMode" | "skipListeningFor" | "openWordDrawer" | "closeWordDrawer" | "setUmlautTolerance" | "setCapitalizationTolerance" | "dismissUmlautPrompt" | "dismissCapitalizationPrompt"> = (set, get) => ({
@@ -54,12 +53,10 @@ export const createSettingsSlice: StoreSlice<"updateSetting" | "resetSettings" |
   },
 
   openThemeSelector: () => {
-    rememberFocusOpener();
     set({ isThemeSelectorOpen: true });
   },
 
   closeThemeSelector: () => {
-    clearFocusOpener();
     set({ isThemeSelectorOpen: false });
   },
 
@@ -74,12 +71,10 @@ export const createSettingsSlice: StoreSlice<"updateSetting" | "resetSettings" |
   },
 
   openFontSelector: () => {
-    rememberFocusOpener();
     set({ isFontSelectorOpen: true });
   },
 
   closeFontSelector: () => {
-    clearFocusOpener();
     set({ isFontSelectorOpen: false });
   },
 
@@ -98,12 +93,10 @@ export const createSettingsSlice: StoreSlice<"updateSetting" | "resetSettings" |
   },
 
   openOnboarding: () => {
-    rememberFocusOpener();
     set({ isOnboardingOpen: true, onboardingIntroLanguage: null });
   },
 
   closeOnboarding: () => {
-    clearFocusOpener();
     // dismissing (skip/escape) closes the intro but leaves the language out of
     // seenIntroLanguages so its intro can replay; still counts as onboarding
     // having been dealt with, to avoid nagging on every fresh load
@@ -145,13 +138,11 @@ export const createSettingsSlice: StoreSlice<"updateSetting" | "resetSettings" |
   },
 
   openWordDrawer: (wordId) => {
-    rememberFocusOpener();
     set({ activeWordDrawerId: wordId });
     get().markWordExplored(wordId);
   },
 
   closeWordDrawer: () => {
-    clearFocusOpener();
     set({ activeWordDrawerId: null });  },
 
   setUmlautTolerance: (enabled) => {

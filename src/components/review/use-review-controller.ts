@@ -16,7 +16,7 @@ import { getLanguageDefinition, type LanguageDefinition } from "@/data/languages
 import { buildWordEntityMaps } from "@/lib/word-entities-core";
 import type { CompendiumData, LessonIndexEntry, MasteryState, ReviewMode, ShiftFamily, SRSCard, WordEntity } from "@/lib/types";
 import type { ReviewSnapshot } from "@/lib/store/types";
-import { hasBlockingKeyboardDialog, useDialogFocus } from "@/lib/use-dialog-focus";
+import { hasBlockingKeyboardDialog } from "@/components/common/ModalDialog";
 import type { CustomizationSettings } from "@/data/settings";
 import { useReviewAnswers } from "./use-review-answers";
 import { createReviewGrading, EMPTY_SESSION_STATS, blankSessionGrades, type ReviewSessionStats, type SessionGrades } from "./review-grading";
@@ -124,17 +124,7 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
 
   useBackDismiss(isModeSelectorOpen, () => setIsModeSelectorOpen(false));
 
-  const modeDialogRef = useRef<HTMLDivElement>(null);
-
-  const closeModeSelector = () => {
-    setIsModeSelectorOpen(false);
-  };
-
-  useDialogFocus({
-    open: isModeSelectorOpen,
-    containerRef: modeDialogRef,
-    onEscape: closeModeSelector,
-  });
+  const modeDialogRef = useRef<HTMLDialogElement>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -892,7 +882,7 @@ export interface ReviewController extends Pick<ReviewHubProps, "activeLanguageId
   articleCount: number;
   everythingTotal: number;
   isModeSelectorOpen: boolean;
-  modeDialogRef: RefObject<HTMLDivElement | null>;
+  modeDialogRef: RefObject<HTMLDialogElement | null>;
   selectReviewStyle: (mode: ReviewMode) => void;
   rememberPreference: boolean;
   setRememberPreference: StateSetter<boolean>;

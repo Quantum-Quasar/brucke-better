@@ -14,7 +14,7 @@ import { evaluateAnswerAccuracy } from "@/lib/letter-diff";
 import { affirmationFor } from "@/lib/shift-diagnosis";
 import { useAppStore } from "@/lib/store";
 import { soundEngine } from "@/lib/sound";
-import { hasBlockingKeyboardDialog } from "@/lib/use-dialog-focus";
+import { hasBlockingKeyboardDialog } from "@/components/common/ModalDialog";
 import type { ExerciseItem } from "@/lib/types";
 
 interface LiteralGlossProps {

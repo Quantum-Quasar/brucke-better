@@ -6,8 +6,8 @@ import { X } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { useAppNavigation, isModifiedClick } from "@/lib/app-navigation";
 import { loadCompendium, loadLessonIndex } from "@/lib/content-client";
-import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
+import { ModalDialog } from "@/components/common/ModalDialog";
 import { getLanguageDefinition } from "@/data/languages";
 import { buildSearchIndex, searchIndex, type SearchEntry } from "@/lib/search-index";
 
@@ -27,13 +27,11 @@ export default function SearchDialog({ onClose }: { onClose: () => void }) {
   const openWordDrawer = useAppStore((state) => state.openWordDrawer);
   const { openLesson } = useAppNavigation();
   const language = getLanguageDefinition(languageId);
-  const dialogRef = React.useRef<HTMLDivElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [query, setQuery] = React.useState("");
   const [index, setIndex] = React.useState<SearchEntry[] | null>(null);
   const [error, setError] = React.useState(false);
   const [attempt, retry] = React.useReducer((n: number) => n + 1, 0);
-  useDialogFocus({ open: true, containerRef: dialogRef, initialFocusRef: inputRef, onEscape: onClose });
   useBackDismiss(true, onClose);
 
   React.useEffect(() => {
@@ -49,8 +47,8 @@ export default function SearchDialog({ onClose }: { onClose: () => void }) {
   const results = React.useMemo(() => index ? searchIndex(index, query) : [], [index, query]);
   const open = (id: number) => { onClose(); openLesson(languageId, id); };
   return (
-    <div className="fixed inset-0 z-[80] bg-black/70 flex items-start justify-center px-3 pt-[max(1rem,env(safe-area-inset-top))] sm:pt-[10vh]" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
-      <div ref={dialogRef} role="dialog" aria-modal="true" aria-labelledby="search-title" className="w-full max-w-2xl max-h-[80dvh] flex flex-col rounded-xl border border-[var(--sub-color)]/40 bg-[var(--bg-color)] shadow-xl">
+    <ModalDialog onClose={onClose} initialFocusRef={inputRef} aria-labelledby="search-title" className="open:flex items-start justify-center px-3 pt-[max(1rem,env(safe-area-inset-top))] sm:pt-[10vh] bg-black/70 z-[80]" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
+      <div className="w-full max-w-2xl max-h-[80dvh] flex flex-col rounded-xl border border-[var(--sub-color)]/40 bg-[var(--bg-color)] shadow-xl">
         <div className="flex items-center justify-between px-4 pt-3">
           <h2 id="search-title" className="text-sm font-bold">Search {language.name} words & lessons</h2>
           <button type="button" aria-label="Close search" onClick={onClose} className="min-h-11 min-w-11 flex items-center justify-center"><X size={18} /></button>
@@ -88,6 +86,6 @@ export default function SearchDialog({ onClose }: { onClose: () => void }) {
           </ul>
         </div>
       </div>
-    </div>
+    </ModalDialog>
   );
 }

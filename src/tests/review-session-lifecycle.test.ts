@@ -1,24 +1,10 @@
 import { describe, it, expect, beforeEach, beforeAll, afterAll } from "vitest";
+import { LocalStorageMock } from "./storage-fixture";
 import { useAppStore } from "../lib/store";
 import { compendium } from "../data/compendium";
-import { isMastered, getDueCards, getWeakestCards, getCardsByShift, localDateKey } from "../lib/srs";
+import { isMastered, getDueCards, localDateKey } from "../lib/srs";
+import { getAtlasFamilyWordIds, rankWeakestCards } from "../lib/review-decks";
 import type { ReviewGrade } from "../lib/srs";
-
-class LocalStorageMock {
-  private store: Record<string, string> = {};
-  getItem(key: string) {
-    return this.store[key] || null;
-  }
-  setItem(key: string, value: string) {
-    this.store[key] = String(value);
-  }
-  removeItem(key: string) {
-    delete this.store[key];
-  }
-  clear() {
-    this.store = {};
-  }
-}
 
 describe("Full Review Session Lifecycle Integration", () => {
   beforeAll(() => {
@@ -73,14 +59,12 @@ describe("Full Review Session Lifecycle Integration", () => {
     }
 
     // 3. Sound Shift Deck: Filter by th_to_d (should include Bruder)
-    const dentalShiftCards = getCardsByShift(cards, compendium.words, "th_to_d");
-    expect(dentalShiftCards.length).toBeGreaterThanOrEqual(1);
-    expect(dentalShiftCards.some((c) => c.word_id === "bruder")).toBe(true);
+    expect(getAtlasFamilyWordIds(compendium, "th_to_d")).toContain("bruder");
 
     // 4. Weakest Deck: Seed a lapse and verify sorting
     store.recordReview("wasser", 1); // Grade 1 = Again (failure)
     const afterLapseState = useAppStore.getState();
-    const weakestCards = getWeakestCards(afterLapseState.srsCards);
+    const weakestCards = rankWeakestCards(afterLapseState.srsCards);
     expect(weakestCards.length).toBeGreaterThanOrEqual(1);
     expect(weakestCards[0].word_id).toBe("wasser");
     expect(weakestCards[0].lapses).toBe(1);

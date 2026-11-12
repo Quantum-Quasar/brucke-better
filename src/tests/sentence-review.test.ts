@@ -1,4 +1,5 @@
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { MemoryStorage } from "./storage-fixture";
 import { useAppStore } from "../lib/store";
 import { createProgressBackup } from "../lib/progress-backup";
 import { loadSavedState, persistenceRuntime } from "../lib/store/persistence";
@@ -11,13 +12,6 @@ import { localDateKey } from "../lib/srs";
 import type { ExerciseItem } from "../lib/types";
 
 const exercise: ExerciseItem = { id: "process", type: "transcribe", prompt: "Build the thought", target_answer: "Ich bin hier", idea: "I am here", word_bank: ["Ich", "bin", "hier"], cues: ["Find the subject"], idea_parts: ["I", "am here"] };
-class MemoryStorage {
-  private values = new Map<string, string>();
-  getItem(key: string) { return this.values.get(key) ?? null; }
-  setItem(key: string, value: string) { this.values.set(key, String(value)); }
-  removeItem(key: string) { this.values.delete(key); }
-  clear() { this.values.clear(); }
-}
 function session(): SentenceReviewSession {
   const state = useAppStore.getState();
   return { resetAt: state.progressResetAt, resetActor: state.progressResetActor, index: 0, entries: [{ id: "1:process", attempt: 2, graded: false }] };

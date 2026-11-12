@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Compass, Search, ChevronRight } from "lucide-react";
 import { DonutChart } from "@/components/common/DonutChart";

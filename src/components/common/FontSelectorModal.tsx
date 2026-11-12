@@ -4,9 +4,8 @@ import React, { useMemo, useRef, useState } from "react";
 import { Search, X, Check, Type, Sparkles } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { FONT_LIST, ensureFontLoaded, type FontMeta } from "@/data/fonts";
-import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
-import { focusOpener } from "@/lib/focus-return";
+import { ModalDialog } from "@/components/common/ModalDialog";
 
 import { RECOMMENDED_FONTS, filterPickerFonts, type FontPickerTab } from "@/components/common/font-picker";
 
@@ -23,17 +22,9 @@ export const FontSelectorModal: React.FC = () => {
   const [previewedIds, setPreviewedIds] = useState<Set<string>>(() => new Set([currentFont]));
   const [loadAllPreviews, setLoadAllPreviews] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const dialogRef = useRef<HTMLDivElement>(null);
 
   useBackDismiss(isOpen, closeFontSelector);
 
-  useDialogFocus({
-    open: isOpen,
-    containerRef: dialogRef,
-    initialFocusRef: searchInputRef,
-    returnFocus: focusOpener,
-    onEscape: closeFontSelector,
-  });
 
   const filteredFonts = useMemo(
     () => filterPickerFonts(query, activeTab, currentFont),
@@ -60,11 +51,8 @@ export const FontSelectorModal: React.FC = () => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75">
+    <ModalDialog onClose={closeFontSelector} initialFocusRef={searchInputRef} aria-labelledby="font-selector-title" className="open:flex items-center justify-center p-3 sm:p-4 bg-black/75">
       <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
         aria-labelledby="font-selector-title"
         className="w-full max-w-3xl max-h-[85dvh] flex flex-col rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/25 text-[var(--text-color)] shadow-2xl overflow-hidden font-sans"
       >
@@ -204,6 +192,6 @@ export const FontSelectorModal: React.FC = () => {
           <span>On-demand webfont · Auto-saved</span>
         </div>
       </div>
-    </div>
+    </ModalDialog>
   );
 };

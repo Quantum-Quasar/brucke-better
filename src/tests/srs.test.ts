@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { createInitialCard, gradeCard, isMastered, getDueCards, getWeakestCards, getCardsByShift, localDateKey } from "../lib/srs";
+import { createInitialCard, gradeCard, isMastered, getDueCards, localDateKey } from "../lib/srs";
+import { rankWeakestCards } from "../lib/review-decks";
 
 describe("SM-2 Spaced Repetition Engine", () => {
   it("initializes a card with a one-day grace (first review tomorrow)", () => {
@@ -64,7 +65,7 @@ describe("SM-2 Spaced Repetition Engine", () => {
     expect(dueToday.map((c) => c.word_id)).toContain("hoffen");
     expect(dueToday.map((c) => c.word_id)).toContain("helfen");
 
-    const weakest = getWeakestCards(cards);
+    const weakest = rankWeakestCards(cards);
     expect(weakest[0].word_id).toBe("helfen");
     expect(weakest[1].word_id).toBe("hoffen");
   });
@@ -80,22 +81,4 @@ describe("SM-2 Spaced Repetition Engine", () => {
     expect(card.ease_factor).toBe(1.3);
   });
 
-  it("filters cards by sound shift family correctly", () => {
-    const cards = {
-      hoffen: createInitialCard("hoffen"),
-      denken: createInitialCard("denken"),
-    };
-    const mockWords: any = {
-      hoffen: { id: "hoffen", sound_shift_ids: ["p_to_pf_f"] },
-      denken: { id: "denken", sound_shift_ids: ["th_to_d"] },
-    };
-
-    const pCards = getCardsByShift(cards, mockWords, "p_to_pf_f");
-    expect(pCards.length).toBe(1);
-    expect(pCards[0].word_id).toBe("hoffen");
-
-    const thCards = getCardsByShift(cards, mockWords, "th_to_d");
-    expect(thCards.length).toBe(1);
-    expect(thCards[0].word_id).toBe("denken");
-  });
 });

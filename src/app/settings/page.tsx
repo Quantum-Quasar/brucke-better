@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Volume2, EyeOff, Sliders, Keyboard, Palette, ShieldAlert, Search, Zap, Download, Languages } from "lucide-react";
 import { useAppStore } from "@/lib/store";

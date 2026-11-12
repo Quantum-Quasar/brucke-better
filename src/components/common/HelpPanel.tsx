@@ -1,13 +1,12 @@
 "use client";
 
-import React, { useRef } from "react";
+import React from "react";
 import { usePathname } from "next/navigation";
 import { BookOpen, Keyboard, X } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { useViewStore } from "@/lib/view-store";
-import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
-import { focusOpener } from "@/lib/focus-return";
+import { ModalDialog } from "@/components/common/ModalDialog";
 
 interface HelpPanelProps {
   open: boolean;
@@ -71,11 +70,9 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({ open, onClose }) => {
   const pathname = usePathname();
   const lessonOpen = useViewStore((s) => s.subView?.kind === "lesson");
   const openOnboarding = useAppStore((s) => s.openOnboarding);
-  const dialogRef = useRef<HTMLDivElement>(null);
 
   useBackDismiss(open, onClose);
 
-  useDialogFocus({ open, containerRef: dialogRef, returnFocus: focusOpener, onEscape: onClose });
 
   if (!open) return null;
 
@@ -95,16 +92,15 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({ open, onClose }) => {
   const help = PAGE_HELP[key];
 
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 animate-in fade-in duration-150"
+    <ModalDialog
+      onClose={onClose}
+      aria-labelledby="help-panel-title"
+      className="open:flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/75 animate-in fade-in duration-150"
       onClick={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
     >
       <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
         aria-labelledby="help-panel-title"
         className="safe-x w-full sm:max-w-md rounded-t-2xl sm:rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl p-5 pb-safe sm:p-6 space-y-4 max-h-[85dvh] overflow-y-auto overscroll-contain"
       >
@@ -173,6 +169,6 @@ export const HelpPanel: React.FC<HelpPanelProps> = ({ open, onClose }) => {
           </button>
         </div>
       </div>
-    </div>
+    </ModalDialog>
   );
 };

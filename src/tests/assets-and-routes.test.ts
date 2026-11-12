@@ -11,7 +11,7 @@ const WEBFONTS_DIR = path.resolve(ROOT_DIR, "public/webfonts");
 const SOUNDS_DIR = path.resolve(ROOT_DIR, "public/sounds");
 
 describe("Filesystem Assets & Dynamic Routes Integrity", () => {
-  describe("Physical Font Files & CSS Declarations", () => {
+  describe("Physical Font Files", () => {
     it("contains all 43 font definitions in FONT_LIST", () => {
       expect(FONT_LIST).toHaveLength(43);
     });

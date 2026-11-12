@@ -5,7 +5,7 @@
 // the learner sees a full noun-heavy sentence and folds its repeated or heavy
 // noun phrases into compact pronouns in their natural syntactic slot.
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import {
   Minimize2,
   Maximize2,
@@ -16,13 +16,9 @@ import { ProductionAnswerInput } from "./inputs/ProductionAnswerInput";
 import { ProductionAnswerActions } from "./ProductionAnswerActions";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
-import { arrangeTilesDeterministically } from "./exercise-tiles";
-import { gradeExerciseAttempt } from "@/lib/exercise-grading";
-import { affirmationFor } from "@/lib/shift-diagnosis";
-import { getLanguageDefinition } from "@/data/languages";
-import { useAppStore } from "@/lib/store";
+import { useProductionAttempt } from "./use-production-attempt";
 import { soundEngine } from "@/lib/sound";
-import type { ExerciseDiagnosis, ExerciseItem } from "@/lib/types";
+import type { ExerciseItem } from "@/lib/types";
 
 interface PronounCompressionExerciseProps {
   exercise: ExerciseItem;
@@ -43,62 +39,49 @@ export const PronounCompressionExercise: React.FC<PronounCompressionExerciseProp
   onPurpleForfeit,
   onFlagGuessed,
 }) => {
-  const [userInput, setUserInput] = useState("");
   const [isFoldPreviewOpen, setIsFoldPreviewOpen] = useState(false);
-  const [status, setStatus] = useState<"idle" | "correct" | "almost" | "incorrect">("idle");
-  const [sheetVariant, setSheetVariant] = useState<"exact" | "almost">("exact");
-  const [verifiedAttemptText, setVerifiedAttemptText] = useState("");
-  const [acceptedTarget, setAcceptedTarget] = useState(exercise.target_answer);
-  const [almostWarningNote, setAlmostWarningNote] = useState<string | undefined>(undefined);
-  const [feedbackNote, setFeedbackNote] = useState<string | null>(null);
-  const [showErrorSheet, setShowErrorSheet] = useState(false);
-  const [showSuccessSheet, setShowSuccessSheet] = useState(false);
-  const [failedAttemptText, setFailedAttemptText] = useState("");
-  const [failedDiagnosis, setFailedDiagnosis] = useState<ExerciseDiagnosis | undefined>(undefined);
+  const {
+    inputRef,
+    settings,
+    language,
+    wordBank,
+    target,
+    affirmation,
+    userInput,
+    setUserInput,
+    status,
+    sheetVariant,
+    feedbackNote,
+    setFeedbackNote,
+    setStatus,
+    verifiedAttemptText,
+    acceptedTarget,
+    almostWarningNote,
+    showErrorSheet,
+    showSuccessSheet,
+    failedAttemptText,
+    failedDiagnosis,
+    resetCurrentExercise,
+    insertWord: appendChip,
+    handleVerify,
+    handleSuccessContinue,
+    handleErrorContinue,
+  } = useProductionAttempt({
+    exercise,
+    isRetry,
+    onSuccess,
+    onError,
+    onQueueRetry,
+    onPurpleForfeit,
+    emptyMessage: "Fold the sentence into its compact form before verifying.",
+    exactMessage: "Spot On! Cleanly folded.",
+    almostMessage: `Almost right! Standard form: "${exercise.target_answer.trim()}"`,
+    onIncorrect: () => setIsFoldPreviewOpen(true),
+    onReset: () => setIsFoldPreviewOpen(false),
+  });
 
-  const inputRef = useRef<HTMLInputElement>(null);
-  const tolerance = useAppStore((s) => s.tolerance);
-  const settings = useAppStore((s) => s.settings);
-  const activeLanguageId = useAppStore((s) => s.activeLanguageId);
-  const language = getLanguageDefinition(activeLanguageId);
-
-  const wordBank = React.useMemo(() => {
-    const cleaned = (exercise.word_bank || []).map((w) => w.replace(/[.,!?;:]+$/, ""));
-    return arrangeTilesDeterministically(cleaned, `${exercise.id}#wb`, exercise.target_answer);
-  }, [exercise.word_bank, exercise.id, exercise.target_answer]);
-  const target = exercise.target_answer.trim();
   const fullSentence = exercise.full_sentence ?? "";
   const compressedParts = exercise.compressed_parts ?? [];
-
-  const resetCurrentExercise = () => {
-    setUserInput("");
-    setIsFoldPreviewOpen(false);
-    setStatus("idle");
-    setSheetVariant("exact");
-    setVerifiedAttemptText("");
-    setAlmostWarningNote(undefined);
-    setFeedbackNote(null);
-    setShowErrorSheet(false);
-    setShowSuccessSheet(false);
-    setFailedAttemptText("");
-    setFailedDiagnosis(undefined);
-    setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 50);
-  };
-
-  useEffect(() => {
-    resetCurrentExercise();
-  }, [exercise.id]);
-
-  const appendChip = (word: string) => {
-    if (status === "correct" || status === "almost") return;
-    void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
-    setFeedbackNote(null);
-    setUserInput((prev) => {
-      if (!prev) return word;
-      return prev.endsWith(" ") ? prev + word : `${prev} ${word}`;
-    });
-    setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 0);
-  };
 
   const toggleFoldPreview = () => {
     void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
@@ -168,57 +151,6 @@ export const PronounCompressionExercise: React.FC<PronounCompressionExerciseProp
     });
   };
 
-
-  const handleVerify = () => {
-    inputRef.current?.blur();
-    const answerToCheck = userInput.trim();
-    if (!answerToCheck) {
-      setFeedbackNote("Fold the sentence into its compact form before verifying.");
-      return;
-    }
-
-    const evalOptions = {
-      umlautTolerance: Boolean(settings.lazyMode ?? tolerance.umlautTolerance),
-      capitalizationTolerance: Boolean(
-        settings.capitalizationTolerance ?? tolerance.capitalizationTolerance
-      ),
-    };
-    const graded = gradeExerciseAttempt(exercise, [answerToCheck], { ...evalOptions, languageId: activeLanguageId }, isRetry, wordBank);
-    const evaluation = graded.result;
-    setAcceptedTarget(graded.target);
-
-    if (evaluation.accuracy === "exact") {
-      setStatus("correct");
-      setFeedbackNote("Spot On! Cleanly folded.");
-      setSheetVariant("exact");
-      setVerifiedAttemptText(answerToCheck);
-      setAlmostWarningNote(undefined);
-      setShowSuccessSheet(true);
-      return;
-    }
-
-    if (evaluation.accuracy === "almost") {
-      setStatus("almost");
-      setFeedbackNote(evaluation.warningNote || `Almost right! Standard form: "${target}"`);
-      setSheetVariant("almost");
-      setVerifiedAttemptText(answerToCheck);
-      setAlmostWarningNote(evaluation.warningNote);
-      setShowSuccessSheet(true);
-      if (graded.queueRetry) onQueueRetry?.();
-      return;
-    }
-
-    setStatus("incorrect");
-    void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
-    onError(graded.errorType);
-    onQueueRetry?.();
-    setFailedAttemptText(answerToCheck);
-    setFailedDiagnosis(graded.diagnosis);
-    setIsFoldPreviewOpen(true);
-    setShowErrorSheet(true);
-  };
-
-  const affirmation = affirmationFor(exercise.affirmation, exercise.shift_hint);
 
   return (
     <div className="p-6 rounded-xl bg-[var(--sub-alt-color)] border border-[var(--main-color)]/30 space-y-5 shadow-lg font-mono">
@@ -358,17 +290,7 @@ export const PronounCompressionExercise: React.FC<PronounCompressionExerciseProp
           shiftRule={exercise.shift_hint}
           explanation={exercise.explanation}
           diagnosis={failedDiagnosis}
-          onContinue={() => {
-            setShowErrorSheet(false);
-            setStatus("idle");
-            setFeedbackNote(null);
-            if (isRetry) {
-              setUserInput("");
-              setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 50);
-            } else {
-              onSuccess();
-            }
-          }}
+          onContinue={handleErrorContinue}
         />
       )}
 
@@ -384,12 +306,7 @@ export const PronounCompressionExercise: React.FC<PronounCompressionExerciseProp
           userAttempt={verifiedAttemptText}
           warningNote={almostWarningNote}
           affirmation={affirmation}
-          onContinue={() => {
-            setShowSuccessSheet(false);
-            setStatus("idle");
-            setFeedbackNote(null);
-            onSuccess();
-          }}
+          onContinue={handleSuccessContinue}
         />
       )}
     </div>

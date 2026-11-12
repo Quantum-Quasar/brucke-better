@@ -4,7 +4,7 @@
 // "where this is taught" links from each language's curriculum and hands them
 // over as plain data, so this chunk stays small.
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowLeft, Compass, Languages } from "lucide-react";
 import { useAppStore } from "@/lib/store";

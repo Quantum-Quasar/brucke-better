@@ -6,8 +6,8 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { AlertCircle, ArrowRight, Stethoscope, Volume2 } from "lucide-react";
 import { computeLetterDiff } from "@/lib/letter-diff";
-import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
+import { ModalDialog } from "@/components/common/ModalDialog";
 import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
 import { playTargetAudio } from "@/lib/audio";
@@ -40,20 +40,12 @@ export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
 }) => {
   const diff = computeLetterDiff(userInput, expectedAnswer);
   const continueBtnRef = React.useRef<HTMLButtonElement>(null);
-  const dialogRef = React.useRef<HTMLDivElement>(null);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
   const spokenText = audioText ?? expectedAnswer;
   const spokenLocale = audioLocale ?? language.ttsLocale;
 
   useBackDismiss(true, onContinue);
-
-  useDialogFocus({
-    open: true,
-    containerRef: dialogRef,
-    initialFocusRef: continueBtnRef,
-    onEscape: onContinue,
-  });
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -81,12 +73,8 @@ export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
   // Portal out of the lesson's transformed/scrolled ancestors so the sheet is
   // positioned against the viewport (see SuccessFeedbackSheet).
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 animate-in fade-in duration-200">
+    <ModalDialog onClose={onContinue} initialFocusRef={continueBtnRef} aria-labelledby="error-feedback-title" className="open:flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 animate-in fade-in duration-200">
       <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="error-feedback-title"
         className="w-full sm:max-w-md max-h-[85dvh] overflow-y-auto overscroll-contain bg-[var(--bg-color)] border-t sm:border border-[var(--error-color)]/30 sm:rounded-lg rounded-t-lg shadow-2xl p-6 pb-safe space-y-5 animate-in slide-in-from-bottom duration-200"
       >
         {/* Header */}
@@ -185,7 +173,7 @@ export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>
-    </div>,
+    </ModalDialog>,
     document.body
   );
 };

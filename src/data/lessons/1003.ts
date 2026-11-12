@@ -126,10 +126,6 @@ const lesson: Lesson = {
         "en",
         "ie"
       ],
-      "target_tiles": [
-        "d",
-        "ie"
-      ],
       "target_answer": "die",
       "meaning": "the hand — a she-word in German",
       "explanation": "Hand is a she-word in German, even though English treats it as an 'it'. Ask the pronoun question about the *word* — she — and she + D- gives die. Tür and Milch behave the same way: German decided their class centuries ago, and the article simply remembers it.",

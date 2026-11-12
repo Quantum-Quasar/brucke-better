@@ -79,7 +79,7 @@ summary is `title drift: 0 | teaser flags: 0`.
 | Script | What it checks |
 | --- | --- |
 | `check-compendium.ts` | **Fast table preflight** (`bun run check:compendium`): parses `word_connections.md` in memory and prints *every* row-level issue with its source line — column counts, duplicate ids, unknown shift ids, unknown domains, bad id-sense tags, inventory drift. Writes nothing, so it is safe before a batch and on save; `bun run test` enforces the same checks and `.githooks/pre-commit` calls it when the table is staged. |
-| `audit-vocab-balance.ts` | Vocabulary legality and campaign bookkeeping — that exercise-surface tokens resolve to words introduced *before* the lesson that uses them, with an explicit allowlist for pre-existing drift. Also the authority for the "unique taught words" figure quoted in the docs. |
+| `audit-vocab-balance.ts` | Vocabulary legality and balance — that exercise-surface tokens resolve to words introduced *before* the lesson that uses them, new-word bands, and the zero-new share. Also the authority for the "unique taught words" figure quoted in the docs. |
 | `audit-wording.ts` | **No cargo-cult repetition.** Blocks `explanation` strings, prose sentences, and prompt formulas copy-pasted between neighbouring lessons, while an allowlist protects widget labels that are *meant* to stay identical. |
 | `audit-word-refs.ts` | Word-reference integrity — every lesson/exercise token reference resolves; exits 1 on failure. |
 | `audit-teasers.ts` | Lesson title drift and `curiosity_teaser` chaining: each teaser must point at the next node in trail order. |

@@ -1,25 +1,10 @@
 import { describe, test, expect, beforeEach, beforeAll, afterAll } from "vitest";
+import { LocalStorageMock } from "./storage-fixture";
 
 // ponytail: language registry sanity + store multi-language behavior
 
-class LocalStorageMock {
-  private store: Record<string, string> = {};
-  getItem(key: string) {
-    return this.store[key] || null;
-  }
-  setItem(key: string, value: string) {
-    this.store[key] = String(value);
-  }
-  removeItem(key: string) {
-    delete this.store[key];
-  }
-  clear() {
-    this.store = {};
-  }
-}
-
 import { LANGUAGES, DEFAULT_LANGUAGE_ID, getLanguageDefinition, isValidLanguageId } from "@/data/languages";
-import { getLanguageContent, getTotalWordCount, EMPTY_COMPENDIUM, getNextPlayableLessonIdFor } from "@/data/language-content";
+import { getLanguageContent, EMPTY_COMPENDIUM } from "@/data/language-content";
 import { getCourseCounts, getWordCount, COURSE_COUNTS, WORD_COUNTS } from "@/data/word-counts";
 import { getAtlasFamilies } from "@/lib/atlas-families";
 import { getWordEntity, getWordEntityMap, getWordLessonMap } from "./word-entity-fixtures";
@@ -35,7 +20,6 @@ describe("language registry", () => {
     // would put every lesson and compendium in the shared root chunk). This
     // guard is what keeps those constants from silently drifting.
     for (const languageId of Object.keys(WORD_COUNTS)) {
-      expect(getWordCount(languageId)).toBe(getTotalWordCount(languageId));
       expect(getWordCount(languageId)).toBe(getLanguageContent(languageId).compendium!.wordList.length);
     }
   });
@@ -102,38 +86,13 @@ describe("language content registry", () => {
         const content = getLanguageContent(lang.id);
         expect(content.compendium).toBeNull();
         expect(content.topics).toHaveLength(0);
-        expect(getTotalWordCount(lang.id)).toBe(0);
+        expect(content.compendium).toBeNull();
       }
     }
   });
 
   test("german word count matches the compendium", () => {
-    expect(getTotalWordCount("de")).toBeGreaterThan(0);
-  });
-});
-
-describe("next playable lesson across the trail", () => {
-  const LANGS = ["de", "es", "fr", "nl"] as const;
-
-  test("lesson continuation visits every authored lesson exactly once in each course", () => {
-    for (const lang of LANGS) {
-      const content = getLanguageContent(lang);
-      const remaining = new Set([
-        ...content.topics.flatMap((topic) => [topic.core, ...topic.sprigs, ...(topic.stories ?? [])]),
-        ...content.trailBranches.flatMap((branch) => branch.lessons),
-      ].filter((lesson) => lesson.authored).map((lesson) => lesson.id));
-      let current: number | null = content.topics[0].core.id;
-      while (current !== null) {
-        expect(remaining.delete(current), `${lang}: repeated or unknown lesson ${current}`).toBe(true);
-        current = getNextPlayableLessonIdFor(lang, current);
-      }
-      expect([...remaining], `${lang}: lessons omitted by continuation`).toEqual([]);
-    }
-  });
-
-  test("unknown courses and unknown lesson ids have no continuation", () => {
-    expect(getNextPlayableLessonIdFor("it", 1)).toBeNull();
-    expect(getNextPlayableLessonIdFor("de", 999999)).toBeNull();
+    expect(getLanguageContent("de").compendium!.wordList.length).toBeGreaterThan(0);
   });
 });
 

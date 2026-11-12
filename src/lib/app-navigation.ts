@@ -27,7 +27,6 @@ export interface AppNavigation {
   openAtlasMaster: () => void;
   openAtlasIndex: () => void;
   closeLesson: () => void;
-  closeAtlas: () => void;
   closeSubview: () => void;
 }
 
@@ -95,7 +94,6 @@ export function useAppNavigation(): AppNavigation {
       openAtlasMaster,
       openAtlasIndex,
       closeLesson: closeSubview,
-      closeAtlas: closeSubview,
       closeSubview,
     }),
     [openLesson, openAtlasFamily, openAtlasMaster, openAtlasIndex, closeSubview]

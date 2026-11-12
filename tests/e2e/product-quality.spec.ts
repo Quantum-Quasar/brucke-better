@@ -1,11 +1,11 @@
 import { expect, test, type Locator, type Page } from "@playwright/test";
 import { LESSONS } from "../../src/data/lessons";
-import { EXERCISE_CAPABILITIES, type ExerciseItem, type ExerciseType } from "../../src/lib/types";
+import { EXERCISE_TYPES, type ExerciseItem } from "../../src/lib/types";
 import { activateWithKeyboard, expectModalKeysIsolated, readLearningProgress, seedReturningLearner, tabTo } from "./product-quality-helpers";
 import { writeFile } from "node:fs/promises";
 
 const lessonOne = LESSONS.find((lesson) => lesson.id === 1)!;
-const exerciseTypes = Object.keys(EXERCISE_CAPABILITIES) as ExerciseType[];
+const exerciseTypes = EXERCISE_TYPES;
 
 function fixtureFor(type: typeof exerciseTypes[number]) {
   for (const lesson of LESSONS) {

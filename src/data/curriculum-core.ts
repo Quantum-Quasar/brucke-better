@@ -52,14 +52,3 @@ export function orderedTrailLessons(topics: TopicCluster[], branches: TrailBranc
   }
   return lessons;
 }
-
-/** Next authored lesson, including side lessons; progress and gates are resolved by the trail. */
-export function getNextPlayableLessonIdFrom(
-  content: CurriculumData,
-  currentId: number
-): number | null {
-  const lessons = orderedTrailLessons(content.topics, content.trailBranches);
-  const index = lessons.findIndex((lesson) => lesson.id === currentId);
-  if (index < 0) return null;
-  return lessons.slice(index + 1).find((lesson) => lesson.authored)?.id ?? null;
-}

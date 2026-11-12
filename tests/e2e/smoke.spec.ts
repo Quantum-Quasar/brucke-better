@@ -134,7 +134,7 @@ test.describe("browser smoke", () => {
     // First visit is a landing page, not a modal wall. Wait for React hydration
     // before the one click, then allow the lazy modal chunk to arrive. Retrying
     // the click is wrong once the modal is open: the overlay blocks the button.
-    const dialog = page.locator('div[aria-label="Brücke introduction"]');
+    const dialog = page.locator('dialog[aria-label="Brücke introduction"]');
     await expect(dialog).toBeHidden();
     await page.waitForFunction(
       () => document.documentElement.getAttribute("data-app-ready") === "true",
@@ -149,7 +149,7 @@ test.describe("browser smoke", () => {
 
     // the dismissal must survive a reload (persisted hasCompletedOnboarding)
     await page.reload();
-    await expect(page.locator('div[aria-label="Brücke introduction"]')).toBeHidden();
+    await expect(page.locator('dialog[aria-label="Brücke introduction"]')).toBeHidden();
     const state = await readAppState(page);
     expect(state?.hasCompletedOnboarding).toBe(true);
   });

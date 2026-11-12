@@ -1,172 +1,28 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import { Search, Check, Sparkles, Moon, Sun, Shuffle, Maximize2, Type, X } from "lucide-react";
+
+import { Maximize2, Shuffle, Type } from "lucide-react";
 import { useAppStore } from "@/lib/store";
-import { THEME_LIST, POPULAR_THEMES } from "@/data/themes";
+import { THEME_LIST } from "@/data/themes";
 import { MENU_PANEL_FRAME } from "@/components/common/menu-panel";
-import { ThemeSwatch, useThemeFilter } from "@/components/common/theme-picker";
+import { ThemeBrowser } from "@/components/common/ThemeBrowser";
 
 /** The open dropdown body. Split from the trigger so the 187-theme table is
  * only downloaded when someone opens the theme menu. */
 export default function ThemeDropdownPanel({ onClose }: { onClose: () => void }) {
-  const currentTheme = useAppStore((s) => s.theme);
-  const { query, setQuery, activeTab, setActiveTab, filteredThemes } = useThemeFilter(currentTheme);
   const setTheme = useAppStore((s) => s.setTheme);
   const openThemeSelector = useAppStore((s) => s.openThemeSelector);
   const openFontSelector = useAppStore((s) => s.openFontSelector);
-  const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const id = setTimeout(() => inputRef.current?.focus(), 50);
-    return () => clearTimeout(id);
-  }, []);
-
 
   const handleRandomTheme = () => {
-    const pool = filteredThemes.length > 0 ? filteredThemes : THEME_LIST;
-    const chosen = pool[Math.floor(Math.random() * pool.length)];
+    const chosen = THEME_LIST[Math.floor(Math.random() * THEME_LIST.length)];
     if (chosen) setTheme(chosen.id);
   };
 
   return (
     <div className={`${MENU_PANEL_FRAME} overflow-hidden font-sans text-[var(--text-color)] animate-in fade-in slide-in-from-top-1 duration-100`}>
-      {/* Search Header */}
-      <div className="p-2.5 border-b border-[var(--sub-color)]/20 bg-[var(--sub-alt-color)]/60 space-y-2">
-        <div className="relative">
-          <Search className="w-3.5 h-3.5 text-[var(--sub-color)] absolute left-2.5 top-1/2 -translate-y-1/2" />
-          <input
-            ref={inputRef}
-            type="text"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder={`Search ${THEME_LIST.length} themes...`}
-            className="min-h-11 w-full pl-8 pr-7 py-1.5 rounded bg-[var(--bg-color)] border border-[var(--sub-color)]/30 text-xs font-mono text-[var(--text-color)] placeholder-[var(--sub-color)] outline-none focus:border-[var(--main-color)] transition"
-          />
-          {query && (
-            <button
-              type="button"
-              onClick={() => setQuery("")}
-              className="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--sub-color)] hover:text-[var(--text-color)] p-1.5 cursor-pointer"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          )}
-        </div>
+      <ThemeBrowser compact autoFocus onPick={onClose} />
 
-        {/* Filter Tabs */}
-        <div className="flex items-center gap-1 text-[10px] font-mono overflow-x-auto pb-0.5">
-          <button
-            type="button"
-            onClick={() => setActiveTab("popular")}
-            aria-pressed={activeTab === "popular"}
-            className={`min-h-9 rounded px-2 py-1 transition cursor-pointer flex items-center gap-1 shrink-0 ${
-              activeTab === "popular"
-                ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
-                : "bg-[var(--bg-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
-            }`}
-          >
-            <Sparkles className="w-2.5 h-2.5" />
-            <span>Recommended ({POPULAR_THEMES.length})</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab("dark")}
-            aria-pressed={activeTab === "dark"}
-            className={`min-h-9 rounded px-2 py-1 transition cursor-pointer flex items-center gap-1 shrink-0 ${
-              activeTab === "dark"
-                ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
-                : "bg-[var(--bg-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
-            }`}
-          >
-            <Moon className="w-2.5 h-2.5" />
-            <span>Dark</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab("light")}
-            aria-pressed={activeTab === "light"}
-            className={`min-h-9 rounded px-2 py-1 transition cursor-pointer flex items-center gap-1 shrink-0 ${
-              activeTab === "light"
-                ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
-                : "bg-[var(--bg-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
-            }`}
-          >
-            <Sun className="w-2.5 h-2.5" />
-            <span>Light</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab("all")}
-            aria-pressed={activeTab === "all"}
-            className={`min-h-9 rounded px-2 py-1 transition cursor-pointer shrink-0 ${
-              activeTab === "all"
-                ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold"
-                : "bg-[var(--bg-color)] text-[var(--sub-color)] hover:text-[var(--text-color)]"
-            }`}
-          >
-            Show all ({THEME_LIST.length})
-          </button>
-        </div>
-      </div>
-
-      {/* Theme List */}
-      <div className="max-h-64 overflow-y-auto p-1.5 space-y-1">
-        {filteredThemes.map((theme) => {
-          const isSelected = currentTheme === theme.id;
-
-          return (
-            <button
-              key={theme.id}
-              type="button"
-              onClick={() => {
-                setTheme(theme.id);
-                onClose();
-              }}
-              aria-pressed={isSelected}
-              className={`w-full min-h-10 px-2.5 py-1.5 rounded text-left transition flex items-center justify-between cursor-pointer group ${
-                isSelected
-                  ? "bg-[var(--sub-alt-color)] border border-[var(--main-color)]/50"
-                  : "hover:bg-[var(--sub-alt-color)]/60 border border-transparent"
-              }`}
-            >
-              <div className="flex items-center gap-2 min-w-0 pr-2">
-                <span
-                  className={`text-xs font-mono truncate ${
-                    isSelected
-                      ? "text-[var(--main-color)] font-bold"
-                      : "text-[var(--text-color)] group-hover:text-[var(--main-color)]"
-                  }`}
-                >
-                  {theme.name}
-                </span>
-                <span className="text-[9px] font-mono text-[var(--sub-color)] shrink-0">
-                  {theme.id === "dark" ? "high contrast · dark" : theme.isDark ? "dark" : "light"}
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-                <ThemeSwatch theme={theme} compact />
-
-                {isSelected && (
-                  <Check className="w-3.5 h-3.5 text-[var(--main-color)] shrink-0" />
-                )}
-              </div>
-            </button>
-          );
-        })}
-
-        {filteredThemes.length === 0 && (
-          <div className="py-6 text-center text-xs font-mono text-[var(--sub-color)]">
-            No themes found matching &quot;{query}&quot;
-          </div>
-        )}
-      </div>
-
-      {/* Dropdown Footer Actions */}
       <div className="p-2 border-t border-[var(--sub-color)]/20 bg-[var(--sub-alt-color)]/60 flex items-center justify-between text-[11px] font-mono">
         <button
           type="button"

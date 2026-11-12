@@ -4,7 +4,7 @@
 
 import { WordFrequency } from "@/components/common/WordFrequency";
 import { WordCardContextDetails, WordCardShiftDetails } from "@/components/common/WordCardLearningDetails";
-import React, { useMemo, useRef } from "react";
+import React, { useMemo } from "react";
 import Link from "next/link";
 import { X, ExternalLink, Compass, BookOpen, CheckCircle2, Circle, Disc, Minus, Volume2 } from "lucide-react";
 import { useAppStore } from "@/lib/store";
@@ -16,9 +16,8 @@ import { wordWithArticle } from "@/lib/gender";
 import { useCompendium, useLessonIndex } from "@/lib/content-client";
 import { buildWordEntityMaps, lookupWordEntity } from "@/lib/word-entities-core";
 import { lessonHref } from "@/lib/routes";
-import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
-import { focusOpener } from "@/lib/focus-return";
+import { ModalDialog } from "@/components/common/ModalDialog";
 
 export const WordCardDrawer: React.FC = () => {
   const activeWordId = useAppStore((s) => s.activeWordDrawerId);
@@ -43,26 +42,13 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
         : null,
     [activeLanguageId, compendium.data, lessonIndex.data]
   );
-  const dialogRef = useRef<HTMLDivElement>(null);
-
   useBackDismiss(true, closeDrawer);
 
-  useDialogFocus({
-    open: true,
-    containerRef: dialogRef,
-    returnFocus: focusOpener,
-    onEscape: closeDrawer,
-  });
 
   if (compendium.error || lessonIndex.error) {
     return (
-      <div ref={dialogRef} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Word details unavailable"
-          className="bg-[var(--bg-color)] border border-[var(--sub-color)]/30 p-6 rounded-lg max-w-sm w-full text-center space-y-3"
-        >
+      <ModalDialog onClose={closeDrawer} aria-label="Word details unavailable" className="open:flex items-center justify-center bg-black/80 p-4">
+        <div className="bg-[var(--bg-color)] border border-[var(--sub-color)]/30 p-6 rounded-lg max-w-sm w-full text-center space-y-3">
           <p className="text-sm font-mono text-[var(--sub-color)]">word details could not be loaded.</p>
           <button
             onClick={closeDrawer}
@@ -71,19 +57,13 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
             close
           </button>
         </div>
-      </div>
+      </ModalDialog>
     );
   }
 
   if (!compendium.data || !lessonIndex.data || !wordEntityMaps) {
     return (
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Loading word details"
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4"
-      >
+      <ModalDialog onClose={closeDrawer} aria-label="Loading word details" className="open:flex items-center justify-center bg-black/80 p-4">
         <div className="bg-[var(--bg-color)] border border-[var(--sub-color)]/30 p-6 rounded-lg max-w-sm w-full text-center space-y-3">
           <p className="text-sm font-mono text-[var(--sub-color)]" role="status">
             loading word…
@@ -95,7 +75,7 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
             close
           </button>
         </div>
-      </div>
+      </ModalDialog>
     );
   }
 
@@ -104,13 +84,8 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
 
   if (!word) {
     return (
-      <div ref={dialogRef} className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
-        <div
-          role="dialog"
-          aria-modal="true"
-          aria-label="Word details unavailable"
-          className="bg-[var(--bg-color)] border border-[var(--sub-color)]/30 p-6 rounded-lg max-w-sm w-full text-center space-y-3"
-        >
+      <ModalDialog onClose={closeDrawer} aria-label="Word details unavailable" className="open:flex items-center justify-center bg-black/80 p-4">
+        <div className="bg-[var(--bg-color)] border border-[var(--sub-color)]/30 p-6 rounded-lg max-w-sm w-full text-center space-y-3">
           <p className="text-sm font-mono text-[var(--sub-color)]">word details not found for &quot;{activeWordId}&quot;</p>
           <button
             onClick={closeDrawer}
@@ -119,7 +94,7 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
             close
           </button>
         </div>
-      </div>
+      </ModalDialog>
     );
   }
 
@@ -176,17 +151,12 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
   };
 
   return (
-    <div ref={dialogRef} className="fixed inset-0 z-50 flex justify-end bg-black/80 transition-opacity animate-in fade-in duration-200">
+    <ModalDialog onClose={closeDrawer} aria-labelledby="word-drawer-title" className="open:flex justify-end bg-black/80 transition-opacity animate-in fade-in duration-200">
       {/* Backdrop click to dismiss */}
       <div className="absolute inset-0" onClick={closeDrawer} />
 
       {/* Drawer Panel: Slide-over on desktop, bottom-sheet on mobile */}
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="word-drawer-title"
-        className="relative z-10 flex flex-col w-full sm:max-w-md h-full sm:h-auto sm:min-h-full bg-[var(--bg-color)] border-l border-[var(--sub-color)]/20 shadow-2xl overflow-y-auto overscroll-contain"
-      >
+      <div className="relative z-10 flex flex-col w-full sm:max-w-md h-full sm:h-auto sm:min-h-full bg-[var(--bg-color)] border-l border-[var(--sub-color)]/20 shadow-2xl overflow-y-auto overscroll-contain">
         {/* Header */}
         <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-4 bg-[var(--bg-color)] border-b border-[var(--sub-color)]/20">
           <div className="flex items-center gap-2">
@@ -282,6 +252,6 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
           <WordCardContextDetails word={word} language={language} relatedCompounds={relatedCompounds} />
         </div>
       </div>
-    </div>
+    </ModalDialog>
   );
 };

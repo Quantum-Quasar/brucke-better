@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from "vitest";
+import { LocalStorageMock } from "./storage-fixture";
 import { useAppStore } from "../lib/store";
 import { loadSavedState, saveState, flushSave } from "../lib/store/persistence";
 import { isPlausibleStateObject } from "../lib/store/schema";
@@ -13,22 +14,6 @@ import { getDueCards } from "../lib/srs";
 // - invalid JSON falls back to whichever store parses
 // - pre-multi-language payloads migrate into the default language slice
 // - importBackupState accepts partial backups and rejects non-objects
-
-class LocalStorageMock {
-  private store: Record<string, string> = {};
-  getItem(key: string) {
-    return this.store[key] || null;
-  }
-  setItem(key: string, value: string) {
-    this.store[key] = String(value);
-  }
-  removeItem(key: string) {
-    delete this.store[key];
-  }
-  clear() {
-    this.store = {};
-  }
-}
 
 const WEEK = [true, false, false, false, false, false, false];
 

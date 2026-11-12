@@ -1,11 +1,7 @@
 // Lightweight curriculum access. Unlike language-content.ts this module never
 // imports a lesson body, so the trail map and landing page stay small.
 
-import {
-  EMPTY_CURRICULUM,
-  getNextPlayableLessonIdFrom,
-  type CurriculumData,
-} from "./curriculum-core";
+import { EMPTY_CURRICULUM, type CurriculumData } from "./curriculum-core";
 import { GERMAN_CURRICULUM } from "./curriculum";
 import { FRENCH_CURRICULUM } from "./french/curriculum-fr";
 import { SPANISH_CURRICULUM } from "./spanish/curriculum-es";
@@ -22,11 +18,4 @@ const CURRICULUM_MAP: Record<string, CurriculumData> = {
 
 export function getCurriculum(languageId: string): CurriculumData {
   return CURRICULUM_MAP[languageId] ?? EMPTY_CURRICULUM;
-}
-
-export function getNextPlayableLessonIdFor(
-  languageId: string,
-  currentId: number
-): number | null {
-  return getNextPlayableLessonIdFrom(getCurriculum(languageId), currentId);
 }

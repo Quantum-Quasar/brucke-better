@@ -1,25 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll, beforeEach, vi } from "vitest";
+import { LocalStorageMock } from "./storage-fixture";
 import { useAppStore } from "../lib/store";
 import { loadSavedState, saveState, getCookie } from "../lib/store/persistence";
 import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "../lib/storage-keys";
 import { DEFAULT_THEME } from "@/lib/theme-runtime";
 import { DEFAULT_FONT } from "@/data/fonts";
-
-class LocalStorageMock {
-  private store: Record<string, string> = {};
-  getItem(key: string) {
-    return this.store[key] || null;
-  }
-  setItem(key: string, value: string) {
-    this.store[key] = String(value);
-  }
-  removeItem(key: string) {
-    delete this.store[key];
-  }
-  clear() {
-    this.store = {};
-  }
-}
 
 describe("Store Persistence Security & Header Quota Bounds", () => {
   beforeAll(() => {

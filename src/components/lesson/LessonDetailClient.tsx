@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { ArrowLeft, MapPin, Eye } from "lucide-react";
 import { LessonReader } from "@/components/lesson/LessonReader";
 import { useCourseRecommendation } from "@/lib/use-course-recommendation";

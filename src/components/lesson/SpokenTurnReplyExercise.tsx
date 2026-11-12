@@ -5,7 +5,7 @@
 // in the target language (with audio playback) and replies to it in the target
 // language based on a conversational cue.
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Volume2,
   MessageCircle,
@@ -18,15 +18,10 @@ import { VoiceStatusBanner } from "@/components/common/VoiceStatusBanner";
 import { MicrophonePractice } from "@/components/common/MicrophonePractice";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
-import { arrangeTilesDeterministically } from "./exercise-tiles";
-import { gradeExerciseAttempt } from "@/lib/exercise-grading";
-import { affirmationFor } from "@/lib/shift-diagnosis";
-import { getLanguageDefinition } from "@/data/languages";
 import { playTargetAudio } from "@/lib/audio";
 import { isListeningSkipped } from "@/lib/listening";
-import { useAppStore } from "@/lib/store";
-import { soundEngine } from "@/lib/sound";
-import type { ExerciseDiagnosis, ExerciseItem } from "@/lib/types";
+import { useProductionAttempt } from "./use-production-attempt";
+import type { ExerciseItem } from "@/lib/types";
 
 interface SpokenTurnReplyExerciseProps {
   exercise: ExerciseItem;
@@ -47,131 +42,59 @@ export const SpokenTurnReplyExercise: React.FC<SpokenTurnReplyExerciseProps> = (
   onPurpleForfeit,
   onFlagGuessed,
 }) => {
-  const [userInput, setUserInput] = useState("");
-  const [cuesRevealed, setCuesRevealed] = useState(0);
   const [showQuestionGloss, setShowQuestionGloss] = useState(false);
-  const [status, setStatus] = useState<"idle" | "correct" | "almost" | "incorrect">("idle");
-  const [sheetVariant, setSheetVariant] = useState<"exact" | "almost">("exact");
-  const [verifiedAttemptText, setVerifiedAttemptText] = useState("");
-  const [acceptedTarget, setAcceptedTarget] = useState(exercise.target_answer);
-  const [almostWarningNote, setAlmostWarningNote] = useState<string | undefined>(undefined);
-  const [feedbackNote, setFeedbackNote] = useState<string | null>(null);
-  const [showErrorSheet, setShowErrorSheet] = useState(false);
-  const [showSuccessSheet, setShowSuccessSheet] = useState(false);
-  const [failedAttemptText, setFailedAttemptText] = useState("");
-  const [failedDiagnosis, setFailedDiagnosis] = useState<ExerciseDiagnosis | undefined>(undefined);
-
-  const inputRef = useRef<HTMLInputElement>(null);
-  const tolerance = useAppStore((s) => s.tolerance);
-  const settings = useAppStore((s) => s.settings);
-  const activeLanguageId = useAppStore((s) => s.activeLanguageId);
-  const language = getLanguageDefinition(activeLanguageId);
+  const {
+    inputRef,
+    settings,
+    language,
+    wordBank,
+    cues,
+    target,
+    affirmation,
+    userInput,
+    setUserInput,
+    cuesRevealed,
+    status,
+    sheetVariant,
+    feedbackNote,
+    setFeedbackNote,
+    setStatus,
+    verifiedAttemptText,
+    acceptedTarget,
+    almostWarningNote,
+    showErrorSheet,
+    showSuccessSheet,
+    failedAttemptText,
+    failedDiagnosis,
+    resetCurrentExercise,
+    insertWord,
+    revealNextCue,
+    handleVerify,
+    handleSuccessContinue,
+    handleErrorContinue,
+  } = useProductionAttempt({
+    exercise,
+    isRetry,
+    onSuccess,
+    onError,
+    onQueueRetry,
+    onPurpleForfeit,
+    emptyMessage: "Write your reply before sending.",
+    exactMessage: "Spot On! Natural reply.",
+    almostMessage: `Almost right! Standard reply: "${exercise.target_answer.trim()}"`,
+    onReset: () => setShowQuestionGloss(false),
+  });
 
   const spokenQuestion = exercise.spoken_question ?? "";
   const questionMeaning = exercise.question_meaning ?? "";
   const replyIdea = exercise.reply_idea ?? exercise.idea ?? "";
-  const cues = exercise.cues ?? [];
-  const wordBank = React.useMemo(() => {
-    const cleaned = (exercise.word_bank || []).map((w) => w.replace(/[.,!?;:]+$/, ""));
-    return arrangeTilesDeterministically(cleaned, `${exercise.id}#wb`, exercise.target_answer);
-  }, [exercise.word_bank, exercise.id, exercise.target_answer]);
-  const target = exercise.target_answer.trim();
   const listeningOff = isListeningSkipped(settings.listeningSkippedUntil);
-
-  const resetCurrentExercise = () => {
-    setUserInput("");
-    setCuesRevealed(0);
-    setShowQuestionGloss(false);
-    setStatus("idle");
-    setSheetVariant("exact");
-    setVerifiedAttemptText("");
-    setAlmostWarningNote(undefined);
-    setFeedbackNote(null);
-    setShowErrorSheet(false);
-    setShowSuccessSheet(false);
-    setFailedAttemptText("");
-    setFailedDiagnosis(undefined);
-    setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 50);
-  };
-
-  useEffect(() => {
-    resetCurrentExercise();
-  }, [exercise.id]);
 
   useEffect(() => {
     if (listeningOff || !spokenQuestion) return;
-    const t = setTimeout(() => playTargetAudio(spokenQuestion), 350);
-    return () => clearTimeout(t);
+    const timer = setTimeout(() => playTargetAudio(spokenQuestion), 350);
+    return () => clearTimeout(timer);
   }, [exercise.id, listeningOff, spokenQuestion]);
-
-  const insertWord = (word: string) => {
-    if (status === "correct" || status === "almost") return;
-    void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
-    setFeedbackNote(null);
-    setUserInput((prev) => {
-      if (!prev) return word;
-      return prev.endsWith(" ") ? prev + word : `${prev} ${word}`;
-    });
-    setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 0);
-  };
-
-  const revealNextCue = () => {
-    if (cuesRevealed >= cues.length) return;
-    onPurpleForfeit?.();
-    setCuesRevealed((n) => n + 1);
-  };
-
-
-  const handleVerify = () => {
-    inputRef.current?.blur();
-    const answerToCheck = userInput.trim();
-    if (!answerToCheck) {
-      setFeedbackNote("Write your reply before sending.");
-      return;
-    }
-
-    const evalOptions = {
-      umlautTolerance: Boolean(settings.lazyMode ?? tolerance.umlautTolerance),
-      capitalizationTolerance: Boolean(
-        settings.capitalizationTolerance ?? tolerance.capitalizationTolerance
-      ),
-    };
-    const graded = gradeExerciseAttempt(exercise, [answerToCheck], { ...evalOptions, languageId: activeLanguageId }, isRetry, wordBank);
-    const evaluation = graded.result;
-    setAcceptedTarget(graded.target);
-
-    if (evaluation.accuracy === "exact") {
-      setStatus("correct");
-      setFeedbackNote("Spot On! Natural reply.");
-      setSheetVariant("exact");
-      setVerifiedAttemptText(answerToCheck);
-      setAlmostWarningNote(undefined);
-      setShowSuccessSheet(true);
-      return;
-    }
-
-    if (evaluation.accuracy === "almost") {
-      setStatus("almost");
-      setFeedbackNote(evaluation.warningNote || `Almost right! Standard reply: "${target}"`);
-      setSheetVariant("almost");
-      setVerifiedAttemptText(answerToCheck);
-      setAlmostWarningNote(evaluation.warningNote);
-      setShowSuccessSheet(true);
-      if (graded.queueRetry) onQueueRetry?.();
-      return;
-    }
-
-    setStatus("incorrect");
-    void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
-    onError(graded.errorType);
-    onQueueRetry?.();
-    setFailedAttemptText(answerToCheck);
-    setFailedDiagnosis(graded.diagnosis);
-    if (cuesRevealed < cues.length) setCuesRevealed((n) => n + 1);
-    setShowErrorSheet(true);
-  };
-
-  const affirmation = affirmationFor(exercise.affirmation, exercise.shift_hint);
 
   return (
     <div className="p-6 rounded-xl bg-[var(--sub-alt-color)] border border-[var(--main-color)]/25 space-y-5 shadow-lg font-mono">
@@ -327,17 +250,7 @@ export const SpokenTurnReplyExercise: React.FC<SpokenTurnReplyExerciseProps> = (
           shiftRule={exercise.shift_hint}
           explanation={exercise.explanation}
           diagnosis={failedDiagnosis}
-          onContinue={() => {
-            setShowErrorSheet(false);
-            setStatus("idle");
-            setFeedbackNote(null);
-            if (isRetry) {
-              setUserInput("");
-              setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 50);
-            } else {
-              onSuccess();
-            }
-          }}
+          onContinue={handleErrorContinue}
         />
       )}
 
@@ -353,12 +266,7 @@ export const SpokenTurnReplyExercise: React.FC<SpokenTurnReplyExerciseProps> = (
           userAttempt={verifiedAttemptText}
           warningNote={almostWarningNote}
           affirmation={affirmation}
-          onContinue={() => {
-            setShowSuccessSheet(false);
-            setStatus("idle");
-            setFeedbackNote(null);
-            onSuccess();
-          }}
+          onContinue={handleSuccessContinue}
         />
       )}
     </div>

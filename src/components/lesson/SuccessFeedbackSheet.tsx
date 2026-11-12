@@ -4,8 +4,8 @@ import React, { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { CheckCircle2, ArrowRight, Sparkles, BookOpen, AlertCircle, Repeat, Volume2 } from "lucide-react";
 import type { VocabHint } from "@/lib/types";
-import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
+import { ModalDialog } from "@/components/common/ModalDialog";
 import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
 import { playTargetAudio } from "@/lib/audio";
@@ -64,7 +64,6 @@ export const SuccessFeedbackSheet: React.FC<SuccessFeedbackSheetProps> = ({
   onContinue,
 }) => {
   const continueBtnRef = React.useRef<HTMLButtonElement>(null);
-  const dialogRef = React.useRef<HTMLDivElement>(null);
   const isAlmost = variant === "almost";
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
@@ -72,13 +71,6 @@ export const SuccessFeedbackSheet: React.FC<SuccessFeedbackSheetProps> = ({
   const spokenLocale = audioLocale ?? language.ttsLocale;
 
   useBackDismiss(true, onContinue);
-
-  useDialogFocus({
-    open: true,
-    containerRef: dialogRef,
-    initialFocusRef: continueBtnRef,
-    onEscape: onContinue,
-  });
 
   // Listen for Enter or Space key to advance immediately. A focused control keeps
   // its native activation: Enter on "I guessed — bring this one back sooner" must
@@ -109,12 +101,8 @@ export const SuccessFeedbackSheet: React.FC<SuccessFeedbackSheetProps> = ({
   // sheet inside them is positioned against the scroll container, not the
   // viewport, which puts the continue button off-screen.
   return createPortal(
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 animate-in fade-in duration-150">
+    <ModalDialog onClose={onContinue} initialFocusRef={continueBtnRef} aria-labelledby="success-feedback-title" className="open:flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 animate-in fade-in duration-150">
       <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="success-feedback-title"
         className={`w-full sm:max-w-md max-h-[85dvh] overflow-y-auto overscroll-contain bg-[var(--bg-color)] border-t sm:border sm:rounded-lg rounded-t-lg shadow-2xl p-6 pb-safe space-y-5 animate-in slide-in-from-bottom duration-200 font-mono ${
           isAlmost
             ? "border-[var(--sub-color)]/40"
@@ -287,7 +275,7 @@ export const SuccessFeedbackSheet: React.FC<SuccessFeedbackSheetProps> = ({
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>
-    </div>,
+    </ModalDialog>,
     document.body
   );
 };

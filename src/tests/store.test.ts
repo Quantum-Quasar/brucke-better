@@ -1,25 +1,10 @@
 import { describe, it, expect, beforeEach, beforeAll, afterAll } from "vitest";
+import { LocalStorageMock } from "./storage-fixture";
 import { useAppStore } from "../lib/store";
 import { loadSavedState, getCookie, setCookie } from "../lib/store/persistence";
 import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "../lib/storage-keys";
 import { DEFAULT_THEME } from "@/lib/theme-runtime";
 import { DEFAULT_SETTINGS } from "../data/settings";
-
-class LocalStorageMock {
-  private store: Record<string, string> = {};
-  getItem(key: string) {
-    return this.store[key] || null;
-  }
-  setItem(key: string, value: string) {
-    this.store[key] = String(value);
-  }
-  removeItem(key: string) {
-    delete this.store[key];
-  }
-  clear() {
-    this.store = {};
-  }
-}
 
 describe("App Store & User Progress State", () => {
   beforeAll(() => {

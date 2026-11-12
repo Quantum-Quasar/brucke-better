@@ -2,8 +2,6 @@ import { describe, expect, it } from "vitest";
 import { parseStoredView, useViewStore } from "@/lib/view-store";
 import { getAtlasFamily, getFamilyOwnerLanguageIds, UNSHIFTED_FAMILY_ID } from "@/lib/atlas-families";
 import { compendium } from "@/data/compendium";
-import { getNextPlayableLessonIdFrom } from "@/data/curriculum-core";
-import { GERMAN_CURRICULUM } from "@/data/curriculum";
 
 describe("persisted view state", () => {
   it("returns empty maps for missing or malformed storage", () => {
@@ -96,12 +94,5 @@ describe("atlas family ownership", () => {
 
     useViewStore.getState().openAtlasFamily("__proto__", []);
     expect(useViewStore.getState().subView).toBeNull();
-  });
-});
-
-describe("next playable lesson", () => {
-
-  it("returns null outside the trail", () => {
-    expect(getNextPlayableLessonIdFrom(GERMAN_CURRICULUM, 999999)).toBeNull();
   });
 });

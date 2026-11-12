@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeAll, afterAll, vi } from "vitest";
+import { LocalStorageMock } from "./storage-fixture";
 import { STORAGE_COOKIE_KEY } from "../lib/storage-keys";
 
 // Regression guard for a boot-order bug that only exists in a real browser:
@@ -17,34 +18,6 @@ import { STORAGE_COOKIE_KEY } from "../lib/storage-keys";
 // storage at all — a real cross-tab event asks for `{ reread: true }`.
 
 const STORAGE_KEY = "brucke_app_state_v1";
-
-class LocalStorageMock {
-  private store = new Map<string, string>();
-
-  getItem(key: string): string | null {
-    return this.store.get(key) ?? null;
-  }
-
-  setItem(key: string, value: string): void {
-    this.store.set(key, String(value));
-  }
-
-  removeItem(key: string): void {
-    this.store.delete(key);
-  }
-
-  clear(): void {
-    this.store.clear();
-  }
-
-  key(index: number): string | null {
-    return Array.from(this.store.keys())[index] ?? null;
-  }
-
-  get length(): number {
-    return this.store.size;
-  }
-}
 
 describe("boot hydration snapshot", () => {
   beforeAll(() => {

@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { matchingPairForKey } from "@/lib/matching";
 import type { ClassicExerciseController } from "./classic-exercise-types";
-import { hasBlockingKeyboardDialog } from "@/lib/use-dialog-focus";
+import { hasBlockingKeyboardDialog } from "@/components/common/ModalDialog";
 
 export function useClassicKeyboard(controller: ClassicExerciseController, onDeselect: () => void) {
   useEffect(() => {

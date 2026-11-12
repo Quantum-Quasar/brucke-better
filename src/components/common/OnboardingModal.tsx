@@ -16,9 +16,8 @@ import { getCourseCounts } from "@/data/word-counts";
 import { THEME_COUNT } from "@/lib/theme-runtime";
 import { FONT_LIST } from "@/data/fonts";
 import { ShiftPair } from "@/components/common/ShiftPair";
-import { useDialogFocus } from "@/lib/use-dialog-focus";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
-import { focusOpener } from "@/lib/focus-return";
+import { ModalDialog } from "@/components/common/ModalDialog";
 import { LearningPreferences } from "@/components/common/LearningPreferences";
 
 export const OnboardingModal: React.FC = () => {
@@ -36,7 +35,6 @@ export const OnboardingModal: React.FC = () => {
   const [step, setStep] = useState(0);
   const [introLanguageId, setIntroLanguageId] = useState<string | null>(null);
   const [activeShiftDemo, setActiveShiftDemo] = useState(0);
-  const dialogRef = useRef<HTMLDivElement>(null);
 
   const effectiveLanguageId = introLanguageId || storeLanguageId;
   const language = getLanguageDefinition(effectiveLanguageId);
@@ -59,12 +57,6 @@ export const OnboardingModal: React.FC = () => {
 
   useBackDismiss(isOpen, closeOnboarding);
 
-  useDialogFocus({
-    open: isOpen,
-    containerRef: dialogRef,
-    returnFocus: focusOpener,
-    onEscape: closeOnboarding,
-  });
 
   // Every fresh opening starts clean. A completed learner using the guide
   // re-enters at the language's core idea, not the picker they already know.
@@ -138,11 +130,8 @@ export const OnboardingModal: React.FC = () => {
   const isGuide = hasCompletedOnboarding;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 animate-in fade-in duration-200">
+    <ModalDialog onClose={closeOnboarding} aria-label="Brücke introduction" className="open:flex items-center justify-center p-4 bg-black/80 animate-in fade-in duration-200">
       <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
         aria-label="Brücke introduction"
         className="w-full max-w-2xl rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl overflow-hidden flex flex-col max-h-[92dvh]"
       >
@@ -429,6 +418,6 @@ export const OnboardingModal: React.FC = () => {
           </div>
         </div>
       </div>
-    </div>
+    </ModalDialog>
   );
 };

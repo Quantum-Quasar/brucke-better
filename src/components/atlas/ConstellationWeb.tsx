@@ -55,7 +55,7 @@ function buildWeb(
   const rows = Math.max(2, Math.ceil(n / cols));
   const cellW = WIDTH / cols;
   const cellH = HEIGHT / rows;
-  const nodes: WebNode[] = ids.map((id, i) => {
+  const nodes: WebNode[] = ids.map((_id, i) => {
     const col = i % cols;
     const row = Math.floor(i / cols);
     const jx = (rng() - 0.5) * cellW * 0.6;

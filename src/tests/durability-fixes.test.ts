@@ -1,23 +1,8 @@
 import { describe, it, expect, beforeEach, beforeAll, afterAll } from "vitest";
+import { LocalStorageMock } from "./storage-fixture";
 import { useAppStore } from "../lib/store";
 import { loadSavedState } from "../lib/store/persistence";
 import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "../lib/storage-keys";
-
-class LocalStorageMock {
-  private store: Record<string, string> = {};
-  getItem(key: string) {
-    return this.store[key] || null;
-  }
-  setItem(key: string, value: string) {
-    this.store[key] = String(value);
-  }
-  removeItem(key: string) {
-    delete this.store[key];
-  }
-  clear() {
-    this.store = {};
-  }
-}
 
 describe("backup import rejects entirely-corrupt progress instead of wiping it", () => {
   beforeAll(() => {

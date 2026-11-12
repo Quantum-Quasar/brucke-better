@@ -1,22 +1,7 @@
 import { describe, it, expect, beforeEach, beforeAll, afterAll } from "vitest";
+import { LocalStorageMock } from "./storage-fixture";
 import { useAppStore } from "../lib/store";
 import { isMastered, gradeCard } from "../lib/srs";
-
-class LocalStorageMock {
-  private store: Record<string, string> = {};
-  getItem(key: string) {
-    return this.store[key] || null;
-  }
-  setItem(key: string, value: string) {
-    this.store[key] = String(value);
-  }
-  removeItem(key: string) {
-    delete this.store[key];
-  }
-  clear() {
-    this.store = {};
-  }
-}
 
 function setCardVersion(wordId: string, version: string) {
   useAppStore.setState((s) => ({
