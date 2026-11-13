@@ -63,7 +63,9 @@ function resolveLemma(lemma: string): boolean {
 
 const foldUmlauts = (s: string) => s.replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").replace(/ß/g, "ss");
 
-function resolves(token: string): boolean {
+/** Single-token German resolution, shared with the naturalness extractor's
+ * is-this-German test so both audits agree on what counts as German. */
+export function resolves(token: string): boolean {
   const raw = token.toLowerCase().replace(/[.,!?;:]+$/, "");
   if (!raw) return true;
   if (FUNCTION_WORDS.has(raw)) return true;

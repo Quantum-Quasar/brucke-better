@@ -144,6 +144,7 @@ claims that every file was downloaded in a browser session:
 | Script | Run via | What it writes |
 | --- | --- | --- |
 | `export-trail.ts` | `bun run trail` | Writes `TRAIL.md` at the repo root — the German trail in reading order. Run it after any lesson or teaser change. |
+| `export-naturalness-review.ts` | `bun run audit:naturalness-export` | Writes the checker-facing **naturalness review packet** to `naturalness-review/` — one review grid per structure bucket (`<bucket>.md`), `all-sentences.csv`, `SUMMARY.md` (totals, bucket counts, provenance coverage, method notes) and `SPEAKER-BRIEFING.md` (the protocol every speaker gets). Every learner-facing German sentence in the German course, with its English pairing, per-row provenance (`<lessonId> · <surface>`) and two free-text speaker columns. Read-only on content; output is a list of suspects to discuss, never auto-fixes. Run on demand by the human before a speaker round — deliberately **not** wired into build, test or CI, and the generated packet is not gitignored (version-controlling it is the human's call). Logic lives in `src/lib/naturalness-extract.ts` and is pinned by `src/tests/naturalness-extract.test.ts`; the export is deterministic, so re-runs diff cleanly. |
 
 ---
 

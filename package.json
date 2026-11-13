@@ -8,6 +8,7 @@
     "check:compendium": "bun run scripts/check-compendium.ts",
     "export-data": "bun run scripts/export-client-data.ts",
     "audit:assets": "bun run scripts/audit-public-assets.ts",
+    "audit:naturalness-export": "bun run scripts/export-naturalness-review.ts",
     "trail": "bun run scripts/export-trail.ts",
     "dev": "bun run export-data && next dev",
     "build": "bun run parse-data && bun run export-data && next build",
