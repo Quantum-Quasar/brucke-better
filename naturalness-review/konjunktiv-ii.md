@@ -1,4 +1,4 @@
-# Konjunktiv II — naturalness review grid
+# Konjunktiv II — pass 1 — sentence grids
 
 16 rows. Read SPEAKER-BRIEFING.md first: for each row answer in free text — *would you say this, and if not, what would you say?* Leave a row blank if it is natural.
 

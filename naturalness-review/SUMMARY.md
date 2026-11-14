@@ -5,41 +5,49 @@ Checker-facing review packet for the native-speaker naturalness audit (Option B 
 `bun scripts/export-naturalness-review.ts`; deterministic — re-running reproduces these
 files byte-for-byte. Output is a list of suspects to discuss, never auto-fixes.
 
+## The packet is two passes
+
+- **Pass 1 — sentence grids (1942 rows, 14 files).** Authored German sentences and phrases, grouped by structure. This is the core review: one grid per law, English beside German, two free-text columns. A sitting or two of focused judgment.
+- **Pass 2 — prose skim (`mixed-prose.md`, 506 rows).** Whole teaching paragraphs (lesson hooks, pattern sections, vocab-hint notes) with German embedded in English prose. A different mode of reading — skim the German inside each paragraph in trail order and quote anything a speaker wouldn't say. Separating it keeps the sentence grids pure; a speaker can do both passes in one weekend or in different sittings.
+
 ## Totals
 
-- **2387 distinct German sentences/phrases** from 2961 learner-facing occurrences (of which 133 were authored English — gloss answers on 
+- **2448 distinct German sentences/phrases** from 3037 learner-facing occurrences (of which 134 were authored English — gloss answers on 
   `shift_select` / `reverse_cognate` / `variant_english` / `literal_gloss` `target_answer` — and are not part of the packet).
-- **1881 rows (79%) carry an English pairing** from the data; 506 rows show "—" (the mixed-prose rows and a few typed fields have no per-item English).
+- **1942 rows (79%) carry an English pairing** from the data; 506 rows show "—" (the pass-2 prose rows have no per-fragment English by construction).
 - The spec estimated ~1,400 distinct sentences; the extraction is larger. The gap comes from surfaces the estimate did not itemize: matching-pair cards (~700 distinct single words/phrases), the whole teaching prose fields (506 rows) and the per-exercise single-word answers (`derive`, `shift_select`). Nothing was trimmed to fit the estimate.
 
 ## Per-bucket counts
 
 | Bucket | Rows | File |
 | --- | ---: | --- |
-| Relative clauses | 40 | `relative-clauses.md` |
+| Relative clauses | 41 | `relative-clauses.md` |
 | Konjunktiv II | 16 | `konjunktiv-ii.md` |
 | Subordinate clauses | 36 | `subordinate-clauses.md` |
-| Questions & word order | 74 | `questions-word-order.md` |
-| Negation | 50 | `negation.md` |
+| Questions & word order | 77 | `questions-word-order.md` |
+| Negation | 51 | `negation.md` |
 | Modals | 139 | `modals.md` |
 | Perfekt & Präteritum | 121 | `perfekt-praeteritum.md` |
-| Imperative | 25 | `imperative.md` |
-| Verb bracket | 28 | `verb-bracket.md` |
-| Two-way prepositions | 82 | `two-way-prepositions.md` |
+| Imperative | 26 | `imperative.md` |
+| Verb bracket | 30 | `verb-bracket.md` |
+| Two-way prepositions | 89 | `two-way-prepositions.md` |
 | Dative | 85 | `dative.md` |
-| Adjective endings | 42 | `adjective-endings.md` |
-| Single words & short phrases | 843 | `single-words-phrases.md` |
+| Adjective endings | 45 | `adjective-endings.md` |
+| Single words & short phrases | 858 | `single-words-phrases.md` |
 | Mixed prose (teaching text) | 506 | `mixed-prose.md` |
-| Other | 300 | `other.md` |
-| **Total** | **2387** | `all-sentences.csv` |
+| Other | 328 | `other.md` |
+| **Total** | **2448** | `all-sentences.csv` |
 
 ## Surface inventory
 
 | Surface | Occurrences | Included | Excluded (not German) |
 | --- | ---: | ---: | ---: |
+| `compound · example_sentence` | 32 | 31 | 1 |
+| `daily_insight · german_expression` | 28 | 28 | 0 |
 | `derive · target_answer` | 56 | 56 | 0 |
 | `dictation · spoken` | 14 | 14 | 0 |
 | `dictation · target_answer` | 14 | 14 | 0 |
+| `false_friend · example_sentence` | 16 | 16 | 0 |
 | `family_matrix · cell` | 29 | 29 | 0 |
 | `family_matrix · target_answer` | 6 | 6 | 0 |
 | `hook · content` | 179 | 179 | 0 |
@@ -62,17 +70,19 @@ files byte-for-byte. Output is a list of suspects to discuss, never auto-fixes.
 
 ## Method notes
 
-- **Corpus.** The spec's corpus table, plus the typed German fields the table predates: `variant_english.german`, `spoken_turn_reply.spoken_question`, `pronoun_compression.full_sentence`, `transcribe.accepted_answers` and the individual `matching_pairs` cards. `matching_pairs.target_answer` itself is a comma-joined serialization of those cards and is deliberately not extracted as a row (the cards carry the same German plus an English pairing).
+- **Corpus.** The spec's corpus table, plus typed German fields the table predates: `variant_english.german`, `spoken_turn_reply.spoken_question`, `pronoun_compression.full_sentence`, `transcribe.accepted_answers` and the individual `matching_pairs` cards, plus the compendium surfaces (`compound · example_sentence`, `false_friend · example_sentence`, `daily_insight · german_expression`). `matching_pairs.target_answer` itself is a comma-joined serialization of those cards and is deliberately not extracted as a row (the cards carry the same German plus an English pairing).
 - **English-by-design answers.** `reverse_cognate`, `variant_english` and `literal_gloss` have authored-English `target_answer`s (glosses, word-for-word renderings); their German lives on other fields that are extracted. Stray English answers on German-by-design types (e.g. shift_select gloss answers like "yon") are filtered out by the German test below.
 - **German test.** An unambiguous English marker word excludes a string; otherwise a German marker (function word, taught word via the word-reference resolver, grammar-form supplement) or a bare umlaut includes it, with an authored-German default for multi-word answers. Single unknown tokens stay excluded.
-- **Prose.** `hook.content`, `pattern.content` and `vocab_hints[].note` are authored mixed EN/DE paragraphs; they are kept whole-field in the *Mixed prose* bucket rather than segmented, so reviewers check the German embedded in each paragraph. They have no English pairing by construction.
-- **Pairing.** English meaning comes from the data's own pairing field per surface (`meaning`, `idea`, `question_meaning`, `english_hint`, `prompt`, `natural`, `rendering`, card/cell English, twist prompt, hint translation where present), else "—".
-- **Dedupe.** Normalized key = trim + collapse whitespace + strip trailing punctuation, lowercased. All original spellings are kept on the row and listed when they differ; provenance lists every occurrence (`<lessonId> · <surface>`).
-- **Bucketing.** Keyword + pattern heuristics, first match wins, priority: relative clauses → Konjunktiv II → subordinate clauses → questions & word order → negation → modals → Perfekt/Präteritum → imperative → verb bracket → two-way prepositions → dative → adjective endings → single words & short phrases (≤ 4 tokens). *Mixed prose* and *Other* are the two catch-alls; *Other* held 300 rows — mostly subordinate-clause variants without a marker, fixed expressions and multi-word card lists.
-- **Determinism.** Stable sort (bucket order → normalized key → first seen), stable ids (`<bucket>-<n>`), no timestamps.
+- **Prose.** `hook.content`, `pattern.content` and `vocab_hints[].note` are authored mixed EN/DE paragraphs; they are kept whole-field in the *Mixed prose* pass-2 skim rather than segmented (segmentation prototypes produced ~30% junk fragments), presented trail-ordered as blockquotes so reviewers check the German embedded in each paragraph. They have no English pairing by construction.
+- **Pairing.** English meaning comes from the data's own pairing field per surface (`meaning`, `idea`, `question_meaning`, `english_hint`, `prompt`, `natural`, card/cell English, compound/false-friend `example_translation`, insight `english_meaning`, twist prompt, where present), else "—".
+- **Dedupe.** Normalized key = trim + collapse whitespace + strip trailing punctuation, lowercased. All original spellings are kept on the row and listed when they differ; provenance lists every occurrence (`<lessonId> · <surface>` or `compendium:<id> · <surface>`).
+- **Bucketing.** Keyword + pattern heuristics, first match wins, priority: relative clauses → Konjunktiv II → subordinate clauses → questions & word order → negation → modals → Perfekt/Präteritum → imperative → verb bracket → two-way prepositions → dative → adjective endings → single words & short phrases (≤ 4 tokens). *Mixed prose* and *Other* are the two catch-alls; *Other* held 328 rows — mostly subordinate-clause variants without a marker, fixed expressions and multi-word card lists.
+- **Ordering.** Sentence rows sort alphabetically within their bucket (groups similar sentences for pattern-spotting); pass-2 prose rows sort in trail order (lesson 1's hook, pattern, notes, then lesson 2's …).
+- **Determinism.** Stable sort and ids (`<bucket>-<n>`), no timestamps.
 
 ## Reading order
 
-1. `SPEAKER-BRIEFING.md` — give this to every speaker before the grids.
-2. One `relative-clauses.md`-style grid per structure, or `all-sentences.csv` for spreadsheet users.
-3. Collect the two free-text columns back; a pattern across several speakers is worth a lot, a single confident correction is worth very little.
+1. `SPEAKER-BRIEFING.md` — give this to every speaker before anything else.
+2. **Pass 1:** one `<bucket>.md` sentence grid per structure, or `all-sentences.csv` (`pass` column) for spreadsheet users.
+3. **Pass 2:** `mixed-prose.md` — the prose skim.
+4. Collect the free-text answers back; a pattern across several speakers is worth a lot, a single confident correction is worth very little.

@@ -1,4 +1,4 @@
-# Perfekt & Präteritum — naturalness review grid
+# Perfekt & Präteritum — pass 1 — sentence grids
 
 121 rows. Read SPEAKER-BRIEFING.md first: for each row answer in free text — *would you say this, and if not, what would you say?* Leave a row blank if it is natural.
 

@@ -1,6 +1,6 @@
-# Adjective endings — naturalness review grid
+# Adjective endings — pass 1 — sentence grids
 
-42 rows. Read SPEAKER-BRIEFING.md first: for each row answer in free text — *would you say this, and if not, what would you say?* Leave a row blank if it is natural.
+45 rows. Read SPEAKER-BRIEFING.md first: for each row answer in free text — *would you say this, and if not, what would you say?* Leave a row blank if it is natural.
 
 | # | German | English | source | would you say this? (free text) | what would you say instead? (free text) |
 | --- | --- | --- | --- | --- | --- |
@@ -34,15 +34,18 @@
 | adjective-endings-028 | Ich heiße Anna und ich komme aus Berlin | Ich heiße Anna und ich komme aus Berlin | 5071 · syntax_builder · target_answer |  |  |
 | adjective-endings-029 | Ich heiße Anna. Ich komme aus England, und ich wohne in Berlin. | My name is Anna. I come from England, and I live in Berlin. | 5071 · summary · use_example |  |  |
 | adjective-endings-030 | Ich trinke heute kaltes Wasser | I drink cold water today | 702 · variant_english · german |  |  |
-| adjective-endings-031 | Im Winter trägt der Bauer einen Mantel, einen Schal, einen Hut und warme Socken | In winter the farmer wears a coat, a scarf, a hat and warm socks | 5282 · matching_pairs · card |  |  |
-| adjective-endings-032 | Ja es ist heute kälter | Yes, it is colder today | 2401 · spoken_turn_reply · target_answer |  |  |
-| adjective-endings-033 | kalt → kälter | cold → colder | 24 · matching_pairs · card |  |  |
-| adjective-endings-034 | kaltes<br>*(also: Kaltes)* | ein kaltes Bier = a cold beer (neuter: the adjective echoes -es) | 2403 · shift_select · target_answer<br>2404 · shift_select · target_answer |  |  |
-| adjective-endings-035 | kaltes Wasser | cold water (no article) | 2404 · matching_pairs · card |  |  |
-| adjective-endings-036 | Kaltes Wasser ist besser als warmer Kaffee.<br>*(also: Kaltes Wasser ist besser als warmer Kaffee)* | Cold water is better than warm coffee. | 2404 · summary · use_example<br>2404 · twist · target_answer<br>2404 · transcribe · target_answer |  |  |
-| adjective-endings-037 | Meine Tochter trinkt kaltes Wasser.<br>*(also: Meine Tochter trinkt kaltes Wasser)* | My daughter drinks cold water. | 701 · summary · use_example<br>701 · twist · target_answer<br>701 · syntax_builder · target_answer |  |  |
-| adjective-endings-038 | Paula findet einen kleinen Brief. | Paula finds a small letter. | 5351 · matching_pairs · card |  |  |
-| adjective-endings-039 | Sie trägt einen roten Schal. | She is wearing a red scarf. | 5361 · matching_pairs · card |  |  |
-| adjective-endings-040 | Wir heißen heute hier | Without looking back — build in German: "We be called here today" | 5071 · twist · target_answer |  |  |
-| adjective-endings-041 | Wir trinken kaltes Wasser | Same water, shared: I drink cold water becomes we drink cold water. (The verb ending goes back to the stem.) | 7 · twist · target_answer |  |  |
-| adjective-endings-042 | älter als du | older than you (the old job) | 5111 · matching_pairs · card |  |  |
+| adjective-endings-031 | Im Winter trage ich warme Handschuhe. | In winter I wear warm gloves. | compendium:handschuh · compound · example_sentence |  |  |
+| adjective-endings-032 | Im Winter trägt der Bauer einen Mantel, einen Schal, einen Hut und warme Socken | In winter the farmer wears a coat, a scarf, a hat and warm socks | 5282 · matching_pairs · card |  |  |
+| adjective-endings-033 | Ja es ist heute kälter | Yes, it is colder today | 2401 · spoken_turn_reply · target_answer |  |  |
+| adjective-endings-034 | kalt → kälter | cold → colder | 24 · matching_pairs · card |  |  |
+| adjective-endings-035 | kaltes<br>*(also: Kaltes)* | ein kaltes Bier = a cold beer (neuter: the adjective echoes -es) | 2403 · shift_select · target_answer<br>2404 · shift_select · target_answer |  |  |
+| adjective-endings-036 | kaltes Wasser | cold water (no article) | 2404 · matching_pairs · card |  |  |
+| adjective-endings-037 | Kaltes Wasser ist besser als warmer Kaffee.<br>*(also: Kaltes Wasser ist besser als warmer Kaffee)* | Cold water is better than warm coffee. | 2404 · summary · use_example<br>2404 · twist · target_answer<br>2404 · transcribe · target_answer |  |  |
+| adjective-endings-038 | Meine Oma backt den besten Apfelkuchen. | My grandma bakes the best apple cake. | compendium:apfelkuchen · compound · example_sentence |  |  |
+| adjective-endings-039 | Meine Tochter trinkt kaltes Wasser.<br>*(also: Meine Tochter trinkt kaltes Wasser)* | My daughter drinks cold water. | 701 · summary · use_example<br>701 · twist · target_answer<br>701 · syntax_builder · target_answer |  |  |
+| adjective-endings-040 | Paula findet einen kleinen Brief. | Paula finds a small letter. | 5351 · matching_pairs · card |  |  |
+| adjective-endings-041 | Sie spielt Klavier mit großer Leidenschaft. | She plays piano with great passion. | compendium:leidenschaft · compound · example_sentence |  |  |
+| adjective-endings-042 | Sie trägt einen roten Schal. | She is wearing a red scarf. | 5361 · matching_pairs · card |  |  |
+| adjective-endings-043 | Wir heißen heute hier | Without looking back — build in German: "We be called here today" | 5071 · twist · target_answer |  |  |
+| adjective-endings-044 | Wir trinken kaltes Wasser | Same water, shared: I drink cold water becomes we drink cold water. (The verb ending goes back to the stem.) | 7 · twist · target_answer |  |  |
+| adjective-endings-045 | älter als du | older than you (the old job) | 5111 · matching_pairs · card |  |  |

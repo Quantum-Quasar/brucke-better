@@ -1,6 +1,6 @@
-# Imperative — naturalness review grid
+# Imperative — pass 1 — sentence grids
 
-25 rows. Read SPEAKER-BRIEFING.md first: for each row answer in free text — *would you say this, and if not, what would you say?* Leave a row blank if it is natural.
+26 rows. Read SPEAKER-BRIEFING.md first: for each row answer in free text — *would you say this, and if not, what would you say?* Leave a row blank if it is natural.
 
 | # | German | English | source | would you say this? (free text) | what would you say instead? (free text) |
 | --- | --- | --- | --- | --- | --- |
@@ -21,11 +21,12 @@
 | imperative-015 | Kommt! | come! (two friends) | 5062 · matching_pairs · card |  |  |
 | imperative-016 | Macht | might (power) | 2601 · matching_pairs · card |  |  |
 | imperative-017 | Macht das | do! (ihr) — do that! | 5062 · morpheme_tiles · target_answer |  |  |
-| imperative-018 | Sei! | be! (one friend) | 5062 · matching_pairs · card |  |  |
-| imperative-019 | setz- | setzen (to set) | 901 · matching_pairs · card |  |  |
-| imperative-020 | Sprich Deutsch | speak! (German) — speak German! | 5061 · morpheme_tiles · target_answer |  |  |
-| imperative-021 | Steh heute früh auf | Get up early today | 5061 · literal_gloss · german |  |  |
-| imperative-022 | steh- | stehen (to stand) | 901 · matching_pairs · card |  |  |
-| imperative-023 | Trink Tee | drink! tea — drink tea! (to a friend) | 5063 · morpheme_tiles · target_answer |  |  |
-| imperative-024 | Wasch die Hände mit Seife | Wash your hands with soap | 5212 · matching_pairs · card |  |  |
-| imperative-025 | zeig- | zeigen (to show) | 901 · matching_pairs · card |  |  |
+| imperative-018 | Sei brav und hör auf deine Mutter. | Be good and listen to your mother. | compendium:brav · false_friend · example_sentence |  |  |
+| imperative-019 | Sei! | be! (one friend) | 5062 · matching_pairs · card |  |  |
+| imperative-020 | setz- | setzen (to set) | 901 · matching_pairs · card |  |  |
+| imperative-021 | Sprich Deutsch | speak! (German) — speak German! | 5061 · morpheme_tiles · target_answer |  |  |
+| imperative-022 | Steh heute früh auf | Get up early today | 5061 · literal_gloss · german |  |  |
+| imperative-023 | steh- | stehen (to stand) | 901 · matching_pairs · card |  |  |
+| imperative-024 | Trink Tee | drink! tea — drink tea! (to a friend) | 5063 · morpheme_tiles · target_answer |  |  |
+| imperative-025 | Wasch die Hände mit Seife | Wash your hands with soap | 5212 · matching_pairs · card |  |  |
+| imperative-026 | zeig- | zeigen (to show) | 901 · matching_pairs · card |  |  |

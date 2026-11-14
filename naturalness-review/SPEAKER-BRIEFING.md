@@ -14,6 +14,15 @@ prove is naturalness — that is exactly what your ear adds.
 
 Different regions and generations disagree — that disagreement is data, not noise.
 
+## The packet has two passes — take them in either order, or in separate sittings
+
+- **Pass 1 — sentence grids.** The `<bucket>.md` files (one structure per file: negation, dative,
+  Perfekt & Präteritum, modals, …). One row = one German sentence or phrase with its English.
+  Judge each row: *would you say this?* Pure sentence judgment.
+- **Pass 2 — prose skim (`mixed-prose.md`).** Whole teaching paragraphs with German embedded in
+  English prose. Read the German inside each paragraph and quote anything unnatural. This is
+  reading, not row-by-row judgment — a different mode, and fine as its own sitting.
+
 ## The one question — and what it is not
 
 For every row, answer in your own words: **"Would you say this? And if not — what would you say?"**
@@ -50,9 +59,9 @@ several speakers get talked through with context; rows flagged once usually stay
 
 ## Practicalities
 
-- Work one `<bucket>.md` file at a time (one structure per file), or `all-sentences.csv` if you
-  prefer a spreadsheet. Fill the two free-text columns; leave natural rows blank.
-- Rows in *Mixed prose (teaching text)* are whole teaching paragraphs — check the German embedded
-  in the English prose, not the English around it.
-- Rows show a source like `1103 · dictation · spoken` (lesson · surface) — quote the row id when
-  a sentence needs discussion.
+- Pass 1: work one `<bucket>.md` file at a time (one structure per file); pass 2: read
+  `mixed-prose.md` top to bottom. `all-sentences.csv` mirrors everything with a `pass` column
+  if you prefer a spreadsheet. Fill the free-text fields; leave natural rows blank.
+- Rows show a source like `1103 · dictation · spoken` (lesson · surface) or
+  `compendium:kühlschrank · compound · example_sentence` — quote the row id when a sentence
+  needs discussion.

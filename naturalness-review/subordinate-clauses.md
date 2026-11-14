@@ -1,4 +1,4 @@
-# Subordinate clauses — naturalness review grid
+# Subordinate clauses — pass 1 — sentence grids
 
 36 rows. Read SPEAKER-BRIEFING.md first: for each row answer in free text — *would you say this, and if not, what would you say?* Leave a row blank if it is natural.
 

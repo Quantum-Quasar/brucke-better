@@ -1,6 +1,6 @@
-# Relative clauses — naturalness review grid
+# Relative clauses — pass 1 — sentence grids
 
-40 rows. Read SPEAKER-BRIEFING.md first: for each row answer in free text — *would you say this, and if not, what would you say?* Leave a row blank if it is natural.
+41 rows. Read SPEAKER-BRIEFING.md first: for each row answer in free text — *would you say this, and if not, what would you say?* Leave a row blank if it is natural.
 
 | # | German | English | source | would you say this? (free text) | what would you say instead? (free text) |
 | --- | --- | --- | --- | --- | --- |
@@ -41,6 +41,7 @@
 | relative-clauses-035 | Einen Moment, bitte, die Kanne ist heiß | A moment please, the pot is hot | 5211 · matching_pairs · card<br>5211 · morpheme_tiles · target_answer |  |  |
 | relative-clauses-036 | feminine — die Straße, die Briefmarke | plain -e (mostly) | 22 · matching_pairs · card |  |  |
 | relative-clauses-037 | feminine — die Wissenschaft, die Freundschaft | -schaft → die | 2201 · shift_select · target_answer |  |  |
-| relative-clauses-038 | Weißt du, wo der Kaffee ist? | Do you know where the coffee is? | 1302 · summary · use_example |  |  |
-| relative-clauses-039 | Wir nehmen einen Umweg, der Weg ist weit | We take a detour — the way is far | 5172 · matching_pairs · card |  |  |
-| relative-clauses-040 | Wir sind richtig, die Schule ist leer | We are right, the school is empty | 5312 · matching_pairs · card |  |  |
+| relative-clauses-038 | Vorsicht, das Gift ist gefährlich! | Careful, the poison is dangerous! | compendium:gift · false_friend · example_sentence |  |  |
+| relative-clauses-039 | Weißt du, wo der Kaffee ist? | Do you know where the coffee is? | 1302 · summary · use_example |  |  |
+| relative-clauses-040 | Wir nehmen einen Umweg, der Weg ist weit | We take a detour — the way is far | 5172 · matching_pairs · card |  |  |
+| relative-clauses-041 | Wir sind richtig, die Schule ist leer | We are right, the school is empty | 5312 · matching_pairs · card |  |  |

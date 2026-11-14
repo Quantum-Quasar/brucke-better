@@ -10,12 +10,15 @@ import { BUCKETS, bucketName, extractNaturalnessRows, normalizeKey } from "../li
 const { rows, stats } = extractNaturalnessRows();
 
 describe("Naturalness extraction — row shape", () => {
-  it("gives every row non-empty German and provenance of the form <lessonId> · <surface>", () => {
+  it("gives every row non-empty German and provenance of the form <owner> · <surface>", () => {
     for (const row of rows) {
       expect(row.german.trim().length, `row ${row.id} has empty German`).toBeGreaterThan(0);
       expect(row.sources.length, `row ${row.id} (${row.german}) has no provenance`).toBeGreaterThan(0);
       for (const source of row.sources) {
-        expect(source, `row ${row.id} provenance is malformed`).toMatch(/^\d+ · [a-z_]+( · [a-z_]+)+$/);
+        expect(
+          source,
+          `row ${row.id} provenance is malformed: "${source}"`
+        ).toMatch(/^(?:\d+|compendium:[\p{L}\p{N}_-]+) · [a-z_]+( · [a-z_]+)+$/u);
       }
     }
   });
@@ -38,10 +41,11 @@ describe("Naturalness extraction — row shape", () => {
 
 describe("Naturalness extraction — corpus size", () => {
   it("extracts at least the floor justified by the current surfaces", () => {
-    // Actual extraction: 2,387 distinct rows (mixed prose 506 + single words &
-    // phrases 843 + the structural buckets). The floor leaves headroom for small
-    // content edits but fails if a whole surface stops being extracted.
-    expect(rows.length).toBeGreaterThanOrEqual(2_200);
+    // Actual extraction: ~2,450 distinct rows (pass 2 prose skim 506 + single
+    // words & phrases ~860 + the structural buckets + compendium examples).
+    // The floor leaves headroom for small content edits but fails if a whole
+    // surface stops being extracted.
+    expect(rows.length).toBeGreaterThanOrEqual(2_300);
   });
 
   it("pins the two largest surfaces so their loss is named, not inferred", () => {
@@ -51,6 +55,13 @@ describe("Naturalness extraction — corpus size", () => {
     expect(mixedProse).toBeGreaterThanOrEqual(450);
     // matching cards + short answers dominate this bucket
     expect(singleWords).toBeGreaterThanOrEqual(700);
+  });
+
+  it("includes the compendium surfaces (compound, false-friend, insight examples)", () => {
+    const compendiumRows = rows.filter((r) => r.sources.some((s) => s.startsWith("compendium:")));
+    expect(compendiumRows.length, "compendium example sentences missing from the packet").toBeGreaterThanOrEqual(70);
+    // every compendium surface carries its own English pairing
+    expect(compendiumRows.every((r) => r.english.length > 0)).toBe(true);
   });
 });
 
@@ -71,10 +82,25 @@ describe("Naturalness extraction — bucketing", () => {
   });
 
   it("keeps 'other' below the reported heuristic threshold", () => {
-    // Keyword bucketing cannot name every structure; ~12% of rows currently have
+    // Keyword bucketing cannot name every structure; ~13% of rows currently have
     // no marker (subordinate-clause variants, fixed expressions, card lists).
     const otherShare = (stats.perBucket["other"] ?? 0) / rows.length;
     expect(otherShare, `other bucket grew to ${Math.round(otherShare * 100)}% — the bucket heuristics need a new rule`).toBeLessThan(0.15);
+  });
+
+  it("keeps the pass-2 prose skim exactly the authored prose surfaces", () => {
+    // The export derives pass 1 vs pass 2 from the bucket alone: pass 2 is the
+    // mixed-prose bucket, so only prose surfaces may live there — and every
+    // prose-surface occurrence must be in it.
+    const proseSurfaces = new Set(["hook · content", "pattern · content", "vocab_hints · note"]);
+    for (const row of rows) {
+      const allProse = row.sources.every((s) => proseSurfaces.has(s.slice(s.indexOf(" · ") + 3)));
+      if (row.bucket === "mixed-prose") {
+        expect(allProse, `row ${row.id} is pass-2 prose but sourced from ${row.sources.join(" | ")}`).toBe(true);
+      } else {
+        expect(allProse, `row ${row.id} is prose-sourced but sits in "${row.bucket}"`).toBe(false);
+      }
+    }
   });
 });
 

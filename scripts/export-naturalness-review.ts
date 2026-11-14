@@ -32,14 +32,36 @@ const { rows, stats } = extractNaturalnessRows();
 
 fs.mkdirSync(OUT_DIR, { recursive: true });
 
-// --- one grid per bucket ---------------------------------------------------
+// --- pass 1: one sentence grid per bucket, pass 2: prose skim --------------
 
 for (const bucket of BUCKETS) {
   const bucketRows = rows.filter((r) => r.bucket === bucket.slug);
   const out: string[] = [];
-  out.push(`# ${bucketName(bucket.slug)} — naturalness review grid`);
+  const pass = bucket.slug === "mixed-prose" ? "pass 2 — prose skim" : "pass 1 — sentence grids";
+  out.push(`# ${bucketName(bucket.slug)} — ${pass}`);
   out.push("");
+
+  if (bucket.slug === "mixed-prose") {
+    // Whole paragraphs read better as a list than as table rows.
+    out.push(`${bucketRows.length} whole teaching paragraphs (lesson hooks, pattern sections, vocab-hint notes) with German embedded in English prose. This is a **skim, not a grid**: read the German inside each paragraph and write any German a speaker wouldn't say under it — quote the fragment. Leave clean paragraphs untouched.`);
+    out.push("");
+    for (const row of bucketRows) {
+      out.push(`## ${row.id} — ${row.sources.join(" + ")}`);
+      out.push("");
+      out.push(`> ${row.german.replace(/\r?\n/g, " ")}`);
+      out.push("");
+      out.push("**Would you say the German here? (free text — quote any unnatural fragment):**");
+      out.push("");
+    }
+    fs.writeFileSync(path.join(OUT_DIR, `${bucket.slug}.md`), out.join("\n") + "\n", "utf-8");
+    continue;
+  }
+
   out.push(`${bucketRows.length} rows. Read SPEAKER-BRIEFING.md first: for each row answer in free text — *would you say this, and if not, what would you say?* Leave a row blank if it is natural.`);
+  if (bucket.slug === "single-words-phrases") {
+    out.push("");
+    out.push("*Short items — judge the word or phrase itself, as you would hear it in conversation. Register counts: flag anything that is grammatically fine but would sound odd coming from a real speaker.*");
+  }
   out.push("");
   out.push("| # | German | English | source | would you say this? (free text) | what would you say instead? (free text) |");
   out.push("| --- | --- | --- | --- | --- | --- |");
@@ -51,19 +73,16 @@ for (const bucket of BUCKETS) {
     const sources = row.sources.map(mdCell).join("<br>");
     out.push(`| ${row.id} | ${german} | ${english} | ${sources} |  |  |`);
   }
-  if (bucket.slug === "mixed-prose") {
-    out.push("");
-    out.push("*Rows in this grid are whole teaching paragraphs (hook, pattern, vocab-hint notes) with German embedded in English prose. Check the German inside them; flag the row if any of it is unnatural.*");
-  }
   fs.writeFileSync(path.join(OUT_DIR, `${bucket.slug}.md`), out.join("\n") + "\n", "utf-8");
 }
 
 // --- CSV -------------------------------------------------------------------
 
 const csvLines: string[] = [];
-csvLines.push(["id", "bucket", "german", "english", "sources", "would you say this? (free text)", "what would you say instead? (free text)"].map(csvCell).join(","));
+csvLines.push(["id", "pass", "bucket", "german", "english", "sources", "would you say this? (free text)", "what would you say instead? (free text)"].map(csvCell).join(","));
 for (const row of rows) {
-  csvLines.push([row.id, bucketName(row.bucket), row.originals.join(" | "), row.english, row.sources.join(" | "), "", ""].map(csvCell).join(","));
+  const pass = row.bucket === "mixed-prose" ? "pass-2-prose-skim" : "pass-1-sentence-grids";
+  csvLines.push([row.id, pass, bucketName(row.bucket), row.originals.join(" | "), row.english, row.sources.join(" | "), "", ""].map(csvCell).join(","));
 }
 fs.writeFileSync(path.join(OUT_DIR, "all-sentences.csv"), csvLines.join("\n") + "\n", "utf-8");
 
@@ -71,6 +90,8 @@ fs.writeFileSync(path.join(OUT_DIR, "all-sentences.csv"), csvLines.join("\n") + 
 
 const withEnglish = rows.length - stats.rowsWithoutEnglish;
 const englishShare = Math.round((withEnglish / rows.length) * 100);
+const pass1Count = rows.filter((r) => r.bucket !== "mixed-prose").length;
+const pass2Count = rows.length - pass1Count;
 const summary: string[] = [];
 summary.push("# Naturalness review export — summary");
 summary.push("");
@@ -79,11 +100,16 @@ summary.push("`docs/ideas to add in future/native-speaker-naturalness-audit.md`)
 summary.push("`bun scripts/export-naturalness-review.ts`; deterministic — re-running reproduces these");
 summary.push("files byte-for-byte. Output is a list of suspects to discuss, never auto-fixes.");
 summary.push("");
+summary.push("## The packet is two passes");
+summary.push("");
+summary.push(`- **Pass 1 — sentence grids (${pass1Count} rows, ${BUCKETS.length - 1} files).** Authored German sentences and phrases, grouped by structure. This is the core review: one grid per law, English beside German, two free-text columns. A sitting or two of focused judgment.`);
+summary.push(`- **Pass 2 — prose skim (\`mixed-prose.md\`, ${pass2Count} rows).** Whole teaching paragraphs (lesson hooks, pattern sections, vocab-hint notes) with German embedded in English prose. A different mode of reading — skim the German inside each paragraph in trail order and quote anything a speaker wouldn't say. Separating it keeps the sentence grids pure; a speaker can do both passes in one weekend or in different sittings.`);
+summary.push("");
 summary.push("## Totals");
 summary.push("");
 summary.push(`- **${rows.length} distinct German sentences/phrases** from ${stats.occurrences} learner-facing occurrences (of which ${stats.excludedNotGerman} were authored English — gloss answers on `);
 summary.push(`  \`shift_select\` / \`reverse_cognate\` / \`variant_english\` / \`literal_gloss\` \`target_answer\` — and are not part of the packet).`);
-summary.push(`- **${withEnglish} rows (${englishShare}%) carry an English pairing** from the data; ${stats.rowsWithoutEnglish} rows show "—" (the mixed-prose rows and a few typed fields have no per-item English).`);
+summary.push(`- **${withEnglish} rows (${englishShare}%) carry an English pairing** from the data; ${stats.rowsWithoutEnglish} rows show "—" (the pass-2 prose rows have no per-fragment English by construction).`);
 summary.push("- The spec estimated ~1,400 distinct sentences; the extraction is larger. The gap comes from surfaces the estimate did not itemize: matching-pair cards (~700 distinct single words/phrases), the whole teaching prose fields (506 rows) and the per-exercise single-word answers (`derive`, `shift_select`). Nothing was trimmed to fit the estimate.");
 summary.push("");
 summary.push("## Per-bucket counts");
@@ -105,20 +131,22 @@ for (const s of stats.perSurface) {
 summary.push("");
 summary.push("## Method notes");
 summary.push("");
-summary.push("- **Corpus.** The spec's corpus table, plus the typed German fields the table predates: `variant_english.german`, `spoken_turn_reply.spoken_question`, `pronoun_compression.full_sentence`, `transcribe.accepted_answers` and the individual `matching_pairs` cards. `matching_pairs.target_answer` itself is a comma-joined serialization of those cards and is deliberately not extracted as a row (the cards carry the same German plus an English pairing).");
+summary.push("- **Corpus.** The spec's corpus table, plus typed German fields the table predates: `variant_english.german`, `spoken_turn_reply.spoken_question`, `pronoun_compression.full_sentence`, `transcribe.accepted_answers` and the individual `matching_pairs` cards, plus the compendium surfaces (`compound · example_sentence`, `false_friend · example_sentence`, `daily_insight · german_expression`). `matching_pairs.target_answer` itself is a comma-joined serialization of those cards and is deliberately not extracted as a row (the cards carry the same German plus an English pairing).");
 summary.push("- **English-by-design answers.** `reverse_cognate`, `variant_english` and `literal_gloss` have authored-English `target_answer`s (glosses, word-for-word renderings); their German lives on other fields that are extracted. Stray English answers on German-by-design types (e.g. shift_select gloss answers like \"yon\") are filtered out by the German test below.");
 summary.push("- **German test.** An unambiguous English marker word excludes a string; otherwise a German marker (function word, taught word via the word-reference resolver, grammar-form supplement) or a bare umlaut includes it, with an authored-German default for multi-word answers. Single unknown tokens stay excluded.");
-summary.push("- **Prose.** `hook.content`, `pattern.content` and `vocab_hints[].note` are authored mixed EN/DE paragraphs; they are kept whole-field in the *Mixed prose* bucket rather than segmented, so reviewers check the German embedded in each paragraph. They have no English pairing by construction.");
-summary.push("- **Pairing.** English meaning comes from the data's own pairing field per surface (`meaning`, `idea`, `question_meaning`, `english_hint`, `prompt`, `natural`, `rendering`, card/cell English, twist prompt, hint translation where present), else \"—\".");
-summary.push("- **Dedupe.** Normalized key = trim + collapse whitespace + strip trailing punctuation, lowercased. All original spellings are kept on the row and listed when they differ; provenance lists every occurrence (`<lessonId> · <surface>`).");
+summary.push("- **Prose.** `hook.content`, `pattern.content` and `vocab_hints[].note` are authored mixed EN/DE paragraphs; they are kept whole-field in the *Mixed prose* pass-2 skim rather than segmented (segmentation prototypes produced ~30% junk fragments), presented trail-ordered as blockquotes so reviewers check the German embedded in each paragraph. They have no English pairing by construction.");
+summary.push("- **Pairing.** English meaning comes from the data's own pairing field per surface (`meaning`, `idea`, `question_meaning`, `english_hint`, `prompt`, `natural`, card/cell English, compound/false-friend `example_translation`, insight `english_meaning`, twist prompt, where present), else \"—\".");
+summary.push("- **Dedupe.** Normalized key = trim + collapse whitespace + strip trailing punctuation, lowercased. All original spellings are kept on the row and listed when they differ; provenance lists every occurrence (`<lessonId> · <surface>` or `compendium:<id> · <surface>`).");
 summary.push("- **Bucketing.** Keyword + pattern heuristics, first match wins, priority: relative clauses → Konjunktiv II → subordinate clauses → questions & word order → negation → modals → Perfekt/Präteritum → imperative → verb bracket → two-way prepositions → dative → adjective endings → single words & short phrases (≤ 4 tokens). *Mixed prose* and *Other* are the two catch-alls; *Other* held " + (stats.perBucket["other"] ?? 0) + " rows — mostly subordinate-clause variants without a marker, fixed expressions and multi-word card lists.");
-summary.push("- **Determinism.** Stable sort (bucket order → normalized key → first seen), stable ids (`<bucket>-<n>`), no timestamps.");
+summary.push("- **Ordering.** Sentence rows sort alphabetically within their bucket (groups similar sentences for pattern-spotting); pass-2 prose rows sort in trail order (lesson 1's hook, pattern, notes, then lesson 2's …).");
+summary.push("- **Determinism.** Stable sort and ids (`<bucket>-<n>`), no timestamps.");
 summary.push("");
 summary.push("## Reading order");
 summary.push("");
-summary.push("1. `SPEAKER-BRIEFING.md` — give this to every speaker before the grids.");
-summary.push(`2. One \`${BUCKETS[0].slug}.md\`-style grid per structure, or \`all-sentences.csv\` for spreadsheet users.`);
-summary.push("3. Collect the two free-text columns back; a pattern across several speakers is worth a lot, a single confident correction is worth very little.");
+summary.push("1. `SPEAKER-BRIEFING.md` — give this to every speaker before anything else.");
+summary.push("2. **Pass 1:** one `<bucket>.md` sentence grid per structure, or `all-sentences.csv` (`pass` column) for spreadsheet users.");
+summary.push(`3. **Pass 2:** \`mixed-prose.md\` — the prose skim.`);
+summary.push("4. Collect the free-text answers back; a pattern across several speakers is worth a lot, a single confident correction is worth very little.");
 fs.writeFileSync(path.join(OUT_DIR, "SUMMARY.md"), summary.join("\n") + "\n", "utf-8");
 
 // --- SPEAKER-BRIEFING ------------------------------------------------------
@@ -139,6 +167,15 @@ briefing.push("");
 briefing.push("- Grew up abroad in another language? (yes / no):");
 briefing.push("");
 briefing.push("Different regions and generations disagree — that disagreement is data, not noise.");
+briefing.push("");
+briefing.push("## The packet has two passes — take them in either order, or in separate sittings");
+briefing.push("");
+briefing.push(`- **Pass 1 — sentence grids.** The \`<bucket>.md\` files (one structure per file: negation, dative,`);
+briefing.push("  Perfekt & Präteritum, modals, …). One row = one German sentence or phrase with its English.");
+briefing.push("  Judge each row: *would you say this?* Pure sentence judgment.");
+briefing.push(`- **Pass 2 — prose skim (\`mixed-prose.md\`).** Whole teaching paragraphs with German embedded in`);
+briefing.push("  English prose. Read the German inside each paragraph and quote anything unnatural. This is");
+briefing.push("  reading, not row-by-row judgment — a different mode, and fine as its own sitting.");
 briefing.push("");
 briefing.push("## The one question — and what it is not");
 briefing.push("");
@@ -176,16 +213,16 @@ briefing.push("several speakers get talked through with context; rows flagged on
 briefing.push("");
 briefing.push("## Practicalities");
 briefing.push("");
-briefing.push("- Work one `<bucket>.md` file at a time (one structure per file), or `all-sentences.csv` if you");
-briefing.push("  prefer a spreadsheet. Fill the two free-text columns; leave natural rows blank.");
-briefing.push("- Rows in *Mixed prose (teaching text)* are whole teaching paragraphs — check the German embedded");
-briefing.push("  in the English prose, not the English around it.");
-briefing.push("- Rows show a source like `1103 · dictation · spoken` (lesson · surface) — quote the row id when");
-briefing.push("  a sentence needs discussion.");
+briefing.push("- Pass 1: work one `<bucket>.md` file at a time (one structure per file); pass 2: read");
+briefing.push("  `mixed-prose.md` top to bottom. `all-sentences.csv` mirrors everything with a `pass` column");
+briefing.push("  if you prefer a spreadsheet. Fill the free-text fields; leave natural rows blank.");
+briefing.push("- Rows show a source like `1103 · dictation · spoken` (lesson · surface) or");
+briefing.push("  `compendium:kühlschrank · compound · example_sentence` — quote the row id when a sentence");
+briefing.push("  needs discussion.");
 fs.writeFileSync(path.join(OUT_DIR, "SPEAKER-BRIEFING.md"), briefing.join("\n") + "\n", "utf-8");
 
 // --- console summary ---------------------------------------------------------
 
 const bucketSummary = BUCKETS.map((b) => `${b.slug} ${stats.perBucket[b.slug] ?? 0}`).join(", ");
 console.log(`naturalness-review: ${rows.length} distinct sentences (${stats.occurrences} occurrences) — ${bucketSummary}`);
-console.log(`naturalness-review: ${stats.rowsWithoutEnglish} rows without an English pairing (${Math.round((stats.rowsWithoutEnglish / rows.length) * 100)}%) — written to ${OUT_DIR}`);
+console.log(`naturalness-review: pass 1 sentence grids ${pass1Count} rows | pass 2 prose skim ${pass2Count} rows | ${stats.rowsWithoutEnglish} rows without an English pairing (${Math.round((stats.rowsWithoutEnglish / rows.length) * 100)}%) — written to ${OUT_DIR}`);

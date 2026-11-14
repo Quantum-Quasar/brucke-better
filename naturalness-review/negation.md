@@ -1,6 +1,6 @@
-# Negation — naturalness review grid
+# Negation — pass 1 — sentence grids
 
-50 rows. Read SPEAKER-BRIEFING.md first: for each row answer in free text — *would you say this, and if not, what would you say?* Leave a row blank if it is natural.
+51 rows. Read SPEAKER-BRIEFING.md first: for each row answer in free text — *would you say this, and if not, what would you say?* Leave a row blank if it is natural.
 
 | # | German | English | source | would you say this? (free text) | what would you say instead? (free text) |
 | --- | --- | --- | --- | --- | --- |
@@ -42,15 +42,16 @@
 | negation-036 | keinen | Ich trinke keinen Kaffee = I am not drinking coffee | 1201 · shift_select · target_answer<br>1201 · family_matrix · target_answer<br>1201 · family_matrix · cell |  |  |
 | negation-037 | Max hat kein Fieber. | Max does not have a fever. | 9005 · matching_pairs · card |  |  |
 | negation-038 | Max will nicht zur Schule gehen. | Max does not want to go to school. | 9005 · matching_pairs · card |  |  |
-| negation-039 | nicht | Ich kann nicht kommen = I cannot come | 1201 · shift_select · target_answer<br>1202 · shift_select · target_answer |  |  |
-| negation-040 | nicht laut — leise | not loud — quiet | 12 · matching_pairs · card |  |  |
-| negation-041 | nichts und niemand | nothing and nobody | 1401 · matching_pairs · card |  |  |
-| negation-042 | Sie finden das Buch nicht | Without looking back — say in German: 'They do not find the book.' | 5351 · twist · target_answer |  |  |
-| negation-043 | Sie finden den Schatz nicht, aber sie sind trotzdem glücklich. | They do not find the treasure, but they are happy all the same. | 5351 · summary · use_example |  |  |
-| negation-044 | Sie haben kein Kind | Hearing check — negate the noun: they have a child becomes they have NO child. (kein, declined like ein.) | 21 · twist · target_answer |  |  |
-| negation-045 | Sie suchen den ganzen Abend, aber sie finden den Schatz nicht. | They search all evening but do not find the treasure. | 5351 · matching_pairs · card |  |  |
-| negation-046 | Wir haben keine Zeit | We have no time | 12 · matching_pairs · card |  |  |
-| negation-047 | Wir können nicht einschlafen | Without looking back — rebuild the core sentence from Prefix Flight Path (We cannot fall asleep): | 1502 · twist · target_answer<br>1502 · syntax_builder · target_answer |  |  |
-| negation-048 | Wir leben in Deutschland und wir lieben es nicht | Rainy week — walk it back: we live in Germany and we love it becomes ...and we do NOT love it. | 25 · twist · target_answer |  |  |
-| negation-049 | Wir wollen nicht frieren | We do not want to freeze | 1901 · matching_pairs · card |  |  |
-| negation-050 | Zeit habe ich keine | I have no time / I do not have time | 1201 · transcribe · accepted_answer |  |  |
+| negation-039 | Mein Chef ist heute nicht im Büro. | My boss is not in the office today. | compendium:chef · false_friend · example_sentence |  |  |
+| negation-040 | nicht | Ich kann nicht kommen = I cannot come | 1201 · shift_select · target_answer<br>1202 · shift_select · target_answer |  |  |
+| negation-041 | nicht laut — leise | not loud — quiet | 12 · matching_pairs · card |  |  |
+| negation-042 | nichts und niemand | nothing and nobody | 1401 · matching_pairs · card |  |  |
+| negation-043 | Sie finden das Buch nicht | Without looking back — say in German: 'They do not find the book.' | 5351 · twist · target_answer |  |  |
+| negation-044 | Sie finden den Schatz nicht, aber sie sind trotzdem glücklich. | They do not find the treasure, but they are happy all the same. | 5351 · summary · use_example |  |  |
+| negation-045 | Sie haben kein Kind | Hearing check — negate the noun: they have a child becomes they have NO child. (kein, declined like ein.) | 21 · twist · target_answer |  |  |
+| negation-046 | Sie suchen den ganzen Abend, aber sie finden den Schatz nicht. | They search all evening but do not find the treasure. | 5351 · matching_pairs · card |  |  |
+| negation-047 | Wir haben keine Zeit | We have no time | 12 · matching_pairs · card |  |  |
+| negation-048 | Wir können nicht einschlafen | Without looking back — rebuild the core sentence from Prefix Flight Path (We cannot fall asleep): | 1502 · twist · target_answer<br>1502 · syntax_builder · target_answer |  |  |
+| negation-049 | Wir leben in Deutschland und wir lieben es nicht | Rainy week — walk it back: we live in Germany and we love it becomes ...and we do NOT love it. | 25 · twist · target_answer |  |  |
+| negation-050 | Wir wollen nicht frieren | We do not want to freeze | 1901 · matching_pairs · card |  |  |
+| negation-051 | Zeit habe ich keine | I have no time / I do not have time | 1201 · transcribe · accepted_answer |  |  |

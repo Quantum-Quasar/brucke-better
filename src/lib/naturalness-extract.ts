@@ -11,11 +11,14 @@
 // exported packet can never drift apart.
 
 import { LESSONS } from "../data/lessons";
+import { compendium } from "../data/compendium";
+import { TOPICS, TRAIL_BRANCHES } from "../data/curriculum";
 import { germanTokens } from "./word-token-resolver";
 import { resolves } from "./word-refs-audit";
 
 export interface NaturalnessOccurrence {
-  lesson: number;
+  /** where the occurrence lives: a lesson id, or "compendium:<item id>" */
+  owner: string;
   /** surface label of the form "<type> · <field>", e.g. "dictation · spoken" */
   surface: string;
   german: string;
@@ -76,6 +79,27 @@ export const BUCKETS: Array<{ slug: string; name: string }> = [
 ];
 
 const BUCKET_NAMES = new Map(BUCKETS.map((b) => [b.slug, b.name]));
+
+// Trail reading order (same convention as scripts/export-trail.ts: core →
+// stories → sprigs → branches attached to the topic), used to skim the prose
+// rows alongside the course. Lessons outside the map sort last, in walk order.
+const trailIndex = new Map<number, number>();
+{
+  let i = 0;
+  for (const topic of TOPICS) {
+    trailIndex.set(topic.core.id, i++);
+    for (const story of topic.stories ?? []) trailIndex.set(story.id, i++);
+    for (const sprig of topic.sprigs) trailIndex.set(sprig.id, i++);
+    for (const branch of TRAIL_BRANCHES.filter((b) => b.attach === topic.id)) {
+      for (const lesson of branch.lessons) if (!trailIndex.has(lesson.id)) trailIndex.set(lesson.id, i++);
+    }
+  }
+  for (const lesson of LESSONS) if (!trailIndex.has(lesson.id)) trailIndex.set(lesson.id, i++);
+}
+const trailIndexOfSource = (source: string) => {
+  const id = Number.parseInt(source, 10);
+  return Number.isNaN(id) ? Number.MAX_SAFE_INTEGER : trailIndex.get(id) ?? Number.MAX_SAFE_INTEGER;
+};
 
 /** Authored mixed EN/DE prose — checked whole-field in its own bucket,
  * because a paragraph spans several laws and reads as English around the German. */
@@ -244,10 +268,12 @@ function exerciseEnglish(ex: {
  * compression German, accepted answers) — each tagged with its surface. */
 export function collectNaturalnessOccurrences(): NaturalnessOccurrence[] {
   const occs: NaturalnessOccurrence[] = [];
-  const add = (lesson: number, surface: string, german: string | undefined | null, english: string | undefined | null) => {
+  const push = (owner: string, surface: string, german: string | undefined | null, english: string | undefined | null) => {
     if (!german || !german.trim()) return;
-    occs.push({ lesson, surface, german, english: english?.trim() ?? "" });
+    occs.push({ owner, surface, german, english: english?.trim() ?? "" });
   };
+  const add = (lesson: number, surface: string, german: string | undefined | null, english: string | undefined | null) =>
+    push(String(lesson), surface, german, english);
 
   for (const lesson of LESSONS) {
     add(lesson.id, "summary · use_example", lesson.summary.use_example.german, lesson.summary.use_example.english);
@@ -277,6 +303,18 @@ export function collectNaturalnessOccurrences(): NaturalnessOccurrence[] {
       for (const hint of ex.vocab_hints ?? []) add(lesson.id, "vocab_hints · note", hint.note, "");
     }
   }
+
+  // Compendium surfaces — learner-facing German outside the lessons (atlas cards,
+  // review example sentences, the daily-insights reel). Each carries an English pairing.
+  for (const compound of compendium.compounds) {
+    push(`compendium:${compound.id}`, "compound · example_sentence", compound.example_sentence, compound.example_translation);
+  }
+  for (const friend of compendium.falseFriends) {
+    push(`compendium:${friend.id}`, "false_friend · example_sentence", friend.example_sentence, friend.example_translation);
+  }
+  for (const insight of compendium.dailyInsights) {
+    push(`compendium:day-${insight.day}`, "daily_insight · german_expression", insight.german_expression, insight.english_meaning);
+  }
   return occs;
 }
 
@@ -304,7 +342,7 @@ export function extractNaturalnessRows(): { rows: NaturalnessRow[]; stats: Natur
 
     const key = normalizeKey(occ.german);
     if (!key) continue;
-    const source = `${occ.lesson} · ${occ.surface}`;
+    const source = `${occ.owner} · ${occ.surface}`;
     const existing = byKey.get(key);
     if (existing) {
       if (!existing.row.originals.includes(occ.german)) existing.row.originals.push(occ.german);
@@ -330,6 +368,13 @@ export function extractNaturalnessRows(): { rows: NaturalnessRow[]; stats: Natur
     .sort((a, b) => {
       const bucketDelta = (bucketIndex.get(a.row.bucket) ?? BUCKETS.length) - (bucketIndex.get(b.row.bucket) ?? BUCKETS.length);
       if (bucketDelta !== 0) return bucketDelta;
+      // Prose paragraphs skim in trail order (same convention as export-trail:
+      // core → stories → sprigs → branches), so the reviewer follows the course.
+      if (a.row.bucket === "mixed-prose" && b.row.bucket === "mixed-prose") {
+        const trailDelta = trailIndexOfSource(a.row.sources[0]) - trailIndexOfSource(b.row.sources[0]);
+        if (trailDelta !== 0) return trailDelta;
+        return a.order - b.order;
+      }
       const keyDelta = a.row.german.toLowerCase() < b.row.german.toLowerCase() ? -1 : a.row.german.toLowerCase() > b.row.german.toLowerCase() ? 1 : 0;
       if (keyDelta !== 0) return keyDelta;
       return a.order - b.order;
