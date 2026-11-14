@@ -53,6 +53,13 @@ const lesson: DutchLessonSpec = {
     "en": "The other man is here.",
     "explanation": "Ander is the th→d twin of other; the adjective takes -e before a de-word."
   },
+  "exercises": [
+    { "kind": "matching" },
+    { "kind": "derive", "english": "three", "target": "drie", "meaning": "drie — three", "english_hint": "three → d-rie", "rule": "th → d", "explanation": "three and drie are one Germanic word: English kept the th, Dutch hardened it to d. denken (think) and dank (thank) crossed the same bridge." },
+    { "kind": "select", "at": 0 },
+    { "kind": "transcribe", "at": 1 },
+    { "kind": "dictation", "at": 3 }
+  ],
   "outcome": "Recognise th↔d twins and use broer, denken, dank and ding in simple sentences.",
   "takeaway": "The rule is a hint for recognition, not a licence to predict every d word."
 };

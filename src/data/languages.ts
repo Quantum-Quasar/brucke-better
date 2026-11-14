@@ -66,6 +66,8 @@ export interface LanguageDefinition {
   charBarLabel: string;
   genderSystem: LanguageGenderSystem | null;
   status: LanguageStatus;
+  /** Honest depth label for the language picker: how much course exists behind the button. */
+  courseTier: "full course" | "starter course" | "compact course";
   /** one-line description on the language picker */
   blurb: string;
   /** faint watermark characters scattered behind the trail map */
@@ -284,7 +286,8 @@ export const LANGUAGES: LanguageDefinition[] = [
       colors: ["blue", "rose", "emerald"],
     },
     status: "available",
-    blurb: "The full cognate engine: 30 topics, 9 shift families, 1227 words.",
+    courseTier: "full course",
+    blurb: "The full cognate engine: 30 topics, 179 lessons, 1227 words.",
     decoChars: ["ß", "ü", "ö", "ä", "ß", "§"],
     onboarding: GERMAN_ONBOARDING,
   },
@@ -308,7 +311,8 @@ export const LANGUAGES: LanguageDefinition[] = [
       colors: ["blue", "emerald"],
     },
     status: "available",
-    blurb: "The West Germanic twin: 30 topics, 75 lessons, 9 correspondence bridges, 390 words.",
+    courseTier: "compact course",
+    blurb: "The West Germanic twin: 30 topics, 85 lessons, 390 words.",
     decoChars: ["ij", "ui", "oe", "sch", "g", "ch", "aa", "ee"],
     onboarding: DUTCH_ONBOARDING,
   },
@@ -335,7 +339,8 @@ export const LANGUAGES: LanguageDefinition[] = [
       colors: ["blue", "rose"],
     },
     status: "available",
-    blurb: "The Latin cognate engine: 30 topics, 123 lessons, 9 conversion bridges, 293 words.",
+    courseTier: "starter course",
+    blurb: "The Latin cognate engine: 30 topics, 133 lessons, 293 words.",
     decoChars: ["ñ", "á", "é", "í", "ó", "ú", "¿", "¡"],
     onboarding: SPANISH_ONBOARDING,
   },
@@ -362,7 +367,8 @@ export const LANGUAGES: LanguageDefinition[] = [
       colors: ["blue", "rose"],
     },
     status: "available",
-    blurb: "The Norman doublet engine: 30 topics, 123 lessons, 9 conversion bridges, 306 words.",
+    courseTier: "starter course",
+    blurb: "The Norman doublet engine: 30 topics, 133 lessons, 306 words.",
     decoChars: ["é", "à", "ç", "œ", "è", "ê"],
     onboarding: FRENCH_ONBOARDING,
   },

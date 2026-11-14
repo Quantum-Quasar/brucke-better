@@ -16,6 +16,7 @@ Start here. Every file below is maintained; anything not listed is either genera
 | Changing or adding lessons / words | [`AGENT_PRECAUTIONS.md`](./AGENT_PRECAUTIONS.md) (traps, invariants) → [`content-agent-prompt.md`](./content-agent-prompt.md) (voice, schema, workflow) → [`../word_connections.md`](../word_connections.md) |
 | Understanding how the app works | [`ARCHITECTURE.md`](./ARCHITECTURE.md), then [`../AUDIT_MANIFEST.md`](../AUDIT_MANIFEST.md) for schemas and the auditor checklist |
 | Working on French / Spanish / Dutch | [`courses.md`](./courses.md) and `src/data/<lang>/` |
+| Comparing sibling-course depth or planning parity work | [`sibling-parity-audit.md`](./sibling-parity-audit.md) (measured coverage, exercise inventory, decision memo) |
 | Placing a grammar topic on the trail | [`german-panorama.md`](./german-panorama.md) (what is taught where) and [`grammar-gap-placement.md`](./grammar-gap-placement.md) |
 | Running scripts or audits | [`../scripts/README.md`](../scripts/README.md) |
 | Changing sentence-process review | [`SENTENCE_REVIEW.md`](./SENTENCE_REVIEW.md), then `src/lib/sentence-review*.ts` and `src/components/review/SentenceReviewDeck.tsx` |

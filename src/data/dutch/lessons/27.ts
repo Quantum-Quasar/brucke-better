@@ -53,6 +53,13 @@ const lesson: DutchLessonSpec = {
     "en": "She is sleeping.",
     "explanation": "Liggen ('lie') plus te + slapen pictures someone asleep; the continuous is built from the posture."
   },
+  "exercises": [
+    { "kind": "matching" },
+    { "kind": "select", "at": 0 },
+    { "kind": "build", "at": 1 },
+    { "kind": "transcribe", "at": 2 },
+    { "kind": "dictation", "at": 3 }
+  ],
   "outcome": "Build the Dutch continuous with aan het or a posture verb + te.",
   "takeaway": "Dutch 'is doing' is a picture: on the doing, or sitting/standing/lying to do."
 };

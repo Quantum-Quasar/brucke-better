@@ -53,6 +53,13 @@ const lesson: DutchLessonSpec = {
     "en": "I cannot come.",
     "explanation": "Niet sits before the final infinitive; the modal keeps second place."
   },
+  "exercises": [
+    { "kind": "matching" },
+    { "kind": "select", "at": 0 },
+    { "kind": "build", "at": 1, "bank": ["Jij", "moet", "werken", "werkt"] },
+    { "kind": "gloss", "at": 2 },
+    { "kind": "dictation", "at": 3 }
+  ],
   "outcome": "Use a modal in second position and leave the infinitive at the end.",
   "takeaway": "The modal bracket is the same two-position idea as V2, stretched across two verbs."
 };

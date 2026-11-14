@@ -1,7 +1,7 @@
 ---
 name: flash-builder
 description: Scoped writer running on GLM-5.3-Flash for the Brücke repo — implements precisely defined writing tasks (design docs, data files, lesson content, code edits) from a written spec, then verifies with the repo's own checks.
-model: account:zai-start-plan/GLM-5.3-Flash
+model: account:zai-start-plan/GLM-5.3-Flash$high
 tools: Read, Glob, Grep, Edit, Write, Bash, TodoWrite
 ---
 

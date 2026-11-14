@@ -206,6 +206,9 @@ export const OnboardingModal: React.FC = () => {
                       <div className="text-[10px] font-mono text-[var(--sub-color)] uppercase tracking-wider">
                         {lang.nativeName}
                       </div>
+                      <div className="text-[10px] font-mono text-[var(--main-color)] uppercase tracking-wider font-semibold">
+                        {lang.courseTier}
+                      </div>
                     </div>
                     <p className="hidden sm:block text-[11px] font-mono text-[var(--sub-color)] leading-relaxed">
                       {lang.blurb}

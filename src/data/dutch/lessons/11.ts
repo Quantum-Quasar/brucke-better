@@ -53,6 +53,13 @@ const lesson: DutchLessonSpec = {
     "en": "I am not hungry.",
     "explanation": "Honger is an indefinite noun, so the negator is geen, not niet."
   },
+  "exercises": [
+    { "kind": "matching" },
+    { "kind": "select", "at": 0 },
+    { "kind": "build", "at": 1, "bank": ["Ik", "heb", "geen", "niet", "tijd"] },
+    { "kind": "gloss", "at": 2 },
+    { "kind": "dictation", "at": 3 }
+  ],
   "outcome": "Choose niet or geen by what follows and place it in the Dutch sentence.",
   "takeaway": "Negation is a decision about the noun phrase, not a single word you sprinkle on a sentence."
 };

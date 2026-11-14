@@ -53,6 +53,13 @@ const lesson: DutchLessonSpec = {
     "en": "I stay because it is raining.",
     "explanation": "Omdat sends the finite verb regent to the end of the subordinate clause."
   },
+  "exercises": [
+    { "kind": "matching" },
+    { "kind": "select", "at": 0 },
+    { "kind": "transcribe", "at": 1 },
+    { "kind": "build", "at": 2 },
+    { "kind": "dictation", "at": 3 }
+  ],
   "outcome": "Put the finite verb last after a subordinating conjunction.",
   "takeaway": "The conjunction is the signal: subordinate clause, verb final."
 };

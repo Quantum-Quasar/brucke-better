@@ -48,6 +48,13 @@ const lesson: DutchLessonSpec = {
     "en": "Although it is cold, I go.",
     "explanation": "Hoewel is a subordinator: is goes to the end of its clause; ga keeps main-clause order."
   },
+  "exercises": [
+    { "kind": "matching" },
+    { "kind": "select", "at": 0 },
+    { "kind": "transcribe", "at": 1 },
+    { "kind": "build", "at": 2 },
+    { "kind": "dictation", "at": 3 }
+  ],
   "outcome": "Choose a subordinator or a coordinator and order the verb accordingly.",
   "takeaway": "Connectors come in two species: those that move the verb and those that do not."
 };

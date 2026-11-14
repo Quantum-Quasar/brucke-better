@@ -54,6 +54,13 @@ const lesson: DutchLessonSpec = {
     "en": "The sea is cold.",
     "explanation": "Zee is the s→z twin of sea; the sentence reuses the subject–is–adjective frame."
   },
+  "exercises": [
+    { "kind": "matching" },
+    { "kind": "derive", "english": "father", "target": "vader", "meaning": "de vader — the father", "english_hint": "father → v-ader", "rule": "f → v", "explanation": "father and vader are one word across the fence: the f turns on its voice and becomes v. foot → voet and fish → vis cross the same bridge." },
+    { "kind": "select", "at": 0 },
+    { "kind": "transcribe", "at": 1 },
+    { "kind": "dictation", "at": 3 }
+  ],
   "outcome": "Recognise f↔v and s↔z twins and read Dutch v/z as family clues.",
   "takeaway": "Dutch spelling preserves a consonant history that the modern accent may hide."
 };

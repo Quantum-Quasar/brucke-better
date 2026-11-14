@@ -55,6 +55,13 @@ const lesson: DutchLessonSpec = {
     "en": "The mouse is small.",
     "explanation": "Muis is the ui twin of mouse; the sentence reuses the adjective frame."
   },
+  "exercises": [
+    { "kind": "matching" },
+    { "kind": "derive", "english": "book", "target": "boek", "meaning": "het boek — the book", "english_hint": "book → b-oek", "rule": "oo ↔ oe", "explanation": "English oo and Dutch oe are spelling twins: book → boek, foot → voet, good → goed. Dutch oe is the /u/ sound — read the bridge, then say the Dutch vowel." },
+    { "kind": "select", "at": 0 },
+    { "kind": "transcribe", "at": 1 },
+    { "kind": "dictation", "at": 3 }
+  ],
   "outcome": "Read ij, ui and oe as Dutch vowel signals and match them to English spelling twins.",
   "takeaway": "Vowels are where the course earns its keep; consonants are the free part."
 };

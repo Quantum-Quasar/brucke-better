@@ -53,6 +53,13 @@ const lesson: DutchLessonSpec = {
     "en": "The shoulder is warm.",
     "explanation": "Schouder and shoulder are the same word; the sch block carries the sh sound."
   },
+  "exercises": [
+    { "kind": "matching" },
+    { "kind": "derive", "english": "ship", "target": "schip", "meaning": "het schip — the ship", "english_hint": "ship → sch-ip", "rule": "sh → sch", "explanation": "English sh answers to Dutch sch — one extra letter, same family. schoen (shoe) and schaap (sheep) read the same way." },
+    { "kind": "select", "at": 0 },
+    { "kind": "transcribe", "at": 1 },
+    { "kind": "dictation", "at": 3 }
+  ],
   "outcome": "Read Dutch sch as one sound and recognise its English sh twins.",
   "takeaway": "A spelling bridge is a free word: once you see sch, you can hear the English twin underneath."
 };

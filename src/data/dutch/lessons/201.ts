@@ -48,6 +48,13 @@ const lesson: DutchLessonSpec = {
     "en": "The shoulder is warm.",
     "explanation": "The same sch block now sits in a body word; the frame is unchanged."
   },
+  "exercises": [
+    { "kind": "matching" },
+    { "kind": "derive", "english": "shoe", "target": "schoen", "meaning": "de schoen — the shoe", "english_hint": "shoe → sch-oen", "rule": "sh → sch", "explanation": "shoe and schoen are one word in different clothes: sh becomes sch and the vowel decides the rest. schaap (sheep) wears the same block." },
+    { "kind": "select", "at": 0 },
+    { "kind": "transcribe", "at": 1 },
+    { "kind": "dictation", "at": 3 }
+  ],
   "outcome": "Recognise six sch words through their English twins and use them with the right article.",
   "takeaway": "Repetition is hidden by changing the word, not the pattern."
 };

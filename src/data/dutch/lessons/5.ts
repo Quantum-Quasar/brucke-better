@@ -53,6 +53,13 @@ const lesson: DutchLessonSpec = {
     "en": "The daughter is here.",
     "explanation": "Dochter and daughter are the same word; the ch is the old gh."
   },
+  "exercises": [
+    { "kind": "matching" },
+    { "kind": "derive", "english": "night", "target": "nacht", "meaning": "de nacht — the night", "english_hint": "night → n-acht", "rule": "gh → ch", "explanation": "The gh English stopped pronouncing still breathes in Dutch: night → nacht, light → licht, eight → acht. The ch is the sound English let go." },
+    { "kind": "select", "at": 0 },
+    { "kind": "transcribe", "at": 1 },
+    { "kind": "dictation", "at": 3 }
+  ],
   "outcome": "Recognise gh↔ch twins and produce the Dutch throat sound in nacht, licht and recht.",
   "takeaway": "English spelling often preserves a sound English forgot; Dutch still says it."
 };

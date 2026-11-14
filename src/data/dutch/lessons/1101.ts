@@ -48,6 +48,13 @@ const lesson: DutchLessonSpec = {
     "en": "I do not drink wine.",
     "explanation": "Wijn is indefinite, so geen; the verb drinken stays positive."
   },
+  "exercises": [
+    { "kind": "matching" },
+    { "kind": "select", "at": 0 },
+    { "kind": "transcribe", "at": 1 },
+    { "kind": "build", "at": 2, "bank": ["Wij", "hebben", "geen", "niet", "tijd"] },
+    { "kind": "dictation", "at": 3 }
+  ],
   "outcome": "Negate indefinite nouns with geen and adjectives/verbs with niet.",
   "takeaway": "The negator is chosen by the thing being negated, not by the speaker's mood."
 };

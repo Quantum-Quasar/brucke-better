@@ -53,6 +53,13 @@ const lesson: DutchLessonSpec = {
     "en": "Today I come.",
     "explanation": "Fronting vandaag forces the verb second and the subject after it: kom ik."
   },
+  "exercises": [
+    { "kind": "matching" },
+    { "kind": "select", "at": 0 },
+    { "kind": "build", "at": 1 },
+    { "kind": "gloss", "at": 2 },
+    { "kind": "dictation", "at": 3 }
+  ],
   "outcome": "Keep the finite verb second when a time or place word is fronted.",
   "takeaway": "Dutch word order is a position rule: the verb claims second place, and the subject moves around it."
 };

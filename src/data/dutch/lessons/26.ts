@@ -53,6 +53,13 @@ const lesson: DutchLessonSpec = {
     "en": "The woman who works there is my sister.",
     "explanation": "Vrouw is a de-word, so the relative pronoun is die; werkt closes the relative clause."
   },
+  "exercises": [
+    { "kind": "matching" },
+    { "kind": "select", "at": 0 },
+    { "kind": "variants", "at": 0, "renderings": ["The man who lives here is my brother", "The man that lives here is my brother"], "traps": ["The man who here lives is my brother", "The man which lives here is my brother"], "explanation": "English who and that both fit a person; the Dutch connector was chosen by the de-noun, not by the English shape. What English cannot copy is the clause order: woont closes the relative clause." },
+    { "kind": "transcribe", "at": 1 },
+    { "kind": "dictation", "at": 3 }
+  ],
   "outcome": "Choose die or dat by the noun and keep the relative clause verb-final.",
   "takeaway": "The noun's article decides the relative pronoun; the clause keeps subordinate order."
 };

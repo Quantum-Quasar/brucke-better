@@ -56,6 +56,13 @@ const lesson: DutchLessonSpec = {
   },
   "outcome": "Match y↔g and y↔j twins and spell Dutch final consonants by their plural, not by their sound.",
   "takeaway": "Dutch spelling is morphological: the word's family decides the letter.",
+  "exercises": [
+    { "kind": "matching" },
+    { "kind": "derive", "english": "yellow", "target": "geel", "meaning": "geel — yellow", "english_hint": "yellow → g-eel", "rule": "y → g", "explanation": "yellow and geel share their bones: English kept the y spelling, Dutch the g sound. year → jaar is the other branch — Dutch j, not g — so keep the two families apart." },
+    { "kind": "select", "at": 0 },
+    { "kind": "transcribe", "at": 1 },
+    { "kind": "dictation", "at": 3 }
+  ],
   "foreshadow": {
     "line": "You now have the decode engine. The next stretch turns it into a sentence machine — starting with the two verbs every Dutch sentence leans on.",
     "resolvedIn": 8

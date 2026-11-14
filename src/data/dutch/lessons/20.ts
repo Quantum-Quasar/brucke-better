@@ -53,6 +53,13 @@ const lesson: DutchLessonSpec = {
     "en": "I would like to go.",
     "explanation": "Zou + graag softens the wish; the infinitive gaan stays at the end."
   },
+  "exercises": [
+    { "kind": "matching" },
+    { "kind": "select", "at": 0 },
+    { "kind": "transcribe", "at": 1 },
+    { "kind": "build", "at": 3, "bank": ["Hij", "gaat", "het", "maken", "zal"] },
+    { "kind": "dictation", "at": 2 }
+  ],
   "outcome": "Talk about plans with gaan, predictions with zullen, and polite wishes with zou.",
   "takeaway": "Dutch future is a choice of stance: going to, will, or would."
 };
