@@ -41,6 +41,7 @@ export function NextLessonBar() {
   if (!ready || (!nextLesson && !checkpoint)) return null;
   const resume = nextLesson ? Boolean(progress[nextLesson.id]) : false;
   const missed = nextLesson ? state.missedIds.includes(nextLesson.id) : false;
+  const required = nextLesson ? state.requiredIds.has(nextLesson.id) : false;
   const action = checkpoint ? "Open checkpoint" : resume ? "Resume" : completed.length ? "Continue" : "Start";
   const title = nextLesson?.title ?? checkpoint!.title;
   const launch = () => {
@@ -51,7 +52,7 @@ export function NextLessonBar() {
   return (
     <section aria-label="Next recommended lesson" className="fixed inset-x-3 bottom-[calc(5.25rem+env(safe-area-inset-bottom))] z-30 mx-auto flex max-w-2xl items-center gap-2 rounded-xl border border-[var(--sub-color)]/30 bg-[var(--bg-color)]/95 p-2 shadow-lg backdrop-blur xl:bottom-6">
       <div className="min-w-0 flex-1 px-2">
-        <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--sub-color)]">{missed ? "Pick up a missed lesson" : "Up next"}</p>
+        <p className="text-[10px] font-mono uppercase tracking-wider text-[var(--sub-color)]">{missed ? "Pick up a missed lesson" : required ? "Required grammar" : "Up next"}</p>
         <p className="truncate text-sm font-semibold text-[var(--text-color)]" title={title}>{title}</p>
         {exerciseCount !== undefined && <LessonEffort exerciseCount={exerciseCount} />}
       </div>

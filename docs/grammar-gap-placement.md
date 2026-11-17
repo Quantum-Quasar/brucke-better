@@ -26,3 +26,45 @@ by `bun run trail`) and `src/data/curriculum.ts`.
 - Only `curiosity_teaser` strings were edited on existing lessons (1903 → 1904, 1602 → 1603,
   2403 → 2404 and so on); branch teasers chain within their own branch. After any edit here run
   `bun scripts/audit-teasers.ts` and expect `title drift: 0 | teaser flags: 0`.
+
+## Implemented — required grammar (final mapping)
+
+The seven gaps are **required**: a learner can no longer "complete" the app without meeting
+imperative, Präteritum of sein/haben/modals, reflexives, adjective declension, Konjunktiv II,
+relative clauses, and als/wenn/ob. Nothing was renumbered, moved between topics, or given new
+ids — requiredness is a flag on the existing shells (`required` on the sprig shells and the
+branch specs), pinned by id in `src/tests/required-grammar.test.ts`.
+
+| Grammar | Ids | Treatment | Unlock |
+|---|---|---|---|
+| Imperative | branch 5060 (5061–5063) | required in place — map pocket beside topic 9 | first lesson after core 9 (existing rule) |
+| Präteritum `sein`/`haben`/modals | sprigs 1904, 1905 | required in place | after core 19 (existing rule) |
+| Adjective declension | sprigs 2403, 2404 | required in place | after core 24 (existing rule) |
+| Reflexives | sprigs 1603, 1604 | required in place | after core 16 (existing rule) |
+| Konjunktiv II | branch 5080 (5081–5082) | required — **Part 2** region | after the pre-capstone spine (through story 9005) |
+| Relative clauses | branch 5100 (5101–5102) | required — **Part 2** region | after the pre-capstone spine |
+| als / wenn / ob | branch 5110 (5111–5112) | required — **Part 2** region | after the pre-capstone spine |
+
+How it behaves:
+
+- **Part 2: Complex sentences.** The three post-capstone branches render as their own labeled
+  region below topic 30 (top of the flipped map). The trail visibly continues past the capstone:
+  a required branch's first lesson unlocks from the attach topic's last spine node, so Part 2
+  opens only once the pre-capstone spine (cores 1–30 + the five stories) is complete. 100%
+  completion is impossible without it.
+- **No bypass.** Required lessons are bypass-immune: stored per-lesson bypass counts are ignored
+  (not migrated, not cleared) and never incremented, so "Continue ahead" cannot suppress them.
+  Star gates are unaffected — requiredness introduces no new star quotas.
+- **Recommendation priority.** Required-first: the next incomplete required lesson whose region
+  is done surfaces before missed optional lessons; then missed optional lessons; then the next
+  available lesson in trail order. Required sprigs/branches keep their existing unlock rule
+  (outward from their attachment), so mid-trail flow still walks trail order until a required
+  lesson is the outstanding gap.
+- **Dependency soundness.** Structural prerequisites of the Part 2 branches are spine-required
+  (weil/dass basement = core 14; demonstrative der/die/das = core 11; Perfekt = core 18). The two
+  optional conveniences named above (möchte = sprig 201; als = "than" drilled in sprig 2402) are
+  re-taught inside 5081/5111 themselves, so no optional prerequisite had to be promoted — the
+  Part 2 nodes unlock with the topic-30 region instead.
+- **Auditor coverage.** `scripts/audit-teasers.ts` walks the required branch chains with the
+  same 0-flags rule (inner links must reference the next branch lesson; the last link may point
+  back to the spine or close the branch, per §3.4 of AGENT_PRECAUTIONS).

@@ -25,6 +25,7 @@ async function startLearnedReview(page: Page, mode: "flashcard" | "typing") {
     };
   });
   await seedReturningLearner(page, {
+    completedLessons: [1],
     wordMastery: { lernen: "encountered" },
     preferredReviewMode: mode,
     settings: reviewSettings,

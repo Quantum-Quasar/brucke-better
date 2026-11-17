@@ -5,8 +5,13 @@
 // 2. Teaser chain check: prints the trail reading order (core → that topic's sprigs →
 //    next core) with each authored lesson's curiosity_teaser, and heuristically flags
 //    teasers that don't reference the node that actually follows them.
+// 3. Required grammar branches (5060/5080/5100/5110 — see docs/grammar-gap-placement.md)
+//    are spine-adjacent, so their chains get the same 0-flags rule: each lesson's teaser
+//    must reference the next lesson of its branch. The last lesson may point back toward
+//    the spine or close the branch (AGENT_PRECAUTIONS §3.4), so it is only checked for
+//    existence.
 import { LESSONS } from "../src/data/lessons";
-import { TOPICS } from "../src/data/curriculum";
+import { TOPICS, TRAIL_BRANCHES } from "../src/data/curriculum";
 
 type Node = { id: number; title: string; topic: number; plan: string };
 const order: Node[] = [];
@@ -28,6 +33,28 @@ console.log(`authored lessons: ${LESSONS.length} / ${order.length} trail nodes\n
 
 let drift = 0;
 let flagged = 0;
+
+type Shell = { id: number; title: string; plan: string };
+
+const checkLink = (curId: number, curTitle: string, teaserRaw: string, next: Shell, context: string): boolean => {
+  const teaser = teaserRaw.toLowerCase();
+  // titles like "will ≠ will" or "Wie geht's?" yield no >=5-char tokens —
+  // fall back to the shell's plan line so the check stays passable
+  const titleTokens = tokens(next.title);
+  const probe = titleTokens.length > 0 ? next.title : next.plan;
+  const probeNote = titleTokens.length > 0 ? "" : " (plan fallback)";
+  const hits = tokens(probe).filter((w) => teaser.includes(w));
+  const nextAuthored = byId.get(next.id);
+  const mark = nextAuthored === undefined ? "?" : hits.length > 0 ? "✓" : "⚠";
+  if (mark !== "✓") flagged++;
+  console.log(
+    `${mark} [${curId}] ${curTitle}${context}` +
+      `\n     teaser → ${teaser.slice(0, 100)}` +
+      `\n     next   → [${next.id}] ${next.title}${nextAuthored ? "" : " (hollow)"}${probeNote}`
+  );
+  return mark === "✓";
+};
+
 for (let i = 0; i < order.length; i++) {
   const node = order[i];
   const cur = byId.get(node.id);
@@ -51,21 +78,35 @@ for (let i = 0; i < order.length; i++) {
   }
 
   // 2. teaser should reference the node that actually follows in trail order
-  const teaser = cur.summary.curiosity_teaser.toLowerCase();
-  // titles like "will ≠ will" or "Wie geht's?" yield no >=5-char tokens —
-  // fall back to the shell's plan line so the check stays passable
-  const titleTokens = tokens(next.title);
-  const probe = titleTokens.length > 0 ? next.title : next.plan;
-  const probeNote = titleTokens.length > 0 ? "" : " (plan fallback)";
-  const hits = tokens(probe).filter((w) => teaser.includes(w));
-  const nextAuthored = byId.get(next.id);
-  const mark = nextAuthored === undefined ? "?" : hits.length > 0 ? "✓" : "⚠";
-  if (mark !== "✓") flagged++;
-  console.log(
-    `${mark} [${node.id}] ${node.title}` +
-      `\n     teaser → ${teaser.slice(0, 100)}` +
-      `\n     next   → [${next.id}] ${next.title}${nextAuthored ? "" : " (hollow)"}${probeNote}`
-  );
+  checkLink(node.id, node.title, cur.summary.curiosity_teaser, next, "");
+}
+
+// 3. required grammar branches: same rule inside the branch chain
+for (const branch of TRAIL_BRANCHES) {
+  if (!branch.required) continue;
+  console.log(`\n— required branch ${branch.id} · ${branch.title} —`);
+  for (let i = 0; i < branch.lessons.length; i++) {
+    const shell = branch.lessons[i];
+    const cur = byId.get(shell.id);
+    if (!cur) {
+      console.log(`· HOLLOW  [${shell.id}] (branch ${branch.id}) ${shell.title}`);
+      continue;
+    }
+    if (cur.title !== shell.title) {
+      drift++;
+      console.log(`✗ DRIFT   [${shell.id}] lesson title "${cur.title}" != shell title "${shell.title}"`);
+      continue;
+    }
+    const nextShell = branch.lessons[i + 1];
+    if (!nextShell) {
+      // last lesson of the chain — its teaser may point back to the spine or
+      // close the branch (§3.4), so only its existence is checked
+      if (!cur.summary.curiosity_teaser) flagged++;
+      console.log(`✓ [${shell.id}] ${shell.title} — branch end`);
+      continue;
+    }
+    checkLink(shell.id, shell.title, cur.summary.curiosity_teaser, nextShell, " (required branch)");
+  }
 }
 
 console.log(`\n=== title drift: ${drift} | teaser flags: ${flagged} (heuristic — ⚠ means "read it, the pointer may skip a node") ===`);

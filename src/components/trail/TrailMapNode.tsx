@@ -21,14 +21,26 @@ export const TrailMapNode = memo(function TrailMapNode({ node, sectionTop, statu
   const completed = status === "completed";
   const locked = status === "locked";
   const unwritten = locked && !node.authored;
-  const label = `${node.kind === "core" ? `Topic ${node.topicId}` : node.kind === "story" ? `Story ${node.label ?? ""}` : node.kind === "sprig" ? "Extra lesson" : "Support branch"}: ${node.title} — ` +
+  const requiredPending = Boolean(node.required) && !completed;
+  const kindWord = node.kind === "core"
+    ? `Topic ${node.topicId}`
+    : node.kind === "story"
+    ? `Story ${node.label ?? ""}`
+    : node.kind === "sprig"
+    ? node.required ? "Required lesson" : "Extra lesson"
+    : node.required ? "Required grammar path" : "Support branch";
+  const label = `${kindWord}: ${node.title} — ` +
     (completed ? `completed${star === "purple" ? " with a purple star" : ""}` : locked ? unwritten ? "locked, content being written" : "locked" : "available to play");
   const statusStyle = completed
     ? "bg-[var(--main-color)] border-[var(--main-color)] text-[var(--bg-color)] shadow-sm"
     : locked
     ? unwritten
       ? "bg-[var(--bg-color)] border border-dashed border-[var(--text-color)]/25 text-[var(--text-color)]/55 cursor-not-allowed"
+      : requiredPending
+      ? "bg-[var(--bg-color)] border border-dashed border-[var(--main-color)]/50 text-[var(--text-color)]/80"
       : "bg-[var(--bg-color)] border border-dashed border-[var(--text-color)]/35 text-[var(--text-color)]/80"
+    : requiredPending
+    ? "bg-[var(--sub-alt-color)] border border-[var(--main-color)]/50 text-[var(--text-color)] hover:border-[var(--main-color)] hover:-translate-y-0.5"
     : "bg-[var(--sub-alt-color)] border border-[var(--text-color)]/25 text-[var(--text-color)] hover:border-[var(--main-color)] hover:-translate-y-0.5";
 
   return (
@@ -79,6 +91,14 @@ export const TrailMapNode = memo(function TrailMapNode({ node, sectionTop, statu
           <span className="flex items-center gap-1.5 px-2 w-full min-w-0">
             <GitBranch className="w-3 h-3 shrink-0 opacity-70" />
             <span className="text-[11px] font-semibold leading-tight line-clamp-2">{node.title}</span>
+          </span>
+        )}
+        {requiredPending && (
+          <span
+            className="absolute -top-1.5 -left-1.5 w-4 h-4 rounded-full bg-[var(--main-color)] border border-[var(--bg-color)] flex items-center justify-center text-[9px] font-bold text-[var(--bg-color)]"
+            aria-hidden
+          >
+            !
           </span>
         )}
         {completed && (

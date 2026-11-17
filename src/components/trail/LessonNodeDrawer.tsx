@@ -26,7 +26,9 @@ const kindLabel = (node: TrailNode) =>
     : node.kind === "story"
     ? `story ${node.label ?? ""} · main path`
     : node.kind === "sprig"
-    ? `topic ${node.topicId} · extra practice`
+    ? `topic ${node.topicId} · ${node.required ? "required practice" : "extra practice"}`
+    : node.required
+    ? `${node.partLabel ?? `topic ${node.topicId}`} · required path`
     : `topic ${node.topicId} · support branch`;
 
 export const LessonNodeDrawer: React.FC<LessonNodeDrawerProps> = ({

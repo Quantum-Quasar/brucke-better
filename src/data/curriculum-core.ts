@@ -10,6 +10,12 @@ export interface CurriculumData {
   totalTopics: number;
   /** Number of authored lessons in this language's trail. */
   lessonCount: number;
+  /**
+   * Label for the required region rendered below the final topic (the trail's
+   * "Part 2"): required branches attached to the last topic. German-only data;
+   * sibling courses leave it unset and have no required branches.
+   */
+  epilogueTitle?: string;
 }
 
 export const EMPTY_CURRICULUM: CurriculumData = {
@@ -29,6 +35,24 @@ export function spineNodeIds(topics: TopicCluster[]): number[] {
   for (const topic of topics) {
     ids.push(topic.core.id);
     for (const story of topic.stories ?? []) ids.push(story.id);
+  }
+  return ids;
+}
+
+/**
+ * Every lesson that completes the trail requires: sprigs marked required plus
+ * all lessons of branches marked required. Required lessons cannot be bypassed
+ * and must be finished before the trail reports completion.
+ */
+export function requiredLessonIds(topics: TopicCluster[], branches: TrailBranch[]): Set<number> {
+  const ids = new Set<number>();
+  for (const topic of topics) {
+    for (const sprig of topic.sprigs) {
+      if (sprig.required) ids.add(sprig.id);
+    }
+  }
+  for (const branch of branches) {
+    if (branch.required) for (const lesson of branch.lessons) ids.add(lesson.id);
   }
   return ids;
 }

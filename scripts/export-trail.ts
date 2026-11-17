@@ -7,7 +7,7 @@
 // Skips the machinery: exercises, word-id arrays, store internals.
 import fs from "fs";
 import path from "path";
-import { TOPICS, TRAIL_GATES, TRAIL_BRANCHES, TOTAL_TOPICS } from "../src/data/curriculum";
+import { TOPICS, TRAIL_GATES, TRAIL_BRANCHES, TOTAL_TOPICS, GERMAN_CURRICULUM } from "../src/data/curriculum";
 import { LESSONS } from "../src/data/lessons";
 import { compendium } from "../src/data/compendium";
 import { wordWithArticle } from "../src/lib/gender";
@@ -29,7 +29,7 @@ const line = (s = "") => out.push(s);
 
 const lessonById = new Map(LESSONS.map((l) => [l.id, l]));
 
-function lessonSection(id: number, kind: "core" | "story" | "sprig" | "branch"): void {
+function lessonSection(id: number, kind: "core" | "story" | "sprig" | "branch", required = false): void {
   const lesson = lessonById.get(id);
   if (!lesson) {
     line(`### ${id} · *(hollow shell)*`);
@@ -41,7 +41,7 @@ function lessonSection(id: number, kind: "core" | "story" | "sprig" | "branch"):
     .filter(Boolean)
     .join(" · ");
   const icon = kind === "core" ? "🟢" : kind === "story" ? "📖" : kind === "branch" ? "🌿" : "🔸";
-  line(`### ${icon} ${lesson.id} · ${lesson.title}`);
+  line(`### ${icon} ${lesson.id} · ${lesson.title}${required ? " · ⚑ required" : ""}`);
   line();
   line(`*${lesson.subtitle}*`);
   line();
@@ -78,6 +78,12 @@ line();
 line("---");
 line();
 
+// Required branches on the final topic are core grammar (Konjunktiv II, relative
+// clauses, als/wenn/ob) — they render as the trail's "Part 2" region, not under
+// topic 30's side paths.
+const lastTopicCoreId = TOPICS[TOPICS.length - 1]?.id;
+const epilogueBranches = TRAIL_BRANCHES.filter((b) => b.required && b.attach === lastTopicCoreId);
+
 for (const topic of TOPICS) {
   const gate = TRAIL_GATES.find((g) => g.afterTopic === topic.id);
   line(`## 📍 Topic ${topic.id} — ${topic.title}`);
@@ -87,14 +93,15 @@ for (const topic of TOPICS) {
 
   lessonSection(topic.core.id, "core");
   for (const story of topic.stories ?? []) lessonSection(story.id, "story");
-  for (const sprig of topic.sprigs) lessonSection(sprig.id, "sprig");
+  for (const sprig of topic.sprigs) lessonSection(sprig.id, "sprig", sprig.required);
 
   for (const branch of TRAIL_BRANCHES.filter((b) => b.attach === topic.id)) {
-    line(`#### 🌿 Side path — ${branch.title}`);
+    if (epilogueBranches.includes(branch)) continue;
+    line(`#### 🌿 ${branch.required ? "Required path" : "Side path"} — ${branch.title}`);
     line();
     line(`> ${branch.blurb}`);
     line();
-    for (const l of branch.lessons) lessonSection(l.id, "branch");
+    for (const l of branch.lessons) lessonSection(l.id, "branch", branch.required);
   }
 
   if (gate) {
@@ -107,6 +114,24 @@ for (const topic of TOPICS) {
   } else if (topic.id !== TOTAL_TOPICS) {
     line("---");
     line();
+  }
+}
+
+// Required grammar below the capstone: the trail visibly continues into its own
+// labeled region, and 100% completion is impossible without it.
+if (epilogueBranches.length > 0) {
+  line(`## 🧭 ${GERMAN_CURRICULUM.epilogueTitle ?? "Part 2"}`);
+  line();
+  line(
+    "> Required grammar — the trail does not end at the capstone. Every path below must be completed to finish Brücke."
+  );
+  line();
+  for (const branch of epilogueBranches) {
+    line(`#### 🌿 Required path — ${branch.title}`);
+    line();
+    line(`> ${branch.blurb}`);
+    line();
+    for (const l of branch.lessons) lessonSection(l.id, "branch", true);
   }
 }
 

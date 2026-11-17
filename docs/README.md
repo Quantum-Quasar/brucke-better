@@ -82,6 +82,9 @@ isolation, accessible controls/error feedback for all exercise types, and cold m
 also cover failed-process persistence/replay, shareable links, and a listening pause
 surviving reload, tab closure and expiry without restarting its timer.
 
+Learned-word keyboard fixtures include a completed teaching lesson. Encountering a
+word alone correctly opens recognition-first review, not the selected production style.
+
 ### Production Build
 
 Pre-renders six top-level tabs — 6 static routes: `/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about` — plus canonical lesson reference pages at `/trail/<lang>/<id>`. There are 193 unique ids (179 German plus 14 French/Spanish-only ids; Dutch reuses the shared lesson-id space), 530 per-lesson payloads, and 37 atlas families. Practice and atlas details still open as instant overlays: opening, changing or closing one replaces the current history entry with a language-explicit query URL (`/?lesson=1&lang=de`, `/atlas?family=th_to_d&lang=de`, `/atlas?master=1&lang=de`). Reload restores that view; Back follows top-level tab history. Canonical lesson pages render introductions, patterns, vocabulary and outcomes for readers and search engines, with `LearningResource` structured data, `sitemap.xml` and `robots.txt`. `bun run build` regenerates ignored `public/data/` payloads before `next build`; these distribution copies are not committed.
@@ -103,11 +106,12 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
 ## Core Features
 
 1. **The Trail Map (`/` — the homepage)**:
-   - Baba Is You-style node map: 30 topic clusters on one linear spine, with skip-able extra-practice nodes ("sprigs") and support-material branches hanging off each cluster.
-   - Required spine cores and reading stories unlock sequentially; optional sprigs/branches cannot bypass a missing core. Each gate also requires its stretch's star quota and a passed checkpoint test.
+   - Baba Is You-style node map: 30 topic clusters on one linear spine, with extra-practice nodes ("sprigs") and support-material branches hanging off each cluster.
+   - Required spine cores and reading stories unlock sequentially; sprigs/branches cannot bypass a missing core. Each gate also requires its stretch's star quota and a passed checkpoint test.
+   - **Required grammar:** seven core-grammar containers are required and cannot be bypassed or left out of completion — the imperative branch (5060, topic 9), the reflexives (1603/1604), Präteritum (1904/1905) and adjective-declension (2403/2404) sprigs, and the three post-capstone branches (5080 Konjunktiv II, 5100 relative clauses, 5110 als/wenn/ob), which render as the required **"Part 2: Complex sentences"** region below topic 30 and unlock only after the pre-capstone spine completes. The id list is pinned by `src/tests/required-grammar.test.ts`.
    - Topic 1 starts at the bottom; the learner climbs upward. The pulsing selector and minimalist next-lesson bar share the same recommendation.
    - The entire curriculum is authored — 30 cores + 79 sprigs + 65 branch lessons + 5 required reading stories = 179 lessons, each with a title, plan and full `Lesson` object (`src/data/curriculum.ts`, `src/data/lessons.ts`).
-   - Recommendations visit every authored lesson: core, sprigs, attached support branches, then story. Earlier missed lessons come first; **Continue ahead** bypasses them without marking completion. Three explicit bypasses stop automatic reminders for those gaps; the lessons remain available on the map. Preferences are language-scoped and reset with progress.
+   - Recommendations visit every authored lesson: core, sprigs, attached support branches, then story. Required grammar surfaces first; earlier missed lessons come next; **Continue ahead** bypasses those optional gaps without marking completion. Three explicit bypasses stop automatic reminders for those gaps; the lessons remain available on the map. Preferences are language-scoped and reset with progress.
    - From the unfocused trail, **Tab** focuses the next-lesson bar and **Enter** starts it. Further Tab presses work normally; existing gates remain in force.
    - The first lesson leads with usable German. Historical notes, margin notes and linguistic background are collapsed optional disclosures.
    - Custom DOM+SVG renderer (no game libraries) with `content-visibility` windowing per topic cluster.

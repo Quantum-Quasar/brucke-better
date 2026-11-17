@@ -93,8 +93,15 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
 - A Baba-Is-You-style node graph built by `src/lib/trail-map.ts` and drawn by
   `src/components/trail/TrailMap.tsx` (custom DOM + SVG, no game library).
 - **Nodes:** 30 spine cores (ids 1–30, strictly ordered), **sprigs** (`topicId*100+n`,
-  skippable extra practice), support **branches** (`5000+n*10+lesson`, never reconnect
-  to the spine) and five required reading stories (9001–9005) on the spine.
+  extra practice — skippable unless marked `required`), support **branches**
+  (`5000+n*10+lesson`, never reconnect to the spine — skippable unless the branch is
+  marked `required`) and five required reading stories (9001–9005) on the spine.
+- **Required grammar:** seven containers are required (German only): sprigs 1603/1604,
+  1904/1905, 2403/2404 and branches 5060, 5080, 5100, 5110. They cannot be bypassed or
+  excluded from completion; the three topic-30 branches render as the required
+  **"Part 2: Complex sentences"** region below topic 30 (its own layout group) and unlock
+  only after the pre-capstone spine — a required branch's first lesson chains from the
+  attach topic's last spine node. The id list is pinned by `src/tests/required-grammar.test.ts`.
 - **Unlock rule:** required spine cores and stories require all preceding spine nodes;
   node 1 starts unlocked. Optional sprigs/branches remain skippable and cannot substitute
   for a missing core; applicable gates must also pass. Completing an already-reachable
@@ -112,9 +119,12 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   per cluster, deterministic decorative glyphs. `use-course-recommendation.ts` drives the
   selector, next-lesson bar, Review continuation and lesson-summary continuation from one policy.
 - **Recommendation order:** each topic's core, sprigs, attached support branches and stories;
-  every authored lesson participates. Earlier incomplete lessons are recommended before the
-  frontier. Continue ahead increments language-scoped view preferences for those gaps; after
-  three explicit bypasses they stop resurfacing but remain incomplete and manually playable.
+  every authored lesson participates. Required grammar surfaces first (the next incomplete
+  required lesson whose region is done); earlier incomplete optional lessons are recommended
+  before the frontier. Continue ahead increments language-scoped view preferences for those
+  optional gaps; after three explicit bypasses they stop resurfacing but remain incomplete and
+  manually playable. Required lessons are bypass-immune — stored counts are ignored and never
+  incremented — so the bar can always pull the learner back to outstanding required grammar.
   A progress-reset epoch invalidates those preferences. The bar also opens reached checkpoints.
   Tab from the unfocused trail targets Start; Enter launches it; ordinary focus navigation remains intact.
 - **Topic ids are welded** into lesson ids, spine edges, gate positions, store progress

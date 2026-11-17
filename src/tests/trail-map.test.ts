@@ -81,9 +81,21 @@ describe("Trail graph", () => {
 
   it("chains branch lessons off their attach node", () => {
     for (const branch of TRAIL_BRANCHES) {
+      // required branches chain from the attach topic's spine end (its last story,
+      // else the core) so the Part 2 region opens only after the pre-capstone spine
       let prev = branch.attach;
+      if (branch.required) {
+        const topic = TOPICS.find(
+          (t) =>
+            t.core.id === branch.attach ||
+            t.sprigs.some((s) => s.id === branch.attach) ||
+            (t.stories ?? []).some((s) => s.id === branch.attach)
+        )!;
+        const stories = topic.stories ?? [];
+        prev = stories.length > 0 ? stories[stories.length - 1].id : topic.core.id;
+      }
       for (const lesson of branch.lessons) {
-        expect(has(prev, lesson.id)).toBe(true);
+        expect(has(prev, lesson.id), `branch edge ${prev}→${lesson.id}`).toBe(true);
         prev = lesson.id;
       }
     }

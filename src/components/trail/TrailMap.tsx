@@ -18,22 +18,24 @@ import { TrailMapNode, GOLD_STAR } from "./TrailMapNode";
 
 interface NodeGroup {
   topicId: number;
-  anchor: { x: number; y: number; title: string } | null;
+  anchor: { x: number; y: number; title: string; epilogue?: boolean } | null;
   nodes: TrailNode[];
   top: number;
   height: number;
 }
 
-/** Bundle nodes into one absolutely-positioned section per topic so
- *  `content-visibility` can skip off-screen clusters (cheap windowing). */
+/** Bundle nodes into one absolutely-positioned section per topic (or the required
+ *  "Part 2" region, grouped under totalTopics + 1) so `content-visibility` can skip
+ *  off-screen clusters (cheap windowing). */
 const groupNodesByTopic = (
   nodes: TrailNode[],
-  anchors: Array<{ topicId: number; x: number; y: number; title: string }>
+  anchors: Array<{ topicId: number; x: number; y: number; title: string; epilogue?: boolean }>
 ): NodeGroup[] => {
   const byTopic = new Map<number, TrailNode[]>();
   for (const node of nodes) {
-    if (!byTopic.has(node.topicId)) byTopic.set(node.topicId, []);
-    byTopic.get(node.topicId)!.push(node);
+    const groupId = node.groupId ?? node.topicId;
+    if (!byTopic.has(groupId)) byTopic.set(groupId, []);
+    byTopic.get(groupId)!.push(node);
   }
   const anchorById = new Map(anchors.map((a) => [a.topicId, a]));
   const topicIds = new Set<number>([...byTopic.keys(), ...anchorById.keys()]);
@@ -213,6 +215,15 @@ export const TrailMap: React.FC = () => {
           <span className="w-3 h-3 rounded-sm bg-[var(--main-color)]" aria-hidden /> main topic
         </span>
         <span className="inline-flex items-center gap-1.5">
+          <span
+            className="w-3 h-3 rounded-full bg-[var(--main-color)] flex items-center justify-center text-[8px] leading-none font-bold text-[var(--bg-color)]"
+            aria-hidden
+          >
+            !
+          </span>
+          required grammar
+        </span>
+        <span className="inline-flex items-center gap-1.5">
           <BookOpen className="w-3 h-3" aria-hidden /> required story
         </span>
         <span className="inline-flex items-center gap-1.5">
@@ -330,9 +341,15 @@ export const TrailMap: React.FC = () => {
                 }}
               >
                 <span className="font-mono text-[12px] leading-tight text-[var(--text-color)]/75">
-                  <span className="text-[var(--main-color)] font-bold">topic {group.topicId}</span>
-                  {" — "}
-                  {group.anchor.title}
+                  {group.anchor.epilogue ? (
+                    <span className="text-[var(--main-color)] font-bold">{group.anchor.title}</span>
+                  ) : (
+                    <>
+                      <span className="text-[var(--main-color)] font-bold">topic {group.topicId}</span>
+                      {" — "}
+                      {group.anchor.title}
+                    </>
+                  )}
                 </span>
               </div>
             )}

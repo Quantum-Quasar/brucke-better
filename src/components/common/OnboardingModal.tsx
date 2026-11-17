@@ -316,7 +316,7 @@ export const OnboardingModal: React.FC = () => {
                   </div>
                   <p className="text-[var(--sub-color)] leading-relaxed">
                     {isAvailable
-                      ? `${topicCount} topics · ${lessonCount} lessons, plus optional extra practice.`
+                      ? `${topicCount} topics · ${lessonCount} lessons — required grammar included, plus optional extra practice.`
                       : "the trail for this language is still being authored."}
                   </p>
                 </div>

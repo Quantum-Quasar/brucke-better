@@ -122,7 +122,14 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 
 ### 3.4 Branch lessons are side material
 - **Applies when:** authoring branch lessons or their teasers.
-- **Action:** branch teasers chain within their own branch (lesson i → lesson i+1); the last one may point back toward the spine. Spine teasers must never point into a branch. The teaser auditor only walks the spine — branch chains are your own responsibility.
+- **Action:** branch teasers chain within their own branch (lesson i → lesson i+1); the last one may point back toward the spine. Spine teasers must never point into a branch. The teaser auditor walks the spine **and the required grammar branch chains** (5060/5080/5100/5110) — the last lesson of a chain may point back or close the branch, so it is only checked for existence.
+
+### 3.5 Required grammar stays required — never "fix" it back to optional
+- **Applies when:** touching `src/data/curriculum.ts` shells, `trail-map.ts` state/layout, or any proposal that says "this sprig/branch is optional, why is it required?".
+- **Action:** seven core-grammar containers are **required** and must stay that way — the id list is asserted verbatim in `src/tests/required-grammar.test.ts` (`TrailState.requiredIds`):
+  - sprigs **1603, 1604** (reflexives, topic 16), **1904, 1905** (Präteritum of sein/haben/modals, topic 19), **2403, 2404** (adjective declension, topic 24) — `required: true` on the sprig shells;
+  - branches **5060** (imperative, topic 9), **5080** (Konjunktiv II), **5100** (relative clauses), **5110** (als/wenn/ob) — `required: true` on the branch spec; the three topic-30 branches render as the required **"Part 2: Complex sentences"** region below topic 30 and unlock only after the pre-capstone spine (through story 9005) completes.
+  - Required lessons cannot be bypassed (stored bypass counts are ignored, never incremented), and 100% completion is impossible without them. Demoting one is a curriculum decision that must come from the human, not a cleanup.
 
 ---
 

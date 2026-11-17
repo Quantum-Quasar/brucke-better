@@ -358,6 +358,8 @@ export interface LessonShell {
   authored?: boolean;
   /** true for a required story that sits on the spine between cores */
   spineStory?: boolean;
+  /** true when completing the trail requires this lesson (required sprig; branch requiredness lives on TrailBranch) */
+  required?: boolean;
   /** short display label for a spine story, e.g. "s1" */
   label?: string;
 }
@@ -373,11 +375,11 @@ export interface TopicCluster {
   core: LessonShell;
   /** Required reading stories that immediately follow this core on the spine. */
   stories?: LessonShell[];
-  /** Optional side lessons of the same topic; all attach to the core (individually skippable). */
+  /** Side lessons of the same topic; all attach to the core (skippable unless marked required). */
   sprigs: LessonShell[];
 }
 
-/** A support-material branch: a mini path of 1–3 optional lessons hanging off an attach node. */
+/** A support-material branch: a mini path of 1–3 lessons hanging off an attach node. */
 export interface TrailBranch {
   /** 5000-series unique id of the branch (lessons get branchId+1, +2, …). */
   id: number;
@@ -385,6 +387,11 @@ export interface TrailBranch {
   attach: number;
   title: string;
   blurb: string;
+  /**
+   * true when the branch is required grammar: it cannot be bypassed, counts toward
+   * completion, and (on the final topic) renders in the required Part 2 region.
+   */
+  required?: boolean;
   /** Ordered mini path; lesson i unlocks the next. */
   lessons: LessonShell[];
 }

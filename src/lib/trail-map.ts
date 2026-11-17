@@ -1,5 +1,5 @@
 import { TOPICS, TRAIL_BRANCHES, TRAIL_GATES, TOTAL_TOPICS } from "@/data/curriculum";
-import { orderedTrailLessons, spineNodeIds } from "@/data/curriculum-core";
+import { orderedTrailLessons, requiredLessonIds, spineNodeIds } from "@/data/curriculum-core";
 import type { LessonProgress, LessonStar, TopicCluster, TrailBranch, TrailGate } from "./types";
 
 // ---------------------------------------------------------------------------
@@ -13,6 +13,11 @@ import type { LessonProgress, LessonStar, TopicCluster, TrailBranch, TrailGate }
 // Graph rules:
 //   · each required spine node needs every earlier core/story completed
 //   · sprigs and branches unlock outward from their attachment, never backward
+//   · required sprigs/branches (data flags) cannot be bypassed and must be
+//     completed before the trail reports done; a required branch's first lesson
+//     unlocks from the attach topic's last spine node, so the Part 2 region
+//     (required branches on the final topic) opens only once the pre-capstone
+//     spine is complete
 //   · side lessons remain optional; gates additionally require stars and a pass
 //
 // Layout rules (bottom → top, like climbing a trail):
@@ -30,6 +35,8 @@ export interface TrailData {
   branches: TrailBranch[];
   gates: TrailGate[];
   totalTopics: number;
+  /** Label for the required region below the final topic (see CurriculumData.epilogueTitle). */
+  epilogueTitle?: string;
 }
 
 export const GERMAN_TRAIL_DATA: TrailData = {
@@ -37,6 +44,7 @@ export const GERMAN_TRAIL_DATA: TrailData = {
   branches: TRAIL_BRANCHES,
   gates: TRAIL_GATES,
   totalTopics: TOTAL_TOPICS,
+  epilogueTitle: "Part 2: Complex sentences",
 };
 
 export type NodeKind = "core" | "story" | "sprig" | "branch";
@@ -53,6 +61,16 @@ export interface TrailNode {
   /** display label for required spine stories, e.g. "s1" */
   label?: string;
   spineStory?: boolean;
+  /** true when completing the trail requires this lesson (required sprig or branch lesson) */
+  required?: boolean;
+  /**
+   * Layout grouping id — equals topicId except for the required region below the
+   * final topic ("Part 2"), which groups under totalTopics + 1. State logic keeps
+   * the real attach topic; this only drives map sections/anchors.
+   */
+  groupId?: number;
+  /** short region label for nodes of the required region, e.g. "Part 2" */
+  partLabel?: string;
   /** top-left corner in final (flipped) map space */
   x: number;
   y: number;
@@ -79,6 +97,8 @@ export interface TopicAnchor {
   y: number;
   title: string;
   blurb: string;
+  /** true for the required region's label below the final topic (rendered without the "topic N —" prefix) */
+  epilogue?: boolean;
 }
 
 /** A star gate rendered as a checkpoint pill on the spine between two topic clusters. */
@@ -98,6 +118,19 @@ export interface TrailLayout {
 }
 
 export const FIRST_NODE_ID = 1;
+
+/** Where a node unlock chain starts: the last spine node of the topic containing `attach`. */
+const spineEndNodeId = (data: TrailData, attach: number): number => {
+  const topic = data.topics.find(
+    (t) =>
+      t.core.id === attach ||
+      t.sprigs.some((s) => s.id === attach) ||
+      (t.stories ?? []).some((s) => s.id === attach)
+  );
+  if (!topic) return attach;
+  const stories = topic.stories ?? [];
+  return stories.length > 0 ? stories[stories.length - 1].id : topic.core.id;
+};
 
 const CORE_W = 152;
 const CORE_H = 58;
@@ -130,7 +163,9 @@ export function buildTrailEdgePairs(data: TrailData = GERMAN_TRAIL_DATA): TrailE
     for (const sprig of topic.sprigs) edges.push({ a: topic.core.id, b: sprig.id });
   }
   for (const branch of data.branches) {
-    let prev = branch.attach;
+    // optional branches hang off their attach node; required branches start from
+    // the attach topic's spine end, so Part 2 opens only after the story completes
+    let prev = branch.required ? spineEndNodeId(data, branch.attach) : branch.attach;
     for (const lesson of branch.lessons) {
       edges.push({ a: prev, b: lesson.id });
       prev = lesson.id;
@@ -148,7 +183,7 @@ export function buildTrailPrerequisites(data: TrailData = GERMAN_TRAIL_DATA): Ma
     for (const sprig of topic.sprigs) prerequisites.set(sprig.id, topic.core.id);
   }
   for (const branch of data.branches) {
-    let previous = branch.attach;
+    let previous = branch.required ? spineEndNodeId(data, branch.attach) : branch.attach;
     for (const lesson of branch.lessons) {
       prerequisites.set(lesson.id, previous);
       previous = lesson.id;
@@ -174,6 +209,15 @@ export function buildTrailLayout(width: number, data: TrailData = GERMAN_TRAIL_D
   const anchors: TopicAnchor[] = [];
 
   let cursor = TOP_PAD;
+
+  // Required branches on the final topic form the "Part 2" region rendered after
+  // every topic cluster (below topic 30 in trail order, top of the flipped map).
+  const lastTopicCoreId = data.topics[data.topics.length - 1]?.core.id;
+  const epilogueBranches = data.branches.filter(
+    (branch) => branch.required && branch.attach === lastTopicCoreId
+  );
+  const epilogueGroupId = data.totalTopics + 1;
+  const partLabel = (data.epilogueTitle ?? "Part 2").split(":")[0].trim();
 
   for (const topic of data.topics) {
     const clusterTop = cursor;
@@ -210,6 +254,7 @@ export function buildTrailLayout(width: number, data: TrailData = GERMAN_TRAIL_D
         title: sprig.title,
         plan: sprig.plan,
         authored: Boolean(sprig.authored),
+        required: Boolean(sprig.required),
         x: coreX + (side === 1 ? CORE_W + SIDE_GAP : -(SPRIG_W + SIDE_GAP)),
         y: coreY + (CORE_H - SPRIG_H) / 2 + row * (SPRIG_H + 9),
         w: SPRIG_W,
@@ -261,6 +306,8 @@ export function buildTrailLayout(width: number, data: TrailData = GERMAN_TRAIL_D
 
     for (const branch of data.branches) {
       if (branch.attach !== topic.core.id && !topic.sprigs.some((lesson) => lesson.id === branch.attach) && !(topic.stories ?? []).some((lesson) => lesson.id === branch.attach)) continue;
+      // required branches on the final topic move to the Part 2 region below
+      if (epilogueBranches.includes(branch)) continue;
       // branches tuck into a side pocket below the cluster (sprigs own the flanks)
       const sprigSides = topic.sprigs.map((_, j) => (j % 2 === 0 ? -1 : 1));
       const side = sprigSides.filter((s) => s === 1).length <= sprigSides.filter((s) => s === -1).length ? 1 : -1;
@@ -283,6 +330,7 @@ export function buildTrailLayout(width: number, data: TrailData = GERMAN_TRAIL_D
           title: lesson.title,
           plan: lesson.plan,
           authored: Boolean(lesson.authored),
+          required: Boolean(branch.required),
           x: bx,
           y: by,
           w: BRANCH_W,
@@ -293,6 +341,53 @@ export function buildTrailLayout(width: number, data: TrailData = GERMAN_TRAIL_D
     }
 
     cursor = clusterBottom + TOPIC_GAP;
+  }
+
+  // The required region below the final topic: its own labeled band; whole branch
+  // chains stay contiguous per row when the canvas allows, wrapping mid-chain only
+  // on sub-minimum canvases (same behavior as the topic pocket layout).
+  if (epilogueBranches.length > 0) {
+    anchors.push({
+      topicId: epilogueGroupId,
+      x: centerX,
+      y: cursor + 4,
+      title: data.epilogueTitle ?? "Part 2",
+      blurb: "",
+      epilogue: true,
+    });
+    let by = cursor + LABEL_H;
+    let bx = EDGE_PAD;
+    for (const branch of epilogueBranches) {
+      const chainWidth = branch.lessons.length * BRANCH_W + (branch.lessons.length - 1) * 24;
+      if (bx > EDGE_PAD && bx + chainWidth > w - EDGE_PAD) {
+        bx = EDGE_PAD;
+        by += BRANCH_H + 9;
+      }
+      branch.lessons.forEach((lesson, i) => {
+        if (i > 0 && bx + BRANCH_W > w - EDGE_PAD) {
+          bx = EDGE_PAD;
+          by += BRANCH_H + 9;
+        }
+        nodes.push({
+          id: lesson.id,
+          kind: "branch",
+          topicId: branch.attach,
+          title: lesson.title,
+          plan: lesson.plan,
+          authored: Boolean(lesson.authored),
+          required: true,
+          groupId: epilogueGroupId,
+          partLabel,
+          x: bx,
+          y: by,
+          w: BRANCH_W,
+          h: BRANCH_H,
+        });
+        bx += BRANCH_W + 24;
+      });
+      bx += 12;
+    }
+    cursor = by + BRANCH_H + TOPIC_GAP;
   }
 
   const height = cursor - TOPIC_GAP + BOTTOM_PAD;
@@ -400,6 +495,8 @@ export interface TrailState {
   forwardId: number | null;
   missedIds: number[];
   gates: Map<number, GateView>;
+  /** every required lesson id (required sprigs + required branch lessons) */
+  requiredIds: Set<number>;
 }
 
 const edgeKey = (a: number, b: number) => `${Math.min(a, b)}-${Math.max(a, b)}`;
@@ -535,21 +632,30 @@ export function getTrailState(
   const ordered = orderedTrailLessons(data.topics, data.branches).filter((lesson) => lesson.authored);
   const started = recommendation.lessonProgress ?? {};
   const bypasses = recommendation.bypasses ?? {};
+  const requiredIds = requiredLessonIds(data.topics, data.branches);
   let frontier = 0;
   ordered.forEach((lesson, index) => {
     if (completedSet.has(lesson.id)) frontier = Math.max(frontier, index + 1);
     else if (started[lesson.id]) frontier = Math.max(frontier, index);
   });
   const available = ordered.filter((lesson) => view.get(lesson.id)?.status === "available");
+  // Required lessons are never "missed side lessons": bypass counts (stored or new)
+  // are ignored for them, so "Continue ahead" can never suppress required grammar.
   const missedIds = ordered.slice(0, frontier)
-    .filter((lesson) => view.get(lesson.id)?.status === "available" && (bypasses[lesson.id] ?? 0) < 3)
+    .filter((lesson) => !requiredIds.has(lesson.id)
+      && view.get(lesson.id)?.status === "available" && (bypasses[lesson.id] ?? 0) < 3)
     .map((lesson) => lesson.id);
   const forwardId = ordered.slice(frontier)
     .find((lesson) => view.get(lesson.id)?.status === "available")?.id ?? null;
-  const recommendedId = missedIds[0] ??
-    available.find((lesson) => (bypasses[lesson.id] ?? 0) < 3)?.id ?? null;
+  // Required grammar surfaces first: the next required lesson whose region is done,
+  // then missed optional lessons, then the next available lesson in trail order.
+  const pendingRequired = ordered.find(
+    (lesson) => requiredIds.has(lesson.id) && view.get(lesson.id)?.status === "available"
+  );
+  const recommendedId = pendingRequired?.id ?? missedIds[0] ??
+    available.find((lesson) => (bypasses[lesson.id] ?? 0) < 3 || requiredIds.has(lesson.id))?.id ?? null;
 
-  return { nodes: view, litEdges, recommendedId, forwardId, missedIds, gates: gateViews };
+  return { nodes: view, litEdges, recommendedId, forwardId, missedIds, gates: gateViews, requiredIds };
 }
 
 /** topic range each gate closes: (previous gate's afterTopic, gate.afterTopic] */

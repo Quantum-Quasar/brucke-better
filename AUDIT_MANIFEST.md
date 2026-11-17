@@ -34,7 +34,7 @@ Use a familiar word or a clear pattern to make new German easier to remember, th
 
 ### Pillar 1: The Trail (`/` and the in-page lesson reader)
 - **Curriculum Scope**: 30 topic clusters with the entire curriculum authored — 30 cores + 79 sprigs + 65 branch lessons + 5 required reading stories = **179 lessons**, all fully interactive. Unknown lesson ids open the reader's "Coming Soon" state instead of creating a route.
-- **Recommendation bar**: every authored lesson, including sprigs and branches, in topic order. Earlier gaps are offered first; Continue ahead suppresses automatic gap reminders after three explicit bypasses without awarding progress. Tab from an unfocused trail focuses Start; Enter launches it. Map layout and gate thresholds are unchanged.
+- **Recommendation bar**: every authored lesson, including sprigs and branches, in topic order. Required grammar surfaces first; earlier optional gaps are offered next, and Continue ahead suppresses automatic gap reminders for them after three explicit bypasses without awarding progress — required lessons are bypass-immune, so they can never be suppressed. Tab from an unfocused trail focuses Start; Enter launches it. Map layout and gate thresholds are unchanged.
 - **5-Segment Card-by-Card Wizard (`LessonReader.tsx`)**:
   1. **Part 01: The Hook**: Familiar German first; historical notes are optional disclosures.
   2. **Part 02: The Pattern**: Mechanical shift rules and suffix patterns (`-en`), with optional linguistic background.

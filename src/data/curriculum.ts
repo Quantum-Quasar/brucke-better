@@ -9,8 +9,10 @@ import type { CurriculumData } from "./curriculum-core";
 //                                  between some cores and are never skippable
 //   · core(n) —sprig(n, i)         every sprig of a topic hangs off its core → all
 //                                  adjacent nodes unlock at once when the core is
-//                                  done, and every sprig can be skipped
-//   · branch lessons chain off an attach node (support material, skippable)
+//                                  done; sprigs are skippable unless marked required
+//   · branch lessons chain off an attach node (skippable unless the branch is
+//     marked required; required branches on the final topic form the required
+//     Part 2 region rendered below topic 30)
 //
 // ID scheme:  core   = topic id (1–30, all authored)
 //             story  = 9000 + n                          (9001, 9002, … 9005)
@@ -214,8 +216,8 @@ export const TOPICS: TopicCluster[] = [
     sprigs: [
       { ...shell(sprigId(16, 1), "ver ↔ for- Cognate Set", "12 ver- words mapped to English for- words; payoff arc completing the vergessen preview from earlier topics."), authored: true },
       { ...shell(sprigId(16, 2), "be- & er- Verb Factory", "be-/er- as meaning-shapers: bekommen, erinnern, erklären; spot inseparable vs separable by stress."), authored: true },
-      { ...shell(sprigId(16, 3), "sich & the Lost Reflexives", "The sich-system and English's lost reflexives (hie thee hence, help yourself): mich/dich/sich/uns, sich waschen with its stem change, sich freuen and sich fühlen."), authored: true },
-      { ...shell(sprigId(16, 4), "Reflexive Daily Routines", "The morning round: sich anziehen, aufstehen, aufwachen, einschlafen — separable prefixes plus reflexive pronouns in routine chains."), authored: true },
+      { ...shell(sprigId(16, 3), "sich & the Lost Reflexives", "The sich-system and English's lost reflexives (hie thee hence, help yourself): mich/dich/sich/uns, sich waschen with its stem change, sich freuen and sich fühlen."), authored: true, required: true },
+      { ...shell(sprigId(16, 4), "Reflexive Daily Routines", "The morning round: sich anziehen, aufstehen, aufwachen, einschlafen — separable prefixes plus reflexive pronouns in routine chains."), authored: true, required: true },
     ],
   },
   {
@@ -249,8 +251,8 @@ export const TOPICS: TopicCluster[] = [
       { ...shell(sprigId(19, 1), "sing/sang/sung Mirrors", "Practise German Ablaut forms with English memory clues."), authored: true },
       { ...shell(sprigId(19, 2), "Ablaut Families I: e→i, a→o", "Class drills: geben/gab, sprechen/sprach, fahren/fuhr with participle forms."), authored: true },
       { ...shell(sprigId(19, 3), "dachte & the Suppletive Irregulars", "think/thought↔denken/dachte, bring/brought↔bringen/brachte, go/went↔gehen/ging."), authored: true },
-      { ...shell(sprigId(19, 4), "hatte & war: The Fortress Pasts", "haben and sein keep their simple pasts: hatte ↔ had, war ↔ was — the -te ending is English's own -ed, the storyteller's tense."), authored: true },
-      { ...shell(sprigId(19, 5), "konnte, musste & the Frozen Pasts", "The preterite-present modals: konnte↔could, musste↔must, sollte↔should, wollte↔would, durfte↔durst, wusste↔wist — English froze their pasts into presents."), authored: true },
+      { ...shell(sprigId(19, 4), "hatte & war: The Fortress Pasts", "haben and sein keep their simple pasts: hatte ↔ had, war ↔ was — the -te ending is English's own -ed, the storyteller's tense."), authored: true, required: true },
+      { ...shell(sprigId(19, 5), "konnte, musste & the Frozen Pasts", "The preterite-present modals: konnte↔could, musste↔must, sollte↔should, wollte↔would, durfte↔durst, wusste↔wist — English froze their pasts into presents."), authored: true, required: true },
     ],
   },
   {
@@ -322,8 +324,8 @@ export const TOPICS: TopicCluster[] = [
     sprigs: [
       { ...shell(sprigId(24, 1), "Twin Suppletions", "gut/besser/hoch/höher vs good/better/high/higher — the shared irregular story."), authored: true },
       { ...shell(sprigId(24, 2), "-er/-ste Sentence Gym", "20 comparison sentences with als/wie using taught adjectives."), authored: true },
-      { ...shell(sprigId(24, 3), "Adjective Endings: the Article's Echo", "Before-noun declension: der kalte Tag vs ein kalter Tag — the adjective carries the flag only when the article doesn't; the 80/20 -en rule; mixed declension after kein/mein."), authored: true },
-      { ...shell(sprigId(24, 4), "No Article? The Adjective Goes Strong", "Strong declension before bare nouns: kaltes Wasser, heißer Tee, guter Wein — the adjective does the article's job alone; the capstone's besseren callback."), authored: true },
+      { ...shell(sprigId(24, 3), "Adjective Endings: the Article's Echo", "Before-noun declension: der kalte Tag vs ein kalter Tag — the adjective carries the flag only when the article doesn't; the 80/20 -en rule; mixed declension after kein/mein."), authored: true, required: true },
+      { ...shell(sprigId(24, 4), "No Article? The Adjective Goes Strong", "Strong declension before bare nouns: kaltes Wasser, heißer Tee, guter Wein — the adjective does the article's job alone; the capstone's besseren callback."), authored: true, required: true },
     ],
   },
   {
@@ -408,7 +410,10 @@ export const TOPICS: TopicCluster[] = [
   },
 ];
 
-/** Support-material branches: optional mini paths hanging off the spine. */
+/** Support-material branches: mini paths hanging off the spine — skippable unless the
+ *  branch is marked required. Required branches attached to the final topic (5080, 5100,
+ *  5110) are core grammar (Konjunktiv II, relative clauses, als/wenn/ob) and render as
+ *  the required "Part 2: Complex sentences" region below topic 30. */
 export const TRAIL_BRANCHES: TrailBranch[] = [
   {
     id: 5010,
@@ -450,6 +455,7 @@ export const TRAIL_BRANCHES: TrailBranch[] = [
   {
     id: 5060,
     attach: 9,
+    required: true,
     title: "The Imperative Line",
     blurb: "Commands are the bare stem: Komm! Mach! Iss! — Shakespeare's English gave orders the same way.",
     lessons: [
@@ -491,6 +497,7 @@ export const TRAIL_BRANCHES: TrailBranch[] = [
   {
     id: 5080,
     attach: 30,
+    required: true,
     title: "The Would-World: Konjunktiv II",
     blurb: "hätte, wäre, könnte, würde — the subjunctive twins of had, were, could, would, and the politeness escalator.",
     lessons: [
@@ -501,6 +508,7 @@ export const TRAIL_BRANCHES: TrailBranch[] = [
   {
     id: 5100,
     attach: 30,
+    required: true,
     title: "The Relative Twist",
     blurb: "der/die/das take a third job — relative pronouns — and the verb drops to the basement again.",
     lessons: [
@@ -511,6 +519,7 @@ export const TRAIL_BRANCHES: TrailBranch[] = [
   {
     id: 5110,
     attach: 30,
+    required: true,
     title: "The Three Whens & the Whether-Word",
     blurb: "wann, als, wenn split English 'when' into three jobs — and ob turns out to be English if's true twin.",
     lessons: [
@@ -869,6 +878,9 @@ export const GERMAN_CURRICULUM: CurriculumData = {
   trailGates: TRAIL_GATES,
   totalTopics: TOTAL_TOPICS,
   lessonCount: AUTHORED_LESSON_COUNT,
+  // Label for the required region below topic 30 (the three post-capstone grammar
+  // branches); the trail-map engine renders it as its own labeled region.
+  epilogueTitle: "Part 2: Complex sentences",
 };
 
 

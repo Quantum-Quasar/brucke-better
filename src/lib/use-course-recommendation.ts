@@ -24,6 +24,7 @@ export function useCourseRecommendation(languageId: string, afterLessonId?: numb
     branches: curriculum.trailBranches,
     gates: curriculum.trailGates,
     totalTopics: curriculum.totalTopics,
+    epilogueTitle: curriculum.epilogueTitle,
   }), [curriculum]);
   const state = useMemo(() => getTrailState(
     afterLessonId && !completed.includes(afterLessonId) ? [...completed, afterLessonId] : completed,

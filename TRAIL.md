@@ -624,11 +624,11 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Table:** der Bruder — *brother* · morgen — *tomorrow / morrow* · zwölf — *twelve* · schön — *beautiful / sheen* · das Öl — *oil* · die Tüte — *bag* · der Herr — *mister / lord* · die Fabrik — *factory / fabric* · das Gymnasium — *grammar school / gym* · die Rente — *pension / rent* · der Dom — *cathedral / dome* · die Art — *kind / type / art* · die Kaution — *deposit / caution* · eventuell — *possibly / eventually* · das Abendbrot — *supper*
 
-#### 🌿 Side path — The Imperative Line
+#### 🌿 Required path — The Imperative Line
 
 > Commands are the bare stem: Komm! Mach! Iss! — Shakespeare's English gave orders the same way.
 
-### 🌿 5061 · Speak, Hands, for Me!
+### 🌿 5061 · Speak, Hands, for Me! · ⚑ required
 
 *The du-command is the bare stem: Komm! Lern! Iss! — the imperative you already own*
 
@@ -641,7 +641,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Table:** kommen — *to come* · gehen — *to go* · essen — *to eat* · sprechen — *to speak* · helfen — *to help* · lernen — *to learn* · trinken — *to drink* · machen — *to make / do* · das Amerika — *America* · das Geschenk — *present / gift* · der Pilz — *mushroom* · schwierig — *difficult* · sterben — *to die* · der Wecker — *alarm clock* · der Anker — *anchor*
 
-### 🌿 5062 · Kommen Sie! Kommt!
+### 🌿 5062 · Kommen Sie! Kommt! · ⚑ required
 
 *The formal Sie-command (verb first, Sie after) and the plural ihr-command*
 
@@ -654,7 +654,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Table:** kommen — *to come* · machen — *to make / do* · trinken — *to drink* · sein — *to be* · essen — *to eat* · sprechen — *to speak* · der Gegenstand — *object / item* · der Cousin — *cousin (male)* · das Bein — *leg (twin: bone)* · die Erdbeere — *strawberry (lit. earth-berry)* · der Appetit — *appetite* · das Kissen — *pillow* · die Brust — *breast, chest* · der Krankenwagen — *ambulance* · die Operation — *operation*
 
-### 🌿 5063 · Commands in the Wild
+### 🌿 5063 · Commands in the Wild · ⚑ required
 
 *Recipes, dialogues and the register switch — where German commands go native*
 
@@ -1204,7 +1204,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Table:** bekommen — *to get / receive* · erinnern — *to remember* · erklären — *to explain* · verstehen — *to understand* · versuchen — *to try / attempt* · verkaufen — *to sell* · beginnen — *to begin* · bezahlen — *to pay (a bill)* · einkaufen — *to shop* · abfahren — *to depart* · verdienen — *to earn* · hart — *hard* · das Unwetter — *storm; severe weather* · alles — *everything; all* · die Post — *mail, post office* · die Gefahr — *danger*
 
-### 🔸 1603 · sich & the Lost Reflexives
+### 🔸 1603 · sich & the Lost Reflexives · ⚑ required
 
 *hie thee hence, help yourself — the pronouns English dropped, German kept working*
 
@@ -1217,7 +1217,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Table:** waschen — *to wash* · erinnern — *to remember* · freuen — *to rejoice / be glad* · fühlen — *to feel (twin: feel)* · treffen — *to hit / meet / strike* · uns — *us* · verdienen — *to earn* · beginnen — *to begin* · bezahlen — *to pay (a bill)* · das Fieber — *fever* · vielleicht — *maybe / perhaps* · fröhlich — *cheerful; merry* · die Uniform — *uniform* · einige — *some; a few* · angeln — *to fish, to angle*
 
-### 🔸 1604 · Reflexive Daily Routines
+### 🔸 1604 · Reflexive Daily Routines · ⚑ required
 
 *sich anziehen, aufwachen, einschlafen — the morning round where prefixes and reflexives meet*
 
@@ -1612,7 +1612,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Table:** denken — *to think* · bringen — *to bring* · gehen — *to go* · danken — *to thank* · das Ding — *thing* · schlagen — *to hit / slay* · stehlen — *to steal* · blasen — *to blow* · frieren — *to freeze; to be cold* · fallen — *to fall* · springen — *to spring / jump* · treten — *to tread / step* · der Stoff — *fabric, material* · sondern — *but rather* · die Stiefmutter — *stepmother*
 
-### 🔸 1904 · hatte & war: The Fortress Pasts
+### 🔸 1904 · hatte & war: The Fortress Pasts · ⚑ required
 
 *haben and sein keep their simple pasts: hatte ↔ had, war ↔ was — the -te is your -ed*
 
@@ -1625,7 +1625,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Table:** haben — *to have* · sein — *to be* · gestern — *yesterday* · das Kind — *child* · das Haus — *house* · der Kaffee — *coffee* · jung — *young* · stark — *strong* · schwach — *weak* · gesund — *healthy (twin: sound)* · fallen — *to fall* · springen — *to spring / jump* · treten — *to tread / step* · schlagen — *to hit / slay* · stehlen — *to steal*
 
-### 🔸 1905 · konnte, musste & the Frozen Pasts
+### 🔸 1905 · konnte, musste & the Frozen Pasts · ⚑ required
 
 *The preterite-present modals: konnte↔could, musste↔must — English froze their pasts into presents*
 
@@ -2083,7 +2083,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Table:** gut — *good* · besser — *better* · kalt — *cold* · alt — *old* · hoch — *high* · groß — *great / big* · klein — *small / clean* · als — *than / as / else* · wie — *how / why* · schnell — *fast* · schwer — *heavy / difficult* · spät — *late* · das Spiel — *game / play* · die Stunde — *hour* · der Humor — *humor*
 
-### 🔸 2403 · Adjective Endings: the Article's Echo
+### 🔸 2403 · Adjective Endings: the Article's Echo · ⚑ required
 
 *der kalte Tag vs ein kalter Tag — the adjective only speaks when the article is silent*
 
@@ -2096,7 +2096,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Table:** kalt — *cold* · gut — *good* · alt — *old* · schön — *beautiful / sheen* · klein — *small / clean* · groß — *great / big* · lang — *long* · lecker — *delicious* · neu — *new* · spät — *late* · schnell — *fast* · schwer — *heavy / difficult* · der Puls — *pulse* · der Unfall — *accident* · der Geschäftsmann — *businessman*
 
-### 🔸 2404 · No Article? The Adjective Goes Strong
+### 🔸 2404 · No Article? The Adjective Goes Strong · ⚑ required
 
 *kaltes Wasser, heißer Tee, guter Wein — the adjective does the article's job alone*
 
@@ -2698,96 +2698,6 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Table:** sein — *to be* · haben — *to have* · geben — *to give* · nehmen — *to take* · sagen — *to say* · die Nacht — *night* · können — *can / to be able to* · wollen — *to want / will* · müssen — *must / to have to* · kommen — *to come* · gehen — *to go* · morgen — *tomorrow / morrow* · der Zug — *pull / train* · das Buch — *book* · das Haus — *house* · das Kind — *child*
 
-#### 🌿 Side path — The Would-World: Konjunktiv II
-
-> hätte, wäre, könnte, würde — the subjunctive twins of had, were, could, would, and the politeness escalator.
-
-### 🌿 5081 · hätte & wäre: The Subjunctive Twins
-
-*hätte is had's subjunctive, wäre is were — the would-world of wishes and kind speech*
-
-**The Room English Locked** — English keeps exactly one fossil of its old subjunctive room: If I WERE you. That were — not was — is the sound of a world that isn't real: wishes, hypotheses, polite dreaming.
-
-> 🔭 **Next:** könnte, würde & the politeness escalator — could's old job, would's machine, and four ways to order a coffee.
-
-- 🗝️ Wenn ich Zeit hätte, wäre ich froh. — *If I had time, I would be glad.*
-- 🧭 hätte ↔ had, wäre ↔ were: the would-world wears past-tense clothes — and the -e is the signal.
-
-**Table:** haben — *to have* · sein — *to be* · die Zeit — *time / tide* · das Geld — *money (kin: yield)* · reich — *rich / realm* · froh — *glad* · müde — *tired* · der Buchstabe — *letter of the alphabet* · die Familie — *family* · der Salat — *salad* · das Hähnchen — *roast chicken* · die Schale — *bowl, peel* · lecken — *to lick* · die Krankenschwester — *nurse* · die Kreuzung — *intersection*
-
-### 🌿 5082 · könnte, würde & the Politeness Escalator
-
-*could's old job (polite asking), would's machine, and the wurde/würde umlaut trap*
-
-**Distance Is Politeness** — Here is the politeness escalator, four steps, one coffee. Step one: Ein Kaffee, bitte! — bare and friendly.
-
-> 🔭 **Next:** This would-branch ends here — more side paths wait on the map, and the whole compendium waits in review.
-
-- 🗝️ Könnten Sie mir helfen? Ich würde Tee trinken. — *Could you help me? I would drink tea.*
-- 🧭 Distance is politeness: könnte asks, würde conditions, möchte softens — and wurde without dots is just the past.
-
-**Table:** können — *can / to be able to* · werden — *to become / will (future)* · mögen — *may / to like* · mir — *to me (dative)* · der Kaffee — *coffee* · helfen — *to help* · trinken — *to drink* · freundlich — *friendly* · die Familie — *family* · der Saft — *juice (kin: sap)* · die Pizza — *pizza* · schrecklich — *terrible; awful* · hören — *to hear* · die Rettung — *rescue* · der Fahrgast — *passenger*
-
-#### 🌿 Side path — The Relative Twist
-
-> der/die/das take a third job — relative pronouns — and the verb drops to the basement again.
-
-### 🌿 5101 · The Man That Knows: der/die/das Double Duty
-
-*the relative pronoun is the demonstrative re-employed — and the verb drops to the basement*
-
-**One Set of Pronouns, Three Jobs** — der, die, das already work two jobs: the article (der Mann) and the demonstrative (das ist mein Haus? — that is my house, with das = that). Here comes the third: the relative pronoun.
-
-> 🔭 **Next:** relatives in all cases — den and dem, the object and giving jobs, and English's own fossil whom.
-
-- 🗝️ Das Buch, das ich lese, ist alt. — *The book that I am reading is old.*
-- 🧭 The relative pronoun is der/die/das re-employed: copy the noun's gender, do the clause's job, park the verb at the end.
-
-**Table:** der — *the / he* · die — *the / she / they* · das — *that / the* · der Mann — *man* · die Frau — *woman / lady* · lesen — *to read* · das Kind — *child* · das Buch — *book* · trinken — *to drink* · der Kaffee — *coffee* · der Lehrer — *teacher* · die Person — *person* · freundlich — *friendly* · der Soldat — *soldier* · ab — *off / from*
-
-### 🌿 5102 · Relatives in All Cases
-
-*den and dem: the case comes from the relative clause's own verb — whom proves it*
-
-**Whom Still Works Here** — The man whom I see. The friend whom I gave it to.
-
-> 🔭 **Next:** This relative branch ends here — more side paths wait on the map, and the whole compendium waits in review.
-
-- 🗝️ Der Mann, dem ich helfe, liest das Buch, das ich sehe. — *The man I help is reading the book that I see.*
-- 🧭 Gender from the noun outside, case from the verb inside: den for objects, dem for receivers — whom's living twin.
-
-**Table:** der Film — *film / movie* · der Mann — *man* · die Frau — *woman / lady* · sehen — *to see* · helfen — *to help* · das Kind — *child* · geben — *to give* · das Buch — *book* · der Freund — *friend* · freundlich — *friendly* · der Lehrer — *teacher* · die Person — *person* · niesen — *to sneeze* · der Vorname — *first name* · der Brief — *letter*
-
-#### 🌿 Side path — The Three Whens & the Whether-Word
-
-> wann, als, wenn split English 'when' into three jobs — and ob turns out to be English if's true twin.
-
-### 🌿 5111 · The Three Whens: wann, als, wenn
-
-*English 'when' does three jobs — German hires three words, all verb-final*
-
-**The When-Split** — English when is one word doing shift work: the question (When do you come?), the once-only past (when I was a child), the repeater (when it rains). German refuses the overtime and hires three.
-
-> 🔭 **Next:** ob — whether or not — the indirect yes/no word and English if's true twin.
-
-- 🗝️ Wann kommst du? — Wenn es regnet, lese ich. — *When are you coming? — When it rains, I read.*
-- 🧭 wann asks, als marks the once-only past (and 'than'), wenn repeats and conditions — and all three park the verb.
-
-**Table:** wann — *when* · als — *than / as / else* · wenn — *if / when(ever) (twin: when)* · regnen — *to rain* · lesen — *to read* · kommen — *to come* · das Kind — *child* · gestern — *yesterday* · die Zeit — *time / tide* · der Lehrer — *teacher* · die Person — *person* · der Freund — *friend* · die Küste — *coast* · der Professor — *professor* · der Erwachsener — *adult*
-
-### 🌿 5112 · ob: Whether or Not
-
-*the indirect yes/no word — and the true twin of English if*
-
-**Two Ifs, One Ancient Word** — German has two ifs and refuses to share. wenn runs the conditions (if it rains...).
-
-> 🔭 **Next:** This whether-branch ends here — more side paths wait on the map, and the whole compendium waits in review.
-
-- 🗝️ Ich weiß nicht, ob er kommt — wenn er kommt, lese ich. — *I don't know whether he's coming — if he comes, I'll read.*
-- 🧭 ob asks the open yes/no ('or not' test), wenn builds the condition — and ob is English if, disguised.
-
-**Table:** ob — *whether / if (twin: if)* · wenn — *if / when(ever) (twin: when)* · wissen — *to know (a fact)* · haben — *to have* · kommen — *to come* · mögen — *may / to like* · die Zeit — *time / tide* · der Freund — *friend* · das Haar — *hair* · das Abendessen — *dinner / supper* · das Müsli — *muesli* · schlimm — *bad; serious* · hungrig — *hungry* · der Autor — *author* · die Weste — *vest, waistcoat*
-
 #### 🌿 Side path — Leseclub
 
 > One extra capstone reading: a library mystery with an open ending.
@@ -2804,5 +2714,99 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🧭 A mystery can end without a solution. The story's job is to make the search interesting, not to hand you the treasure.
 
 **Table:** der Brief — *letter* · das Buch — *book* · alt — *old* · der Boden — *floor / ground (twin: bottom)* · finden — *to find* · suchen — *to seek / search* · die Nacht — *night* · das Licht — *light* · das Geschenk — *present / gift* · der Mann — *man* · die Frau — *woman / lady* · der Freund — *friend* · die Gruppe — *group* · der Geburtstag — *birthday* · der Tisch — *table / dish* · der Stuhl — *chair* · das Haus — *house* · das Zimmer — *room* · das Geld — *money (kin: yield)* · das Wort — *word* · die Zeit — *time / tide*
+
+## 🧭 Part 2: Complex sentences
+
+> Required grammar — the trail does not end at the capstone. Every path below must be completed to finish Brücke.
+
+#### 🌿 Required path — The Would-World: Konjunktiv II
+
+> hätte, wäre, könnte, würde — the subjunctive twins of had, were, could, would, and the politeness escalator.
+
+### 🌿 5081 · hätte & wäre: The Subjunctive Twins · ⚑ required
+
+*hätte is had's subjunctive, wäre is were — the would-world of wishes and kind speech*
+
+**The Room English Locked** — English keeps exactly one fossil of its old subjunctive room: If I WERE you. That were — not was — is the sound of a world that isn't real: wishes, hypotheses, polite dreaming.
+
+> 🔭 **Next:** könnte, würde & the politeness escalator — could's old job, would's machine, and four ways to order a coffee.
+
+- 🗝️ Wenn ich Zeit hätte, wäre ich froh. — *If I had time, I would be glad.*
+- 🧭 hätte ↔ had, wäre ↔ were: the would-world wears past-tense clothes — and the -e is the signal.
+
+**Table:** haben — *to have* · sein — *to be* · die Zeit — *time / tide* · das Geld — *money (kin: yield)* · reich — *rich / realm* · froh — *glad* · müde — *tired* · der Buchstabe — *letter of the alphabet* · die Familie — *family* · der Salat — *salad* · das Hähnchen — *roast chicken* · die Schale — *bowl, peel* · lecken — *to lick* · die Krankenschwester — *nurse* · die Kreuzung — *intersection*
+
+### 🌿 5082 · könnte, würde & the Politeness Escalator · ⚑ required
+
+*could's old job (polite asking), would's machine, and the wurde/würde umlaut trap*
+
+**Distance Is Politeness** — Here is the politeness escalator, four steps, one coffee. Step one: Ein Kaffee, bitte! — bare and friendly.
+
+> 🔭 **Next:** This would-branch ends here — more side paths wait on the map, and the whole compendium waits in review.
+
+- 🗝️ Könnten Sie mir helfen? Ich würde Tee trinken. — *Could you help me? I would drink tea.*
+- 🧭 Distance is politeness: könnte asks, würde conditions, möchte softens — and wurde without dots is just the past.
+
+**Table:** können — *can / to be able to* · werden — *to become / will (future)* · mögen — *may / to like* · mir — *to me (dative)* · der Kaffee — *coffee* · helfen — *to help* · trinken — *to drink* · freundlich — *friendly* · die Familie — *family* · der Saft — *juice (kin: sap)* · die Pizza — *pizza* · schrecklich — *terrible; awful* · hören — *to hear* · die Rettung — *rescue* · der Fahrgast — *passenger*
+
+#### 🌿 Required path — The Relative Twist
+
+> der/die/das take a third job — relative pronouns — and the verb drops to the basement again.
+
+### 🌿 5101 · The Man That Knows: der/die/das Double Duty · ⚑ required
+
+*the relative pronoun is the demonstrative re-employed — and the verb drops to the basement*
+
+**One Set of Pronouns, Three Jobs** — der, die, das already work two jobs: the article (der Mann) and the demonstrative (das ist mein Haus? — that is my house, with das = that). Here comes the third: the relative pronoun.
+
+> 🔭 **Next:** relatives in all cases — den and dem, the object and giving jobs, and English's own fossil whom.
+
+- 🗝️ Das Buch, das ich lese, ist alt. — *The book that I am reading is old.*
+- 🧭 The relative pronoun is der/die/das re-employed: copy the noun's gender, do the clause's job, park the verb at the end.
+
+**Table:** der — *the / he* · die — *the / she / they* · das — *that / the* · der Mann — *man* · die Frau — *woman / lady* · lesen — *to read* · das Kind — *child* · das Buch — *book* · trinken — *to drink* · der Kaffee — *coffee* · der Lehrer — *teacher* · die Person — *person* · freundlich — *friendly* · der Soldat — *soldier* · ab — *off / from*
+
+### 🌿 5102 · Relatives in All Cases · ⚑ required
+
+*den and dem: the case comes from the relative clause's own verb — whom proves it*
+
+**Whom Still Works Here** — The man whom I see. The friend whom I gave it to.
+
+> 🔭 **Next:** This relative branch ends here — more side paths wait on the map, and the whole compendium waits in review.
+
+- 🗝️ Der Mann, dem ich helfe, liest das Buch, das ich sehe. — *The man I help is reading the book that I see.*
+- 🧭 Gender from the noun outside, case from the verb inside: den for objects, dem for receivers — whom's living twin.
+
+**Table:** der Film — *film / movie* · der Mann — *man* · die Frau — *woman / lady* · sehen — *to see* · helfen — *to help* · das Kind — *child* · geben — *to give* · das Buch — *book* · der Freund — *friend* · freundlich — *friendly* · der Lehrer — *teacher* · die Person — *person* · niesen — *to sneeze* · der Vorname — *first name* · der Brief — *letter*
+
+#### 🌿 Required path — The Three Whens & the Whether-Word
+
+> wann, als, wenn split English 'when' into three jobs — and ob turns out to be English if's true twin.
+
+### 🌿 5111 · The Three Whens: wann, als, wenn · ⚑ required
+
+*English 'when' does three jobs — German hires three words, all verb-final*
+
+**The When-Split** — English when is one word doing shift work: the question (When do you come?), the once-only past (when I was a child), the repeater (when it rains). German refuses the overtime and hires three.
+
+> 🔭 **Next:** ob — whether or not — the indirect yes/no word and English if's true twin.
+
+- 🗝️ Wann kommst du? — Wenn es regnet, lese ich. — *When are you coming? — When it rains, I read.*
+- 🧭 wann asks, als marks the once-only past (and 'than'), wenn repeats and conditions — and all three park the verb.
+
+**Table:** wann — *when* · als — *than / as / else* · wenn — *if / when(ever) (twin: when)* · regnen — *to rain* · lesen — *to read* · kommen — *to come* · das Kind — *child* · gestern — *yesterday* · die Zeit — *time / tide* · der Lehrer — *teacher* · die Person — *person* · der Freund — *friend* · die Küste — *coast* · der Professor — *professor* · der Erwachsener — *adult*
+
+### 🌿 5112 · ob: Whether or Not · ⚑ required
+
+*the indirect yes/no word — and the true twin of English if*
+
+**Two Ifs, One Ancient Word** — German has two ifs and refuses to share. wenn runs the conditions (if it rains...).
+
+> 🔭 **Next:** This whether-branch ends here — more side paths wait on the map, and the whole compendium waits in review.
+
+- 🗝️ Ich weiß nicht, ob er kommt — wenn er kommt, lese ich. — *I don't know whether he's coming — if he comes, I'll read.*
+- 🧭 ob asks the open yes/no ('or not' test), wenn builds the condition — and ob is English if, disguised.
+
+**Table:** ob — *whether / if (twin: if)* · wenn — *if / when(ever) (twin: when)* · wissen — *to know (a fact)* · haben — *to have* · kommen — *to come* · mögen — *may / to like* · die Zeit — *time / tide* · der Freund — *friend* · das Haar — *hair* · das Abendessen — *dinner / supper* · das Müsli — *muesli* · schlimm — *bad; serious* · hungrig — *hungry* · der Autor — *author* · die Weste — *vest, waistcoat*
 
 *End of the trail — willkommen auf der anderen Seite der Brücke.* 🌉
