@@ -75,8 +75,6 @@ docs/distribution.md
 docs/response.md
 .vitest/
 
-# local-only working notes / repo snapshots (never push)
-docs/muse-suggesions.md
-docs/.muse-suggesions-archive.md
+# local-only repo snapshots (never push)
 german-app-better-ux.zip
 *.zip
