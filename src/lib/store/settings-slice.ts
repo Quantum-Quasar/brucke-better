@@ -4,12 +4,15 @@ import { applyAppearanceSettings, applyTheme } from "../theme-runtime";
 import { applyFont } from "@/data/fonts";
 import { DEFAULT_SETTINGS } from "@/data/settings";
 import { soundEngine } from "../sound";
-import { SAFE_THEME_ID, SAFE_FONT_ID } from "./schema";
+import { SAFE_THEME_ID, SAFE_FONT_ID, normalizePronunciationPreferences } from "./schema";
 
 export const createSettingsSlice: StoreSlice<"updateSetting" | "resetSettings" | "setTheme" | "openThemeSelector" | "closeThemeSelector" | "setFont" | "openFontSelector" | "closeFontSelector" | "completeOnboarding" | "openOnboarding" | "closeOnboarding" | "dismissGenderIntro" | "openGenderIntro" | "setPreferredReviewMode" | "skipListeningFor" | "openWordDrawer" | "closeWordDrawer" | "setUmlautTolerance" | "setCapitalizationTolerance" | "dismissUmlautPrompt" | "dismissCapitalizationPrompt"> = (set, get) => ({
   updateSetting: (key, value) => {
     set((s) => {
-      const nextSettings = { ...s.settings, [key]: value };
+      const nextSettings = {
+        ...s.settings,
+        [key]: key === "pronunciationByLanguage" ? normalizePronunciationPreferences(value) : value,
+      };
       applyAppearanceSettings(nextSettings);
       if (key === "playSoundOnClick" && typeof value === "string") {
         void soundEngine.preloadClickSound(value);

@@ -62,10 +62,7 @@ function lessonIndexEntry(lesson: Lesson): LessonIndexEntry {
     word_ids: lesson.word_ids,
     table_word_ids: lesson.table_word_ids,
     summary: {
-      use_example: {
-        german: lesson.summary.use_example.german,
-        english: lesson.summary.use_example.english,
-      },
+      use_example: lesson.summary.use_example,
       takeaway: lesson.summary.takeaway,
     },
   };

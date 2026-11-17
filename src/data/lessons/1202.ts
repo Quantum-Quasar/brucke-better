@@ -119,6 +119,7 @@ const lesson: Lesson = {
       "type": "syntax_builder",
       "prompt": "Assemble: 'Nobody comes tomorrow'",
       "target_answer": "Niemand kommt morgen",
+      "accepted_answers": ["Morgen kommt niemand"],
       "meaning": "Nobody comes tomorrow",
       "word_bank": [
         "morgen",
@@ -127,14 +128,20 @@ const lesson: Lesson = {
         "Getränk",
         "Niemand"
       ],
-      "explanation": "Niemand is a subject like any other — it holds position 1, the verb keeps position 2, and the whole sentence negates itself without a single nicht."
+      "explanation": "Niemand can open the sentence: Niemand kommt morgen. You can also start with the time: Morgen kommt niemand. The verb stays in position 2, and niemand negates the sentence without a separate nicht."
     }
   ],
   "summary": {
     "outcome": "Place nicht correctly across simple clauses, brackets, targets, and subclauses.",
     "use_example": {
       "german": "Ich kann heute nicht kommen.",
-      "english": "I cannot come today."
+      "english": "I cannot come today.",
+      "accepted_answers": ["Heute kann ich nicht kommen"],
+      "mcq_distractors": [
+        "Ich kann heute nicht kommt",
+        "Heute ich kann nicht kommen",
+        "Ich heute kann nicht kommen"
+      ]
     },
     "takeaway": "nicht negates what follows it — end of clause by default, before the target when there is one.",
     "curiosity_teaser": "Next: asking questions — was, wo, wer, wann: the w-words are pure cognates, and German asks with zero do-support."

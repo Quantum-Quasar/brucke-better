@@ -84,7 +84,7 @@ export function useReviewAnswers({ currentWord, currentCardId, currentIndex, ses
     if (isRevealed || !currentWord) return;
     const isSentenceCard = currentWord.id.startsWith("sentence_") || currentWord.target_word.includes(" ");
     const assembled = isSentenceCard ? selectedTiles.join(" ") : selectedTiles.join("");
-    const { result: evalResult } = gradeLessonAnswer([assembled], [currentWord.target_word], {
+    const { result: evalResult } = gradeLessonAnswer([assembled], [currentWord.target_word, ...(currentWord.accepted_answers ?? [])], {
       umlautTolerance: Boolean(settings.lazyMode),
       capitalizationTolerance: Boolean(settings.capitalizationTolerance),
     });
@@ -111,7 +111,7 @@ export function useReviewAnswers({ currentWord, currentCardId, currentIndex, ses
       umlautTolerance: Boolean(settings.lazyMode),
       capitalizationTolerance: Boolean(settings.capitalizationTolerance),
     };
-    const { result: evaluation } = gradeLessonAnswer([guess], [currentWord.target_word], evalOptions);
+    const { result: evaluation } = gradeLessonAnswer([guess], [currentWord.target_word, ...(currentWord.accepted_answers ?? [])], evalOptions);
     if (evaluation.accuracy === "exact") {
       void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
       setCurrentAutoGrade(4);
@@ -132,20 +132,22 @@ export function useReviewAnswers({ currentWord, currentCardId, currentIndex, ses
   const handleTypingInputChange = (val: string) => {
     if (val.length > inputGuess.length) {
       if (settings.stopOnError === "letter" && currentWord) {
-        const nextCharIndex = inputGuess.length;
-        const expectedTarget = currentWord.target_word;
-        if (nextCharIndex < expectedTarget.length) {
-          const valChar = val[nextCharIndex].toLowerCase();
-          const targetChar = expectedTarget[nextCharIndex].toLowerCase();
-          const normalizeChar = (c: string) =>
-            c.replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").replace(/ß/g, "s");
-          const isMatch =
-            valChar === targetChar ||
-            (settings.lazyMode && normalizeChar(valChar) === normalizeChar(targetChar));
-          if (!isMatch) {
-            void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
-            return;
+        const targets = [currentWord.target_word, ...(currentWord.accepted_answers ?? [])];
+        const normalizePrefix = (text: string) => {
+          let normalized = text.toLowerCase().replace(/\s*,\s*/g, " ").replace(/[.!?;:]+$/, "").replace(/\s+/g, " ").trimStart();
+          if (settings.lazyMode) {
+            normalized = normalized.replace(/ä/g, "a").replace(/ö/g, "o").replace(/ü/g, "u").replace(/ß/g, "ss");
           }
+          return normalized;
+        };
+        const prefix = normalizePrefix(val);
+        const isMatch = targets.some((target) => {
+          const expected = normalizePrefix(target);
+          return expected.startsWith(prefix) || prefix.startsWith(expected);
+        });
+        if (!isMatch) {
+          void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
+          return;
         }
       }
       void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);

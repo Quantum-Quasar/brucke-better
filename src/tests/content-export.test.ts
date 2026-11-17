@@ -41,6 +41,7 @@ describe("client content boundaries", () => {
       const payload = readJson<LessonPayload>(`data/${language}/lessons/${entry.id}.json`);
       expect(payload.lesson.id).toBe(entry.id);
       expect(entry.exerciseCount).toBe(payload.lesson.exercises.length);
+      expect(entry.summary.use_example).toEqual(payload.lesson.summary.use_example);
       for (const id of new Set([...payload.lesson.word_ids, ...payload.lesson.table_word_ids])) {
         expect(payload.compendium.words[id], `${language}/${entry.id}: unresolved ${id}`).toHaveProperty("id", id);
       }
@@ -55,6 +56,20 @@ describe("client content boundaries", () => {
       expect(lesson).not.toHaveProperty("pattern");
       expect(lesson).not.toHaveProperty("exercises");
     }
+  });
+
+  it("exports reviewed summary alternatives and foils without borrowing unrelated exercises", () => {
+    const index = readJson<LessonIndexEntry[]>("data/de/lesson-index.json");
+    const modal = index.find((lesson) => lesson.id === 2)!;
+    expect(modal.summary.use_example.accepted_answers).toEqual(["Morgen kann ich kommen"]);
+    expect(modal.summary.use_example.mcq_distractors).toEqual([
+      "Ich morgen kann kommen",
+      "Morgen ich kann kommen",
+      "Ich kann morgen kommt",
+    ]);
+    const followUp = index.find((lesson) => lesson.id === 202)!;
+    expect(followUp.summary.use_example.accepted_answers).toEqual(["Morgen will ich Deutsch lernen"]);
+    expect(followUp.summary.use_example.accepted_answers).not.toContain("Der Kuchen kann teuer sein");
   });
 
   it.each(LANGUAGES)("%s bundled effort counts match isolated authored lesson payloads", (language) => {

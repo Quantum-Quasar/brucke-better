@@ -126,8 +126,10 @@ export const DECK_CAPABILITIES: Record<ReviewDeckType, DeckCapabilitySpec> = {
 export function resolveCardReviewMode(
   entity: WordEntity | undefined,
   preferredMode: ReviewMode,
-  deckId?: ReviewDeckType | null
+  deckId?: ReviewDeckType | null,
+  recognitionFirst = false,
 ): ReviewMode {
+  if (recognitionFirst) return "flashcard";
   const deckModes = deckId ? DECK_CAPABILITIES[deckId]?.supportedModes ?? ALL_REVIEW_MODES : ALL_REVIEW_MODES;
   const entityModes = entity?.supportedModes && entity.supportedModes.length > 0 ? entity.supportedModes : deckModes;
   const allowed = entityModes.filter((m) => deckModes.includes(m));

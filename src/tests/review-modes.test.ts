@@ -4,6 +4,10 @@ import { describe, it, expect } from "vitest";
 import { generateMCQOptions, generateWordTiles, shuffleArray } from "@/lib/review-modes";
 import { compendium as data } from "@/data/compendium";
 import type { WordEntity } from "@/lib/types";
+import { buildWordEntityMaps } from "@/lib/word-entities-core";
+import modalLesson from "@/data/lessons/2";
+import modalFollowUp from "@/data/lessons/202";
+import { gradeLessonAnswer } from "@/lib/lesson-grading";
 const words = data.wordList;
 
 describe("Review Modes Engine & Question Generators", () => {
@@ -86,12 +90,73 @@ describe("Sentence-Level SRS Deck across German, French, and Spanish", () => {
     expect(esSentences.length).toBe(133);
   });
 
-  it("generates word-order permutations for sentence MCQ so structure is tested", () => {
-    const deSentence = getSentenceEntities("de").find((s) => s.target_word.split(/\s+/).length >= 4)!;
-    const options = generateMCQOptions(deSentence, getSentenceEntities("de"), 4);
-    expect(options).toHaveLength(4);
-    expect(options).toContain(deSentence.target_word);
-    expect(new Set(options).size).toBe(4);
+  it("uses only authored invalid sentence choices, never shuffled or unrelated answers", () => {
+    const sentence = getSentenceEntities("de").find((s) => s.id === "sentence_2")!;
+    const options = generateMCQOptions(sentence, getSentenceEntities("de"));
+    expect(new Set(options)).toEqual(new Set([
+      sentence.target_word,
+      ...modalLesson.summary.use_example.mcq_distractors!,
+    ]));
+    expect(options).not.toContain("Morgen kann ich kommen");
+    expect(options).not.toContain("Ich kann kommen morgen");
+    expect(sentence.supportedModes).toContain("mcq");
+  });
+
+  it("keeps sentences without vetted foils usable in existing non-MCQ modes", () => {
+    for (const language of ["de", "fr", "es", "nl"]) {
+      const sentence = getSentenceEntities(language).find((s) => !s.customMcqOptions)!;
+      expect(sentence.supportedModes).toEqual(["flashcard", "tiles", "typing"]);
+      expect(generateMCQOptions(sentence, words)).toEqual([]);
+      expect(resolveCardReviewMode(sentence, "mcq", "sentences")).toBe("flashcard");
+      expect(resolveCardReviewMode(sentence, "typing", "everything")).toBe("typing");
+      expect(generateWordTiles(sentence).tiles.length).toBeGreaterThan(0);
+    }
+  });
+
+  it("carries only alternatives explicitly authored for the summary's exact meaning", () => {
+    const maps = buildWordEntityMaps("de", data, [modalLesson, modalFollowUp]);
+    expect(maps.entities.sentence_2.accepted_answers).toEqual(["Morgen kann ich kommen"]);
+    expect(maps.entities.sentence_202.accepted_answers).toEqual(["Morgen will ich Deutsch lernen"]);
+    expect(maps.entities.sentence_202.accepted_answers).not.toContain("Der Kuchen kann teuer sein");
+    const withoutSummaryAlternatives = {
+      ...modalLesson,
+      summary: { ...modalLesson.summary, use_example: { german: "Ich kann morgen kommen.", english: "I can come tomorrow." } },
+    };
+    expect(buildWordEntityMaps("de", data, [withoutSummaryAlternatives]).sentences[0].accepted_answers).toBeUndefined();
+  });
+
+  it("excludes canonical and accepted sentences from an authored foil list", () => {
+    const lesson = {
+      ...modalLesson,
+      summary: {
+        ...modalLesson.summary,
+        use_example: {
+          ...modalLesson.summary.use_example,
+          mcq_distractors: ["Ich kann morgen kommen.", "Morgen kann ich kommen!", "  "],
+        },
+      },
+    };
+    const sentence = buildWordEntityMaps("de", data, [lesson]).sentences[0];
+    expect(sentence.supportedModes).not.toContain("mcq");
+    expect(generateMCQOptions(sentence, words)).toEqual([]);
+  });
+
+  it("grades authored alternatives for review typing and the same words assembled as tiles", () => {
+    const sentence = getSentenceEntities("de").find((s) => s.id === "sentence_2")!;
+    const targets = [sentence.target_word, ...(sentence.accepted_answers ?? [])];
+    const options = { languageId: "de", umlautTolerance: false, capitalizationTolerance: false };
+    expect(gradeLessonAnswer(["Morgen kann ich kommen."], targets, options).result.accuracy).toBe("exact");
+    const { tiles } = generateWordTiles(sentence);
+    const selected = ["morgen", "kann", "ich", "kommen"].map((word) => {
+      const index = tiles.findIndex((tile) => tile.toLowerCase() === word);
+      expect(index).toBeGreaterThanOrEqual(0);
+      return tiles.splice(index, 1)[0];
+    });
+    const result = gradeLessonAnswer([selected.join(" ")], targets, options).result;
+    expect(["exact", "almost"]).toContain(result.accuracy);
+    if (result.accuracy === "almost") expect(result.reason).toBe("case");
+    expect(gradeLessonAnswer(["Ich morgen kann kommen"], targets, options).result.accuracy).toBe("incorrect");
+    expect(gradeLessonAnswer(["Ich kann morgen kommt"], targets, options).result.accuracy).toBe("incorrect");
   });
 
   it("splits sentence SRS entities into word-level tiles rather than character fragments", () => {

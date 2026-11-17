@@ -133,17 +133,28 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   Practice (exactly 5 graded exercises, one at a time) → Summary (outcome, example,
   takeaway, `curiosity_teaser`). Every lesson also ends with an ungraded, skippable
   **Twist** card outside the 5-exercise contract.
+- Ordinary vocabulary tables keep deduplicated `word_ids` in a visible focus group and
+  table-only words in a closed optional disclosure. Reading-story banks remain visible;
+  neither group claims that every listed word is newly introduced.
 - **Exercise types:** the `ExerciseType` union in `src/lib/types.ts` (classic tiles,
   matching, shift select, derive, reverse cognate, syntax builder, plus the Thinking
   Method types: transcribe, literal gloss, dictation, family grid, variant English,
   pronoun compression, spoken turn reply). Per-type authoring rules:
   [`AGENT_PRECAUTIONS.md`](./AGENT_PRECAUTIONS.md) §4 and §7.
+- The final eligible `syntax_builder` or `transcribe` uses the existing typed-production
+  widget with the bank initially hidden. **Show words / help** reveals words and cues
+  without a new penalty; retries begin supported. Earlier tasks, vocabulary hints,
+  original exercise IDs/types and the optional Twist retain their existing behavior.
 - **Grading:** `letter-diff.ts` diagnoses exact, near and incorrect answers;
   `lesson-grading.ts` applies the learning policy. Missing infinitive endings or articles
   do not satisfy production. Initial spelling near-misses queue reinforcement; repeated
   spelling errors cannot drain it. Configured casing/digraph tolerances remain respected.
   Free-production `accepted_answers` are explicitly authored, with exact alternatives preferred
-  over near matches to the canonical target. Multiple-choice grading remains direct equality.
+  over near matches to the canonical target. Review sentence entities carry alternatives from
+  their own `summary.use_example.accepted_answers`; typing and tiles use the same policy.
+  Sentence MCQ requires explicit invalid `summary.use_example.mcq_distractors`. Cards without
+  vetted choices retain Quick Flip, tiles and typing; no word-order permutation generator
+  invents incorrect sentences. Word and article MCQ remain direct equality.
 - **Retry queue:** missed items replay at the end of Practice and must drain before
   Summary unlocks; touching it forfeits the purple star. Pending exercise IDs and
   the reinforcement position persist with lesson progress, so leaving or reloading
@@ -183,6 +194,11 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   session card and style dialog. Beginner actions precede a closed advanced-options disclosure.
   The learned-word deck is independent of the advanced scope filter. Tiles and typing use
   the same grading policy: exact Good, spelling near-miss Hard with feedback, grammar omission Again.
+  Readiness derives from completed lesson `word_ids`, successful card history and mastery,
+  without a new persisted field. Unpractised/table-only words use target-word → English
+  Quick Flip and target-language audio; only Good/Easy enables later chosen-style production.
+  Again does not promote, and Back restores prior grading history and statistics. Ambiguous
+  legacy zero-success histories conservatively return to recognition rather than cold recall.
   Session limits are 5/10/20/All (default 10), shared by ordinary word decks including
   Learned Words. Suspend excludes a card until manual resumption; Bury excludes it
   until the next local calendar day, including DST changes. Five lapses since relearning
@@ -213,9 +229,12 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   An increased-contrast toggle remains available. **43 self-hosted fonts**:
   six recommendations, then More fonts; non-default faces load on selection/preview.
   Existing non-curated preferences remain visible rather than being replaced.
-- **Independent audio paths:** pronunciation uses `window.speechSynthesis` (language
-  locale, rate 0.92); missing target-language voices get a one-time install guide and
-  fallback warning. System voices can depend on installed packages or a connection.
+- **Independent audio paths:** pronunciation uses `window.speechSynthesis`, with
+  per-language voice URI and Slow/Normal/Faster preferences (0.75/0.92/1.1) in existing
+  settings persistence and backups. Voice lists update asynchronously; a missing saved
+  voice falls back to exact locale, then another regional voice. Missing target-language
+  voices retain the install guide and fallback warning. Preview requires a user gesture;
+  system voices can depend on installed packages or a connection.
   Keyboard-click samples load only when played from the selected pack, with bounded
   decoded-buffer and negative-URL caches; no sound collection downloads at startup.
 - **Speaking is optional:** sound settings enable browser speech recognition where

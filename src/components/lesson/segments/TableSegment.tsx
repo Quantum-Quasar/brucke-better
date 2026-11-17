@@ -11,6 +11,29 @@ import type { LessonSession } from "../lesson-session-types";
 
 export default function TableSegment({ session }: { session: LessonSession }) {
   const { lesson, data, genderSystem, isReading, setCurrentSegment, soundImports, primaryShift, startPractice, resumingPractice, openAtlasFamily } = session;
+  const focusIds = [...new Set(lesson.word_ids.map((id) => id.toLowerCase()))];
+  const focusIdSet = new Set(focusIds);
+  const tableIds = [...new Set(lesson.table_word_ids.map((id) => id.toLowerCase()))];
+  const extraIds = tableIds.filter((id) => !focusIdSet.has(id));
+  const renderWords = (ids: string[]) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+      {ids.map((id) => {
+        const word = data.words[id];
+        if (!word) return null;
+        return (
+          <ShiftPair
+            key={id}
+            english={word.english_cognate}
+            german={word.target_word}
+            gender={word.gender}
+            rule={word.shift_rule}
+            wordId={word.id}
+            className="w-full justify-between py-2 px-3 bg-[var(--sub-alt-color)] hover:border-[var(--main-color)]/40 border-[var(--sub-color)]/20"
+          />
+        );
+      })}
+    </div>
+  );
   return (
             <div className="p-6 sm:p-8 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-6 shadow-md animate-in fade-in duration-200">
               <div className="flex items-center justify-between pb-2 border-b border-[var(--sub-color)]/15">
@@ -43,25 +66,37 @@ export default function TableSegment({ session }: { session: LessonSession }) {
                 </div>
               )}
 
-              <div className="p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {lesson.table_word_ids.map((wid) => {
-                    const w = data.words[wid.toLowerCase()];
-                    if (!w) return null;
-                    return (
-                      <ShiftPair
-                        key={wid}
-                        english={w.english_cognate}
-                        german={w.target_word}
-                        gender={w.gender}
-                        rule={w.shift_rule}
-                        wordId={w.id}
-                        className="w-full justify-between py-2 px-3 bg-[var(--sub-alt-color)] hover:border-[var(--main-color)]/40 border-[var(--sub-color)]/20"
-                      />
-                    );
-                  })}
+              {isReading ? (
+                <div data-testid="story-word-bank" className="p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 space-y-3">
+                  <p className="text-sm font-mono text-[var(--sub-color)]">
+                    Reading support: keep these words handy as you follow the story.
+                  </p>
+                  {renderWords([...tableIds, ...focusIds.filter((id) => !tableIds.includes(id))])}
                 </div>
-              </div>
+              ) : (
+                <>
+                  <section data-testid="lesson-focus-words" className="p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 space-y-3">
+                    <h3 className="font-mono font-semibold text-[var(--text-color)]">Focus words for this lesson</h3>
+                    <p className="text-sm font-mono text-[var(--sub-color)]">
+                      Focus your practice here. Some words may already be familiar.
+                    </p>
+                    {renderWords(focusIds)}
+                  </section>
+                  {extraIds.length > 0 && (
+                    <details key={lesson.id} data-testid="lesson-extra-words" className="p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20">
+                      <summary className="cursor-pointer py-1 font-mono font-semibold text-[var(--text-color)] rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--main-color)]">
+                        Extra words to explore ({extraIds.length})
+                      </summary>
+                      <div className="pt-3 space-y-3">
+                        <p className="text-sm font-mono text-[var(--sub-color)]">
+                          Optional connections to explore. You don&apos;t need to memorize these for this lesson.
+                        </p>
+                        {renderWords(extraIds)}
+                      </div>
+                    </details>
+                  )}
+                </>
+              )}
 
               {/* TM-6: sound import — the English word that already contains this sound */}
               {soundImports.length > 0 && (

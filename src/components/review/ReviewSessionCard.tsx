@@ -11,8 +11,9 @@ import type { ReviewController } from "./use-review-controller";
 import { ReviewAnswerEntry } from "./ReviewAnswerEntry";
 
 export function ReviewSessionCard({ controller }: { controller: ReviewController }) {
-  const { sessionRef, currentIndex, sessionCards, supportedModesForCard, effectiveReviewMode, setReviewMode, setPreferredReviewMode, goBack, canGoBack, settings, goForward, canGoForward, exitDeck, currentWord, language, wordMastery, currentCard, isRevealed, currentCloze, inputGuess, currentFeedbackNote, handleGrade } = controller;
+  const { sessionRef, currentIndex, sessionCards, supportedModesForCard, effectiveReviewMode, setReviewMode, setPreferredReviewMode, goBack, canGoBack, settings, goForward, canGoForward, exitDeck, currentWord, language, wordMastery, currentCard, isRevealed, currentCloze, inputGuess, currentFeedbackNote, handleGrade, recognitionReason } = controller;
   if (!currentCard || !currentWord) return null;
+  const targetPronunciation = wordWithArticle(currentWord.gender, currentWord.target_word, language.id);
   return (
         <div
           ref={sessionRef}
@@ -31,7 +32,7 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
                 <span className="text-[11px] font-mono text-[var(--sub-color)]">style:</span>
                 {supportedModesForCard.length === 1 ? (
                   <span className="text-xs font-mono text-[var(--main-color)] font-bold">
-                    {supportedModesForCard[0]} only
+                    {recognitionReason ? "recognition · Quick Flip" : `${supportedModesForCard[0]} only`}
                   </span>
                 ) : (
                   <select
@@ -116,6 +117,17 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
 
           {/* Front Prompt */}
           <div className="text-center space-y-2 py-2">
+            {recognitionReason && (
+              <div className="mx-auto max-w-lg space-y-1 rounded border border-[var(--main-color)]/25 bg-[var(--main-color)]/10 p-3 text-sm">
+                <p className="font-semibold text-[var(--main-color)]">Recognition first · {language.name} → English</p>
+                <p className="text-[var(--sub-color)]">
+                  {recognitionReason === "table-only"
+                    ? "This is optional table vocabulary, not a word practised in a completed lesson."
+                    : "You haven’t practised this word in a completed lesson yet."}
+                  {" "}Recognise its meaning first. A Good or Easy recognition unlocks your chosen review style next time; Again keeps recognition first.
+                </p>
+              </div>
+            )}
             <div className="flex flex-wrap items-center justify-center gap-2">
               <span className="text-sm font-mono text-[var(--sub-color)] uppercase tracking-widest">
                 shift: {currentWord.shift_rule}
@@ -131,8 +143,8 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
                 </span>
               )}
             </div>
-            <h2 className="text-3xl sm:text-4xl font-mono font-bold text-[var(--text-color)]">
-              {currentWord.id.startsWith("article_") ? (
+            <h2 lang={recognitionReason ? language.ttsLocale : undefined} className="text-3xl sm:text-4xl font-mono font-bold text-[var(--text-color)]">
+              {recognitionReason ? targetPronunciation : currentWord.id.startsWith("article_") ? (
                 <>
                   <span className="sr-only">missing article </span>
                   <span aria-hidden="true" className="inline-block w-16 border-b-2 border-current align-baseline" />{" "}
@@ -140,7 +152,17 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
                 </>
               ) : currentWord.english_cognate}
             </h2>
-            <p className="text-sm font-mono text-[var(--sub-color)]">&quot;{currentWord.english_meaning}&quot;</p>
+            {recognitionReason ? (
+              <button
+                type="button"
+                onClick={() => playTargetAudio(targetPronunciation, language.ttsLocale)}
+                className="inline-flex min-h-11 items-center gap-2 rounded border border-[var(--sub-color)]/20 px-3 text-sm text-[var(--main-color)]"
+                aria-label={`Listen to ${currentWord.target_word}`}
+              >
+                <Volume2 className="h-4 w-4" /> Listen to the {language.name} word
+                {settings.showKeyTips && <span className="keycap text-[10px]">r</span>}
+              </button>
+            ) : <p className="text-sm font-mono text-[var(--sub-color)]">&quot;{currentWord.english_meaning}&quot;</p>}
             {!isRevealed && currentCloze && (
               <div className="mx-auto max-w-md pt-2 text-sm font-mono text-[var(--sub-color)]">
                 <p lang={language.ttsLocale} className="text-[var(--text-color)]">{currentCloze}</p>
@@ -149,7 +171,19 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
             )}
           </div>
 
-    <ReviewAnswerEntry controller={controller} />
+          {recognitionReason ? !isRevealed && (
+            <div className="mx-auto max-w-md space-y-4 py-4 text-center">
+              <p className="text-sm text-[var(--sub-color)]">What does this word mean in English? Decide before revealing.</p>
+              <button
+                type="button"
+                onClick={() => controller.setIsRevealed(true)}
+                className="min-h-11 rounded bg-[var(--main-color)] px-5 py-3 font-semibold text-[var(--bg-color)]"
+              >
+                Reveal English meaning
+                {settings.showKeyTips && <span className="ml-2 keycap text-[10px]">space</span>}
+              </button>
+            </div>
+          ) : <ReviewAnswerEntry controller={controller} />}
           {/* REVEALED CARD CONTENT & SM-2 GRADING (COMMON TO ALL MODES) */}
           {isRevealed && (
             <div className="space-y-6 animate-in fade-in duration-150">
@@ -162,14 +196,20 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
                 </p>
               )}
               <div className="p-5 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 text-center space-y-3">
-                <ShiftPair
+                {recognitionReason ? (
+                  <div className="space-y-2">
+                    <p className="text-xs uppercase tracking-wider text-[var(--sub-color)]">English meaning</p>
+                    <p lang="en" className="text-2xl font-semibold text-[var(--text-color)]">{currentWord.english_meaning}</p>
+                    <p className="text-sm text-[var(--sub-color)]">Knew it before revealing? Choose Good or Easy. Otherwise choose Again.</p>
+                  </div>
+                ) : <ShiftPair
                   english={currentWord.english_cognate}
                   german={currentWord.target_word}
                   gender={currentWord.gender}
                   rule={currentWord.shift_rule}
                   wordId={currentWord.id}
                   className="text-lg px-4 py-2"
-                />
+                />}
 
                 {/* Character-level Diff for Typing Mode */}
                 {effectiveReviewMode === "typing" && inputGuess.trim().length > 0 && (
@@ -236,7 +276,7 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
 
               {/* SM-2 Grade Buttons — sticky on phones so “good” is always reachable */}
               <div className="space-y-2 pt-2 sticky bottom-20 z-20 -mx-2 px-2 pb-2 rounded-lg bg-[var(--sub-alt-color)]/95 backdrop-blur sm:static sm:mx-0 sm:px-0 sm:pb-0 sm:bg-transparent sm:backdrop-blur-none">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className={`grid grid-cols-2 gap-2 ${recognitionReason ? "sm:grid-cols-3" : "sm:grid-cols-4"}`}>
                   <button
                     type="button"
                     onClick={() => handleGrade(1)}
@@ -248,6 +288,7 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
                     )}
                   </button>
 
+                  {!recognitionReason && (
                   <button
                     type="button"
                     onClick={() => handleGrade(3)}
@@ -258,6 +299,7 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
                       <span className="keycap text-[10px]">2</span>
                     )}
                   </button>
+                  )}
 
                   <button
                     type="button"
@@ -285,7 +327,7 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
                   <div className="text-center text-[11px] font-mono text-[var(--sub-color)] flex items-center justify-center gap-1">
                     <span>shortcuts:</span>
                     <span className="keycap text-[10px]">1</span>
-                    <span className="keycap text-[10px]">2</span>
+                    {!recognitionReason && <span className="keycap text-[10px]">2</span>}
                     <span className="keycap text-[10px]">3</span>
                     <span className="keycap text-[10px]">4</span>
                     <span>(or</span>

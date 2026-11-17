@@ -41,7 +41,7 @@ Per-language design notes, shared method and test constraints: [`courses.md`](./
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) 5 (dual `localStorage` + size-guarded cookie persistence)
 - **Icons**: Lucide React
 - **Testing**: Vitest 5 (`bun run test` → `vitest run`). The runner reports current file and test totals; these are not maintained by hand. There is no `bun test` script.
-- **Audio Engine**: Two independent zero-dependency browser-native paths: `window.speechSynthesis` for pronunciation (voice locale chosen per language, 0.92x, preferring an exact locale voice and then another voice for the same language), and a Web Audio **sample** engine (`src/lib/sound.ts`) that decodes bundled Monkeytype mechanical-keyboard `.wav` packs with a 24-entry buffer cache and negative URL caching.
+- **Audio Engine**: Two independent zero-dependency browser-native paths: `window.speechSynthesis` for pronunciation (per-language voice and Slow/Normal/Faster preferences; Normal is 0.92x, with automatic exact-locale then regional fallback), and a Web Audio **sample** engine (`src/lib/sound.ts`) that decodes bundled Monkeytype mechanical-keyboard `.wav` packs with a 24-entry buffer cache and negative URL caching.
 
 ---
 
@@ -114,7 +114,9 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
    - Every German core from Topic 5 includes mixed-pattern recognition using previously taught words, without naming the answer's pattern in the prompt.
    - Taught German vocabulary has assessed retrieval in at least two distinct trail lessons. Declarations, hints, banks and duplicate surfaces do not count; `bun scripts/audit-recurrence.ts --strict` reports the encounter map by lesson and exercise type. This is a minimum practice floor, not a promise of retention.
    - 5-part card-by-card lesson wizard (Hook, Pattern, Transformation Table, Bite-Sized Practice, Summary & Retries) in the in-page lesson reader.
+   - Vocabulary tables separate **Focus words for this lesson** from collapsed **Extra words to explore**. Reading-story word banks stay fully visible as reading support; extra words are not a memorisation requirement.
    - Scaffolded exercises across 13 types (`ExerciseType` in `src/lib/types.ts`): morpheme tiles, matching pairs, shift select, syntax builder, derivation typing, reverse-cognate typing, **transcribe** production drills (thought + lexicon + cue ladder), **literal gloss** direct translations, **dictation** listening drills (played audio, capped replays, a 15-minute listening skip), **family grid** prefix × base matrices, **variant English** "every honest rendering" drills, **pronoun compression**, and **spoken turn reply**.
+   - A lesson's final eligible sentence-building task starts with typed recall before showing its word bank. **Show words / help** is always available without a new star penalty; retries start with support visible. Earlier scaffolds, vocabulary hints and the optional Twist remain unchanged.
    - Every authored lesson ends with an ungraded, skippable **Twist** card and may whisper up to two **posture cues**. Onboarding offers optional goals, daily minutes and a ten-question placement recommendation; placement never invents completion or opens a locked core. Lesson previews show approximate time, exercise count and the possibility of retries.
    - Pre-exercise vocabulary hints (`vocab_hints`) for auxiliary words (e.g., `mit`).
    - End-of-lesson Retry Queue: grammatical omissions do not pass, and spelling mistakes must be corrected during reinforcement or resolved through guided re-learning. A flawless first-try run earns a **purple star** (gold otherwise).
@@ -131,9 +133,10 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
    - Beginner actions are **Continue lesson**, **Review learned words**, and **Practise difficult words**, followed by Due Today. **More practice options** contains family/domain filters, recent lessons, compounds/traps, sentence patterns, article drills and everything.
    - There are **10 review deck types** for vocabulary and example-sentence entities: due, learned, shift family, domain, weakest words, recent lessons, compounds & traps, sentence patterns, article & gender, and everything (`DECK_CAPABILITIES` in `src/lib/review-decks.ts`). Failed sentence processes use a separate replay queue, not another word deck or review style.
    - Word-review sessions offer 5 / 10 / 20 / All cards (default 10), including Learned Words; the old special 20-card cap is gone. Bury hides a card until the next local day; Suspend requires manual resumption. Five lapses move a card to **Relearn**, outside normal queues, with a teaching-lesson link where available and explicit resumption after relearning. Mastery does not stop future scheduling.
+   - Table-only or otherwise unpractised words begin with target-word → English **recognition-first Quick Flip**, even when typing or tiles is selected. Completed lesson focus words and successfully reviewed words use the chosen style. **Good/Easy** enables later production; **Again** does not, and Back undoes promotion.
    - The article drill covers the usual singular definite article for gendered nouns in German, Dutch, French and Spanish; a fixed-width blank marks the missing article. It does not practise cases or articles in sentence context.
-   - 4 review styles are available overall: *Quick Flip*, *Multiple Choice (MCQ)*, *Tile Builder*, and *Derivation Typing*. Article & Gender uses MCQ only; other decks support all four.
-   - Typing and tiles share grading: exact → Good, spelling near-miss → Hard with a correction, grammatical omission → Again. Authored `accepted_answers` support valid complete alternatives in free-production exercises.
+   - 4 review styles are available overall: *Quick Flip*, *Multiple Choice (MCQ)*, *Tile Builder*, and *Derivation Typing*. Article & Gender uses MCQ only. Sentence cards offer MCQ only with explicitly authored invalid choices; otherwise they retain Quick Flip, tiles and typing.
+   - Typing and tiles share grading: exact → Good, spelling near-miss → Hard with a correction, grammatical omission → Again. Explicitly authored complete alternatives are accepted in production exercises and sentence-review cards; review alternatives come from the summary's own example, never unrelated exercises.
    - Anti-spoiler gender shields: front card prompts with `[ der / die / das ? ]` instead of leaking the article before recall.
    - Desktop keyboard navigation (`1`–`4`, `Space`, `Enter`, `Backspace`, `←`/`→` back and forward between cards, `[R]` audio replay, `Esc`).
    - **Sentence process review** schedules incorrectly answered sentence exercises, not just their words. Cards are language-scoped, durable and replayed through the existing widgets, up to 15 per session. Correct-only work creates no card; replay changes neither stars nor word mastery. [Scheduling, recovery and conservative variation rules](./SENTENCE_REVIEW.md).
@@ -165,7 +168,7 @@ The whole surface is themeable and typable, and the app never leaves the browser
 - **`/settings`**, organised into six sections (behavior, input, sound, theme, visibility, danger zone) with a `/`-to-focus search box:
   - *behavior* — quick restart (`off` / `esc`), lazy mode (accepts `ae`/`oe`/`ue`/`ss` for `ä`/`ö`/`ü`/`ß` on US keyboards), capitalization tolerance for lowercase German nouns.
   - *input* — stop-on-error (`off` / `letter`), confidence mode, German character bar visibility (`always` / `on_focus` / `off`).
-  - *sound* — master volume, click pack, error cue, with inline preview playback of every option.
+  - *sound* — master volume, click pack, error cue, plus a per-language pronunciation voice picker, Slow/Normal/Faster playback and a deliberate preview. Missing saved voices fall back automatically; changing a preference never starts speech.
   - *theme* — theme and font pickers, plus an increased-contrast toggle that strengthens muted text and error colors without discarding the selected theme (`src/lib/appearance.ts`).
   - *visibility* — key tips, caps-lock warning, and the `mastered / total` counter badge in the top nav.
   - *danger zone* — JSON backup export/import, reset settings, reset learning progress.
@@ -175,7 +178,7 @@ The whole surface is themeable and typable, and the app never leaves the browser
 - **Word and lesson search** in the top nav (`/` outside inputs/dialogs): target words, English cognates/meanings, lesson titles, shift families and domains. Results open the word drawer or the lesson that teaches it; language indexes load on demand.
 - **Optional speaking practice** in sound settings uses browser recognition when supported. Feedback is lenient and never gates progress. Starting requires an explicit gesture and warns that the browser/provider may process audio online; the app stores no recordings or transcripts. Missing target-language TTS voices trigger a one-time install guide and fallback warning, not a learning block.
 
-The regenerated `public/` inventory is **17,182,538 raw bytes (16.39 MiB), 741 files**.
+The regenerated `public/` inventory is **17,181,619 raw bytes (16.39 MiB), 741 files**.
 This is available disk content, not an initial download: only requested lesson data,
 selected sound samples and selected/previewed fonts load. Reproduce with
 `bun run export-data && bun run audit:assets`; [category breakdown](../scripts/README.md#public-asset-inventory-and-request-audit).

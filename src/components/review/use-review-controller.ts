@@ -23,6 +23,7 @@ import { createReviewGrading, EMPTY_SESSION_STATS, blankSessionGrades, type Revi
 import { useReviewLifecycle } from "./use-review-lifecycle";
 import { orderReviewDeck } from "./review-deck-ordering";
 import { buildTeachingLessonMap } from "@/lib/teaching-lessons";
+import { completedVocabularyCoverage, recognitionFirstReason, type RecognitionFirstReason } from "@/lib/review-readiness";
 type DeckType = ReviewDeckType;
 
 /** Sentinel select value meaning "every family" / "every domain". */
@@ -154,6 +155,10 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
   }, [srsCards, activeDeck, sessionCards, sessionGrades, currentIndex, today]);
 
   const completedLessons = useAppStore((s) => s.completedLessons);
+  const vocabularyCoverage = useMemo(
+    () => completedVocabularyCoverage(lessons, completedLessons),
+    [lessons, completedLessons]
+  );
   const hasAnyCards = Object.keys(srsCards).length > 0;
 
   // Language-aware chrome: French uses conversion bridges, Spanish sound
@@ -475,7 +480,23 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
 
   const currentCard = sessionCards[currentIndex];
   const currentWord: WordEntity | undefined = currentCard ? allWordsMap[currentCard.word_id] : undefined;
+  // Revisiting a graded card must retain its original direction until re-graded.
+  // A newer cross-tab grade, however, takes precedence over this session's snapshot.
+  const readinessSnapshot = currentCard && sessionGrades[currentIndex] != null
+    ? preGradeSnapshots.current[currentCard.word_id]
+    : undefined;
+  const originalReadiness = readinessSnapshot && (readinessSnapshot.version === undefined ||
+    readinessSnapshot.version === useAppStore.getState().progressVersions.srsCards[currentCard?.word_id ?? ""])
+    ? readinessSnapshot : undefined;
+  const recognitionReason = recognitionFirstReason(
+    currentWord?.id,
+    vocabularyCoverage,
+    originalReadiness?.card ?? (currentCard && (srsCards[currentCard.word_id] ?? currentCard)),
+    originalReadiness ? originalReadiness.mastery ?? undefined : wordMastery[currentCard?.word_id ?? ""],
+  );
+  const isRecognitionFirst = recognitionReason !== null;
   const supportedModesForCard: ReviewMode[] = useMemo(() => {
+    if (isRecognitionFirst) return ["flashcard"];
     if (currentWord?.supportedModes && currentWord.supportedModes.length > 0) {
       return currentWord.supportedModes;
     }
@@ -483,16 +504,16 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
       return DECK_CAPABILITIES[activeDeck].supportedModes;
     }
     return ["flashcard", "mcq", "tiles", "typing"];
-  }, [currentWord, activeDeck]);
+  }, [currentWord, activeDeck, isRecognitionFirst]);
   const effectiveReviewMode: ReviewMode = useMemo(
-    () => resolveCardReviewMode(currentWord, reviewMode, activeDeck),
-    [currentWord, reviewMode, activeDeck]
+    () => resolveCardReviewMode(currentWord, reviewMode, activeDeck, isRecognitionFirst),
+    [currentWord, reviewMode, activeDeck, isRecognitionFirst]
   );
 
   // Example sentence with the answer blanked out: a context clue before reveal.
   const currentCloze = useMemo(
-    () => (currentWord && !currentWord.id.startsWith("sentence_") && !currentWord.id.startsWith("article_") ? clozeSentence(currentWord.context_phrase, currentWord.target_word) : null),
-    [currentWord]
+    () => (currentWord && !isRecognitionFirst && !currentWord.id.startsWith("sentence_") && !currentWord.id.startsWith("article_") ? clozeSentence(currentWord.context_phrase, currentWord.target_word) : null),
+    [currentWord, isRecognitionFirst]
   );
 
   // MCQ Options for current card
@@ -517,7 +538,7 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
 
   const { handleGrade, goBack, goForward, canGoBack, canGoForward } = createReviewGrading({
     currentCard, isRevealed, settings, currentIndex, sessionStats, wordMastery, sessionCards,
-    activeDeck, sessionGrades, srsCards, preGradeSnapshots, blankCard, restoreSrsCard, recordReview,
+    activeDeck, recognitionReason, sessionGrades, srsCards, preGradeSnapshots, blankCard, restoreSrsCard, recordReview,
     setSessionGrades, setSessionStats, setIsRevealed, setInputGuess, setSelectedOption,
     setSelectedTiles, setCurrentAutoGrade, setCurrentFeedbackNote, setCurrentIndex,
     setCompletedDeck, setSessionComplete, setActiveDeck,
@@ -625,6 +646,11 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
         return;
       }
 
+      if (isRecognitionFirst && (e.key === "r" || e.key === "R" || e.key === "a" || e.key === "A")) {
+        e.preventDefault();
+        if (currentWord) playTargetAudio(wordWithArticle(currentWord.gender, currentWord.target_word, language.id), language.ttsLocale);
+        return;
+      }
       if ((e.key === "Enter" || e.key === " ") && e.target instanceof Element &&
           e.target.closest("button, a, select, [role='button']")) return;
 
@@ -740,6 +766,8 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
     sessionGrades,
     isRevealed,
     reviewMode,
+    effectiveReviewMode,
+    isRecognitionFirst,
     mcqOptions,
     selectedTiles,
     availableTiles,
@@ -780,7 +808,7 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
     learnedCount: mounted ? learnedCards.length : 0,
     recallSource, mounted, language, activeDeck, hasAnyCards, completedLessons, activeLanguageId, lessons, openLesson,
     masteredCount, activeCount, dueCards, hasSeenGenderIntro, reviewMode, setReviewMode, setPreferredReviewMode, setIsModeSelectorOpen,
-    currentCard, currentWord, sessionRef, currentIndex, sessionCards, supportedModesForCard, effectiveReviewMode,
+    currentCard, currentWord, sessionRef, currentIndex, sessionCards, supportedModesForCard, effectiveReviewMode, recognitionReason,
     goBack, canGoBack, settings, goForward, canGoForward, exitDeck, wordMastery, isRevealed, currentCloze, setIsRevealed,
     mcqOptions, selectedOption, handleSelectMCQ, selectedTiles, handleUnpickTile, availableTiles, handlePickTile, handleResetTiles,
     handleCheckTiles, isCapsLock, inputRef, inputGuess, handleTypingInputChange, setIsCapsLock, setInputGuess, handleCheckTyping,
@@ -821,6 +849,7 @@ export interface ReviewController extends Pick<ReviewHubProps, "activeLanguageId
   sessionCards: SRSCard[];
   supportedModesForCard: ReviewMode[];
   effectiveReviewMode: ReviewMode;
+  recognitionReason: RecognitionFirstReason | null;
   goBack: () => void;
   canGoBack: boolean;
   settings: CustomizationSettings;

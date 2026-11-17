@@ -71,6 +71,25 @@ describe("Persistence validation & dual-store fallback merging", () => {
     (globalThis as any).localStorage.clear();
     (globalThis as any).document.cookie = "";
   });
+
+  it("persists and rehydrates pronunciation preferences without mixing language choices", () => {
+    const preferences = {
+      de: { voiceURI: "German", rate: "slow" as const },
+      fr: { voiceURI: "Quebec", rate: "faster" as const },
+    };
+    useAppStore.getState().updateSetting("pronunciationByLanguage", preferences);
+    useAppStore.getState().setActiveLanguage("fr");
+    expect(useAppStore.getState().settings.pronunciationByLanguage.fr).toEqual(preferences.fr);
+    expect(loadSavedState().settings?.pronunciationByLanguage).toEqual(preferences);
+    useAppStore.setState((state) => ({ settings: { ...state.settings, pronunciationByLanguage: {} } }));
+    useAppStore.getState().hydrateFromStorage({ reread: true });
+    expect(useAppStore.getState().settings.pronunciationByLanguage).toEqual(preferences);
+    useAppStore.getState().setActiveLanguage("de");
+    expect(useAppStore.getState().settings.pronunciationByLanguage.de).toEqual(preferences.de);
+    const cookieValue = document.cookie.split("=").slice(1).join("=").split(";")[0];
+    expect(cookieValue.length).toBeLessThanOrEqual(2048);
+    expect(JSON.parse(decodeURIComponent(cookieValue)).settings).toBeUndefined();
+  });
   it("persists independent gate passes, imports them and resets them", () => {
     useAppStore.getState().passGate(1);
     useAppStore.getState().passGate(1);
@@ -456,7 +475,10 @@ describe("Persistence validation & dual-store fallback merging", () => {
     it("starts the store from defaults and applies storage only on hydrate", async () => {
       localStorage.setItem(
         STORAGE_KEY,
-        JSON.stringify({ completedLessons: [2, 3], currentLessonId: 4, hasCompletedOnboarding: true })
+        JSON.stringify({
+          completedLessons: [2, 3], currentLessonId: 4, hasCompletedOnboarding: true,
+          settings: { pronunciationByLanguage: { de: { voiceURI: "German", rate: "slow" } } },
+        })
       );
 
       // a fresh module evaluation is what the client runs before hydration —
@@ -466,11 +488,13 @@ describe("Persistence validation & dual-store fallback merging", () => {
       expect(fresh.useAppStore.getState().completedLessons).toEqual([]);
       expect(fresh.useAppStore.getState().currentLessonId).toBe(1);
       expect(fresh.useAppStore.getState().hasCompletedOnboarding).toBe(false);
+      expect(fresh.useAppStore.getState().settings.pronunciationByLanguage).toEqual({});
 
       fresh.useAppStore.getState().hydrateFromStorage();
       expect(fresh.useAppStore.getState().completedLessons).toEqual([2, 3]);
       expect(fresh.useAppStore.getState().currentLessonId).toBe(4);
       expect(fresh.useAppStore.getState().hasCompletedOnboarding).toBe(true);
+      expect(fresh.useAppStore.getState().settings.pronunciationByLanguage.de).toEqual({ voiceURI: "German", rate: "slow" });
     });
   });
 

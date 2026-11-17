@@ -1,5 +1,6 @@
 import { useAppStore } from "./store";
-import { getLanguageDefinition } from "@/data/languages";
+import { getLanguageDefinition, isValidLanguageId } from "@/data/languages";
+import { DEFAULT_PRONUNCIATION_PREFERENCE, MAX_PRONUNCIATION_VOICE_URI_LENGTH, PRONUNCIATION_RATES } from "@/data/settings";
 
 export interface VoiceAvailability {
   supported: boolean;
@@ -60,13 +61,40 @@ function resolveLanguageName(locale: string): string {
   return names[language] ?? locale;
 }
 
-export function findLanguageVoice(voices: readonly SpeechSynthesisVoice[], locale: string) {
-  const normalize = (value: string) => value.replace(/_/g, "-").toLowerCase();
-  const normalized = normalize(locale);
+function normalizeLocale(locale: string): string {
+  return locale.replace(/_/g, "-").toLowerCase();
+}
+
+function pronunciationPreference(locale: string) {
+  const languageId = normalizeLocale(locale).split("-")[0];
+  return (isValidLanguageId(languageId) && useAppStore.getState().settings.pronunciationByLanguage[languageId])
+    || DEFAULT_PRONUNCIATION_PREFERENCE;
+}
+
+export function getLanguageVoices(locale = resolveDefaultLocale()): SpeechSynthesisVoice[] {
+  const synthesis = getSynthesis();
+  if (!synthesis) return [];
+  observeVoices(synthesis);
+  try {
+    const languageId = normalizeLocale(locale).split("-")[0];
+    return synthesis.getVoices().filter((voice) =>
+      normalizeLocale(voice.lang).split("-")[0] === languageId
+      && voice.voiceURI.length > 0 && voice.voiceURI.length <= MAX_PRONUNCIATION_VOICE_URI_LENGTH
+    );
+  } catch {
+    return [];
+  }
+}
+
+export function findLanguageVoice(voices: readonly SpeechSynthesisVoice[], locale: string, preferredVoiceURI: string | null = null) {
+  const normalized = normalizeLocale(locale);
   const language = normalized.split("-")[0];
-  const exact = voices.find((voice) => normalize(voice.lang) === normalized);
-  const regional = voices.find((voice) => normalize(voice.lang).split("-")[0] === language);
-  return { exact, voice: exact ?? regional };
+  const exact = voices.find((voice) => normalizeLocale(voice.lang) === normalized);
+  const regional = voices.find((voice) => normalizeLocale(voice.lang).split("-")[0] === language);
+  const preferred = preferredVoiceURI
+    ? voices.find((voice) => voice.voiceURI === preferredVoiceURI && normalizeLocale(voice.lang).split("-")[0] === language)
+    : undefined;
+  return { exact, voice: preferred ?? exact ?? regional };
 }
 
 export function detectLanguageVoice(locale = resolveDefaultLocale()): VoiceAvailability {
@@ -86,11 +114,11 @@ export function detectLanguageVoice(locale = resolveDefaultLocale()): VoiceAvail
   } catch {
     return { ...base, voicesLoaded: true, warningMessage: "This browser could not load system speech voices. You can continue with text-only practice." };
   }
-  const { exact, voice } = findLanguageVoice(voices, locale);
+  const { voice } = findLanguageVoice(voices, locale, pronunciationPreference(locale).voiceURI);
   const loaded = Boolean(voice) || state.settled;
   return {
     ...base, voicesLoaded: loaded, hasLanguageVoice: Boolean(voice),
-    isExactLocale: Boolean(exact), voiceName: voice?.name ?? null, voiceLang: voice?.lang ?? null,
+    isExactLocale: Boolean(voice && normalizeLocale(voice.lang) === normalizeLocale(locale)), voiceName: voice?.name ?? null, voiceLang: voice?.lang ?? null,
     warningMessage: loaded && !voice
       ? `No ${base.languageName} speech voice was detected. Browser fallback audio may sound wrong or stay silent. Install a ${base.languageName} system voice, then reopen the browser, or use "Skip listening".`
       : null,
@@ -108,9 +136,10 @@ export function playTargetAudio(text: string, locale = resolveDefaultLocale()): 
     if (synthesis.paused) synthesis.resume();
     const utterance = new SpeechSynthesisUtterance(cleanText);
     utterance.lang = locale;
-    utterance.rate = 0.92;
+    const preference = pronunciationPreference(locale);
+    utterance.rate = PRONUNCIATION_RATES[preference.rate] ?? PRONUNCIATION_RATES.normal;
     utterance.pitch = 1;
-    const { voice } = findLanguageVoice(synthesis.getVoices(), locale);
+    const { voice } = findLanguageVoice(synthesis.getVoices(), locale, preference.voiceURI);
     if (voice) utterance.voice = voice;
     activeUtterances.add(utterance);
     utterance.onend = utterance.onerror = () => { activeUtterances.delete(utterance); };

@@ -41,17 +41,19 @@ const ExerciseContent: React.FC<ExerciseWidgetProps> = ({
   onSuccess,
   onError,
   isRetry = false,
+  recallFirst = false,
   onQueueRetry,
   onPurpleForfeit,
   onFlagGuessed,
 }) => {
   // TM-1/TM-2: the production-drill types are self-contained widgets with their
   // own cue ladders / option flow; they reuse the same feedback sheets.
-  if (exercise.type === "transcribe") {
+  if (exercise.type === "transcribe" || (exercise.type === "syntax_builder" && recallFirst)) {
     return (
       <TranscribeExercise
         exercise={exercise}
         isRetry={isRetry}
+        recallFirst={recallFirst}
         onSuccess={onSuccess}
         onError={onError}
         onQueueRetry={onQueueRetry}

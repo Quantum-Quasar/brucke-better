@@ -1,15 +1,9 @@
 "use client";
 
-// TM-1 production drill: the learner gets the thought (idea) and a lexicon
-// (word_bank), and must produce the target sentence themselves — choose the elements,
-// decide the order, type the sentence. The word bank is vocabulary, not a jigsaw:
-// tapping a chip inserts the word into a free-text input, and the learner can type
-// inflections the bank doesn't carry. First attempt gets no cues; the cue ladder
-// (scaled prompts) reveals on request or on a failed attempt, and using it forfeits
-// the purple star — cues are help, and help is honest (guidebook §4.2, Turkish
-// analysis: let the learner come in "at the moment their memory is jogged").
+// Sentence production reuses the ordinary typed grading path. Earlier transcribe
+// drills keep their bank and cue ladder; final sentences offer free optional help.
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useId } from "react";
 import { Sparkles, Lightbulb, Quote } from "lucide-react";
 import { ProductionAnswerInput } from "./inputs/ProductionAnswerInput";
 import { ProductionAnswerActions } from "./ProductionAnswerActions";
@@ -22,18 +16,20 @@ import type { ExerciseItem } from "@/lib/types";
 interface TranscribeExerciseProps {
   exercise: ExerciseItem;
   isRetry?: boolean;
+  recallFirst?: boolean;
   onSuccess: () => void;
   onError: (errorType: "spelling" | "umlaut" | "capitalization") => void;
   onQueueRetry?: () => void;
   /** TM-6: the learner got it right but did not trust it (guidebook §1.8/§1.9) */
   onFlagGuessed?: () => void;
-  /** using the cue ladder forfeits the purple star for the run */
+  /** Earlier production drills only; final sentence help never forfeits purple. */
   onPurpleForfeit?: () => void;
 }
 
 export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
   exercise,
   isRetry = false,
+  recallFirst = false,
   onSuccess,
   onError,
   onQueueRetry,
@@ -41,6 +37,9 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
   onFlagGuessed,
 }) => {
   const [showIdeaParts, setShowIdeaParts] = useState(false);
+  const [showWords, setShowWords] = useState(isRetry);
+  const wordBankId = useId();
+  const wordsVisible = !recallFirst || showWords;
   const {
     inputRef,
     settings,
@@ -76,7 +75,7 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
     onSuccess,
     onError,
     onQueueRetry,
-    onPurpleForfeit,
+    onPurpleForfeit: recallFirst ? undefined : onPurpleForfeit,
     emptyMessage: "Please enter or select an answer before verifying.",
     exactMessage: "Spot On! Perfect.",
     onReset: () => setShowIdeaParts(false),
@@ -94,9 +93,11 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
         return;
       }
       if (showErrorSheet || showSuccessSheet) return;
-      const isInput = document.activeElement === inputRef.current;
+      const active = document.activeElement;
+      const isInput = active === inputRef.current;
+      if (!isInput && active instanceof HTMLElement &&
+        (active.isContentEditable || active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.tagName === "SELECT")) return;
       if (e.key === "Enter" && !isInput) {
-        const active = document.activeElement;
         // a focused button/anchor owns its own Enter (native activation)
         if (
           active instanceof HTMLElement &&
@@ -112,14 +113,14 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
       }
       if (isInput) return;
       const num = parseInt(e.key, 10);
-      if (!isNaN(num) && num >= 1 && num <= wordBank.length && status !== "correct" && status !== "almost") {
+      if (wordsVisible && !isNaN(num) && num >= 1 && num <= wordBank.length && status !== "correct" && status !== "almost") {
         e.preventDefault();
         insertWord(wordBank[num - 1]);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [userInput, status, showErrorSheet, showSuccessSheet, wordBank, settings, cuesRevealed, cues.length]);
+  }, [userInput, status, showErrorSheet, showSuccessSheet, wordBank, settings, cuesRevealed, cues.length, wordsVisible]);
 
 
   return (
@@ -129,7 +130,7 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-[var(--main-color)]" />
           <span className="text-xs uppercase tracking-wider text-[var(--main-color)] font-semibold">
-            {isRetry ? "retry exercise" : "transcribe the thought"}
+            {isRetry ? "retry exercise" : recallFirst ? "recall the sentence" : "transcribe the thought"}
           </span>
         </div>
         {exercise.shift_hint && (
@@ -143,11 +144,29 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
       <p className="text-base text-[var(--text-color)] font-bold leading-snug">{exercise.prompt}</p>
       <div className="p-4 rounded-lg bg-[var(--bg-color)] border-l-4 border-[var(--main-color)] space-y-2">
         <Quote className="w-4 h-4 text-[var(--main-color)]" />
-        <p className="text-base text-[var(--text-color)] italic leading-relaxed">{exercise.idea}</p>
+        <p className="text-base text-[var(--text-color)] italic leading-relaxed">{exercise.idea || exercise.meaning || exercise.prompt}</p>
         <p className="text-[11px] text-[var(--sub-color)] pt-1 border-t border-[var(--sub-color)]/15">
-          Build the {language.name}. The words are yours to choose — not all are needed.
+          {recallFirst
+            ? `Try typing the ${language.name} from the meaning. The words and help are here whenever you need them — no penalty.`
+            : `Build the ${language.name}. The words are yours to choose — not all are needed.`}
         </p>
       </div>
+
+      {recallFirst && (
+        <div className="space-y-2">
+          <button
+            type="button"
+            onClick={() => setShowWords(true)}
+            aria-expanded={wordsVisible}
+            aria-controls={wordBankId}
+            className="min-h-11 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-[var(--main-color)]/50 text-sm font-bold text-[var(--main-color)] hover:bg-[var(--main-color)]/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--main-color)] cursor-pointer"
+          >
+            <Lightbulb aria-hidden="true" className="w-4 h-4" />
+            {wordsVisible ? "Words / help shown" : "Show words / help"}
+          </button>
+          <p className="text-xs text-[var(--sub-color)]">Vocabulary clues stay available below. You can use help and still finish normally.</p>
+        </div>
+      )}
 
       {/* TM-6 (guidebook §0.3): a thought is multidimensional and must be split into
           elements before the target language orders them. */}
@@ -238,19 +257,19 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
           onReset={resetCurrentExercise}
           label={exercise.prompt || `Build the ${language.name} sentence`}
           languageId={language.id}
-          placeholder={`build the ${language.name.toLowerCase()} sentence...`}
+          placeholder={recallFirst ? `type the ${language.name.toLowerCase()} sentence...` : `build the ${language.name.toLowerCase()} sentence...`}
           readOnly={status === "correct" || status === "almost"}
           settings={settings}
         />
 
-        <div className="flex flex-wrap gap-2 pt-1">
-          {wordBank.map((word, i) => (
+        <div id={wordBankId} hidden={!wordsVisible} data-testid="sentence-word-bank" className={wordsVisible ? "flex flex-wrap gap-2 pt-1" : undefined}>
+          {wordsVisible && wordBank.map((word, i) => (
             <button
               key={`${word}-${i}`}
               type="button"
               onClick={() => insertWord(word)}
               disabled={status === "correct" || status === "almost"}
-              className="px-3 py-1.5 rounded-lg border text-xs font-mono transition flex items-center gap-2 cursor-pointer border-[var(--sub-color)]/20 bg-[var(--bg-color)] hover:border-[var(--main-color)] text-[var(--text-color)] disabled:opacity-40"
+              className="min-h-11 px-3 py-1.5 rounded-lg border text-xs font-mono transition flex items-center gap-2 cursor-pointer border-[var(--sub-color)]/20 bg-[var(--bg-color)] hover:border-[var(--main-color)] text-[var(--text-color)] disabled:opacity-40"
             >
               {settings.showKeyTips && (
                 <span className="keycap text-[10px]">{i + 1}</span>

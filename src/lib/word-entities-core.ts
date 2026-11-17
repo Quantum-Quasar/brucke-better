@@ -23,7 +23,12 @@ export interface LessonEntitySource {
   word_ids: string[];
   shift_categories?: string[];
   summary?: {
-    use_example?: { german?: string; english?: string };
+    use_example?: {
+      german?: string;
+      english?: string;
+      accepted_answers?: string[];
+      mcq_distractors?: string[];
+    };
     takeaway?: string;
   };
 }
@@ -148,14 +153,26 @@ export function buildWordEntityMaps(
 
   // Sentence-level SRS entities synthesized from each authored lesson's capstone use_example
   for (const lesson of lessons) {
-    const targetSentence = lesson.summary?.use_example?.german?.trim();
-    const englishSentence = lesson.summary?.use_example?.english?.trim();
-    if (!targetSentence || !englishSentence) continue;
+    const example = lesson.summary?.use_example;
+    const targetSentence = example?.german?.trim();
+    const englishSentence = example?.english?.trim();
+    if (!example || !targetSentence || !englishSentence) continue;
     const id = `sentence_${lesson.id}`;
     const cleanTarget = targetSentence.replace(/[.!?;:]+$/, "").trim();
+    const acceptedAnswers = example.accepted_answers?.map((answer) => answer.trim()).filter(Boolean);
+    const answerKey = (answer: string) => answer.toLowerCase().replace(/[.,!?;:]+/g, " ").replace(/\s+/g, " ").trim();
+    const validAnswers = new Set([cleanTarget, ...(acceptedAnswers ?? [])].map(answerKey));
+    const seenFoils = new Set<string>();
+    const distractors = (example.mcq_distractors ?? []).filter((foil) => {
+      const key = answerKey(foil);
+      if (!key || validAnswers.has(key) || seenFoils.has(key)) return false;
+      seenFoils.add(key);
+      return true;
+    });
     const sentenceEntity: WordEntity = {
       id,
       target_word: cleanTarget,
+      accepted_answers: acceptedAnswers,
       english_cognate: englishSentence,
       english_meaning: lesson.title,
       gender: null,
@@ -165,7 +182,10 @@ export function buildWordEntityMaps(
       context_phrase: targetSentence,
       context_translation: englishSentence,
       etymology_derivation: lesson.summary?.takeaway ?? "",
-      supportedModes: ["flashcard", "mcq", "tiles", "typing"],
+      supportedModes: distractors.length > 0
+        ? ["flashcard", "mcq", "tiles", "typing"]
+        : ["flashcard", "tiles", "typing"],
+      customMcqOptions: distractors.length > 0 ? [cleanTarget, ...distractors] : undefined,
       promptLabel: "sentence structure",
       frequencyRank: null,
     };

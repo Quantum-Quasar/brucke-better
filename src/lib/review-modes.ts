@@ -1,6 +1,5 @@
-// ponytail: lean, deterministic review helpers for MCQ distractors and tile morphemes
-// including structural word-order distractors for Sentence-Level SRS cards and
-// fixed article options for Article & Gender SRS cards.
+// Review helpers use authored sentence MCQ choices, word-family distractors,
+// fixed article options, and buildable answer tiles.
 
 import type { WordEntity } from "./types";
 
@@ -16,90 +15,6 @@ export function shuffleArray<T>(arr: T[]): T[] {
   return result;
 }
 
-function normalizeSentenceCase(tokens: string[]): string {
-  if (tokens.length === 0) return "";
-  const copy = [...tokens];
-  const first = copy[0];
-  if (first && first[0]) {
-    copy[0] = first[0].toUpperCase() + first.slice(1);
-  }
-  return copy.join(" ");
-}
-
-/**
- * Generates plausible word-order / syntax permutations of the SAME sentence so
- * that MCQ mode on a sentence card tests sentence structure (e.g. verb-second,
- * Satzklammer, pre-verbal clitic pronouns, ne...pas placement) rather than
- * vocabulary spotting across unrelated sentences.
- */
-function generateSentenceStructureDistractors(target: string, count: number): string[] {
-  const clean = target.replace(/[.!?;:]+$/, "").replace(/,/g, "").trim();
-  const words = clean.split(/\s+/).filter(Boolean);
-  if (words.length < 3) return [];
-
-  const lowerWords = [...words];
-  const LOWER_IF_MOVED = new Set([
-    "ich", "du", "er", "sie", "es", "wir", "ihr", "der", "die", "das", "den", "dem", "ein", "eine",
-    "wie", "wo", "was", "wann", "warum", "ja", "nein", "heute", "morgen", "gestern",
-    "je", "tu", "il", "elle", "on", "nous", "vous", "ils", "elles", "le", "la", "les", "un", "une", "ne", "non", "oui",
-    "yo", "tú", "él", "ella", "nosotros", "ellos", "ellas", "el", "los", "las", "lo", "se", "no", "sí", "hoy",
-  ]);
-  if (LOWER_IF_MOVED.has(lowerWords[0].toLowerCase())) {
-    lowerWords[0] = lowerWords[0].toLowerCase();
-  }
-
-  const candidates: string[] = [];
-
-  // 1. Unclosed bracket / English-order trap: pull the final word into slot 2
-  if (lowerWords.length >= 4) {
-    const englishOrder = [
-      lowerWords[0],
-      lowerWords[1],
-      lowerWords[lowerWords.length - 1],
-      ...lowerWords.slice(2, -1),
-    ];
-    candidates.push(normalizeSentenceCase(englishOrder));
-  }
-
-  // 2. Swap slot 1 and slot 2 (violates V2 or pre-verbal clitic pronoun slot)
-  if (lowerWords.length >= 3) {
-    const swapMid = [...lowerWords];
-    [swapMid[1], swapMid[2]] = [swapMid[2], swapMid[1]];
-    candidates.push(normalizeSentenceCase(swapMid));
-  }
-
-  // 3. Swap the last two words (breaks participle/infinitive/negation tail)
-  if (lowerWords.length >= 4) {
-    const swapTail = [...lowerWords];
-    const n = swapTail.length;
-    [swapTail[n - 2], swapTail[n - 1]] = [swapTail[n - 1], swapTail[n - 2]];
-    candidates.push(normalizeSentenceCase(swapTail));
-  }
-
-  // 4. Swap slot 0 and slot 1 (post-verbal clitic / V1 swap for 3-word clauses)
-  if (lowerWords.length >= 3) {
-    const swapFront = [...lowerWords];
-    [swapFront[0], swapFront[1]] = [swapFront[1], swapFront[0]];
-    candidates.push(normalizeSentenceCase(swapFront));
-  }
-
-  // 5. Move slot 1 to the end (verb-final main clause error)
-  if (lowerWords.length >= 3) {
-    const verbEnd = [lowerWords[0], ...lowerWords.slice(2), lowerWords[1]];
-    candidates.push(normalizeSentenceCase(verbEnd));
-  }
-
-  const unique: string[] = [];
-  const targetLower = target.toLowerCase().replace(/,/g, "");
-  for (const c of candidates) {
-    const cNorm = c.toLowerCase().replace(/,/g, "");
-    if (cNorm !== targetLower && !unique.some((u) => u.toLowerCase() === cNorm)) {
-      unique.push(c);
-      if (unique.length >= count) break;
-    }
-  }
-  return unique;
-}
 
 const STRUCTURAL_FOILS: Record<string, string> = {
   // German case/pronoun/auxiliary foils
@@ -138,7 +53,7 @@ const STRUCTURAL_FOILS: Record<string, string> = {
 /**
  * Generate 4 multiple-choice options for a given target word, article, or sentence.
  * - For article cards (`customMcqOptions`), returns the language's 3-4 article choices.
- * - For sentence cards, generates word-order / syntax permutations of the same sentence.
+ * - Sentence cards require authored choices; unsupported MCQ cards return no options.
  * - For vocabulary words, prioritizes words from the same sound-shift family.
  */
 export function generateMCQOptions(
@@ -146,6 +61,7 @@ export function generateMCQOptions(
   allWords: WordEntity[],
   count: number = 4
 ): string[] {
+  const isSentence = targetWord.id.startsWith("sentence_");
   if (targetWord.customMcqOptions && targetWord.customMcqOptions.length > 0) {
     const target = targetWord.target_word;
     const targetLower = target.toLowerCase();
@@ -155,17 +71,14 @@ export function generateMCQOptions(
     const others = targetWord.customMcqOptions.filter(
       (o) => o.toLowerCase() !== targetLower
     );
-    return shuffleArray([target, ...others].slice(0, count));
+    const options = [target, ...others].slice(0, count);
+    return isSentence && options.length < 2 ? [] : shuffleArray(options);
   }
+  if (isSentence) return [];
 
   const target = targetWord.target_word;
   const distractors: string[] = [];
 
-  if (targetWord.id.startsWith("sentence_") || target.includes(" ")) {
-    for (const d of generateSentenceStructureDistractors(target, count - 1)) {
-      distractors.push(d);
-    }
-  }
 
   // 1. Same sound shift family words first (best linguistic distractors)
   if (distractors.length < count - 1) {

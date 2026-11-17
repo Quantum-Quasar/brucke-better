@@ -41,7 +41,7 @@ Lessons and atlas details open as overlays with short shareable query URLs such 
 
 The app uses **Next.js 16.4.1** (declared `^16.4.1`, locked in `bun.lock`) with static top-level tabs and browser-rendered lesson content. Progress is local-first, with JSON backup export/import. There are no accounts or telemetry; accounts, cross-device recovery and optional privacy-respecting tracking remain future ideas, not implemented features. Use `bun run test` for current automated test totals rather than a manually pinned marketing count.
 
-Pronunciation uses system speech voices, with missing-voice installation guidance.
+Pronunciation uses system speech voices, with per-language voice and speed choices, a deliberate preview, and missing-voice installation guidance.
 Optional microphone practice gives lenient feedback without gating completion.
 Browser recognition may send audio to its provider; the app warns before starting
 and stores no recordings or transcripts. It is not an app-operated speech service

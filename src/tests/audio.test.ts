@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { detectLanguageVoice, findLanguageVoice, playTargetAudio, subscribeVoiceChanges, VOICE_LOAD_WAIT_MS } from "@/lib/audio";
+import { detectLanguageVoice, findLanguageVoice, getLanguageVoices, playTargetAudio, subscribeVoiceChanges, VOICE_LOAD_WAIT_MS } from "@/lib/audio";
+import { useAppStore } from "@/lib/store";
+import { DEFAULT_SETTINGS } from "@/data/settings";
 
 function voice(name: string, lang: string): SpeechSynthesisVoice {
   return { name, lang, default: false, localService: true, voiceURI: name };
@@ -19,7 +21,10 @@ function synthesisFixture(initialVoices: SpeechSynthesisVoice[] = []) {
   } };
 }
 
-beforeEach(() => vi.useFakeTimers());
+beforeEach(() => {
+  vi.useFakeTimers();
+  useAppStore.setState({ activeLanguageId: "de", settings: { ...DEFAULT_SETTINGS, pronunciationByLanguage: {} } });
+});
 afterEach(() => {
   vi.clearAllTimers();
   vi.useRealTimers();
@@ -88,5 +93,83 @@ describe("native target-language voices", () => {
     expect(playTargetAudio("[der] Wasser", "de-DE")).toBe(true);
     expect(fixture.synthesis.cancel).toHaveBeenCalledOnce();
     expect(fixture.synthesis.speak).toHaveBeenCalledWith(expect.objectContaining({ text: "Wasser", lang: "de-DE", rate: 0.92, voice: expect.objectContaining({ name: "German" }) }));
+  });
+
+  it("uses a saved regional voice ahead of the automatic exact-locale choice", () => {
+    const fixture = synthesisFixture([voice("German", "de-DE"), voice("Austrian", "de-AT")]);
+    vi.stubGlobal("SpeechSynthesisUtterance", class { constructor(public text: string) {} });
+    useAppStore.getState().updateSetting("pronunciationByLanguage", { de: { voiceURI: "Austrian", rate: "slow" } });
+    expect(fixture.synthesis.speak).not.toHaveBeenCalled();
+    expect(detectLanguageVoice("de-DE")).toMatchObject({ voiceName: "Austrian", isExactLocale: false });
+    expect(playTargetAudio("Guten Tag", "de-DE")).toBe(true);
+    expect(fixture.synthesis.speak).toHaveBeenCalledWith(expect.objectContaining({
+      rate: 0.75, voice: expect.objectContaining({ name: "Austrian" }),
+    }));
+  });
+
+  it("resolves explicit locales independently of the active course and its preferences", () => {
+    const fixture = synthesisFixture([voice("German", "de-DE"), voice("French", "fr-FR"), voice("Quebec", "fr-CA"), voice("English", "en-US")]);
+    vi.stubGlobal("SpeechSynthesisUtterance", class { constructor(public text: string) {} });
+    useAppStore.getState().updateSetting("pronunciationByLanguage", {
+      de: { voiceURI: "German", rate: "slow" },
+      fr: { voiceURI: "Quebec", rate: "faster" },
+    });
+    expect(playTargetAudio("Bonjour", "FR_fr")).toBe(true);
+    expect(fixture.synthesis.speak).toHaveBeenLastCalledWith(expect.objectContaining({
+      lang: "FR_fr", rate: 1.1, voice: expect.objectContaining({ name: "Quebec" }),
+    }));
+    expect(playTargetAudio("Hello", "en-US")).toBe(true);
+    expect(fixture.synthesis.speak).toHaveBeenLastCalledWith(expect.objectContaining({
+      rate: 0.92, voice: expect.objectContaining({ name: "English" }),
+    }));
+    useAppStore.setState({ activeLanguageId: "fr" });
+    expect(playTargetAudio("Bonjour")).toBe(true);
+    expect(fixture.synthesis.speak).toHaveBeenLastCalledWith(expect.objectContaining({
+      lang: "fr-FR", rate: 1.1, voice: expect.objectContaining({ name: "Quebec" }),
+    }));
+  });
+
+  it("never applies a saved voice from the wrong language", () => {
+    const fixture = synthesisFixture([voice("German", "de-DE"), voice("French", "fr-FR")]);
+    vi.stubGlobal("SpeechSynthesisUtterance", class { constructor(public text: string) {} });
+    useAppStore.getState().updateSetting("pronunciationByLanguage", { de: { voiceURI: "French", rate: "normal" } });
+    expect(playTargetAudio("Wasser", "de-DE")).toBe(true);
+    expect(fixture.synthesis.speak).toHaveBeenLastCalledWith(expect.objectContaining({
+      voice: expect.objectContaining({ name: "German" }),
+    }));
+    expect(getLanguageVoices("de-DE").map((item) => item.name)).toEqual(["German"]);
+  });
+
+  it("keeps a saved selection through delayed loading and falls back when it disappears", () => {
+    const fixture = synthesisFixture([voice("German", "de-DE")]);
+    vi.stubGlobal("SpeechSynthesisUtterance", class { constructor(public text: string) {} });
+    useAppStore.getState().updateSetting("pronunciationByLanguage", { de: { voiceURI: "Austrian", rate: "slow" } });
+    const listener = vi.fn();
+    const unsubscribe = subscribeVoiceChanges(listener);
+    expect(detectLanguageVoice("de-DE").voiceName).toBe("German");
+    fixture.change([voice("German", "de-DE"), voice("Austrian", "de-AT")]);
+    expect(listener).toHaveBeenCalledOnce();
+    expect(getLanguageVoices("de-DE")).toHaveLength(2);
+    expect(detectLanguageVoice("de-DE").voiceName).toBe("Austrian");
+    fixture.change([voice("German", "de-DE")]);
+    expect(playTargetAudio("Hallo", "de-DE")).toBe(true);
+    expect(fixture.synthesis.speak).toHaveBeenLastCalledWith(expect.objectContaining({
+      rate: 0.75, voice: expect.objectContaining({ name: "German" }),
+    }));
+    expect(useAppStore.getState().settings.pronunciationByLanguage.de.voiceURI).toBe("Austrian");
+    unsubscribe();
+  });
+
+  it("retains browser fallback speech and handles inaccessible voice lists safely", () => {
+    const fixture = synthesisFixture([voice("English", "en-US")]);
+    vi.stubGlobal("SpeechSynthesisUtterance", class { constructor(public text: string) {} });
+    expect(playTargetAudio("Hallo", "de-DE")).toBe(true);
+    const utterance = fixture.synthesis.speak.mock.calls[0][0];
+    expect(utterance.lang).toBe("de-DE");
+    expect(utterance.voice).toBeUndefined();
+    vi.spyOn(fixture.synthesis, "getVoices").mockImplementation(() => { throw new Error("unavailable"); });
+    expect(getLanguageVoices("de-DE")).toEqual([]);
+    expect(detectLanguageVoice("de-DE")).toMatchObject({ voicesLoaded: true, hasLanguageVoice: false });
+    expect(playTargetAudio("Hallo", "de-DE")).toBe(false);
   });
 });

@@ -3,7 +3,7 @@ import type { AppState, LanguageProgress, ToleranceSettings, VersionedField } fr
 import { emptyVersions } from "./progress-state";
 import { DEFAULT_THEME } from "../theme-runtime";
 import { DEFAULT_FONT } from "@/data/fonts";
-import { type CustomizationSettings, DEFAULT_SETTINGS } from "@/data/settings";
+import { type CustomizationSettings, type PronunciationPreference, DEFAULT_SETTINGS, DEFAULT_PRONUNCIATION_PREFERENCE, MAX_PRONUNCIATION_VOICE_URI_LENGTH } from "@/data/settings";
 import { DEFAULT_LANGUAGE_ID, getLanguageDefinition, isValidLanguageId } from "@/data/languages";
 
 import { localDateKey } from "../srs";
@@ -226,6 +226,21 @@ export function importSrsCards(raw: unknown, base: Record<string, SRSCard>): Rec
   return cards;
 }
 
+export function normalizePronunciationPreferences(raw: unknown): Record<string, PronunciationPreference> {
+  const preferences: Record<string, PronunciationPreference> = {};
+  if (!isPlausibleStateObject(raw)) return preferences;
+  for (const [languageId, value] of Object.entries(raw)) {
+    if (!isValidLanguageId(languageId) || !isPlausibleStateObject(value)) continue;
+    preferences[languageId] = {
+      voiceURI: typeof value.voiceURI === "string" && value.voiceURI.length > 0 && value.voiceURI.length <= MAX_PRONUNCIATION_VOICE_URI_LENGTH
+        ? value.voiceURI
+        : null,
+      rate: oneOf(value.rate, ["slow", "normal", "faster"] as const, DEFAULT_PRONUNCIATION_PREFERENCE.rate),
+    };
+  }
+  return preferences;
+}
+
 export function normalizeSettings(raw: unknown, fallback: CustomizationSettings): CustomizationSettings {
   const source = isPlausibleStateObject(raw) ? raw : {};
   return {
@@ -244,6 +259,9 @@ export function normalizeSettings(raw: unknown, fallback: CustomizationSettings)
     soundVolume: coerceVolume(source.soundVolume, fallback.soundVolume),
     playSoundOnClick: typeof source.playSoundOnClick === "string" ? source.playSoundOnClick : fallback.playSoundOnClick,
     playSoundOnError: typeof source.playSoundOnError === "string" ? source.playSoundOnError : fallback.playSoundOnError,
+    pronunciationByLanguage: isPlausibleStateObject(source.pronunciationByLanguage)
+      ? normalizePronunciationPreferences(source.pronunciationByLanguage)
+      : fallback.pronunciationByLanguage,
     showKeyTips: coerceBoolean(source.showKeyTips, fallback.showKeyTips),
     capsLockWarning: coerceBoolean(source.capsLockWarning, fallback.capsLockWarning),
     showMasteryCounter: coerceBoolean(source.showMasteryCounter, fallback.showMasteryCounter),

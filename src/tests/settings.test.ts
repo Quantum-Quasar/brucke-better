@@ -1,6 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { DEFAULT_SETTINGS } from "../data/settings";
+import { DEFAULT_SETTINGS, MAX_PRONUNCIATION_VOICE_URI_LENGTH } from "../data/settings";
 import { useAppStore } from "../lib/store";
+import { normalizeSettings } from "../lib/store/schema";
+import { createProgressBackup } from "../lib/progress-backup";
 
 describe("Settings & Store Architecture", () => {
   beforeEach(() => {
@@ -21,6 +23,59 @@ describe("Settings & Store Architecture", () => {
     expect(DEFAULT_SETTINGS.capsLockWarning).toBe(true);
     expect(DEFAULT_SETTINGS.showMasteryCounter).toBe(true);
     expect(DEFAULT_SETTINGS.increasedContrast).toBe(false);
+  });
+
+  it("bounds pronunciation settings to known languages, supported rates and usable voice ids", () => {
+    const settings = normalizeSettings({
+      pronunciationByLanguage: {
+        de: { voiceURI: "d".repeat(MAX_PRONUNCIATION_VOICE_URI_LENGTH), rate: "slow", extra: true },
+        fr: { voiceURI: "f".repeat(MAX_PRONUNCIATION_VOICE_URI_LENGTH + 1), rate: 100 },
+        es: { voiceURI: "", rate: "faster" },
+        nl: null,
+        en: { voiceURI: "English", rate: "normal" },
+        constructor: { voiceURI: "unsafe", rate: "normal" },
+      },
+    }, DEFAULT_SETTINGS);
+    expect(settings.pronunciationByLanguage).toEqual({
+      de: { voiceURI: "d".repeat(MAX_PRONUNCIATION_VOICE_URI_LENGTH), rate: "slow" },
+      fr: { voiceURI: null, rate: "normal" },
+      es: { voiceURI: null, rate: "faster" },
+    });
+    expect(normalizeSettings({ pronunciationByLanguage: [] }, DEFAULT_SETTINGS).pronunciationByLanguage).toEqual({});
+  });
+
+  it("round-trips per-language pronunciation through existing backups and preserves it with older backups", () => {
+    const preferences = {
+      de: { voiceURI: "German regional", rate: "slow" as const },
+      fr: { voiceURI: "French", rate: "faster" as const },
+    };
+    useAppStore.getState().updateSetting("pronunciationByLanguage", preferences);
+    const backup = JSON.parse(JSON.stringify(createProgressBackup(useAppStore.getState())));
+    expect(backup.settings.pronunciationByLanguage).toEqual(preferences);
+    useAppStore.getState().resetSettings();
+    expect(useAppStore.getState().settings.pronunciationByLanguage).toEqual({});
+    expect(useAppStore.getState().importBackupState(backup)).toBe(true);
+    expect(useAppStore.getState().settings.pronunciationByLanguage).toEqual(preferences);
+    expect(useAppStore.getState().importBackupState({ settings: { soundVolume: 0.4 } })).toBe(true);
+    expect(useAppStore.getState().settings.pronunciationByLanguage).toEqual(preferences);
+    expect(useAppStore.getState().importBackupState({ settings: { pronunciationByLanguage: null } })).toBe(true);
+    expect(useAppStore.getState().settings.pronunciationByLanguage).toEqual(preferences);
+    useAppStore.getState().resetProgress();
+    expect(useAppStore.getState().settings.pronunciationByLanguage).toEqual(preferences);
+    useAppStore.getState().resetSettings();
+    expect(useAppStore.getState().settings.pronunciationByLanguage).toEqual({});
+    expect(DEFAULT_SETTINGS.pronunciationByLanguage).toEqual({});
+  });
+
+  it("normalizes pronunciation preferences on direct settings updates as well as backup imports", () => {
+    useAppStore.getState().updateSetting("pronunciationByLanguage", {
+      de: { voiceURI: "x".repeat(MAX_PRONUNCIATION_VOICE_URI_LENGTH + 1), rate: "slow" },
+    });
+    expect(useAppStore.getState().settings.pronunciationByLanguage.de).toEqual({ voiceURI: null, rate: "slow" });
+    expect(useAppStore.getState().importBackupState({ settings: {
+      pronunciationByLanguage: { fr: { voiceURI: "French", rate: "invalid" }, unknown: { voiceURI: "Other", rate: "slow" } },
+    } })).toBe(true);
+    expect(useAppStore.getState().settings.pronunciationByLanguage).toEqual({ fr: { voiceURI: "French", rate: "normal" } });
   });
 
   it("updates individual settings via useAppStore.updateSetting", () => {

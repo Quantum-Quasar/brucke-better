@@ -42,6 +42,7 @@ const SECTION_TERMS: Record<string, string[]> = {
     "sound volume", "volume", "loudness", "mute", "sound", "play sound on click", "switch",
     "mechanical", "cherry", "typewriter", "play sound on error", "error sound", "damage",
     "voice", "tts", "speech", "microphone", "mic", "speaking", "pronunciation",
+    "rate", "speed", "slow", "normal", "faster", "preview",
   ],
   theme: [
     "color scheme", "theme", "colors", "alduin", "font family", "typeface", "fonts",

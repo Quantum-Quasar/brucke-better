@@ -136,7 +136,7 @@ test("learned-word review starts directly, persists its grade, and can be replay
 });
 
 test("tile review cannot grade a missing infinitive ending as Good", async ({ page }) => {
-  await seed(page, { wordMastery: { lernen: "encountered" }, preferredReviewMode: "tiles" });
+  await seed(page, { completedLessons: [1], wordMastery: { lernen: "encountered" }, preferredReviewMode: "tiles" });
   await page.goto("/review");
   await page.getByRole("button", { name: "Review learned words", exact: true }).click();
   await page.getByRole("button", { name: "lern", exact: true }).click();
@@ -155,7 +155,7 @@ test("one failed sentence attempt persists once and its replay never awards less
   await seed(page, { lessonProgress: practice(1) });
   await page.goto("/?lesson=1&lang=de");
   const initial = page.locator('[data-exercise-type="syntax_builder"]');
-  await initial.getByRole("button", { name: exercise.target_answer.split(" ")[0], exact: true }).click();
+  await initial.getByRole("textbox").fill(exercise.target_answer.split(" ")[0]);
   await initial.getByRole("button", { name: "verify", exact: true }).click();
   await expect(page.getByRole("dialog", { name: "sound shift breakdown", exact: true })).toBeVisible();
   await expect.poll(async () => (await progress(page)).sentenceCards?.[id]?.lapses).toBe(1);

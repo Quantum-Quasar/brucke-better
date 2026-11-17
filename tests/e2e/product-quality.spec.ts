@@ -73,19 +73,14 @@ test("keyboard-only: a fresh learner finishes every Lesson 1 exercise from the h
           }
           break;
         case "derive":
-        case "reverse_cognate": {
+        case "reverse_cognate":
+        case "syntax_builder": {
           const input = group.getByRole("textbox", { name: exercise.prompt, exact: true });
           await tabTo(page, input);
           await page.keyboard.type(exercise.target_answer);
           await page.keyboard.press("Enter");
           break;
         }
-        case "syntax_builder":
-          for (const word of exercise.target_answer.split(" ")) {
-            await activateWithKeyboard(page, group.getByRole("button", { name: word, exact: true }));
-          }
-          await activateWithKeyboard(page, group.getByRole("button", { name: "verify", exact: true }));
-          break;
         default:
           throw new Error(`Lesson 1 changed: teach the keyboard scenario to answer ${exercise.type}`);
       }
@@ -138,7 +133,7 @@ test.describe("screen-reader exercise controls and feedback", () => {
       await expect(group).toBeVisible();
       await expect(group).toHaveAccessibleName(exercise.prompt);
 
-      if (["derive", "reverse_cognate", "transcribe", "dictation", "family_matrix", "pronoun_compression", "spoken_turn_reply"].includes(type)) {
+      if (["derive", "reverse_cognate", "syntax_builder", "transcribe", "dictation", "family_matrix", "pronoun_compression", "spoken_turn_reply"].includes(type)) {
         const inputName = type === "dictation" ? "Write down the sentence you heard"
           : type === "family_matrix" ? `The ${exercise.columns![exercise.task!.column]} form of ${exercise.rows![exercise.task!.row]}`
           : exercise.prompt;

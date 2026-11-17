@@ -3,6 +3,18 @@ export type StopOnError = "off" | "letter";
 export type ConfidenceMode = "off" | "on";
 export type ShowCharBar = "always" | "on_focus" | "off";
 
+export const PRONUNCIATION_RATES = { slow: 0.75, normal: 0.92, faster: 1.1 } as const;
+export type PronunciationRate = keyof typeof PRONUNCIATION_RATES;
+export interface PronunciationPreference {
+  voiceURI: string | null;
+  rate: PronunciationRate;
+}
+export const MAX_PRONUNCIATION_VOICE_URI_LENGTH = 512;
+export const DEFAULT_PRONUNCIATION_PREFERENCE: PronunciationPreference = {
+  voiceURI: null,
+  rate: "normal",
+};
+
 export interface CustomizationSettings {
   reviewSessionLimit: 5 | 10 | 20 | 0;
   learningGoal: "travel" | "work" | "exam" | "fun";
@@ -24,6 +36,7 @@ export interface CustomizationSettings {
   soundVolume: number; // 0.0 - 1.0
   playSoundOnClick: string; // ID from SOUND_CLICK_OPTIONS
   playSoundOnError: string; // ID from SOUND_ERROR_OPTIONS
+  pronunciationByLanguage: Record<string, PronunciationPreference>;
 
   // Elements & Accessibility
   showKeyTips: boolean;
@@ -59,6 +72,7 @@ export const DEFAULT_SETTINGS: CustomizationSettings = {
   soundVolume: 0.5,
   playSoundOnClick: "18", // Cherry MX Black ABS default mechanical click
   playSoundOnError: "1", // Damage tone
+  pronunciationByLanguage: {},
 
   showKeyTips: true,
   capsLockWarning: true,

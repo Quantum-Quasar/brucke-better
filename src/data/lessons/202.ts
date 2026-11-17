@@ -182,7 +182,8 @@ const lesson: Lesson = {
     "outcome": "Build full modal brackets with time words: who, what, when, and can/want/must in one frame.",
     "use_example": {
       "german": "Ich will morgen Deutsch lernen.",
-      "english": "I want to learn German tomorrow."
+      "english": "I want to learn German tomorrow.",
+      "accepted_answers": ["Morgen will ich Deutsch lernen"]
     },
     "takeaway": "Conjugated modal in position 2, bare infinitive last — the bracket carries your whole message.",
     "curiosity_teaser": "Next: the first great sound shift — how English 'hope' breathed into 'hoffen' and 'ship' into 'Schiff'."

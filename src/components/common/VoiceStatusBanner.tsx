@@ -23,6 +23,7 @@ export const VoiceStatusBanner: React.FC<VoiceStatusBannerProps> = ({
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const skipListeningFor = useAppStore((s) => s.skipListeningFor);
   const listeningSkippedUntil = useAppStore((s) => s.settings.listeningSkippedUntil);
+  const selectedVoiceURI = useAppStore((s) => s.settings.pronunciationByLanguage[activeLanguageId]?.voiceURI);
   const language = getLanguageDefinition(activeLanguageId);
 
   const [mounted, setMounted] = useState(false);
@@ -36,7 +37,7 @@ export const VoiceStatusBanner: React.FC<VoiceStatusBannerProps> = ({
     const unsub = subscribeVoiceChanges(refresh);
     refresh();
     return unsub;
-  }, [language.ttsLocale]);
+  }, [language.ttsLocale, selectedVoiceURI]);
 
   if (!mounted || !status || dismissed) return null;
 

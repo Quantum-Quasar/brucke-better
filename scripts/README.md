@@ -100,14 +100,14 @@ One-time inventory after regenerating this change's distribution payloads:
 
 | Public group | Files / available URLs | Raw bytes |
 | --- | ---: | ---: |
-| All `public/` | 741 | 17,182,538 |
-| `data/` | 539 | 7,290,609 |
+| All `public/` | 741 | 17,181,619 |
+| `data/` | 539 | 7,289,690 |
 | `sounds/` | 155 | 5,374,430 |
 | `webfonts/` | 42 | 4,417,824 |
 | Other public files | 5 | 99,675 |
 
-Data comprises German 3,521,565 bytes / 181 files, French 1,491,395 / 135,
-Spanish 1,466,632 / 135, Dutch 808,625 / 87, and 2,392 bytes of frequency
+Data comprises German 3,522,385 bytes / 181 files, French 1,491,395 / 135,
+Spanish 1,466,632 / 135, Dutch 806,886 / 87, and 2,392 bytes of frequency
 attribution. The largest individual public asset is Iosevka (1,494,892 bytes);
 it is not a default font. Regenerate and rerun the audit when content changes.
 

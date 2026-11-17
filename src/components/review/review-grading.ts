@@ -46,7 +46,7 @@ function undoGradeInStats(stats: ReviewSessionStats, grade: ReviewGrade): Review
   };
 }
 type Setter<T> = Dispatch<SetStateAction<T>>;
-interface GradingOptions extends Pick<ReviewController, "currentCard" | "isRevealed" | "settings" | "currentIndex" | "sessionStats" | "wordMastery" | "sessionCards" | "activeDeck"> {
+interface GradingOptions extends Pick<ReviewController, "currentCard" | "isRevealed" | "settings" | "currentIndex" | "sessionStats" | "wordMastery" | "sessionCards" | "activeDeck" | "recognitionReason"> {
   sessionGrades: SessionGrades;
   srsCards: Record<string, SRSCard>;
   preGradeSnapshots: RefObject<Record<string, ReviewSnapshot>>;
@@ -67,10 +67,10 @@ interface GradingOptions extends Pick<ReviewController, "currentCard" | "isRevea
   setActiveDeck: Setter<ReviewDeckType | null>;
 }
 export function createReviewGrading(options: GradingOptions) {
-  const { currentCard, isRevealed, settings, currentIndex, sessionStats, wordMastery, sessionCards, activeDeck, sessionGrades, srsCards, preGradeSnapshots, blankCard, restoreSrsCard, recordReview, setSessionGrades, setSessionStats, setIsRevealed, setInputGuess, setSelectedOption, setSelectedTiles, setCurrentAutoGrade, setCurrentFeedbackNote, setCurrentIndex, setCompletedDeck, setSessionComplete, setActiveDeck } = options;
+  const { currentCard, isRevealed, settings, currentIndex, sessionStats, wordMastery, sessionCards, activeDeck, recognitionReason, sessionGrades, srsCards, preGradeSnapshots, blankCard, restoreSrsCard, recordReview, setSessionGrades, setSessionStats, setIsRevealed, setInputGuess, setSelectedOption, setSelectedTiles, setCurrentAutoGrade, setCurrentFeedbackNote, setCurrentIndex, setCompletedDeck, setSessionComplete, setActiveDeck } = options;
   // SM-2 Review Grade Handler
   const handleGrade = (grade: ReviewGrade) => {
-    if (!currentCard || !isRevealed) return;
+    if (!currentCard || !isRevealed || (recognitionReason && grade === 3)) return;
 
     if (grade === 1) {
       void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
@@ -144,20 +144,21 @@ export function createReviewGrading(options: GradingOptions) {
     if (currentIndex <= 0 || sessionCards.length === 0) return;
     void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
 
-    // Leaving the current card: undo the grade it may have received this session.
-    const leavingGrade = sessionGrades[currentIndex] ?? null;
-    if (leavingGrade !== null) {
-      const leaving = sessionCards[currentIndex];
-      const snapshot = preGradeSnapshots.current[leaving.word_id];
-      if (snapshot) restoreSrsCard(leaving.word_id, snapshot);
+    const undoPosition = (index: number) => {
+      const grade = sessionGrades[index] ?? null;
+      if (grade === null) return;
+      const card = sessionCards[index];
+      const snapshot = preGradeSnapshots.current[card.word_id];
+      if (snapshot) restoreSrsCard(card.word_id, snapshot);
       setSessionGrades((prev) => {
         const next = [...prev];
-        next[currentIndex] = null;
+        next[index] = null;
         return next;
       });
-      setSessionStats((prev) => undoGradeInStats(prev, leavingGrade));
-    }
-
+      setSessionStats((prev) => undoGradeInStats(prev, grade));
+    };
+    undoPosition(currentIndex);
+    undoPosition(currentIndex - 1);
     setCurrentIndex((i) => Math.max(0, i - 1));
   };
 

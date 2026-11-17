@@ -7,6 +7,7 @@ import { TwistCard } from "../TwistCard";
 import { RETRY_INTENT_LINE } from "@/lib/retry-variation";
 import { exerciseWordIds } from "@/lib/exercise-words";
 import { LazyLoadBoundary } from "@/components/common/LazyLoadBoundary";
+import { finalSentenceExerciseId } from "../sentence-recall";
 
 import type { LessonSession } from "../lesson-session-types";
 
@@ -14,6 +15,7 @@ const ExerciseWidget = React.lazy(() => import("../ExerciseWidgets").then((modul
 
 export default function PracticeSegment({ session }: { session: LessonSession }) {
   const { lesson, isReading, setCurrentSegment, practiceIndex, setPracticeIndex, retryQueue, retryIndex, inRetryPhase, setEverQueued, twistPhase, twistCompleted, failCounts, mercyRevealFor, setMercyRevealFor, showPostureCues, flagGuessed, detourFootnote, setDetourDismissed, showDetour, consciousnessLine, whisperCues, handleExerciseError, queueExerciseRetry, handleRetryError, handleTwistDone, drainCurrentRetry, handlePracticeSuccess, currentExercise } = session;
+  const recallExerciseId = finalSentenceExerciseId(lesson.exercises);
   return (
             <LazyLoadBoundary label="this exercise">
               <React.Suspense
@@ -167,6 +169,7 @@ export default function PracticeSegment({ session }: { session: LessonSession })
                 key={inRetryPhase ? `retry_${currentExercise.id}_${retryIndex}` : `init_${currentExercise.id}_${practiceIndex}`}
                 exercise={currentExercise}
                 isRetry={inRetryPhase}
+                recallFirst={currentExercise.id === recallExerciseId}
                 onSuccess={handlePracticeSuccess}
                 onError={() =>
                   inRetryPhase ? handleRetryError(currentExercise) : handleExerciseError(currentExercise)

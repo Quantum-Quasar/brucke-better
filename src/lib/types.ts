@@ -23,6 +23,8 @@ export interface WordEntity {
   id: string;
   frequencyRank?: number | null;
   target_word: string;
+  /** Explicitly reviewed complete alternatives for this card's prompt. */
+  accepted_answers?: string[];
   english_cognate: string;
   english_meaning: string;
   gender: Gender | null;
@@ -182,7 +184,7 @@ export interface ExerciseItem {
   supportedModes?: ReviewMode[];
   // --- transcribe (TM-1): the thought the learner must render into German ---
   idea?: string;
-  /** Authored alternative complete sentences for free-production transcribe drills. */
+  /** Authored complete alternatives that satisfy this exercise's actual prompt. */
   accepted_answers?: string[];
   /** Complete, authored replay surfaces. Unsafe or unknown vocabulary is rejected at runtime. */
   variants?: ExerciseItem[];
@@ -295,7 +297,14 @@ export interface Lesson {
   payoff?: { ofLesson: number; text: string };
   summary: {
     outcome: string;
-    use_example: { german: string; english: string };
+    use_example: {
+      german: string;
+      english: string;
+      /** Complete alternatives for this exact English meaning, not other lesson exercises. */
+      accepted_answers?: string[];
+      /** Authored invalid sentences for this prompt; never inferred by shuffling words. */
+      mcq_distractors?: string[];
+    };
     takeaway: string;
     curiosity_teaser: string;
   };
@@ -319,7 +328,7 @@ export interface LessonIndexEntry {
   exerciseCount: number;
   table_word_ids: string[];
   summary: {
-    use_example: { german: string; english: string };
+    use_example: Lesson["summary"]["use_example"];
     takeaway: string;
   };
 }

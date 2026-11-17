@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { classicAnswerReadings, gradeExerciseAttempt } from "../lib/exercise-grading";
 import type { ExerciseItem } from "../lib/types";
+import modalLesson from "../data/lessons/2";
+import negationLesson from "../data/lessons/1202";
 
 const options = { languageId: "de", umlautTolerance: false, capitalizationTolerance: false };
 const exercise: ExerciseItem = {
@@ -28,6 +30,27 @@ describe("production exercise grading", () => {
     expect(gradeExerciseAttempt(item, ["Waser"], options).result.accuracy).toBe("incorrect");
     expect(gradeExerciseAttempt(item, ["wasser"], { ...options, capitalizationTolerance: true }).result.accuracy).toBe("incorrect");
     expect(gradeExerciseAttempt(item, ["Wasser"], options).result.accuracy).toBe("exact");
+  });
+
+  it("accepts reviewed modal word order without accepting a broken bracket", () => {
+    const item = modalLesson.exercises.find((exercise) => exercise.id === "l2_e5")!;
+    const accepted = gradeExerciseAttempt(item, ["Morgen kann ich kommen."], options);
+    expect(accepted.result.accuracy).toBe("exact");
+    expect(accepted.queueRetry).toBe(false);
+    expect(gradeExerciseAttempt(item, ["Ich morgen kann kommen"], options).result.accuracy).toBe("incorrect");
+    expect(gradeExerciseAttempt(item, ["Ich kann morgen kommt"], options).result.accuracy).toBe("incorrect");
+  });
+
+  it("accepts reviewed subject/time order from the actual lesson's tiles", () => {
+    const item = negationLesson.exercises.find((exercise) => exercise.id === "l1202_e5")!;
+    const bank = item.word_bank!;
+    const selection = ["morgen", "kommt", "Niemand"].map((word) => bank.indexOf(word));
+    expect(selection.every((index) => index >= 0)).toBe(true);
+    const readings = classicAnswerReadings(item.type, item.target_answer, "", selection, [], bank);
+    const accepted = gradeExerciseAttempt(item, readings, options);
+    expect(accepted.result).toMatchObject({ accuracy: "almost", reason: "case" });
+    expect(accepted.queueRetry).toBe(false);
+    expect(gradeExerciseAttempt(item, ["Morgen niemand kommt"], options).result.accuracy).toBe("incorrect");
   });
 
   it.each([

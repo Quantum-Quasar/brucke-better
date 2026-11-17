@@ -167,6 +167,7 @@ const lesson: Lesson = {
         "The bare infinitive closes the bracket: kommen goes last"
       ],
       "target_answer": "Ich kann morgen kommen",
+      "accepted_answers": ["Morgen kann ich kommen"],
       "meaning": "I can come tomorrow",
       "vocab_hints": [
         {
@@ -203,7 +204,13 @@ const lesson: Lesson = {
     "outcome": "Say what you want or can do by placing a bare infinitive at the end.",
     "use_example": {
       "german": "Ich kann morgen kommen.",
-      "english": "I can come tomorrow."
+      "english": "I can come tomorrow.",
+      "accepted_answers": ["Morgen kann ich kommen"],
+      "mcq_distractors": [
+        "Ich morgen kann kommen",
+        "Morgen ich kann kommen",
+        "Ich kann morgen kommt"
+      ]
     },
     "takeaway": "Use modal + bare infinitive at the end to assemble complex thoughts immediately.",
     "curiosity_teaser": "Next: the will ≠ will drills — separating ich will (free will) from the future, with sollen ↔ shall."
