@@ -5,7 +5,7 @@ import { ExampleSentence } from "@/components/common/ExampleSentence";
 import { ShiftPair } from "@/components/common/ShiftPair";
 import { computeLetterDiff } from "@/lib/letter-diff";
 import { playTargetAudio } from "@/lib/audio";
-import { wordWithArticle } from "@/lib/gender";
+import { spokenWordEntity } from "@/lib/gender";
 import type { ReviewMode } from "@/lib/types";
 import type { ReviewController } from "./use-review-controller";
 import { ReviewAnswerEntry } from "./ReviewAnswerEntry";
@@ -13,7 +13,7 @@ import { ReviewAnswerEntry } from "./ReviewAnswerEntry";
 export function ReviewSessionCard({ controller }: { controller: ReviewController }) {
   const { sessionRef, currentIndex, sessionCards, supportedModesForCard, effectiveReviewMode, setReviewMode, setPreferredReviewMode, goBack, canGoBack, settings, goForward, canGoForward, exitDeck, currentWord, language, wordMastery, currentCard, isRevealed, currentCloze, inputGuess, currentFeedbackNote, handleGrade, recognitionReason } = controller;
   if (!currentCard || !currentWord) return null;
-  const targetPronunciation = wordWithArticle(currentWord.gender, currentWord.target_word, language.id);
+  const targetPronunciation = spokenWordEntity(currentWord, language.id);
   return (
         <div
           ref={sessionRef}
@@ -203,8 +203,16 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
                     <p className="text-sm text-[var(--sub-color)]">Knew it before revealing? Choose Good or Easy. Otherwise choose Again.</p>
                   </div>
                 ) : <ShiftPair
-                  english={currentWord.english_cognate}
-                  german={currentWord.target_word}
+                  english={
+                    currentWord.id.startsWith("article_") && currentWord.english_cognate.startsWith("- ")
+                      ? currentWord.english_meaning
+                      : currentWord.english_cognate
+                  }
+                  german={
+                    currentWord.id.startsWith("article_") && currentWord.english_cognate.startsWith("- ")
+                      ? currentWord.english_cognate.slice(2).trim()
+                      : currentWord.target_word
+                  }
                   gender={currentWord.gender}
                   rule={currentWord.shift_rule}
                   wordId={currentWord.id}
@@ -238,7 +246,7 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
                   <button
                     type="button"
                     onClick={() => {
-                      const spoken = wordWithArticle(currentWord.gender, currentWord.target_word, language.id);
+                      const spoken = spokenWordEntity(currentWord, language.id);
                       playTargetAudio(spoken, language.ttsLocale);
                     }}
                     className="inline-flex items-center gap-1.5 px-3 py-1 rounded bg-[var(--sub-alt-color)] hover:bg-[var(--main-color)]/10 text-[var(--main-color)] border border-[var(--sub-color)]/20 text-xs font-mono transition cursor-pointer"

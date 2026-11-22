@@ -142,3 +142,19 @@ export function wordWithArticle(
   if (article.replace(/'$/, "").toLowerCase() === word.toLowerCase()) return word;
   return article.endsWith("'") ? `${article}${word}` : `${article} ${word}`;
 }
+
+/**
+ * Spoken/display phrase for any WordEntity, including synthetic article-drill
+ * cards whose target_word is the quiz article ("der", "l'") and whose noun sits
+ * in english_cognate ("- Tisch", "- heure").
+ */
+export function spokenWordEntity(
+  word: { id?: string; gender?: Gender | string | null; target_word: string; english_cognate?: string },
+  languageId: string
+): string {
+  if (word.id?.startsWith("article_") && word.english_cognate?.startsWith("- ")) {
+    const noun = word.english_cognate.slice(2).trim();
+    if (noun) return wordWithArticle(word.gender, noun, languageId);
+  }
+  return wordWithArticle(word.gender, word.target_word, languageId);
+}
