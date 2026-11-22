@@ -1,32 +1,52 @@
 /* Cache only requested content; never download a course in the background. */
 const version = new URL(self.location.href).searchParams.get("v") || "1";
-const prefix = "brucke-offline-";
-const cacheName = `${prefix}${version}`;
+const shellPrefix = "brucke-offline-";
+const mediaPrefix = "brucke-media-";
+const shellCacheName = `${shellPrefix}${version}`;
+const mediaCacheName = `${mediaPrefix}${version}`;
 const routes = new Set(["/", "/atlas", "/panorama", "/review", "/settings", "/about"]);
-const limit = 240;
+const shellLimit = 120;
+const mediaLimit = 200;
 
-function isAsset(url) {
+function isMediaAsset(url) {
   return url.origin === self.location.origin && (
-    url.pathname.startsWith("/_next/static/") ||
     /^\/data\/(de|fr|es|nl)\/(compendium\.json|lesson-index\.json|lessons\/\d+\.json)$/.test(url.pathname) ||
     url.pathname.startsWith("/webfonts/") ||
-    url.pathname.startsWith("/sounds/") ||
+    url.pathname.startsWith("/sounds/")
+  );
+}
+
+function isShellAsset(url) {
+  return url.origin === self.location.origin && (
+    url.pathname.startsWith("/_next/static/") ||
     url.pathname.startsWith("/icons/") ||
     url.pathname === "/manifest.webmanifest" ||
     url.pathname === "/icon.svg"
   );
 }
 
+function isAsset(url) {
+  return isShellAsset(url) || isMediaAsset(url);
+}
+
+function targetCacheFor(url) {
+  return isMediaAsset(url)
+    ? { name: mediaCacheName, limit: mediaLimit, prefix: mediaPrefix }
+    : { name: shellCacheName, limit: shellLimit, prefix: shellPrefix };
+}
+
 async function remember(request, response) {
   if (!response.ok || response.type === "opaque") return;
-  const cache = await caches.open(cacheName);
+  const url = new URL(request.url);
+  const { name, limit } = targetCacheFor(url);
+  const cache = await caches.open(name);
   await cache.put(request, response);
   const keys = (await cache.keys()).filter((key) => new URL(key.url).pathname !== "/offline.html");
   for (const key of keys.slice(0, Math.max(0, keys.length - limit))) await cache.delete(key);
 }
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(cacheName).then((cache) => cache.addAll([
+  event.waitUntil(caches.open(shellCacheName).then((cache) => cache.addAll([
     "/offline.html", "/manifest.webmanifest", "/icons/icon-192.png", "/icons/icon-512.png",
   ])));
   // Do not skipWaiting: an open lesson must keep its own build's chunks.
@@ -34,23 +54,30 @@ self.addEventListener("install", (event) => {
 
 self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
-    const previous = (await caches.keys()).filter((key) => key.startsWith(prefix) && key !== cacheName);
-    // Keep the last usable build; open tabs may still need even older chunks.
+    const allKeys = await caches.keys();
+    const previousShells = allKeys.filter((key) => key.startsWith(shellPrefix) && key !== shellCacheName);
+    const previousMedia = allKeys.filter((key) => key.startsWith(mediaPrefix) && key !== mediaCacheName);
+    // Keep the last usable build (shell + paired media); open tabs may still need older chunks.
     const clients = await self.clients.matchAll({ includeUncontrolled: true });
     if (clients.length === 0) {
-      let usable;
-      for (const key of [...previous].reverse()) {
+      let usableVersion = null;
+      for (const key of [...previousShells].reverse()) {
         const requests = await (await caches.open(key)).keys();
         if (requests.some((request) => {
           const url = new URL(request.url);
           return routes.has(url.pathname) && !url.search && request.headers.get("RSC") !== "1";
         })) {
-          usable = key;
+          usableVersion = key.slice(shellPrefix.length);
           break;
         }
       }
-      for (const key of previous) {
-        if (key !== usable) await caches.delete(key);
+      const keepShell = usableVersion ? `${shellPrefix}${usableVersion}` : null;
+      const keepMedia = usableVersion ? `${mediaPrefix}${usableVersion}` : null;
+      for (const key of previousShells) {
+        if (key !== keepShell) await caches.delete(key);
+      }
+      for (const key of previousMedia) {
+        if (key !== keepMedia) await caches.delete(key);
       }
     }
     await self.clients.claim();
@@ -67,7 +94,8 @@ self.addEventListener("fetch", (event) => {
   if (!navigation && !flight && !asset) return;
 
   event.respondWith((async () => {
-    const cache = await caches.open(cacheName);
+    const { name: targetName, prefix: targetPrefix } = targetCacheFor(url);
+    const cache = await caches.open(targetName);
     // An in-page lesson open rewrites the URL (/?lesson=1&lang=de) without a
     // document request, so only the bare route shell ("/") is in the cache.
     // A reload of that URL is still a navigation to the same JS app; match the
@@ -78,8 +106,13 @@ self.addEventListener("fetch", (event) => {
     const current = await cache.match(request) ?? (shellUrl ? await cache.match(shellUrl) : undefined);
     let saved = current;
     if (!saved) {
-      const previous = (await caches.keys()).filter((key) => key.startsWith(prefix) && key !== cacheName).reverse();
-      for (const key of previous) {
+      const allKeys = await caches.keys();
+      const previous = allKeys.filter((key) => key.startsWith(targetPrefix) && key !== targetName).reverse();
+      // For media assets, also check pre-split shell caches as a fallback during upgrades.
+      const fallbackKeys = targetPrefix === mediaPrefix
+        ? [...previous, ...allKeys.filter((key) => key.startsWith(shellPrefix) && key !== shellCacheName).reverse()]
+        : previous;
+      for (const key of fallbackKeys) {
         saved = await (await caches.open(key)).match(request);
         if (!saved && shellUrl) saved = await (await caches.open(key)).match(shellUrl);
         if (saved) break;
@@ -101,7 +134,8 @@ self.addEventListener("fetch", (event) => {
     } catch (error) {
       if (saved) return saved;
       if (navigation) {
-        const fallback = await cache.match("/offline.html");
+        const shellCache = await caches.open(shellCacheName);
+        const fallback = await shellCache.match("/offline.html");
         if (fallback) return fallback;
       }
       throw error;
@@ -121,13 +155,14 @@ self.addEventListener("message", (event) => {
   }
   if (event.data?.type !== "CACHE_VISIT" || !Array.isArray(event.data.urls)) return;
   event.waitUntil((async () => {
-    for (const value of event.data.urls.slice(0, limit)) {
+    for (const value of event.data.urls.slice(0, shellLimit + mediaLimit)) {
       if (typeof value !== "string") continue;
       let url;
       try { url = new URL(value, self.location.origin); } catch { continue; }
       if (!isAsset(url) && !(url.origin === self.location.origin && routes.has(url.pathname) && !url.search)) continue;
       const request = new Request(url.href);
-      const cache = await caches.open(cacheName);
+      const { name } = targetCacheFor(url);
+      const cache = await caches.open(name);
       if (await cache.match(request)) continue;
       try { await remember(request, await fetch(request)); } catch { /* Still usable online when storage is full. */ }
     }

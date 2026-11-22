@@ -103,4 +103,41 @@ describe("Offline worker update and outage recovery", () => {
     expect(await (await browser.request("/")).text()).toBe("working build A");
     expect([...browser.caches.keys()]).toEqual(["brucke-offline-A", "brucke-offline-C"]);
   });
+
+  it("isolates media/lesson writes so fonts and sounds never evict app shell chunks", async () => {
+    const browser = workerBrowser("V1");
+    browser.setNetwork(async (req) => new Response(`body:${req.url}`));
+    await browser.lifecycle("install");
+    await browser.request("/");
+    await browser.request("/_next/static/chunks/app.js", "cors");
+
+    // Flood media cache past its 200-entry limit with sound/font previews
+    for (let i = 0; i < 220; i++) {
+      await browser.request(`/sounds/click${i}.wav`, "cors");
+    }
+
+    const shellCache = await browser.open("brucke-offline-V1");
+    expect(await shellCache.match("https://brucke.test/")).toBeDefined();
+    expect(await shellCache.match("https://brucke.test/_next/static/chunks/app.js")).toBeDefined();
+
+    const mediaCache = await browser.open("brucke-media-V1");
+    expect((await mediaCache.keys()).length).toBeLessThanOrEqual(200);
+  });
+
+  it("retains paired shell and media caches for the last usable build on activate", async () => {
+    const browser = workerBrowser("C");
+    await (await browser.open("brucke-offline-A")).put("/", new Response("old A"));
+    await (await browser.open("brucke-media-A")).put("/sounds/a.wav", new Response("a"));
+    await (await browser.open("brucke-offline-B")).put("/", new Response("usable B"));
+    await (await browser.open("brucke-media-B")).put("/data/de/lessons/1.json", new Response("{}"));
+
+    await browser.lifecycle("install");
+    await browser.lifecycle("activate");
+
+    expect([...browser.caches.keys()].sort()).toEqual([
+      "brucke-media-B",
+      "brucke-offline-B",
+      "brucke-offline-C",
+    ]);
+  });
 });
