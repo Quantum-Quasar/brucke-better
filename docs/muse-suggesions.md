@@ -12,14 +12,10 @@ Verified against [NORTH_STAR.md](./NORTH_STAR.md). Implemented fixes, stale clai
 - **Selective practice upgrades:**
   - Pilot a short pre-reveal prediction prompt in shift cores (Cores 3–7).
   - Pilot sound-first prompts in discrimination sprigs (`302`, `402`, `502`, `602`, `702`).
-  - Add targeted diagnosis feedback for specific common errors (dative objects, Perfekt auxiliary choice, subclause verb position, `kein`/`nicht`) rather than copying every `trap_note`.
   - Add a sentence-context article exercise mode and a small set of authored sentence-review variants for high-failure items.
-- **CI `TRAIL.md` drift guard:** Add `TRAIL.md` to the CI generated-file sync check if you want `TRAIL.md` guaranteed in sync on every PR.
 
 ## 3. Future Backlog (Non-Urgent)
 
-- Panorama deep links from relevant lessons (e.g., linking verb-bracket lessons to the Panorama section).
 - Named side-path links without hijacking spine teasers.
-- Shorter relearn path for linked leech cards in Review.
 - Optional learning tools grounded in existing data: reading lens for pasted German text, curated compound practice, and a listening review deck.
 - Atlas graph jump-to-word search and representative-device profiling before any graph optimization.
