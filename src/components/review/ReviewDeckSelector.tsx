@@ -13,30 +13,6 @@ export function ReviewDeckSelector({ controller }: { controller: ReviewControlle
   const { nextLesson } = useCourseRecommendation(activeLanguageId);
   return (
           <div className="space-y-6">
-            <fieldset className="flex flex-wrap items-center gap-2 rounded-lg border border-[var(--sub-color)]/20 p-4">
-              <legend className="px-1 text-sm font-semibold">Review session length</legend>
-              {SESSION_SIZES.map((size) => <button key={size} type="button" aria-pressed={sessionSize === size} onClick={() => setSessionSize(size)} className={`min-h-11 rounded border px-4 text-sm ${sessionSize === size ? "border-[var(--main-color)] bg-[var(--main-color)] text-[var(--bg-color)]" : "border-[var(--sub-color)]/30 text-[var(--text-color)]"}`}>{size === 0 ? "All" : size}</button>)}
-              <p className="w-full text-sm text-[var(--sub-color)]">Applies to every vocabulary deck. The separate failed-sentence process queue has its own 15-item cap.</p>
-            </fieldset>
-            <section aria-label="Your next practice" className="grid gap-3 sm:grid-cols-3">
-              <div className="rounded-lg border border-[var(--main-color)]/30 bg-[var(--sub-alt-color)] p-4 space-y-3">
-                <h2 className="font-semibold text-[var(--text-color)]">Continue your lesson</h2>
-                <p className="text-sm text-[var(--sub-color)]">{nextLesson?.title ?? "You’re caught up with your recommendations."}</p>
-                <button type="button" disabled={!nextLesson} onClick={() => { if (nextLesson) openLesson(activeLanguageId, nextLesson.id); }} className="inline-flex min-h-11 items-center gap-2 rounded bg-[var(--main-color)] px-3 text-sm font-bold text-[var(--bg-color)] disabled:opacity-40">
-                  {!hasAnyCards && nextLesson?.id === 1 ? "Start lesson 1" : "Continue lesson"}<ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </button>
-              </div>
-              <div className="rounded-lg border border-[var(--sub-color)]/20 bg-[var(--sub-alt-color)] p-4 space-y-3">
-                <h2 className="font-semibold text-[var(--text-color)]">Review what you learned</h2>
-                <p className="text-sm text-[var(--sub-color)]">{learnedCount ? `${learnedCount} learned words · ${sessionSize ? `up to ${sessionSize}` : "all"} per session` : "Finish a lesson to add your first words."}</p>
-                <button type="button" disabled={learnedCount === 0} onClick={() => requestDeckStart("learned")} className="min-h-11 rounded border border-[var(--sub-color)]/30 px-3 text-sm font-semibold text-[var(--text-color)] hover:border-[var(--main-color)] disabled:opacity-40">Review learned words</button>
-              </div>
-              <div className="rounded-lg border border-[var(--sub-color)]/20 bg-[var(--sub-alt-color)] p-4 space-y-3">
-                <h2 className="font-semibold text-[var(--text-color)]">Your difficult words</h2>
-                <p className="text-sm text-[var(--sub-color)]">{weakestCount ? `${weakestCount} forgotten or guessed words` : "No difficult words yet. They’ll appear after a miss or a guess."}</p>
-                <button type="button" disabled={weakestCount === 0} onClick={() => requestDeckStart("weakest")} className="min-h-11 rounded border border-[var(--sub-color)]/30 px-3 text-sm font-semibold text-[var(--text-color)] hover:border-[var(--main-color)] disabled:opacity-40">Practise difficult words</button>
-              </div>
-            </section>
           {/* Deck 1: Due Today */}
           <div className="p-6 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 hover:border-[var(--main-color)]/40 transition flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="space-y-1">
@@ -66,6 +42,33 @@ export function ReviewDeckSelector({ controller }: { controller: ReviewControlle
               {dueCount > 0 ? "start due review" : "no due reviews"}
             </button>
           </div>
+
+
+            <section aria-label="Your next practice" className="grid gap-3 sm:grid-cols-3">
+              <div className="rounded-lg border border-[var(--main-color)]/30 bg-[var(--sub-alt-color)] p-4 space-y-3">
+                <h2 className="font-semibold text-[var(--text-color)]">Continue your lesson</h2>
+                <p className="text-sm text-[var(--sub-color)]">{nextLesson?.title ?? "You’re caught up with your recommendations."}</p>
+                <button type="button" disabled={!nextLesson} onClick={() => { if (nextLesson) openLesson(activeLanguageId, nextLesson.id); }} className="inline-flex min-h-11 items-center gap-2 rounded bg-[var(--main-color)] px-3 text-sm font-bold text-[var(--bg-color)] disabled:opacity-40">
+                  {!hasAnyCards && nextLesson?.id === 1 ? "Start lesson 1" : "Continue lesson"}<ArrowRight className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
+              <div className="rounded-lg border border-[var(--sub-color)]/20 bg-[var(--sub-alt-color)] p-4 space-y-3">
+                <h2 className="font-semibold text-[var(--text-color)]">Review what you learned</h2>
+                <p className="text-sm text-[var(--sub-color)]">{learnedCount ? `${learnedCount} learned words · ${sessionSize ? `up to ${sessionSize}` : "all"} per session` : "Finish a lesson to add your first words."}</p>
+                <button type="button" disabled={learnedCount === 0} onClick={() => requestDeckStart("learned")} className="min-h-11 rounded border border-[var(--sub-color)]/30 px-3 text-sm font-semibold text-[var(--text-color)] hover:border-[var(--main-color)] disabled:opacity-40">Review learned words</button>
+              </div>
+              <div className="rounded-lg border border-[var(--sub-color)]/20 bg-[var(--sub-alt-color)] p-4 space-y-3">
+                <h2 className="font-semibold text-[var(--text-color)]">Your difficult words</h2>
+                <p className="text-sm text-[var(--sub-color)]">{weakestCount ? `${weakestCount} forgotten or guessed words` : "No difficult words yet. They’ll appear after a miss or a guess."}</p>
+                <button type="button" disabled={weakestCount === 0} onClick={() => requestDeckStart("weakest")} className="min-h-11 rounded border border-[var(--sub-color)]/30 px-3 text-sm font-semibold text-[var(--text-color)] hover:border-[var(--main-color)] disabled:opacity-40">Practise difficult words</button>
+              </div>
+            </section>
+
+            <fieldset className="flex flex-wrap items-center gap-2 rounded-lg border border-[var(--sub-color)]/20 p-4">
+              <legend className="px-1 text-sm font-semibold">Review session length</legend>
+              {SESSION_SIZES.map((size) => <button key={size} type="button" aria-pressed={sessionSize === size} onClick={() => setSessionSize(size)} className={`min-h-11 rounded border px-4 text-sm ${sessionSize === size ? "border-[var(--main-color)] bg-[var(--main-color)] text-[var(--bg-color)]" : "border-[var(--sub-color)]/30 text-[var(--text-color)]"}`}>{size === 0 ? "All" : size}</button>)}
+              <p className="w-full text-sm text-[var(--sub-color)]">Applies to every vocabulary deck. The separate failed-sentence process queue has its own 15-item cap.</p>
+            </fieldset>
 
           {/* Gender guide after the due action; compact-only once dismissed. */}
           {hasAnyCards && !hasSeenGenderIntro && <GenderGuideBanner />}
