@@ -310,3 +310,13 @@ export const PANORAMA_LINKS: Record<PanoramaLanguageId, PanoramaLink[]> = {
   es: panoramaLinksFor("es"),
   nl: panoramaLinksFor("nl"),
 };
+
+/** Returns the matching Panorama link metadata when a lesson is referenced by Panorama. */
+export function panoramaLinkForLesson(
+  languageId: string,
+  lessonId: number
+): PanoramaLink | null {
+  if (!(languageId in PANORAMA_LINKS)) return null;
+  const links = PANORAMA_LINKS[languageId as PanoramaLanguageId];
+  return links.find((link) => link.lessonId === lessonId) ?? null;
+}

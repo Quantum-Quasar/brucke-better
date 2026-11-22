@@ -1,12 +1,15 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, TriangleAlert } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, ArrowRight, BookOpen, TriangleAlert } from "lucide-react";
+import { panoramaLinkForLesson } from "@/data/panorama-links";
 
 
 import type { LessonSession } from "../lesson-session-types";
 
 export default function PatternSegment({ session }: { session: LessonSession }) {
-  const { lesson, isReading, setCurrentSegment, markSegmentDone } = session;
+  const { lesson, activeLanguageId, isReading, setCurrentSegment, markSegmentDone } = session;
+  const panoramaRef = panoramaLinkForLesson(activeLanguageId, lesson.id);
   return (
             <div className="p-6 sm:p-8 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-6 shadow-md animate-in fade-in duration-200">
               <div className="flex items-center gap-2 pb-2 border-b border-[var(--sub-color)]/15">
@@ -25,6 +28,21 @@ export default function PatternSegment({ session }: { session: LessonSession }) 
                     <TriangleAlert className="w-3.5 h-3.5" /> the shortcut your mind will offer
                   </div>
                   <p className="text-xs text-[var(--sub-color)] leading-relaxed">{lesson.pattern.trap_note}</p>
+                </div>
+              )}
+
+              {panoramaRef && (
+                <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 text-xs font-mono">
+                  <span className="text-[var(--sub-color)] inline-flex items-center gap-1.5">
+                    <BookOpen className="w-3.5 h-3.5 text-[var(--main-color)]" />
+                    <span>Grammar reference: {panoramaRef.desc}</span>
+                  </span>
+                  <Link
+                    href="/panorama"
+                    className="text-[var(--main-color)] hover:underline font-semibold"
+                  >
+                    Open in Panorama →
+                  </Link>
                 </div>
               )}
 
