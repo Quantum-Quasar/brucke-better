@@ -47,9 +47,10 @@ export function LessonReader(props: LessonReaderProps) {
           completedSegments={completedSegments}
           onSelectSegment={(seg) => setCurrentSegment(seg)}
         />
+      </div>
 
-        {/* Lesson Title */}
-        <div className="pt-2">
+      {/* Lesson Title — scrolls away so mobile exercises keep vertical room */}
+      <div>
           <span className="text-xs font-mono text-[var(--main-color)] uppercase tracking-wider font-semibold">
             Phase {lesson.phase} ·{" "}
             {lesson.spineStory
@@ -80,13 +81,12 @@ export function LessonReader(props: LessonReaderProps) {
               )} — listening exercises read from the page instead
             </p>
           )}
-        </div>
       </div>
 
       {/* Main Content Area */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Main Step Card Column */}
-        <div className="lg:col-span-8 space-y-6 text-[var(--text-color)] text-base leading-relaxed font-mono">
+        <div className="lg:col-span-8 space-y-6 text-[var(--text-color)] text-base leading-relaxed font-sans">
           <LazyLoadBoundary label="this lesson segment">
           <React.Suspense fallback={<p role="status">loading lesson segment…</p>}>
           {/* STEP 1: The Hook Card */}
