@@ -1359,3 +1359,50 @@ The desktop family web in `ConstellationWeb.tsx` selects the first 20 words; mob
 - The SM-2 formula does reduce ease by `0.14` for Hard and leaves it unchanged for Good, with no interval fuzzing. That does not establish actual learner “ease hell” or avalanche frequency; do not adopt arbitrary recovery or jitter values without evidence and scheduling/migration tests.
 - Both CI jobs build separately. Sharing an artifact may save work but could serialize otherwise parallel jobs and add transfer time; measure total CI duration before changing it.
 - QR/URL transfer has not been shown to fit realistic progress payloads. Encrypted links are copies, not ongoing sync, and URLs can leak through sharing/history; backup and cross-device recovery are already discussed above. The suggested time-machine and cross-language cognate views also risk prioritizing linguistic decoration over learning German.
+
+
+
+
+Heavy minute-one cognitive load: In Lesson 1 (src/data/lessons/1.ts), a brand-new learner sees 10 word_ids, 16 table_word_ids, footnotes, and jumps from single -en verbs to assembling "Ich lerne Deutsch mit Brücke" with three vocab_hints in exercise 5. Even with collapsed disclosures, that's a lot of surface area for a first 3 minutes.
+
+Browser TTS is the weakest link in the experience: Relying purely on window.speechSynthesis is clean architecturally, but voice quality varies wildly across OSes and browsers. For a language app with dictation and listening drills, robotic or missing German voices hurt perceived quality more than almost anything else.
+
+Minor repo and code hotspots: src/components/review/use-review-controller.ts has grown to 919 lines (nearly 1.4× the next largest file), making it the main refactor candidate when you next touch Review. The root directory also has heavy internal scaffolding (TRAIL.md, AUDIT_MANIFEST.md, PROGRESS.md, AGENTS.md, BRUCKE_DESCRIPTION.md) that could eventually be tucked under docs/ so the root stays welcoming.
+
+Upgrade audio quality without adding a backend.
+You don't need accounts or a live TTS API to fix robotic speech. Pre-generating static .opus or .mp3 clips once (using a neural TTS engine) for the 1,227 German words and ~179 core lesson sentences — hosted on static storage/CDN with speechSynthesis as the offline fallback — will make the app feel dramatically more polished.
+
+do 11labs now
+
+Freeze sibling-course expansion and tidy up.
+Commit the working-tree required-grammar changes from PROGRESS.md, remove stray assets like public/sounds/fart-reverb.wav if unintentional, keep French/Spanish/Dutch clearly positioned as secondary/beta, and resist adding Norwegian or adaptive difficulty until German has real retention signal.
+
+
+Fix SM-2's Hard/Easy interval bug in src/lib/srs.ts:
+    Right now, gradeCard() gives Hard (3), Good (4), and Easy (5) the exact same interval on repetitions 0 and 1 (1 day and 6 days). Worse, on mature cards (repetitions >= 2), hitting Hard still multiplies interval * ease_factor — so a 10-day card with EF = 2.5 jumps to 25 days even though the user struggled. There's also no interval fuzzing (so all 10–14 words from a lesson come due on the exact same days) and no overdue bonus when a learner returns after a break.
+    Fix: Give Hard a shorter step (e.g., Math.max(1, Math.round(interval * 1.2))), give Easy a real boost (4 days on rep 0, 1.3× on mature cards), and add ±5% fuzzing — or swap SM-2 for FSRS (a small pure-TS implementation that prevents "ease hell" and handles overdue cards naturally).
+
+    Smooth out the Lesson 1–8 pacing spike and sequence repetition:
+    Scanning src/data/lessons/1.ts–8.ts shows an uneven early ramp: Lesson 1 has 10 core words, Lesson 2 drops to 5, then Lesson 3 spikes to 14 core words (with 16–18 table words across all eight). On top of that, Lessons 6, 7, and 8 (and nearly 4 and 5) repeat the exact same 5-exercise sequence (morpheme_tiles → matching_pairs → shift_select → derive → transcribe). Trimming Lesson 3 and mixing in a syntax_builder, dictation, or literal_gloss earlier will keep Topics 3–8 feeling fresh.
+
+2. Lesson & Review UX
+
+    Shrink the sticky header in src/components/lesson/LessonReader.tsx:
+    Lines 24–84 wrap the Back button, topic pill, ProgressBar5, Phase label, <h1> title (text-3xl sm:text-4xl), subtitle, <LessonEffort />, and the listening-off banner inside one sticky top-0 block. On a phone (or short laptop screen), that eats ~220–280px of vertical space on every scroll, squeezing exercises and word banks above the virtual keyboard. Keep only the compact top bar (Back + ProgressBar5) sticky, and let the title/subtitle scroll away.
+
+    Stop rendering lesson prose in monospace (LessonReader.tsx line 89):
+    The main lesson column sets font-mono on the entire reading body (hook, pattern, explanations). Monospace fits typing boxes, diff highlights, and keycaps, but makes multi-paragraph teaching prose harder to scan. There's also a noticeable style split on /review (ReviewDeckSelector.tsx), where newer cards use sentence-case sans-serif ("Continue your lesson") right above older all-lowercase monospace blocks ("due today", "which words", "start due review"). Unifying prose/headings to sans-serif + consistent casing will immediately make the UI feel more intentional.
+
+    Reorder /review so the primary action comes first (ReviewDeckSelector.tsx):
+    The very first block on /review is currently the "Review session length" radio fieldset (with a note about the 15-item failed-sentence cap), followed by a 3-card action row, and only then the "due today" SRS card. Flip that hierarchy: put Due Today (or a single smart "Start today's review" CTA) at the top, and move session length inline beside the Start button.
+
+    Make onboarding interactive and label course depth honestly (OnboardingModal.tsx):
+    First-time visitors currently face a 4-language grid where German (1,227 words, stories, required grammar) sits beside Dutch (85 lessons) as an equal peer, followed by 3 modal steps before touching any German. Badge German clearly as the Full Course (and the others as shorter/beta trails), and consider letting new users solve one 5-second cognate prompt ("water → Wasser, now try 'hand' or 'book'") before showing any settings.
+
+3. Offline PWA & future audio readiness
+
+    Split the 240-entry Service Worker cache in public/sw.js:
+    Currently, /_next/static/* JS chunks, /webfonts/*, /sounds/*, and /data/<lang>/lessons/*.json all share one 240-entry cache (limit = 240). If a learner previews several fonts and mechanical keyboard sound packs, those media files can evict app JS chunks or previously opened lessons, breaking offline mode. Separate app shell + JS chunks into a protected cache and keep lessons + fonts + audio in a separate bounded LRU cache.
+
+    Plan sw.js for external audio now:
+    Line 63 of public/sw.js bails out on cross-origin requests (url.origin !== self.location.origin). When you add Cloudflare R2–hosted .opus/.mp3 clips, either serve R2 under a same-origin path/proxy or explicitly allow-list your audio CDN origin in sw.js so played clips stay cached offline.
