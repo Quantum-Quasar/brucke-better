@@ -152,7 +152,7 @@ const lesson: Lesson = {
       "id": "l2901_e5",
       "type": "syntax_builder",
       "prompt": "Assemble: 'Yesterday was cold but today is good'",
-      "target_answer": "Gestern war kalt aber heute ist gut",
+      "target_answer": "Gestern war es kalt aber heute ist es gut",
       "meaning": "Yesterday was cold but today is good",
       "vocab_hints": [
         {
@@ -162,15 +162,17 @@ const lesson: Lesson = {
         }
       ],
       "word_bank": [
-        "aber",
-        "kein",
         "Gestern",
-        "der",
         "war",
-        "ist",
+        "es",
         "kalt",
+        "aber",
+        "heute",
+        "ist",
+        "es",
         "gut",
-        "heute"
+        "nicht"
+      
       ],
       "explanation": "war and ist in one sentence — the *wes- past and the *es- present, both twins, both daily."
     }
@@ -178,7 +180,7 @@ const lesson: Lesson = {
   "summary": {
     "outcome": "Conjugate sein through its cognate twins and tell yesterday's story with war.",
     "use_example": {
-      "german": "Gestern war kalt, aber heute ist gut.",
+      "german": "Gestern war es kalt, aber heute ist es gut.",
       "english": "Yesterday was cold, but today is good."
     },
     "takeaway": "ist↔is, war↔was, bist↔art — three roots shared across the sea, and war is the storyteller's tense.",
@@ -186,18 +188,20 @@ const lesson: Lesson = {
   },
   "twist": {
     "prompt": "Without looking back — rebuild the core sentence from ist, war & bin: Being Cognates (Yesterday was cold but today is good):",
-    "target_answer": "Gestern war kalt aber heute ist gut",
+    "target_answer": "Gestern war es kalt aber heute ist es gut",
     "word_bank": [
       "heute",
+      "es",
       "aber",
       "ist",
+      "es",
       "nicht",
       "war",
       "gut",
       "Gestern",
       "kalt"
     ],
-    "explanation": "Re-assembling \"Gestern war kalt aber heute ist gut\" from scratch locks in the structural pattern of ist, war & bin: Being Cognates without relying on short-term echo."
+    "explanation": "Re-assembling \"Gestern war es kalt, aber heute ist es gut\" from scratch locks in the structural pattern of ist, war & bin: Being Cognates without relying on short-term echo."
   }
 };
 

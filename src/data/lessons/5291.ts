@@ -129,7 +129,7 @@ const lesson: Lesson = {
         {
           "id": "be9",
           "english": "The pilot flies to Switzerland",
-          "german": "Der Pilot fliegt zur Schweiz"
+          "german": "Der Pilot fliegt in die Schweiz"
         },
         {
           "id": "be10",
@@ -147,7 +147,7 @@ const lesson: Lesson = {
           "german": "Der Friseur, der Kamm und der Spiegel"
         }
       ],
-      "target_answer": "Der Ingenieur wohnt in Frankreich, Ich gehe zum Friseur, Mein Beruf ist Verkäufer, Was sind Sie von Beruf?, Der Pilot fliegt nach Spanien, Der Kellner bringt das Essen, Der Kellner kommt vom Keller, Der Friseur spricht Französisch, Der Pilot fliegt zur Schweiz, Der Pilot lernt Englisch, Spanisch und Italienisch, Der Student hat noch keinen Beruf, Der Friseur, der Kamm und der Spiegel",
+      "target_answer": "Der Ingenieur wohnt in Frankreich, Ich gehe zum Friseur, Mein Beruf ist Verkäufer, Was sind Sie von Beruf?, Der Pilot fliegt nach Spanien, Der Kellner bringt das Essen, Der Kellner kommt vom Keller, Der Friseur spricht Französisch, Der Pilot fliegt in die Schweiz, Der Pilot lernt Englisch, Spanisch und Italienisch, Der Student hat noch keinen Beruf, Der Friseur, der Kamm und der Spiegel",
       "meaning": "live in France, go to the hairdresser, your profession, asking the job, fly to Spain, bring the food",
       "explanation": "Five jobs, six frames. The jobs own their verbs: der Pilot fliegt (nach + the destination), der Kellner bringt — and bringen is English bring's own twin. Was sind Sie von Beruf? is the polite opener, answered with a bare profession: Ich bin Verkäufer — no article."
     },

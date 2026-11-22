@@ -157,9 +157,9 @@ const lesson: Lesson = {
     {
       "id": "l2603_e5",
       "type": "syntax_builder",
-      "prompt": "Assemble: 'I said the way yesterday' (a little poem)",
-      "target_answer": "Ich sagte den Weg gestern",
-      "meaning": "Ich sagte den Weg gestern = Yesterday I said the way",
+      "prompt": "Assemble: 'I said yesterday where the way is'",
+      "target_answer": "Ich sagte gestern wo der Weg ist",
+      "meaning": "I said yesterday where the way is",
       "vocab_hints": [
         {
           "word": "den",
@@ -168,13 +168,16 @@ const lesson: Lesson = {
         }
       ],
       "word_bank": [
-        "Weg",
-        "sie",
-        "gestern",
-        "den",
         "Ich",
         "sagte",
-        "wenn"
+        "gestern",
+        "wo",
+        "der",
+        "Weg",
+        "ist",
+        "heute",
+        "nicht"
+      
       ],
       "explanation": "Three y→g words in one line: sagte, Weg, gestern — the cabinet, read aloud as a sentence."
     }
@@ -182,15 +185,15 @@ const lesson: Lesson = {
   "summary": {
     "outcome": "Read every English y as a German g — sagen, gestern, Weg, Tag, Regen, Auge.",
     "use_example": {
-      "german": "Ich sagte den Weg gestern.",
-      "english": "I said the way yesterday."
+      "german": "Ich sagte gestern, wo der Weg ist.",
+      "english": "I said yesterday where the way is."
     },
     "takeaway": "y→g closes the Atlas: every English y-word has a g-word twin — day/Tag carrying both y→g and d→t.",
     "curiosity_teaser": "Next: prepositions as physical metaphors — über↔over, unter↔under, durch↔through, and the cases they drag along."
   },
   "twist": {
-    "prompt": "Without looking back — rebuild the core sentence from sagen & gestern: the Y→G Twins (Ich sagte den Weg gestern = Yesterday I said the way):",
-    "target_answer": "Ich sagte den Weg gestern",
+    "prompt": "Without looking back — rebuild the core sentence from sagen & gestern: the Y→G Twins (I said yesterday where the way is):",
+    "target_answer": "Ich sagte gestern wo der Weg ist",
     "word_bank": [
       "Weg",
       "heute",
@@ -198,9 +201,11 @@ const lesson: Lesson = {
       "Ich",
       "nicht",
       "sagte",
-      "den"
+      "wo",
+      "der",
+      "ist"
     ],
-    "explanation": "Re-assembling \"Ich sagte den Weg gestern\" from scratch locks in the structural pattern of sagen & gestern: the Y→G Twins without relying on short-term echo."
+    "explanation": "Re-assembling \"Ich sagte gestern, wo der Weg ist\" from scratch locks in the structural pattern of sagen & gestern: the Y→G Twins without relying on short-term echo."
   }
 };
 

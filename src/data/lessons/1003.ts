@@ -138,7 +138,7 @@ const lesson: Lesson = {
       "spoken": "Der Tisch und die Hand und das Buch",
       "replays": 3,
       "target_answer": "Der Tisch und die Hand und das Buch",
-      "meaning": "the woman and the man and the child",
+      "meaning": "the table and the hand and the book",
       "cues": [
         "Three nouns, three different articles — each one is D- plus a pronoun",
         "she → die, he → der, it → das",

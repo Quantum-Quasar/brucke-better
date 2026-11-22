@@ -74,7 +74,7 @@ const lesson: Lesson = {
         },
         {
           "id": "sg3",
-          "english": "describe (scribe family)",
+          "english": "write / wrote / written",
           "german": "schreiben / schrieb / geschrieben"
         },
         {
@@ -94,7 +94,7 @@ const lesson: Lesson = {
         }
       ],
       "target_answer": "sprechen / sprach / gesprochen, kommen / kam / gekommen, schreiben / schrieb / geschrieben, schlafen / schlief, Wir können in das Glas blasen, Wir wollen nicht frieren",
-      "meaning": "speak / spoke / spoken; come / came / come; describe (scribe family); sleep / slept; We can blow into the glass; We do not want to freeze",
+      "meaning": "speak / spoke / spoken; come / came / come; write / wrote / written; sleep / slept; We can blow into the glass; We do not want to freeze",
       "explanation": "The clues help you remember the German forms. Describe belongs to the scribe family, but is a regular English verb — not a shared vowel melody."
     },
     {

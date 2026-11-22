@@ -179,17 +179,17 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: the alphabet — W is 'veh', V is 'fow', Z is 'tsett', and buchstabieren spells your name out loud."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"We be called here today\"",
-    "target_answer": "Wir heißen heute hier",
+    "prompt": "Without looking back — build in German: \"I live here\"",
+    "target_answer": "Ich wohne hier",
     "word_bank": [
-      "Wir",
-      "heute",
+      "Ich",
+      "wohne",
       "hier",
+      "komme",
       "nicht",
-      "sehr",
-      "heißen"
+      "heute"
     ],
-    "explanation": "Building \"Wir heißen heute hier\" from the lesson's core pattern locks in First Introductions."
+    "explanation": "Ich wohne hier is one of the core first-introduction sentences from this lesson."
   }
 };
 

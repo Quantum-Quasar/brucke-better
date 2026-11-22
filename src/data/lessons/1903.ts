@@ -87,7 +87,7 @@ const lesson: Lesson = {
         },
         {
           "id": "sv5",
-          "english": "slay / slew / slain",
+          "english": "hit / beat (schlagen)",
           "german": "schlagen / schlug / geschlagen"
         },
         {
@@ -107,7 +107,7 @@ const lesson: Lesson = {
         }
       ],
       "target_answer": "denken / dachte, bringen / brachte, gehen / ging, danken / dankte, schlagen / schlug / geschlagen, Wir können das schreiben, Wir können springen, Wir können treten",
-      "meaning": "think / thought; bring / brought; go / went; thank / thanked; slay / slew / slain; We can write that; We can jump; We can kick",
+      "meaning": "think / thought; bring / brought; go / went; thank / thanked; hit / beat; We can write that; We can jump; We can kick",
       "explanation": "The mixed verbs — vowel change plus a dental -t- — exist identically in both languages."
     },
     {

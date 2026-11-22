@@ -192,17 +192,17 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: the distance axis — die Nähe, weit, fern, quer, entlang."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"We at the back here today\"",
-    "target_answer": "Wir hinten heute hier",
+    "prompt": "Without looking back — build in German: \"We are in the back here today\"",
+    "target_answer": "Wir sind heute hier hinten",
     "word_bank": [
-      "sehr",
+      "sind",
       "nicht",
       "hier",
       "Wir",
       "hinten",
       "heute"
     ],
-    "explanation": "Building \"Wir hinten heute hier\" from the lesson's core pattern locks in Richtung II: hinten, Norden, Osten, Westen, Süden."
+    "explanation": "hinten is an adverb of place, so the sentence needs the verb sind in position 2: Wir sind heute hier hinten."
   }
 };
 

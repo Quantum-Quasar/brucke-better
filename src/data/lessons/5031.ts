@@ -93,23 +93,23 @@ const lesson: Lesson = {
       "matching_pairs": [
         {
           "id": "um3",
-          "english": "Brüder (with ü)",
-          "german": "the PLURAL of Bruder — umlaut as sound"
+          "english": "the PLURAL of Bruder — umlaut as sound",
+          "german": "Brüder (with ü)"
         },
         {
           "id": "um4",
-          "english": "zwölf (with ö)",
-          "german": "twelve — the tw→zw number"
+          "english": "twelve — the tw→zw number",
+          "german": "zwölf (with ö)"
         },
         {
           "id": "um5",
-          "english": "Männer (with ä)",
-          "german": "the PLURAL of Mann — the men-fossil"
+          "english": "the PLURAL of Mann — the men-fossil",
+          "german": "Männer (with ä)"
         },
         {
           "id": "um6",
-          "english": "schön (with ö)",
-          "german": "beautiful — the minimal-pair star"
+          "english": "beautiful — the minimal-pair star",
+          "german": "schön (with ö)"
         },
         {
           "id": "recall1",

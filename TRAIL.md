@@ -710,7 +710,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Ich habe einen Traum. — *I have a dream.*
 - 🧭 Masculine objects pay the -n toll (der → den, ein → einen); feminine and neuter stay unchanged.
 
-**Table:** der Kaffee — *coffee* · der Tee — *tea* · der Tisch — *table / dish* · der Traum — *dream* · der Tag — *day* · das Haus — *house* · der — *the / he* · die — *the / she / they* · das — *that / the* · das Glas — *glass* · der Stuhl — *chair* · das Fenster — *window* · der Löffel — *spoon* · stehen — *to stand* · zeigen — *to show* · küssen — *to kiss* · setzen — *to set; to seat* · sitzen — *to sit* · halten — *to hold*
+**Table:** der Kaffee — *coffee* · der Tee — *tea* · der Tisch — *table / dish* · der Traum — *dream* · der Tag — *day* · das Haus — *house* · der — *the / he* · die — *the / she / they* · das — *that / the* · das Glas — *glass* · der Stuhl — *chair* · das Fenster — *window* · der Löffel — *spoon* · stehen — *to stand* · zeigen — *to show* · küssen — *to kiss* · halten — *to hold* · sitzen — *to sit* · halten — *to hold*
 
 ### 🔸 1002 · Him & Whom Proof Texts
 
@@ -2272,7 +2272,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 > 🔭 **Next:** prepositions as physical metaphors — über↔over, unter↔under, durch↔through, and the cases they drag along.
 
-- 🗝️ Ich sagte den Weg gestern. — *I said the way yesterday.*
+- 🗝️ Ich sagte gestern, wo der Weg ist. — *I said yesterday where the way is.*
 - 🧭 y→g closes the Atlas: every English y-word has a g-word twin — day/Tag carrying both y→g and d→t.
 
 **Table:** sagen — *to say* · gestern — *yesterday* · der Weg — *way / path* · der Tag — *day* · der Regen — *rain* · morgen — *tomorrow / morrow* · legen — *to lay / put* · hell — *bright / light* · der Mond — *moon* · der Stern — *star* · die Mitternacht — *midnight* · die Nichte — *niece* · der Nachbar — *neighbor* · die Vorsicht — *caution / foresight* · vorgestern — *day before yesterday*
@@ -2371,7 +2371,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 ### 🌿 5052 · Wechselpräpositionen Sentence Gym
 
-*Twenty picture-prompt sentences switching cases by motion vs location*
+*Switching cases by motion vs location in real sentences*
 
 **The Gym at Full Weight** — No more pairs — full sentences at speed. Each prompt is a scene: is anything moving across a boundary? Accusative.
 
@@ -2592,7 +2592,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 > 🔭 **Next:** Wie geht's? — the greetings and small-talk idioms as archaic English survivals.
 
-- 🗝️ Gestern war kalt, aber heute ist gut. — *Yesterday was cold, but today is good.*
+- 🗝️ Gestern war es kalt, aber heute ist es gut. — *Yesterday was cold, but today is good.*
 - 🧭 ist↔is, war↔was, bist↔art — three roots shared across the sea, and war is the storyteller's tense.
 
 **Table:** sein — *to be* · was — *what* · haben — *to have* · gut — *good* · kalt — *cold* · morgen — *tomorrow / morrow* · gestern — *yesterday* · die Leute — *people* · der Himmel — *sky / heaven* · der Mensch — *human / person (kin: mannish)* · der Hunger — *hunger* · krank — *sick* · satt — *full* · glücklich — *happy / lucky* · holen — *to fetch, get* · wieder — *again*

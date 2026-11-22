@@ -172,17 +172,17 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: Gestern habe ich… Story Drills — narrate a whole weekend in Perfekt sentences from taught words."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"We have here today\"",
-    "target_answer": "Wir haben heute hier",
+    "prompt": "Without looking back — build in German: \"We came today\" (motion takes sein)",
+    "target_answer": "Wir sind heute gekommen",
     "word_bank": [
-      "nicht",
+      "sind",
       "haben",
-      "hier",
-      "sehr",
+      "gekommen",
       "heute",
-      "Wir"
+      "Wir",
+      "nicht"
     ],
-    "explanation": "Building \"Wir haben heute hier\" from the lesson's core pattern locks in haben or sein? Choice Gym."
+    "explanation": "kommen is a verb of motion, so Perfekt pairs it with sein (Wir sind heute gekommen), not haben."
   }
 };
 

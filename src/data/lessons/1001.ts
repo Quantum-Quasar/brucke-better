@@ -24,7 +24,7 @@ const lesson: Lesson = {
     "stehen",
     "zeigen",
     "küssen",
-    "setzen",
+    "halten",
     "sitzen",
     "halten"
   ],
@@ -45,7 +45,7 @@ const lesson: Lesson = {
     "stehen",
     "zeigen",
     "küssen",
-    "setzen",
+    "halten",
     "sitzen",
     "halten"
   ],
@@ -116,9 +116,14 @@ const lesson: Lesson = {
           "id": "recall1",
           "german": "Wir können laufen",
           "english": "We can run"
+        },
+        {
+          "id": "ac_setz",
+          "english": "to seat him",
+          "german": "ihn setzen"
         }
       ],
-      "target_answer": "den Kaffee (object), einen Traum (object), den Tag (object), einen Tisch (object), den Stuhl (object), den Löffel (object), wir küssen, wir stehen, Wir können laufen",
+      "target_answer": "den Kaffee (object), einen Traum (object), den Tag (object), einen Tisch (object), den Stuhl (object), den Löffel (object), wir küssen, wir stehen, Wir können laufen, ihn setzen",
       "meaning": "der Kaffee (subject); ein Traum (subject); der Tag (subject); ein Tisch (subject); der Stuhl (subject); der Löffel (subject); we kiss; we stand; We can run",
       "explanation": "Masculine objects pay the -n toll: der → den, ein → einen. The two wir-forms ride free — no object, no toll."
     },
@@ -162,9 +167,9 @@ const lesson: Lesson = {
     {
       "id": "l1001_e5",
       "type": "syntax_builder",
-      "prompt": "Assemble: 'We put down the chair and show the spoon'",
-      "target_answer": "Wir setzen den Stuhl und zeigen den Löffel",
-      "meaning": "We put down the chair and show the spoon",
+      "prompt": "Assemble: 'We hold the chair and show the spoon'",
+      "target_answer": "Wir halten den Stuhl und zeigen den Löffel",
+      "meaning": "We hold the chair and show the spoon",
       "word_bank": [
         "zeigen",
         "ein",
@@ -172,7 +177,7 @@ const lesson: Lesson = {
         "Löffel",
         "Wir",
         "den",
-        "setzen",
+        "halten",
         "sehr",
         "Stuhl",
         "und"
@@ -190,13 +195,13 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: Him & Whom — the proof texts where English still wears the ancient accusative on its sleeve."
   },
   "twist": {
-    "prompt": "Without looking back — rebuild the core sentence from den / einen / ihn Case Gym (We put down the chair and show the spoon):",
-    "target_answer": "Wir setzen den Stuhl und zeigen den Löffel",
+    "prompt": "Without looking back — rebuild the core sentence from den / einen / ihn Case Gym (We hold the chair and show the spoon):",
+    "target_answer": "Wir halten den Stuhl und zeigen den Löffel",
     "word_bank": [
       "den",
       "zeigen",
       "und",
-      "setzen",
+      "halten",
       "nicht",
       "Wir",
       "heute",
@@ -204,7 +209,7 @@ const lesson: Lesson = {
       "Löffel",
       "den"
     ],
-    "explanation": "Re-assembling \"Wir setzen den Stuhl und zeigen den Löffel\" from scratch locks in the structural pattern of den / einen / ihn Case Gym without relying on short-term echo."
+    "explanation": "Re-assembling \"Wir halten den Stuhl und zeigen den Löffel\" from scratch locks in the structural pattern of den / einen / ihn Case Gym without relying on short-term echo."
   }
 };
 

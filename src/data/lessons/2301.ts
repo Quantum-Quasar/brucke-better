@@ -91,12 +91,12 @@ const lesson: Lesson = {
         },
         {
           "id": "fu5",
-          "english": "fowl (and its archaic kin)",
+          "english": "bird / birds",
           "german": "Vogel / Vögel"
         },
         {
           "id": "fu6",
-          "english": "cow / kine (archaic!)",
+          "english": "cow / cows",
           "german": "Kuh / Kühe"
         },
         {
@@ -131,7 +131,7 @@ const lesson: Lesson = {
         }
       ],
       "target_answer": "Mann / Männer, Fuß / Füße, Maus / Mäuse, Tochter / Töchter, Vogel / Vögel, Kuh / Kühe, das Blatt im Buch, das Auge, das Ei, das Knie, ein Auge, Die Briefmarke ist teuer",
-      "meaning": "man / men; foot / feet; mouse / mice; daughter / daughters; fowl (and its archaic kin); cow / kine (archaic!); the sheet in the book; the eye; the egg; the knee; an eye; The postage stamp is expensive",
+      "meaning": "man / men; foot / feet; mouse / mice; daughter / daughters; bird / birds; cow / cows; the sheet in the book; the eye; the egg; the knee; an eye; The postage stamp is expensive",
       "explanation": "Same vowel-pull, same words — the dots in German are the only visible difference. Kine, English's own umlaut plural of cow, survived into the 1800s."
     },
     {

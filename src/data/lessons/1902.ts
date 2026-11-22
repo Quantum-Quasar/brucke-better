@@ -81,7 +81,7 @@ const lesson: Lesson = {
         },
         {
           "id": "af4",
-          "english": "fare / fared",
+          "english": "drive / travel (fahren)",
           "german": "fahren / fuhr / gefahren"
         },
         {
@@ -96,7 +96,7 @@ const lesson: Lesson = {
         }
       ],
       "target_answer": "geben / gab / gegeben, sprechen / sprach / gesprochen, nehmen / nahm / genommen, fahren / fuhr / gefahren, fallen / fiel / gefallen, springen / sprang / gesprungen",
-      "meaning": "the give, speak, take, fare, fall, and spring melodies",
+      "meaning": "the give, speak, take, drive/travel, fall, and spring melodies",
       "explanation": "e→a in the first family, a→u in the second — the melodies cross the North Sea intact, and fall/spring join the album note for note."
     },
     {

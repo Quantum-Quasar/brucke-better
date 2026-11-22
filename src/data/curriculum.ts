@@ -542,7 +542,7 @@ export const TRAIL_BRANCHES: TrailBranch[] = [
     title: "Zählen & Zahlen: eins bis hundert",
     blurb: "The counting core you actually use — eins, vier, fünf, sechs, zehn — and the nouns that count for you: die Zahl, die Nummer, die Hälfte.",
     lessons: [
-      { ...shell(5121, "Zählen I: eins, vier, fünf, sechs, zehn", "The everyday count: eins/vier/fünf/sechs plus zehn — whose T→S shift (ten) is the same law as Tag/day and two/zwei. drei, zwei, sieben, acht, hundert are already yours."), authored: true },
+      { ...shell(5121, "Zählen I: eins, vier, fünf, sechs, zehn", "The everyday count: eins/vier/fünf/sechs plus zehn — whose T→S shift (ten) is the same law as two/zwei and water/Wasser. drei, zwei, sieben, acht, hundert are already yours."), authored: true },
       { ...shell(5122, "Zählen II: null, die Zahl, die Nummer, die Hälfte, die Million", "Zero and the counting nouns: die Zahl (a count), die Nummer (a number you look up), die Hälfte (half — the doubling prefix), die Million. Every one of them takes a Z, the tsett-letter."), authored: true },
     ],
   },
@@ -732,7 +732,7 @@ export const TRAIL_BRANCHES: TrailBranch[] = [
     title: "Gefühle & Adjektive",
     blurb: "The emotional set — Liebe, nett, wütend, stolz, Freude — and five high-value adjectives: richtig, falsch, sauber, leer, offen.",
     lessons: [
-      { ...shell(5311, "Gefühle: die Liebe, nett, wütend, stolz, die Freude", "The feeling nouns, where the -ung suffix does the same job English's -ness does (Freude/joy, Liebe/love), and wütend/stolz show the dative-free adjective turning back into a noun: der Zorn, der Stolz."), authored: true },
+      { ...shell(5311, "Gefühle: die Liebe, nett, wütend, stolz, die Freude", "The everyday feeling set — die Liebe (love), die Freude (joy), nett (nice), wütend (angry), and stolz (proud) — practiced in natural sein + adjective and haben frames."), authored: true },
       { ...shell(5312, "Adjektive: richtig, falsch, sauber, leer, offen", "Five adjectives, three of them near-twins of English — richtig/right, falsch/false, offen/open — plus sauber (clean) and leer (empty)."), authored: true },
     ],
   },

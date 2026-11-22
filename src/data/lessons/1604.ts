@@ -187,17 +187,18 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: numbers, time & gestern — counting is a shift spiral: drei↔three, zwanzig↔twenty, gestern↔yesterday."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"We put on / get dressed (an + ziehen) here today\"",
-    "target_answer": "Wir anziehen heute hier",
+    "prompt": "Without looking back — build in German: \"We want to get dressed here today\" (modal + reflexive)",
+    "target_answer": "Wir wollen uns heute hier anziehen",
     "word_bank": [
       "Wir",
+      "wollen",
+      "uns",
       "hier",
-      "sehr",
       "heute",
-      "nicht",
-      "anziehen"
+      "anziehen",
+      "nicht"
     ],
-    "explanation": "Building \"Wir anziehen heute hier\" from the lesson's core pattern locks in Reflexive Daily Routines."
+    "explanation": "With a modal verb, the reflexive pronoun uns follows the modal and the separable infinitive anziehen stays whole at the end."
   }
 };
 

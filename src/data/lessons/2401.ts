@@ -151,7 +151,7 @@ const lesson: Lesson = {
     {
       "id": "l2401_e5",
       "type": "syntax_builder",
-      "prompt": "Assemble the German sentence for 'The book is better, but the film is the best':",
+      "prompt": "Assemble the German sentence for 'The book is better, but the film is the best (of all)':",
       "target_answer": "Das Buch ist besser aber der Film ist am besten",
       "meaning": "The book is better, but the film is the best",
       "vocab_hints": [

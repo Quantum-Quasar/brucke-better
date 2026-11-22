@@ -4,7 +4,7 @@ const lesson: Lesson = {
   "id": 5052,
   "slug": "wechselpraepositionen-sentence-gym",
   "title": "Wechselpräpositionen Sentence Gym",
-  "subtitle": "Twenty picture-prompt sentences switching cases by motion vs location",
+  "subtitle": "Switching cases by motion vs location in real sentences",
   "phase": 3,
   "shift_categories": [],
   "word_ids": [

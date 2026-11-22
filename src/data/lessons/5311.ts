@@ -96,8 +96,8 @@ const lesson: Lesson = {
         },
         {
           "id": "gf3",
-          "english": "The farmer has pride",
-          "german": "Der Bauer hat Stolz"
+          "english": "The farmer is very proud",
+          "german": "Der Bauer ist sehr stolz"
         },
         {
           "id": "gf4",
@@ -145,9 +145,9 @@ const lesson: Lesson = {
           "german": "Schach und Gitarre in der Freizeit"
         }
       ],
-      "target_answer": "Die Liebe ist süß wie Honig, Ich habe Angst vor dem Arzt, Der Bauer hat Stolz, Der Pilot ist stolz, Der Ingenieur ist stolz auf das Haus, Der Gast ist sehr nett, Der Kellner ist wütend, Das Lied macht Freude, Der Held hat keine Angst, Die Gruppe tanzt mit Freude, Die Party macht Freude, die Freude am Reiten, Schach und Gitarre in der Freizeit",
+      "target_answer": "Die Liebe ist süß wie Honig, Ich habe Angst vor dem Arzt, Der Bauer ist sehr stolz, Der Pilot ist stolz, Der Ingenieur ist stolz auf das Haus, Der Gast ist sehr nett, Der Kellner ist wütend, Das Lied macht Freude, Der Held hat keine Angst, Die Gruppe tanzt mit Freude, Die Party macht Freude, die Freude am Reiten, Schach und Gitarre in der Freizeit",
       "meaning": "love, pride, anger, joy, fear — the five feelings",
-      "explanation": "Five feelings, one frame. The frame never changes — sein + adjective — and the preposition carries the relationship: stolz auf, Angst vor, Freude mit. The old words feel them too: der Bauer hat Stolz, der Held hat keine Angst, der Kellner ist wütend."
+      "explanation": "Five feelings, one frame. The frame never changes — sein + adjective — and the preposition carries the relationship: stolz auf, Angst vor, Freude mit. The old words feel them too: der Bauer ist sehr stolz, der Held hat keine Angst, der Kellner ist wütend."
     },
     {
       "id": "l5311_e2",
