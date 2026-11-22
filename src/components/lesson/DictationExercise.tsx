@@ -84,15 +84,17 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
     exactMessage: "Spot On! Perfect.",
     guardDuplicateVerify: true,
     focusDelayMs: 80,
-    onReset: () => setReplaysUsed(
+    onReset: () => { setSkippedThisItem(false); setReplaysUsed(
       // The autoplay that opens the card is a hearing; count it against the budget.
       isListeningSkipped(useAppStore.getState().settings.listeningSkippedUntil) ? 0 : 1
-    ),
+    ); },
   });
 
   const spoken = exercise.spoken ?? exercise.target_answer;
   const replayBudget = exercise.replays ?? 2;
+  const [skippedThisItem, setSkippedThisItem] = React.useState(false);
   const listeningOff = isListeningSkipped(settings.listeningSkippedUntil);
+  const textFallback = listeningOff || skippedThisItem;
 
   const play = () => {
     if (replaysUsed >= replayBudget) return;
@@ -151,7 +153,7 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
         <div className="flex items-center gap-2">
           <span className="w-2 h-2 rounded-full bg-[var(--main-color)]" />
           <span className="text-xs uppercase tracking-wider text-[var(--main-color)] font-semibold">
-            {isRetry ? "retry exercise" : listeningOff ? `write the ${language.name}` : "listen and write"}
+            {isRetry ? "retry exercise" : textFallback ? `write the ${language.name}` : "listen and write"}
           </span>
         </div>
         {exercise.shift_hint && (
@@ -165,7 +167,7 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
       <VoiceStatusBanner allowSkipListening />
 
       {/* the prompt is a sound, not a sentence */}
-      {listeningOff ? (
+      {textFallback ? (
         <div className="p-4 rounded-lg bg-[var(--bg-color)] border border-dashed border-[var(--sub-color)]/40 space-y-2">
           <div className="flex items-center gap-2 text-xs text-[var(--sub-color)] uppercase tracking-wider">
             <EarOff className="w-4 h-4" /> Listening is off
@@ -204,16 +206,26 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
         <p className="text-[11px] text-[var(--sub-color)]">
           Write down what you heard. Replays are capped on purpose — the pause is the exercise.
         </p>
-        <button
-          onClick={() => skipListeningFor(LISTENING_SKIP_MS)}
-          className="inline-flex items-center gap-1.5 text-xs text-[var(--sub-color)] hover:text-[var(--text-color)]"
-        >
-          <EarOff className="w-3.5 h-3.5" /> I can&rsquo;t listen right now — skip listening for 15 min
-        </button>
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <button
+            type="button"
+            onClick={() => setSkippedThisItem(true)}
+            className="inline-flex items-center gap-1.5 text-xs text-[var(--sub-color)] hover:text-[var(--text-color)] cursor-pointer"
+          >
+            <EarOff className="w-3.5 h-3.5" /> Read this one instead
+          </button>
+          <button
+            type="button"
+            onClick={() => skipListeningFor(LISTENING_SKIP_MS)}
+            className="inline-flex items-center gap-1.5 text-xs text-[var(--sub-color)] hover:text-[var(--text-color)] cursor-pointer"
+          >
+            Mute listening for 15 min
+          </button>
+        </div>
       </div>
       )}
 
-      {!listeningOff && exercise.vocab_hints && exercise.vocab_hints.length > 0 && (
+      {!textFallback && exercise.vocab_hints && exercise.vocab_hints.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 p-3 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 text-xs">
           <span className="text-[var(--main-color)] font-bold uppercase tracking-wider flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5" /> clue:
