@@ -30,11 +30,14 @@ export function ReviewCardManagement({ controller }: { controller: ReviewControl
         const started = card.relearnLessonId !== undefined;
         return <li key={card.word_id} className="space-y-2 rounded bg-[var(--sub-alt-color)] p-3">
           <h3 className="font-semibold">{cardLabel(card.word_id)} · {card.lapses} lapses</h3>
-          {lesson ? <>
+          {lesson && card.relearnLessonId !== 0 ? <>
             <p className="text-sm text-[var(--sub-color)]">Teaching lesson: {lesson.title}</p>
-            <button type="button" className={buttonClass} onClick={() => { if (card.relearnLessonId !== lesson.id || card.relearnLessonCompleted) beginRelearn(card.word_id, lesson.id); openLesson(activeLanguageId, lesson.id); }}>{started && !card.relearnLessonCompleted ? "Continue teaching lesson" : "Restart teaching lesson to relearn"}</button>
-            {started && <p className="text-sm text-[var(--sub-color)]">{card.relearnLessonCompleted ? "Lesson revisited. Ready to resume." : "Finish the linked lesson, then return here to resume this card."}</p>}
-            <button type="button" disabled={!card.relearnLessonCompleted} className={`${buttonClass} ml-2 disabled:opacity-40`} onClick={() => resumeRelearn(card.word_id)}>Resume regular reviews</button>
+            <div className="flex flex-wrap items-center gap-2">
+              <button type="button" className={buttonClass} onClick={() => { if (card.relearnLessonId !== lesson.id || card.relearnLessonCompleted) beginRelearn(card.word_id, lesson.id); openLesson(activeLanguageId, lesson.id); }}>{started && !card.relearnLessonCompleted ? "Continue teaching lesson" : "Restart teaching lesson to relearn"}</button>
+              <button type="button" className={buttonClass} onClick={() => beginRelearn(card.word_id, 0)}>Quick relearn here</button>
+              <button type="button" disabled={!card.relearnLessonCompleted} className={`${buttonClass} disabled:opacity-40`} onClick={() => resumeRelearn(card.word_id)}>Resume regular reviews</button>
+            </div>
+            {started && <p className="text-sm text-[var(--sub-color)]">{card.relearnLessonCompleted ? "Lesson revisited. Ready to resume." : "Finish the linked lesson, or use Quick relearn here to review its meaning and example."}</p>}
           </> : <>
             <p className="text-sm text-[var(--sub-color)]">This dictionary card has no teaching lesson. Relearn from its meaning and example instead.</p>
             {!started ? <button type="button" className={buttonClass} onClick={() => beginRelearn(card.word_id, 0)}>Relearn this card</button> : <div className="space-y-2">
