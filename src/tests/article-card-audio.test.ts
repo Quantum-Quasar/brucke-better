@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { spokenWordEntity } from "@/lib/gender";
+import { spokenWordEntity, wordWithArticle } from "@/lib/gender";
 import { buildWordEntityMaps } from "@/lib/word-entities-core";
 import { frenchCompendium } from "@/data/french/compendium-fr";
 import germanCompendium from "@/data/compendium.json";
@@ -16,7 +16,7 @@ describe("Synthetic article card display & audio", () => {
     for (const card of maps.articles) {
       const spoken = spokenWordEntity(card, "de");
       expect(spoken).not.toMatch(/^(der|die|das)\s+\1$/i);
-      expect(spoken.split(/\s+/).length).toBeGreaterThanOrEqual(2);
+      expect(spoken.length).toBeGreaterThan(0);
     }
   });
 
@@ -30,5 +30,14 @@ describe("Synthetic article card display & audio", () => {
       expect(spoken.length).toBeGreaterThan(2);
       expect(spoken).not.toMatch(/^(le|la)\s+l'/i);
     }
+  });
+
+  it("omits das before bare German country and continent names while keeping das Land and die Schweiz", () => {
+    expect(wordWithArticle("das", "Österreich", "de")).toBe("Österreich");
+    expect(wordWithArticle("das", "Polen", "de")).toBe("Polen");
+    expect(wordWithArticle("das", "Frankreich", "de")).toBe("Frankreich");
+    expect(wordWithArticle("das", "Deutschland", "de")).toBe("Deutschland");
+    expect(wordWithArticle("das", "Land", "de")).toBe("das Land");
+    expect(wordWithArticle("die", "Schweiz", "de")).toBe("die Schweiz");
   });
 });

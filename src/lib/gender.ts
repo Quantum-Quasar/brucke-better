@@ -131,12 +131,29 @@ export function displayArticle(
  * where the language elides (l'ami), and never doubled when the word *is* the
  * article itself — "der der" is a typo the learner reads as noise.
  */
+// Standard German country and continent names that are used without an article
+// in neutral phrasing (unlike die Schweiz, die Türkei, die USA). Grammatical
+// gender metadata stays on the WordEntity, but default display/audio omits "das".
+const BARE_GERMAN_GEO_NAMES = new Set([
+  "deutschland",
+  "österreich",
+  "frankreich",
+  "polen",
+  "spanien",
+  "italien",
+  "england",
+  "japan",
+  "europa",
+  "amerika",
+]);
+
 export function wordWithArticle(
   gender: Gender | string | null | undefined,
   targetWord: string,
   languageId: string
 ): string {
   const word = targetWord.trim();
+  if (languageId === "de" && BARE_GERMAN_GEO_NAMES.has(word.toLowerCase())) return word;
   const article = displayArticle(gender, word, languageId);
   if (!article) return word;
   if (article.replace(/'$/, "").toLowerCase() === word.toLowerCase()) return word;
