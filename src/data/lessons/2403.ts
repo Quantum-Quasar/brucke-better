@@ -150,7 +150,12 @@ const lesson: Lesson = {
         "sehr",
         "ist"
       ],
-      "explanation": "der carries the flag, alte echoes with -e — and predicative gut stays bare, because outside the noun phrase nobody echoes."
+      "explanation": "der carries the flag, alte echoes with -e — and predicative gut stays bare, because outside the noun phrase nobody echoes.",
+      "affirmation": "Exact echo: der alte Wein before the noun, bare gut after ist.",
+      "diagnosis": {
+        "slip": "adjective ending did not match the article echo",
+        "cue": "After a loud definite article (der), the adjective echoes with -e (der alte Wein), while predicative gut stays bare."
+      }
     }
   ],
   "summary": {

@@ -170,6 +170,11 @@ const lesson: Lesson = {
         "keine"
       ],
       "explanation": "English negates the verb ('do not have'); German negates the noun ('no time') — keine Zeit, the honest fork.",
+      "affirmation": "Clean split: kein negates the noun, nicht negates the action.",
+      "diagnosis": {
+        "slip": "kein and nicht were swapped",
+        "cue": "Use kein to negate a noun (kein Kaffee, kein Geld), and nicht to negate a verb or adjective."
+      },
       "idea": "I have no time / I do not have time",
       "idea_parts": [
         "I have no time /",

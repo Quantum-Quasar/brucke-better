@@ -159,7 +159,12 @@ const lesson: Lesson = {
         "Ich",
         "gestern"
       ],
-      "explanation": "No object driven — just travel: sein. 'Ich bin gefahren' is 'I am come' with wheels."
+      "explanation": "No object driven — just travel: sein. 'Ich bin gefahren' is 'I am come' with wheels.",
+      "affirmation": "Right auxiliary for the verb — motion takes sein, action takes haben.",
+      "diagnosis": {
+        "slip": "Perfekt auxiliary choice missed motion vs action",
+        "cue": "Motion or change of state takes sein (gekommen, gefahren, geblieben); actions on an object take haben."
+      }
     }
   ],
   "summary": {

@@ -173,7 +173,12 @@ const lesson: Lesson = {
         "und",
         "er"
       ],
-      "explanation": "Two clauses, one subject — and the masculine accusative shows twice: einen Kaffee, ihn. Him-case everywhere."
+      "explanation": "Two clauses, one subject — and the masculine accusative shows twice: einen Kaffee, ihn. Him-case everywhere.",
+      "affirmation": "Both masculine objects shifted to -n: einen Kaffee and ihn.",
+      "diagnosis": {
+        "slip": "masculine object stayed in the subject form",
+        "cue": "Kaffee is masculine and acted on, so ein becomes einen — and er becomes ihn (the Him-Case)."
+      }
     }
   ],
   "summary": {
