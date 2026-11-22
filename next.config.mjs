@@ -25,9 +25,13 @@ const appVersion = versionOf(["src", "public/data", "public/sw.js", "public/offl
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  poweredByHeader: false,
+  images: {
+    unoptimized: true,
+  },
   env: { NEXT_PUBLIC_CONTENT_VERSION: dataVersion, NEXT_PUBLIC_APP_VERSION: appVersion },
   experimental: {
-    optimizePackageImports: ["lucide-react"],
+    optimizePackageImports: ["lucide-react", "zustand"],
   },
   async redirects() {
     // Keep legacy links working; the client retains a shareable query URL.
@@ -100,6 +104,24 @@ const nextConfig = {
           {
             key: "Cache-Control",
             value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
+      {
+        source: "/icons/:path*",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=604800, stale-while-revalidate=86400",
+          },
+        ],
+      },
+      {
+        source: "/og-brucke.png",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=604800, stale-while-revalidate=86400",
           },
         ],
       },

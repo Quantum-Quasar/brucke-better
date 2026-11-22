@@ -92,7 +92,7 @@ tests or the build:
 - **No third-party component libraries.** No Radix, Headless UI, Framer Motion.
   Standard DOM + Tailwind v4.
 - **Zero cloud TTS.** Pronunciation is browser-native `window.speechSynthesis`
-  (`de-DE`); the click engine is bundled `.wav` under `public/sounds/`.
+  (`de-DE`); the click engine is bundled `.mp3` under `public/sounds/`.
 - **Durable local storage.** `localStorage` with a ≤ 2048-byte URL-encoded
   cookie fallback, merged field-by-field (`src/lib/store.ts`).
 - **No cargo-cult repetition.** `scripts/audit-wording.ts` blocks prose

@@ -1,7 +1,7 @@
 "use client";
 
 // ponytail: lightweight, zero-dependency Web Audio controller for mechanical keyboard clicks & error sounds
-// Pre-warms only a single primary sample per switch pack (1.wav) and uses Web Audio
+// Pre-warms only a single primary sample per switch pack (1.mp3) and uses Web Audio
 // playbackRate micro-pitching for instant acoustic variation while lazily loading
 // secondary variations in the background.
 
@@ -79,13 +79,13 @@ export class SoundEngine {
   }
 
   /**
-   * Preloads only the primary sample (1.wav) for the chosen switch pack instead of
-   * downloading all 10 WAV variations upfront — cutting initial audio network payload by ~90%.
+   * Preloads only the primary sample (1.mp3) for the chosen switch pack instead of
+   * downloading all sample variations upfront — cutting initial audio network payload by ~90%.
    */
   public async preloadClickSound(clickId: string): Promise<void> {
     const opt = SOUND_CLICK_OPTIONS.find((s) => s.id === clickId);
     if (!opt || opt.count === 0) return;
-    const primaryUrl = `/sounds/click${clickId}/1.wav`;
+    const primaryUrl = `/sounds/click${clickId}/1.mp3`;
     fetch(primaryUrl).catch(() => {});
   }
 
@@ -190,8 +190,8 @@ export class SoundEngine {
     if (!opt || opt.count === 0) return;
 
     const randomIndex = Math.floor(Math.random() * opt.count) + 1;
-    const url = `/sounds/click${clickId}/${randomIndex}.wav`;
-    const primaryUrl = `/sounds/click${clickId}/1.wav`;
+    const url = `/sounds/click${clickId}/${randomIndex}.mp3`;
+    const primaryUrl = `/sounds/click${clickId}/1.mp3`;
 
     const buf = this.bufferCache.get(url);
     if (buf) {
@@ -199,7 +199,7 @@ export class SoundEngine {
       return;
     }
 
-    // If primary sample 1.wav is already cached, play it immediately with subtle pitch variation
+    // If primary sample 1.mp3 is already cached, play it immediately with subtle pitch variation
     // while lazily warming the secondary variation in the background
     const primaryBuf = this.bufferCache.get(primaryUrl);
     if (primaryBuf) {
@@ -224,7 +224,7 @@ export class SoundEngine {
     if (!opt || opt.count === 0) return;
 
     const randomIndex = Math.floor(Math.random() * opt.count) + 1;
-    const url = `/sounds/error${errorId}/${randomIndex}.wav`;
+    const url = `/sounds/error${errorId}/${randomIndex}.mp3`;
 
     const buf = this.bufferCache.get(url);
     if (buf) {

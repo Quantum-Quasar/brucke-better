@@ -10,9 +10,9 @@ export type ReviewGrade = 1 | 3 | 4 | 5; // 1 = Again, 3 = Hard, 4 = Good, 5 = E
  * local midnight (west of UTC) and lags a day behind (east of UTC). */
 export function localDateKey(date = new Date()): string {
   const yyyy = date.getFullYear();
-  const mm = String(date.getMonth() + 1).padStart(2, "0");
-  const dd = String(date.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
+  const m = date.getMonth() + 1;
+  const d = date.getDate();
+  return `${yyyy}-${m < 10 ? "0" : ""}${m}-${d < 10 ? "0" : ""}${d}`;
 }
 
 export const LEECH_LAPSES = 5;
@@ -64,7 +64,8 @@ export function gradeCard(card: SRSCard, grade: ReviewGrade, now = new Date()): 
     repetitions += 1;
 
     // SM-2 Ease Factor formula
-    ease_factor = ease_factor + (0.1 - (5 - grade) * (0.08 + (5 - grade) * 0.02));
+    const diff = 5 - grade;
+    ease_factor = ease_factor + (0.1 - diff * (0.08 + diff * 0.02));
     if (ease_factor < 1.3) ease_factor = 1.3;
   }
   // Sanitize ease_factor and interval against NaN: ensure ease_factor is a finite number >= 1.3, and interval is a finite number >= 1.
@@ -101,7 +102,11 @@ export function getDueCards(cards: Record<string, SRSCard>, today = localDateKey
   // defensive: a null/partial card (truncated store, legacy cookie) must never
   // break the review queue at boot — the store's normaliser drops them, but
   // state can also be seeded by callers/tests
-  return Object.values(cards).filter(
-    (c) => c && typeof c.due_date === "string" && c.due_date <= today && isReviewable(c, today)
-  );
+  const out: SRSCard[] = [];
+  for (const c of Object.values(cards)) {
+    if (c && typeof c.due_date === "string" && c.due_date <= today && isReviewable(c, today)) {
+      out.push(c);
+    }
+  }
+  return out;
 }

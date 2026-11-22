@@ -300,8 +300,8 @@ if (import.meta.main) {
   const outputPath = path.resolve(__dirname, "../src/data/compendium.json");
   const compendium = parseCompendium(fs.readFileSync(mdPath, "utf-8"));
   fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-  fs.writeFileSync(outputPath, JSON.stringify(compendium, null, 2), "utf-8");
-  fs.writeFileSync(path.resolve(__dirname, "../src/data/insights.json"), JSON.stringify(compendium.dailyInsights, null, 2), "utf-8");
+  fs.writeFileSync(outputPath, JSON.stringify(compendium), "utf-8");
+  fs.writeFileSync(path.resolve(__dirname, "../src/data/insights.json"), JSON.stringify(compendium.dailyInsights), "utf-8");
   fs.writeFileSync(path.resolve(__dirname, "../src/data/compendium-digest.md"), renderDigest(compendium), "utf-8");
   console.log(`[Brücke Compendium Parser] Compiled:
  - ${Object.keys(compendium.words).length} Core Words

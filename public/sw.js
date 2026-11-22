@@ -75,8 +75,8 @@ self.addEventListener("fetch", (event) => {
     // "not saved offline" page. Never do this for RSC/asset requests: their
     // query is meaningful (?v= content version).
     const shellUrl = navigation ? new URL(url.pathname, url.origin).href : null;
-    let saved = await cache.match(request);
-    if (!saved && shellUrl) saved = await cache.match(shellUrl);
+    const current = await cache.match(request) ?? (shellUrl ? await cache.match(shellUrl) : undefined);
+    let saved = current;
     if (!saved) {
       const previous = (await caches.keys()).filter((key) => key.startsWith(prefix) && key !== cacheName).reverse();
       for (const key of previous) {
@@ -86,9 +86,11 @@ self.addEventListener("fetch", (event) => {
       }
     }
     if (asset && saved) {
-      // LRU touch: re-insert the hit at the newest end so frequently opened
-      // lessons/assets are not evicted ahead of stale ones under the size cap.
-      event.waitUntil(remember(request, saved.clone()).catch(() => {}));
+      // Only promote into current cache if served from a previous build cache
+      // (avoids redundant disk write + full cache.keys() scan on every warm hit).
+      if (!current) {
+        event.waitUntil(remember(request, saved.clone()).catch(() => {}));
+      }
       return saved;
     }
     try {

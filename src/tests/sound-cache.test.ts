@@ -31,14 +31,14 @@ describe("SoundEngine Cache Bounds & Memory Protection", () => {
 
     // Load 30 sound buffers
     for (let i = 1; i <= 30; i++) {
-      await engine.loadBuffer(`/sounds/click1/${i}.wav`);
+      await engine.loadBuffer(`/sounds/click1/${i}.mp3`);
     }
 
     expect(engine.getCacheSize()).toBeLessThanOrEqual(24);
     // Buffer 1 should have been evicted
-    expect(engine.hasBuffer(`/sounds/click1/1.wav`)).toBe(false);
+    expect(engine.hasBuffer(`/sounds/click1/1.mp3`)).toBe(false);
     // Buffer 30 must be present
-    expect(engine.hasBuffer(`/sounds/click1/30.wav`)).toBe(true);
+    expect(engine.hasBuffer(`/sounds/click1/30.mp3`)).toBe(true);
   });
 
   it("negatively caches failed URLs to prevent repeated network fetch storms on typing", async () => {
@@ -55,7 +55,7 @@ describe("SoundEngine Cache Bounds & Memory Protection", () => {
 
     // Trigger 10 rapid keystroke buffer loads on missing sound
     for (let i = 0; i < 10; i++) {
-      await engine.loadBuffer("/sounds/missing.wav");
+      await engine.loadBuffer("/sounds/missing.mp3");
     }
 
     // Should only attempt fetch once due to negative caching

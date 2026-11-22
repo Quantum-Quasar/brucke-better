@@ -94,7 +94,7 @@ describe("interaction-gated click preload", () => {
 
     listeners.pointerdown[0]();
     await Promise.resolve();
-    expect(fetches).toEqual(["/sounds/click18/1.wav"]);
+    expect(fetches).toEqual(["/sounds/click18/1.mp3"]);
   });
 
   it("fires once, on whichever interaction comes first, and re-arms for a new pack", async () => {
@@ -104,7 +104,7 @@ describe("interaction-gated click preload", () => {
 
     listeners.keydown[0]();
     await Promise.resolve();
-    expect(fetches).toEqual(["/sounds/click4/1.wav"]);
+    expect(fetches).toEqual(["/sounds/click4/1.mp3"]);
 
     // the other triggers were removed with the fired one
     expect(listeners.pointerdown).toEqual([]);
@@ -115,7 +115,7 @@ describe("interaction-gated click preload", () => {
     expect(listeners.pointerdown.length).toBe(1);
     listeners.pointerdown[0]();
     await Promise.resolve();
-    expect(fetches).toEqual(["/sounds/click4/1.wav", "/sounds/click18/1.wav"]);
+    expect(fetches).toEqual(["/sounds/click4/1.mp3", "/sounds/click18/1.mp3"]);
   });
 
   it("is a no-op without a window (server render, node tests)", async () => {

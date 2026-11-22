@@ -1,10 +1,6 @@
 // Exports the heavy per-language content to static JSON under public/data/.
 // The app fetches only what a view needs, so review/atlas/lessons never ship
 // every lesson body and every language in the JS bundle.
-//
-// Each lesson gets its own payload (the lesson plus the words it can render),
-// which is what the in-page lesson reader fetches. The compendium and compact
-// lesson index serve review decks, sentences, the word drawer and the atlas.
 
 import fs from "node:fs";
 import path from "node:path";
@@ -41,11 +37,19 @@ const LANGUAGES: LanguageSource[] = [
   { id: "nl", compendium: dutchCompendium, lessons: NL_LESSONS },
 ];
 
-function writeJson(file: string, value: unknown): number {
-  fs.mkdirSync(path.dirname(file), { recursive: true });
-  const json = `${JSON.stringify(value)}\n`;
-  fs.writeFileSync(file, json);
-  return Buffer.byteLength(json);
+function writeJsonIfChanged(file: string, value: unknown): number {
+  const json = JSON.stringify(value);
+  const buf = Buffer.from(json);
+  try {
+    const existing = fs.readFileSync(file);
+    if (existing.length === buf.length && existing.equals(buf)) {
+      return buf.length;
+    }
+  } catch (error) {
+    if ((error as NodeJS.ErrnoException).code !== "ENOENT") throw error;
+  }
+  fs.writeFileSync(file, buf);
+  return buf.length;
 }
 
 function lessonIndexEntry(lesson: Lesson): LessonIndexEntry {
@@ -86,43 +90,53 @@ export function exportClientData(
   let totalBytes = 0;
   let lessonPayloads = 0;
 
+  fs.mkdirSync(path.dirname(shiftNamesPath), { recursive: true });
+  fs.mkdirSync(path.dirname(exerciseCountsPath), { recursive: true });
+
   for (const language of LANGUAGES) {
-    exerciseCounts[language.id] = Object.fromEntries(
-      language.lessons.map((lesson) => [lesson.id, lesson.exercises.length])
-    );
+    const langDir = path.join(outDir, language.id);
+    const lessonDir = path.join(langDir, "lessons");
+    fs.mkdirSync(lessonDir, { recursive: true });
+
+    const counts: Record<number, number> = {};
+    const indexEntries: LessonIndexEntry[] = new Array(language.lessons.length);
+    const wanted = new Set<string>();
+    for (let i = 0; i < language.lessons.length; i++) {
+      const lesson = language.lessons[i];
+      counts[lesson.id] = lesson.exercises.length;
+      indexEntries[i] = lessonIndexEntry(lesson);
+      wanted.add(`${lesson.id}.json`);
+    }
+    exerciseCounts[language.id] = counts;
+
     const ranks = frequencyRanks[language.id as keyof typeof frequencyRanks];
     const compendium = withFrequencyMetadata(language.compendium, ranks);
     const entities = buildWordEntityMaps(language.id, compendium, language.lessons).entities;
-    // wordList is derived in the client; dailyInsights stays for expression nodes.
     const { wordList: _wordList, ...payload } = compendium;
-    totalBytes += writeJson(path.join(outDir, language.id, "compendium.json"), payload);
-    totalBytes += writeJson(
-      path.join(outDir, language.id, "lesson-index.json"),
-      language.lessons.map(lessonIndexEntry)
-    );
-    for (const lesson of language.lessons) {
-      totalBytes += writeJson(
-        path.join(outDir, language.id, "lessons", `${lesson.id}.json`),
+
+    totalBytes += writeJsonIfChanged(path.join(langDir, "compendium.json"), payload);
+    totalBytes += writeJsonIfChanged(path.join(langDir, "lesson-index.json"), indexEntries);
+
+    for (let i = 0; i < language.lessons.length; i++) {
+      const lesson = language.lessons[i];
+      totalBytes += writeJsonIfChanged(
+        path.join(lessonDir, `${lesson.id}.json`),
         { lesson, compendium: trimCompendium(compendium, lesson, entities) }
       );
       lessonPayloads += 1;
     }
-    // Remove obsolete lesson ids rather than shipping stale course payloads.
-    const lessonDir = path.join(outDir, language.id, "lessons");
-    const wanted = new Set(language.lessons.map((lesson) => `${lesson.id}.json`));
-    if (fs.existsSync(lessonDir)) {
-      for (const name of fs.readdirSync(lessonDir)) {
-        if (name.endsWith(".json") && !wanted.has(name)) {
-          fs.unlinkSync(path.join(lessonDir, name));
-        }
+
+    for (const name of fs.readdirSync(lessonDir)) {
+      if (name.endsWith(".json") && !wanted.has(name)) {
+        fs.unlinkSync(path.join(lessonDir, name));
       }
     }
     shiftNames[language.id] = shiftNameEntries(language.compendium);
   }
 
-  totalBytes += writeJson(path.join(outDir, "frequency-provenance.json"), frequencyProvenance);
-  writeJson(shiftNamesPath, shiftNames);
-  writeJson(exerciseCountsPath, exerciseCounts);
+  totalBytes += writeJsonIfChanged(path.join(outDir, "frequency-provenance.json"), frequencyProvenance);
+  writeJsonIfChanged(shiftNamesPath, shiftNames);
+  writeJsonIfChanged(exerciseCountsPath, exerciseCounts);
   return { languages: LANGUAGES.length, lessonPayloads, totalBytes };
 }
 

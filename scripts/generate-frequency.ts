@@ -56,7 +56,7 @@ for (const lang of suggestionsPath ? [language as FrequencyLanguage] : FREQUENCY
 }
 
 if (!suggestionsPath) {
-  fs.writeFileSync(path.join(root, "src/data/frequency-ranks.json"), `${JSON.stringify(output)}\n`);
+  fs.writeFileSync(path.join(root, "src/data/frequency-ranks.json"), JSON.stringify(output));
   const provenance = {
     title: "App vocabulary surface-form frequency ranks",
     attribution: "Hermit Dave, FrequencyWords; generated from the OPUS OpenSubtitles 2018 tokenized corpus.",
@@ -73,5 +73,5 @@ if (!suggestionsPath) {
     generatedBy: "bun scripts/generate-frequency.ts",
     sources: Object.fromEntries(FREQUENCY_LANGUAGES.map((lang) => [lang, { url: frequencySourceUrl(lang), sha256: FREQUENCY_CHECKSUMS[lang], forms: 50_000 }])),
   };
-  fs.writeFileSync(path.join(root, "src/data/frequency-provenance.json"), `${JSON.stringify(provenance, null, 2)}\n`);
+  fs.writeFileSync(path.join(root, "src/data/frequency-provenance.json"), JSON.stringify(provenance));
 }

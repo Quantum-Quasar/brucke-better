@@ -30,7 +30,7 @@ describe("Filesystem Assets & Dynamic Routes Integrity", () => {
   });
 
   describe("Physical Sound Assets & Pack Verification", () => {
-    it("verifies that all click sound pack folders exist and contain non-empty .wav files", () => {
+    it("verifies that all click sound pack folders exist and contain non-empty .mp3 files", () => {
       expect(fs.existsSync(SOUNDS_DIR)).toBe(true);
       const activeClickPacks = SOUND_CLICK_OPTIONS.filter((s) => s.id !== "off");
       expect(activeClickPacks.length).toBeGreaterThanOrEqual(18);
@@ -39,20 +39,20 @@ describe("Filesystem Assets & Dynamic Routes Integrity", () => {
         const packDir = path.join(SOUNDS_DIR, `click${pack.id}`);
         expect(fs.existsSync(packDir), `Sound pack directory click${pack.id} must exist`).toBe(true);
 
-        const files = fs.readdirSync(packDir).filter((f) => f.endsWith(".wav"));
+        const files = fs.readdirSync(packDir).filter((f) => f.endsWith(".mp3"));
         expect(files.length, `Pack click${pack.id} should have ${pack.count} audio files`).toBeGreaterThanOrEqual(pack.count);
 
-        // Verify each individual indexed audio file (1.wav to N.wav)
+        // Verify each individual indexed audio file (1.mp3 to N.mp3)
         for (let i = 1; i <= pack.count; i++) {
-          const wavPath = path.join(packDir, `${i}.wav`);
-          expect(fs.existsSync(wavPath), `Audio file ${wavPath} must exist`).toBe(true);
-          const stat = fs.statSync(wavPath);
-          expect(stat.size, `Audio file ${wavPath} should have data`).toBeGreaterThan(100);
+          const samplePath = path.join(packDir, `${i}.mp3`);
+          expect(fs.existsSync(samplePath), `Audio file ${samplePath} must exist`).toBe(true);
+          const stat = fs.statSync(samplePath);
+          expect(stat.size, `Audio file ${samplePath} should have data`).toBeGreaterThan(100);
         }
       }
     });
 
-    it("verifies that all error audio cue folders exist and contain non-empty .wav files", () => {
+    it("verifies that all error audio cue folders exist and contain non-empty .mp3 files", () => {
       const activeErrorCues = SOUND_ERROR_OPTIONS.filter((s) => s.id !== "off");
       expect(activeErrorCues.length).toBeGreaterThanOrEqual(4);
 
@@ -61,9 +61,9 @@ describe("Filesystem Assets & Dynamic Routes Integrity", () => {
         expect(fs.existsSync(cueDir), `Error sound folder error${cue.id} must exist`).toBe(true);
 
         for (let i = 1; i <= cue.count; i++) {
-          const wavPath = path.join(cueDir, `${i}.wav`);
-          expect(fs.existsSync(wavPath), `Error audio ${wavPath} must exist`).toBe(true);
-          const stat = fs.statSync(wavPath);
+          const samplePath = path.join(cueDir, `${i}.mp3`);
+          expect(fs.existsSync(samplePath), `Error audio ${samplePath} must exist`).toBe(true);
+          const stat = fs.statSync(samplePath);
           expect(stat.size).toBeGreaterThan(100);
         }
       }

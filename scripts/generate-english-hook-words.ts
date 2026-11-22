@@ -55,5 +55,5 @@ const output = {
   words,
 };
 
-fs.writeFileSync(path.join(root, "src/data/english-hook-words.json"), `${JSON.stringify(output, null, 2)}\n`);
+fs.writeFileSync(path.join(root, "src/data/english-hook-words.json"), JSON.stringify(output));
 console.log(`${words.length} hook words written (${dropped} non-word forms dropped); checksum ${checksum.slice(0, 12)}…`);

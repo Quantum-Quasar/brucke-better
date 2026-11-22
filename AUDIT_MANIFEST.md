@@ -113,7 +113,7 @@ A short map of where things live; list the directories yourself for the full tre
 
 ```
 .
-├── package.json               # Next.js 16.4.1 (declared ^16.4.1; bun.lock resolves 16.4.1), React 19.2.8, Tailwind v4, Zustand 5, Vitest 5, Bun
+├── package.json               # Next.js 16.4.6 (declared ^16.4.6; bun.lock resolves 16.4.6), React 19.2.8, Tailwind v4, Zustand 5, Vitest 5, Bun
 ├── next.config.mjs            # Redirects for legacy /trail and /atlas URLs; cache headers
 ├── word_connections.md        # German content source of truth (parsed into src/data/*.json)
 ├── scripts/                   # Build + audit tooling — see scripts/README.md

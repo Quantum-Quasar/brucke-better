@@ -96,20 +96,19 @@ delete or rewrite assets. File count is the number of available asset URLs, **no
 the number of requests made at startup; raw disk bytes are not gzip/Brotli transfer
 bytes and exclude Next's separately built JavaScript/CSS.
 
-One-time inventory after regenerating this change's distribution payloads:
+Inventory after the audio, font, image and JSON optimisations:
 
 | Public group | Files / available URLs | Raw bytes |
 | --- | ---: | ---: |
-| All `public/` | 741 | 17,181,619 |
-| `data/` | 539 | 7,289,690 |
-| `sounds/` | 155 | 5,374,430 |
-| `webfonts/` | 42 | 4,417,824 |
-| Other public files | 5 | 99,675 |
+| All `public/` | 729 | 8,354,849 |
+| `data/` | 539 | 7,289,151 |
+| `sounds/` | 145 | 274,068 |
+| `webfonts/` | 40 | 758,916 |
+| Other public files | 5 | 32,714 |
 
-Data comprises German 3,522,385 bytes / 181 files, French 1,491,395 / 135,
-Spanish 1,466,632 / 135, Dutch 806,886 / 87, and 2,392 bytes of frequency
-attribution. The largest individual public asset is Iosevka (1,494,892 bytes);
-it is not a default font. Regenerate and rerun the audit when content changes.
+The largest public asset is the German compendium (647,639 bytes); a learner who
+opens a lesson fetches its smaller lesson payload instead. Regenerate and rerun
+the audit when content changes.
 
 Source inspection establishes the following request boundaries; these are not
 claims that every file was downloaded in a browser session:
@@ -122,22 +121,23 @@ claims that every file was downloaded in a browser session:
   Export and client-loader tests pin this boundary.
 - **Sounds:** `src/lib/sound.ts` does not download packs at module import.
   Hydration arms a first-interaction listener, then fetches only the selected
-  click pack's `1.wav` (Cherry MX Black ABS: 34,634 bytes). Further variations
+  click pack's `1.mp3` (Cherry MX Black ABS: 646 bytes). Further variations
   load during playback; an error cue loads when played. Explicit pack changes
-  preload that selected primary sample. No unused packs were deleted.
+  preload that selected primary sample. The unused `click16` pack and two
+  unreferenced WAV cues were removed.
   `sound.test.ts` guards the interaction gate and one-shot preload.
 - **Fonts:** only Lexend Deca and Roboto Mono have baseline rules in
-  `src/app/globals.css` (25,888 and 37,632 bytes). A CSS declaration alone does
-  not fetch a font until rendered text uses it. `src/data/fonts.ts` injects
-  other families only when selected or previewed. `FontSelectorModal.tsx`
-  previews one hovered/focused choice; downloading every preview requires the
-  explicit “Load all previews” action. `fonts.test.ts` pins single-family
-  injection.
+  `src/app/globals.css` (15,116 and 15,380 bytes). The root layout preloads Lexend
+  Deca; CSS alone fetches a font only when rendered text uses it.
+  `src/data/fonts.ts` injects other families only when selected or previewed.
+  `FontSelectorModal.tsx` previews one hovered/focused choice; downloading every
+  preview requires the explicit “Load all previews” action. `fonts.test.ts`
+  pins single-family injection.
 - **Offline:** `public/sw.js` installs only the offline page, manifest and two
   app icons. Fonts, sounds, data and Next assets enter the bounded cache only
   after requests (including already-requested bootstrap assets). There is no
-  whole-course, sound-pack or font-catalog precache. Service-worker behavior
-  and versioned deployment hashes are unchanged by making data build-generated.
+  whole-course, sound-pack or font-catalog precache. A warm asset hit in the
+  current cache avoids another Cache Storage write and eviction scan.
 
 ## Output
 

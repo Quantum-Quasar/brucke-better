@@ -35,13 +35,13 @@ Per-language design notes, shared method and test constraints: [`courses.md`](./
 ## Tech Stack & Architecture
 
 - **Runtime**: [Bun](https://bun.com) v1.4.4 (pinned in CI)
-- **Framework**: [Next.js 16.4.1](https://nextjs.org) (declared `^16.4.1` in `package.json`, resolved in `bun.lock`; App Router and Turbopack). Top-level tabs are statically pre-rendered; lesson content is loaded and rendered in the browser.
+- **Framework**: [Next.js 16.4.6](https://nextjs.org) (declared `^16.4.6` in `package.json`, resolved in `bun.lock`; App Router and Turbopack). Top-level tabs are statically pre-rendered; lesson content is loaded and rendered in the browser.
 - **UI Library**: React 19.2 + TypeScript
 - **Styling**: Tailwind CSS v4 (native CSS tokens, dark mode default)
 - **State Management**: [Zustand](https://github.com/pmndrs/zustand) 5 (dual `localStorage` + size-guarded cookie persistence)
 - **Icons**: Lucide React
 - **Testing**: Vitest 5 (`bun run test` → `vitest run`). The runner reports current file and test totals; these are not maintained by hand. There is no `bun test` script.
-- **Audio Engine**: Two independent zero-dependency browser-native paths: `window.speechSynthesis` for pronunciation (per-language voice and Slow/Normal/Faster preferences; Normal is 0.92x, with automatic exact-locale then regional fallback), and a Web Audio **sample** engine (`src/lib/sound.ts`) that decodes bundled Monkeytype mechanical-keyboard `.wav` packs with a 24-entry buffer cache and negative URL caching.
+- **Audio Engine**: Two independent zero-dependency browser-native paths: `window.speechSynthesis` for pronunciation (per-language voice and Slow/Normal/Faster preferences; Normal is 0.92x, with automatic exact-locale then regional fallback), and a Web Audio **sample** engine (`src/lib/sound.ts`) that decodes bundled Monkeytype mechanical-keyboard `.mp3` packs with a 24-entry buffer cache and negative URL caching.
 
 ---
 
@@ -177,7 +177,7 @@ The whole surface is themeable and typable, and the app never leaves the browser
   - *visibility* — key tips, caps-lock warning, and the `mastered / total` counter badge in the top nav.
   - *danger zone* — JSON backup export/import, reset settings, reset learning progress.
 - **JSON backup import/export** (`src/components/settings/`): backups include settings, per-language learning progress, word SRS and sentence-process cards. Imports validate the payload and remain compatible with older backups. The settings page composes separate behavior, input, sound, theme, visibility and danger-zone components.
-- **Mechanical-keyboard sound engine** (`src/lib/sound.ts`): selectable Monkeytype click packs (`cherrymx black abs`, `tealios v2`, `razer green`, …) plus `off`, and 4 error cues, shipped as real `.wav` files under `public/sounds/` and served with a one-year immutable `Cache-Control`. Decoded buffers are held in a 24-entry cache and failed URLs are negatively cached so a missing sample is never refetched in a loop. Every pack and cue is verified on disk by `src/tests/assets-and-routes.test.ts`.
+- **Mechanical-keyboard sound engine** (`src/lib/sound.ts`): selectable Monkeytype click packs (`cherrymx black abs`, `tealios v2`, `razer green`, …) plus `off`, and 4 error cues, shipped as `.mp3` files under `public/sounds/` and served with a one-year immutable `Cache-Control`. Decoded buffers are held in a 24-entry cache and failed URLs are negatively cached so a missing sample is never refetched in a loop. Every pack and cue is verified on disk by `src/tests/assets-and-routes.test.ts`.
 - **Six-tab bottom dock** (`src/components/navigation/BottomNav.tsx`): trail, atlas, panorama, review (with a due-count badge), settings, about.
 - **Word and lesson search** in the top nav (`/` outside inputs/dialogs): target words, English cognates/meanings, lesson titles, shift families and domains. Results open the word drawer or the lesson that teaches it; language indexes load on demand.
 - **Optional speaking practice** in sound settings uses browser recognition when supported. Feedback is lenient and never gates progress. Starting requires an explicit gesture and warns that the browser/provider may process audio online; the app stores no recordings or transcripts. Missing target-language TTS voices trigger a one-time install guide and fallback warning, not a learning block.
@@ -225,7 +225,7 @@ src/
 │   └── ...               # themes, fonts, settings, phonetics, languages, panorama
 ├── lib/
 │   ├── audio.ts          # Native speech pronunciation engine
-│   ├── sound.ts          # Web Audio sample engine for click/error .wav packs
+│   ├── sound.ts          # Web Audio sample engine for click/error .mp3 packs
 │   ├── letter-diff.ts    # Letter-by-letter diff + three-tier grading
 │   ├── shift-annotator.ts, shift-diagnosis.ts   # Sound-shift aligner; wrong-answer diagnosis
 │   ├── review-decks.ts, review-modes.ts, review-session.ts   # Review decks, styles, lifecycle

@@ -54,6 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <head>
         <meta name="darkreader-lock" />
         <meta name="color-scheme" content="dark light" />
+        <link rel="preload" href="/webfonts/LexendDeca-Regular.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
         {/* Runs before first paint: restores theme/font/contrast from storage */}
         <script
           dangerouslySetInnerHTML={{

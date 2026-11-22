@@ -3,6 +3,10 @@
 
 import { useAppStore } from "./store";
 
+let _lcsBuf = new Int32Array(4096);
+let _levPrev = new Int32Array(256);
+let _levCurr = new Int32Array(256);
+
 export interface DiffChar {
   char: string;
   status: "correct" | "incorrect" | "missing";
@@ -48,15 +52,24 @@ export function computeLetterDiff(userInput: string, expected: string): {
     return { userChars, expectedChars, isMatch: false };
   }
 
-  // LCS dynamic programming table so a single missing or extra letter early in a
-  // sentence doesn't shift and mark the rest of the sentence incorrect.
-  const dp: number[][] = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  // Flat reusable Int32Array LCS table (zero per-call 2D heap allocations)
+  const cols = n + 1;
+  const needed = (m + 1) * cols;
+  if (_lcsBuf.length < needed) _lcsBuf = new Int32Array(needed);
+  const dp = _lcsBuf;
+  for (let j = 0; j <= n; j++) dp[j] = 0;
   for (let i = 1; i <= m; i++) {
+    const rowOff = i * cols;
+    const prevOff = rowOff - cols;
+    dp[rowOff] = 0;
+    const uCode = user.charCodeAt(i - 1);
     for (let j = 1; j <= n; j++) {
-      if (user[i - 1] === target[j - 1]) {
-        dp[i][j] = dp[i - 1][j - 1] + 1;
+      if (uCode === target.charCodeAt(j - 1)) {
+        dp[rowOff + j] = dp[prevOff + j - 1] + 1;
       } else {
-        dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]);
+        const up = dp[prevOff + j];
+        const left = dp[rowOff + j - 1];
+        dp[rowOff + j] = up > left ? up : left;
       }
     }
   }
@@ -67,23 +80,24 @@ export function computeLetterDiff(userInput: string, expected: string): {
   let j = n;
 
   while (i > 0 || j > 0) {
-    if (i > 0 && j > 0 && user[i - 1] === target[j - 1]) {
-      userCharsRev.push({ char: user[i - 1], status: "correct" });
-      expectedCharsRev.push({ char: target[j - 1], status: "correct" });
+    if (i > 0 && j > 0 && user.charCodeAt(i - 1) === target.charCodeAt(j - 1)) {
+      const ch = user[i - 1];
+      userCharsRev.push({ char: ch, status: "correct" });
+      expectedCharsRev.push({ char: ch, status: "correct" });
       i--;
       j--;
     } else if (
       i > 0 &&
       j > 0 &&
-      dp[i][j - 1] === dp[i - 1][j] &&
-      dp[i - 1][j - 1] === dp[i][j - 1]
+      dp[i * cols + j - 1] === dp[(i - 1) * cols + j] &&
+      dp[(i - 1) * cols + j - 1] === dp[i * cols + j - 1]
     ) {
       // 1-for-1 character substitution at the same aligned slot
       userCharsRev.push({ char: user[i - 1], status: "incorrect" });
       expectedCharsRev.push({ char: target[j - 1], status: "incorrect" });
       i--;
       j--;
-    } else if (j > 0 && (i === 0 || dp[i][j - 1] >= dp[i - 1][j])) {
+    } else if (j > 0 && (i === 0 || dp[i * cols + j - 1] >= dp[(i - 1) * cols + j])) {
       expectedCharsRev.push({ char: target[j - 1], status: "missing" });
       j--;
     } else {
@@ -108,22 +122,30 @@ export function getLevenshteinDistance(a: string, b: string): number {
   const lenDiff = Math.abs(a.length - b.length);
   if (lenDiff > 20) return lenDiff;
 
-  // ponytail: O(N) space using two rolling rows instead of full O(M*N) 2D matrix
-  let prev = Array.from({ length: a.length + 1 }, (_, i) => i);
-  let curr = new Array(a.length + 1);
+  // O(N) space using module-scoped reusable Int32Array rolling rows + charCodeAt
+  const aLen = a.length;
+  const bLen = b.length;
+  if (_levPrev.length < aLen + 1) {
+    _levPrev = new Int32Array(aLen + 1);
+    _levCurr = new Int32Array(aLen + 1);
+  }
+  let prev = _levPrev;
+  let curr = _levCurr;
+  for (let j = 0; j <= aLen; j++) prev[j] = j;
 
-  for (let i = 1; i <= b.length; i++) {
+  for (let i = 1; i <= bLen; i++) {
     curr[0] = i;
-    const bChar = b.charAt(i - 1);
-    for (let j = 1; j <= a.length; j++) {
-      if (bChar === a.charAt(j - 1)) {
+    const bCode = b.charCodeAt(i - 1);
+    for (let j = 1; j <= aLen; j++) {
+      if (bCode === a.charCodeAt(j - 1)) {
         curr[j] = prev[j - 1];
       } else {
-        curr[j] = Math.min(
-          prev[j - 1] + 1, // substitution
-          curr[j - 1] + 1, // insertion
-          prev[j] + 1      // deletion
-        );
+        let best = prev[j - 1];
+        const ins = curr[j - 1];
+        const del = prev[j];
+        if (ins < best) best = ins;
+        if (del < best) best = del;
+        curr[j] = best + 1;
       }
     }
     const temp = prev;
