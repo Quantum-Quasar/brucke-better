@@ -53,7 +53,7 @@ const lesson: Lesson = {
   },
   "pattern": {
     "title": "The Twelve, Mapped",
-    "content": "vergessen ↔ forget (get + for). verlieren ↔ lose (forlorn = for-lost). verboten ↔ forbidden. verstehen ↔ understand (for-stand? no — but stehen/stand rhyme!). verkaufen ↔ sell (the cheap-loan with ver-). versuchen ↔ to try (the seek-out verb — suchen inside!). sich verfahren ↔ get lost driving (fahren inside!). verzeihen ↔ forgive? hint — zeihen (accuse) — ver-zeihen is 'un-accuse', forgive's true twin. vermeiden ↔ avoid (meiden = meet? no — 'shun'; mid in English 'methinks' family? hint only). verbinden ↔ bind (connect — verbinden/binden!). verbringen ↔ spend time (bringen inside!). The system: ver- + a root you own = an English for- word or a meaning-shifter.",
+    "content": "vergessen ↔ forget (get + for). verlieren ↔ lose (forlorn = for-lost). verboten ↔ forbidden. verstehen ↔ understand (stehen and stand are twins). verkaufen ↔ sell (the cheap-loan with ver-). versuchen ↔ to try (the seek-out verb — suchen inside!). sich verfahren ↔ get lost driving (fahren inside!). verzeihen ↔ forgive? hint — zeihen (accuse) — ver-zeihen is 'un-accuse', forgive's true twin. vermeiden ↔ avoid (from meiden, to shun). verbinden ↔ bind (connect — verbinden/binden!). verbringen ↔ spend time (bringen inside!). The system: ver- + a root you own = an English for- word or a meaning-shifter.",
     "footnotes": [],
     "linguist_note": "ver- does three jobs: loss (verlieren), error (sich verfahren), and transformation (verkaufen — sell IS a transformation of goods). English for- kept the loss/error jobs (forget, forsake) and lost the rest. The prefix jobs are the drift story."
   },

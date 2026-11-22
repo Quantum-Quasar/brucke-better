@@ -60,7 +60,7 @@ const lesson: Lesson = {
   },
   "pattern": {
     "title": "Flight Plans",
-    "content": "Flight mode (root in 2, prefix last): Ich rufe ihn an (I call him up — anrufen, the phone verb!). Ich wache früh auf. Wir kaufen? no — Wir sehen die? — keep: Ich schlafe? — Ich schlafe nicht ein? — Ich schlafe ein (I fall asleep). Grounded mode (modal bracket): Ich will ihn anrufen. Du musst früh aufwachen. Wir können nicht einschlafen. Perfekt mode (prefix + ge): Ich habe ihn angerufen. Er ist eingeschlafen. Three modes, one verb — read the mode from the sentence architecture before you translate a word.",
+    "content": "Flight mode (root in 2, prefix last): Ich rufe ihn an (I call him up — anrufen, the phone verb!). Ich wache früh auf. Ich schlafe nicht ein? — Ich schlafe ein (I fall asleep). Grounded mode (modal bracket): Ich will ihn anrufen. Du musst früh aufwachen. Wir können nicht einschlafen. Perfekt mode (prefix + ge): Ich habe ihn angerufen. Er ist eingeschlafen. Three modes, one verb — read the mode from the sentence architecture before you translate a word.",
     "footnotes": [],
     "linguist_note": "anrufen (call up) proves the particles are spatial even in abstract uses: the phone call goes UP and OUT. English 'call up' kept the spatial image — the particle, not the verb, carries the metaphor in both languages."
   },

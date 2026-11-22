@@ -57,7 +57,7 @@ const lesson: Lesson = {
   },
   "pattern": {
     "title": "Two Dynasties and a Method",
-    "content": "The fahren dynasty: fahren, fuhr, gefahren ↔ fare, fared. Die Fahrt (the ride), der Fahrer (driver — the -er agent law!), das Fahrzeug (vehicle — the -zeug law), abfahren (depart — separable, prefix flies!), die Abfahrt (departure). The ziehen dynasty: ziehen, zog, gezogen ↔ tug, tugged? no — its English cousins are tow and tug. Der Zug (the train), der Aufzug (elevator), der Umzug (the move), umziehen (to move house), aufziehen (to raise). The method: when you meet a new German word, strip it to the root, check your Atlas family, then let the prefix and suffix laws name it for you.",
+    "content": "The fahren dynasty: fahren, fuhr, gefahren ↔ fare, fared. Die Fahrt (the ride), der Fahrer (driver — the -er agent law!), das Fahrzeug (vehicle — the -zeug law), abfahren (depart — separable, prefix flies!), die Abfahrt (departure). The ziehen dynasty: ziehen, zog, gezogen — its English cousins are tow and tug. Der Zug (the train), der Aufzug (elevator), der Umzug (the move), umziehen (to move house), aufziehen (to raise). The method: when you meet a new German word, strip it to the root, check your Atlas family, then let the prefix and suffix laws name it for you.",
     "footnotes": [],
     "linguist_note": "ziehen's z is the T→Z shift of the ancient *teuhaną — the same root as English tow and tug. So der Zug, tow, and tug are one word: the train is named for pulling, exactly as a tugboat is."
   },

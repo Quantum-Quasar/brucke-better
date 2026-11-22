@@ -48,7 +48,7 @@ const lesson: Lesson = {
   },
   "pattern": {
     "title": "Build the Ladder",
-    "content": "Step one — the trigger verbs: versuchen (Ich versuche, ...), vorhaben (Ich habe vor, ... — 'I have it before me, that...'), vergessen? no — vergessen takes bare: Ich vergesse zu kommen (I forget TO come — zu!). Step two — the comma: German writes it — Ich habe vor, Deutsch zu lernen. Step three — the tail: [zu + infinitive] closes the sentence, exactly where the participle and bare infinitive land: one sentence end, three possible cargoes (gelernt, lernen, zu lernen). Step four — chained ladders: Ich versuche, früh aufzustehen, Deutsch zu lernen und mehr zu lesen? — every rung wears its own zu.",
+    "content": "Step one — the trigger verbs: versuchen (Ich versuche, ...), vorhaben (Ich habe vor, ... — 'I have it before me, that...'), and vergessen: Ich vergesse zu kommen (I forget TO come — zu!). Step two — the comma: German writes it — Ich habe vor, Deutsch zu lernen. Step three — the tail: [zu + infinitive] closes the sentence, exactly where the participle and bare infinitive land: one sentence end, three possible cargoes (gelernt, lernen, zu lernen). Step four — chained ladders: Ich versuche, früh aufzustehen, Deutsch zu lernen und mehr zu lesen? — every rung wears its own zu.",
     "footnotes": [],
     "linguist_note": "zu and to are the same Proto-Germanic preposition (*tō) — English split it into to (infinitive) and too/to (preposition's descendants); German split it into zu (preposition + infinitive glue) and the sibilant-shifted zu you met in topic 5. The to-infinitive is a zu-infinitive wearing English clothes."
   },

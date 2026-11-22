@@ -42,7 +42,7 @@ const lesson: Lesson = {
   ],
   "hook": {
     "title": "The Monster Reading Method",
-    "content": "German compound monsters are famous: Donaudampfschifffahrtsgesellschaft ('Danube steam-shipping company'). They terrify because learners read them as units. Read them as RUSSIANS? no — as stacks: split from the RIGHT, one head at a time. Gesellschaft (company) ← Schifffahrt (shipping) ← Dampf (steam) ← Donau (Danube). Each split gives a smaller compound; the RIGHTMOST word is always the head. Six splits and the monster is a sentence fragment: 'the Danube steam-shipping company'. You own every skill: head-word grammar from topic 21, compound reading, and the vocab pieces.",
+    "content": "German compound monsters are famous: Donaudampfschifffahrtsgesellschaft ('Danube steam-shipping company'). They terrify because learners read them as units. Read them as stacks: split from the RIGHT, one head at a time. Gesellschaft (company) ← Schifffahrt (shipping) ← Dampf (steam) ← Donau (Danube). Each split gives a smaller compound; the RIGHTMOST word is always the head. Six splits and the monster is a sentence fragment: 'the Danube steam-shipping company'. You own every skill: head-word grammar from topic 21, compound reading, and the vocab pieces.",
     "footnotes": [
       {
         "marker": "1",
@@ -53,7 +53,7 @@ const lesson: Lesson = {
   },
   "pattern": {
     "title": "Split, Head, Translate",
-    "content": "Monster one: Donaudampfschifffahrt → Donau + Dampf + Schifffahrt = 'Danube-steam-shipping' — steam-boats on the Danube. Monster two: Unabhängigkeitserklärung → Unabhängigkeit (independence) + Erklärung (explanation/declaration) = 'declaration of independence' — and Erklärung is YOUR er- factory verb as a noun! Monster three: Zeitverschiebung → Zeit + Verschiebung (shift) = 'time-shift' — jetlag, via the -ung factory. Monster four: Krankenhaus? small now — Krankenhausfiliale? no — try: Handschuhfabrik → glove-factory. The method: right-split, read the head, stack the modifiers, translate bottom-up.",
+    "content": "Monster one: Donaudampfschifffahrt → Donau + Dampf + Schifffahrt = 'Danube-steam-shipping' — steam-boats on the Danube. Monster two: Unabhängigkeitserklärung → Unabhängigkeit (independence) + Erklärung (explanation/declaration) = 'declaration of independence' — and Erklärung is YOUR er- factory verb as a noun! Monster three: Zeitverschiebung → Zeit + Verschiebung (shift) = 'time-shift' — jetlag, via the -ung factory. Monster four: Try Handschuhfabrik → glove-factory. The method: right-split, read the head, stack the modifiers, translate bottom-up.",
     "footnotes": [],
     "linguist_note": "The famous longest words are legal texts: Rindfleischetikettierungsüberwachungsaufgabenübertragungsgesetz (the beef-labeling law of Mecklenburg, retired 2013). Every link was real grammar — Germans laugh at these too."
   },

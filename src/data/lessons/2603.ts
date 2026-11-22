@@ -42,7 +42,7 @@ const lesson: Lesson = {
   ],
   "hook": {
     "title": "The Y→G Cabinet",
-    "content": "The last Atlas cabinet holds the y→g twins: English wore the ancient g down to y; German kept it. say ↔ sagen. yesterday ↔ gestern. way ↔ Weg. day ↔ Tag (the double: y→g AND d→t!). rain ↔ Regen. eye ↔ Auge (the g hides mid-word). And the extended family: derive? no — the y-words English still owns: yonder ↔ jener (the far demonstrative from topic 11!). Every English word with a y where a g should be — say, way, day, yesterday, yonder — has its German twin still saying the g.",
+    "content": "The last Atlas cabinet holds the y→g twins: English wore the ancient g down to y; German kept it. say ↔ sagen. yesterday ↔ gestern. way ↔ Weg. day ↔ Tag (the double: y→g AND d→t!). rain ↔ Regen. eye ↔ Auge (the g hides mid-word). And the y-words English still owns: yonder ↔ jener (the far demonstrative from topic 11!). Every English word with a y where a g should be — say, way, day, yesterday, yonder — has its German twin still saying the g.",
     "footnotes": [
       {
         "marker": "1",
@@ -55,7 +55,7 @@ const lesson: Lesson = {
     "title": "The Cabinet Display",
     "content": "Display one: say ↔ sagen — the y→g headliner (ich habe gesagt — you drilled the participle!). Display two: yesterday ↔ gestern — the calendar twin. Display three: way ↔ Weg — der Weg, the path (Ich folge dem Weg — folgen takes dative!). Display four: day ↔ Tag — the double-shift royalty (y→g + d→t). Display five: rain ↔ Regen — y→g with the g mid-word. Display six: yard ↔ Garten (hinted — the d→t + y→g garden pair). Display seven: eye ↔ Auge — the g worn smooth mid-word (die Augen — you own it from the body lessons!). The cabinet closes the Atlas: all nine families, fully displayed.",
     "footnotes": [],
-    "linguist_note": "The y→g pair is mirror-image to the g→y pair: English day (from dæġ, g vocalized) and German Tag (g kept); but English GET (from *getan) and German bekommen-family? no — get/gotten kept the g! The vocalization only happened before front vowels — which is why 'good' never became 'yood'."
+    "linguist_note": "The y→g pair is mirror-image to the g→y pair: English day (from dæġ, g vocalized) and German Tag (g kept); but English get/gotten kept its g! The vocalization only happened before front vowels — which is why 'good' never became 'yood'."
   },
   "exercises": [
     {

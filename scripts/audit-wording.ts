@@ -121,6 +121,22 @@ for (const node of order) {
   }
 }
 
+// 4. AI self-correction prose leakage ("...wait — ...", "...? no — ...", "or rather,")
+const AI_TIC_RE = /\.\.\.\s*wait\s*[—–-]|\?\s*no\s*[—–-]/;
+for (const l of LESSONS) {
+  const fields: Array<[string, string | undefined]> = [
+    ["hook", l.hook.content],
+    ["pattern", l.pattern.content],
+    ["twist", l.twist?.explanation],
+    ...l.exercises.map((ex): [string, string | undefined] => [ex.id, ex.explanation]),
+  ];
+  for (const [label, text] of fields) {
+    if (text && AI_TIC_RE.test(text)) {
+      report(`possible AI self-correction prose tic (${label})`, text, l.id, l.id);
+    }
+  }
+}
+
 if (problems === 0) {
   console.log("✓ no copy-pasted prose between neighbouring lessons (explanations, hook/pattern sentences, prompt formulas)");
 } else {

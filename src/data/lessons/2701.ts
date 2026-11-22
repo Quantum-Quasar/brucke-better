@@ -54,7 +54,7 @@ const lesson: Lesson = {
   },
   "pattern": {
     "title": "Place the Scene",
-    "content": "Static scenes (wo?): Das Buch ist auf? no — auf is next lesson's star; the dative set: über dem Tisch (above it), unter dem Tisch (under it), vor dem Haus (before it). Dynamic scenes (wohin?): Ich gehe unter die? — unter den Tisch (under it, going), über die Straße (across the street — Straße taught!), durch den Park (through it). Origins and targets: aus dem Haus (out of the house), zu dem Haus → zum Haus (to the house — the contraction!). Every sentence is a camera move: where is the camera, where is the thing, did it move?",
+    "content": "Static scenes (wo?) take the dative: über dem Tisch (above it), unter dem Tisch (under it), vor dem Haus (before it). Dynamic scenes (wohin?): Ich gehe unter die? — unter den Tisch (under it, going), über die Straße (across the street — Straße taught!), durch den Park (through it). Origins and targets: aus dem Haus (out of the house), zu dem Haus → zum Haus (to the house — the contraction!). Every sentence is a camera move: where is the camera, where is the thing, did it move?",
     "footnotes": [],
     "linguist_note": "durch is accusative-only because its meaning is inherently directional — you cannot 'be through' a park, only go through it. Meaning determines case here, not memorization."
   },

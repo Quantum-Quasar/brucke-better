@@ -52,7 +52,7 @@ const lesson: Lesson = {
   },
   "pattern": {
     "title": "The Seven Rooms",
-    "content": "Room I (ei–ei–ie): schreiben, schrieb, geschrieben ↔ describe, described — the scribe family. Room II (ie–o–o): ziehen, zog, gezogen — the tow family. Room III (i–a–u): singen, sang, gesungen; trinken, trank; finden, fand, gefunden — the biggest room, with English sing/drink/find beside them. Room IV (e–a–o): sprechen, sprach, gesprochen; kommen? no — kommen is its own oddity (kam, gekommen); stehlen (steal — stahl!). Room V (e–a–e): geben, gab, gegeben; nehmen, nahm, genommen — the give/take room. Room VI (a–u–a): fahren, fuhr, gefahren — the fare family. Room VII (ä/au–ie): schlafen, schlief; fallen, fiel — the reduplicating relics. Walk it twice and the melodies stick.",
+    "content": "Room I (ei–ei–ie): schreiben, schrieb, geschrieben ↔ describe, described — the scribe family. Room II (ie–o–o): ziehen, zog, gezogen — the tow family. Room III (i–a–u): singen, sang, gesungen; trinken, trank; finden, fand, gefunden — the biggest room, with English sing/drink/find beside them. Room IV (e–a–o): sprechen, sprach, gesprochen (with kommen as its own oddity: kam, gekommen); stehlen (steal — stahl!). Room V (e–a–e): geben, gab, gegeben; nehmen, nahm, genommen — the give/take room. Room VI (a–u–a): fahren, fuhr, gefahren — the fare family. Room VII (ä/au–ie): schlafen, schlief; fallen, fiel — the reduplicating relics. Walk it twice and the melodies stick.",
     "footnotes": [],
     "linguist_note": "The classes are defined by the PIE root syllable's structure (e/o ablaut + following consonant), which is why verbs that look unrelated share melodies: Germanic inherited the room assignments wholesale, and both languages redecorated independently."
   },
