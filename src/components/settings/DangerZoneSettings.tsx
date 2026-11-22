@@ -2,10 +2,10 @@
 
 import { useAppStore } from "@/lib/store";
 import { SettingItem } from "./SettingItem";
-import React, { useRef, useState } from "react";
-import { ShieldAlert, Download, Upload, RotateCcw } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { ShieldAlert, Download, Upload, RotateCcw, Copy, Info } from "lucide-react";
 import { LocalDataControls } from "./LocalDataControls";
-import { downloadProgressBackup } from "@/lib/progress-backup";
+import { BACKUP_STATUS_EVENT, downloadProgressBackup, readBackupReminder } from "@/lib/progress-backup";
 
 export function DangerZoneSettings({ matches, sectionVisible }: {
   matches: (keywords: string[]) => boolean;
@@ -14,6 +14,37 @@ export function DangerZoneSettings({ matches, sectionVisible }: {
   const resetSettings = useAppStore((s) => s.resetSettings);
   const resetProgress = useAppStore((s) => s.resetProgress);
   const [backupStatusNote, setBackupStatusNote] = useState<string | null>(null);
+  const [lastBackupAt, setLastBackupAt] = useState<number>(0);
+  const [diagCopied, setDiagCopied] = useState(false);
+
+  useEffect(() => {
+    const refresh = () => setLastBackupAt(readBackupReminder().downloadedAt);
+    refresh();
+    window.addEventListener(BACKUP_STATUS_EVENT, refresh);
+    return () => window.removeEventListener(BACKUP_STATUS_EVENT, refresh);
+  }, []);
+
+  const appVersion = process.env.NEXT_PUBLIC_APP_VERSION || "dev";
+  const dataVersion = process.env.NEXT_PUBLIC_CONTENT_VERSION || "dev";
+
+  const handleCopyDiagnostics = async () => {
+    const activeLanguageId = useAppStore.getState().activeLanguageId;
+    const payload = [
+      `Brücke diagnostics (no personal progress included)`,
+      `App build: ${appVersion}`,
+      `Data build: ${dataVersion}`,
+      `Language: ${activeLanguageId}`,
+      `Route: ${typeof window !== "undefined" ? window.location.pathname : "/settings"}`,
+      `Browser: ${typeof navigator !== "undefined" ? navigator.userAgent : "unknown"}`,
+    ].join("\n");
+    try {
+      await navigator.clipboard.writeText(payload);
+      setDiagCopied(true);
+      window.setTimeout(() => setDiagCopied(false), 2500);
+    } catch {
+      setBackupStatusNote("Could not copy diagnostic info to clipboard.");
+    }
+  };
   const [jsonPasteOpen, setJsonPasteOpen] = useState(false);
   const [jsonPasteText, setJsonPasteText] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -107,6 +138,13 @@ export function DangerZoneSettings({ matches, sectionVisible }: {
               </div>
             </SettingItem>
 
+            <p className="text-xs font-mono text-[var(--sub-color)] pl-2">
+              Last backup download started:{" "}
+              <span className="text-[var(--text-color)]">
+                {lastBackupAt > 0 ? new Date(lastBackupAt).toLocaleString() : "not exported yet"}
+              </span>
+            </p>
+
             {backupStatusNote && (
               <p className="text-xs font-mono text-[var(--main-color)] pl-2" role="status">
                 {backupStatusNote}
@@ -196,6 +234,24 @@ export function DangerZoneSettings({ matches, sectionVisible }: {
               className="px-3 py-1.5 rounded text-xs font-mono font-bold text-[var(--bg-color)] bg-[var(--error-color)] hover:opacity-90 transition cursor-pointer"
             >
               reset all progress
+            </button>
+          </SettingItem>
+
+          {/* Build & Diagnostics */}
+          <SettingItem
+            id="build-diagnostics"
+            icon={Info}
+            title="app version & diagnostics"
+            description={`App build ${appVersion} · Data build ${dataVersion}. Copy build and browser details for bug reports (never includes your answers or learning progress).`}
+            matchesSearch={matches(["version", "build", "diagnostics", "bug", "report", "support"])}
+          >
+            <button
+              type="button"
+              onClick={handleCopyDiagnostics}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-mono bg-[var(--sub-alt-color)] text-[var(--text-color)] hover:border-[var(--main-color)] border border-[var(--sub-color)]/20 transition cursor-pointer"
+            >
+              <Copy className="w-3.5 h-3.5 text-[var(--main-color)]" />
+              <span>{diagCopied ? "copied diagnostics" : "copy diagnostics"}</span>
             </button>
           </SettingItem>
         </section>
