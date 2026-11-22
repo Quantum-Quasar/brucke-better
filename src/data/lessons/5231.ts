@@ -41,8 +41,8 @@ const lesson: Lesson = {
     "winken"
   ],
   "hook": {
-    "title": "Sugar Was Gravel",
-    "content": "The sweet shelf is where the borrowings go deepest. der Zucker made the longest journey of any word you own: Sanskrit śarkarā meant 'gravel, grit', Greek borrowed it as sákkharon for the crystalline sand that sweetens, Latin made it saccharum — and there the road splits: saccharum fathered only the saccharine branch, while sugar and Zucker took the trade road home — Persian shakar, Arabic sukkar, Medieval Latin succarum — then split again, English buying through French sucre and German through Italian zucchero. Same ancient gravel, ground fine. der Honig is the opposite: no journey at all, the pure twin of honey, one Proto-Germanic word in both mouths. die Schokolade is Nahuatl chocolātl through Spanish chocolate — the same door the tomato used. der Keks is the delicious one: German borrowed the English plural cakes whole, s and all, and respelled it — Keks is 'cakes' with a German accent. die Torte came from Italian torta, and English tart is the same word through French: both go back to Latin torquere, 'to twist' — the twisted pastry dough. One twin, one gravel, one ocean-crosser, one baked-in plural, one twist.",
+    "title": "At the Breakfast Table",
+    "content": "Ich nehme Zucker in den Kaffee. Der Honig schmeckt süß. Five everyday sweet-shelf words let you order breakfast and describe taste immediately: der Zucker (sugar), der Honig (honey), die Schokolade (chocolate), der Kuchen (cake), and süß (sweet). Zucker and sugar, Honig and honey, süß and sweet — the English twins are already sitting right on the table.",
     "footnotes": [
       {
         "marker": "1",

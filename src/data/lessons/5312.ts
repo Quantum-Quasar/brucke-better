@@ -72,8 +72,8 @@ const lesson: Lesson = {
     "nachts"
   ],
   "hook": {
-    "title": "Right, False, Open — and the Closing Proof",
-    "content": "The last new words of the campaign, and they prove the method one final time. richtig is right — one Proto-Germanic word, *rehtaz, that both languages kept: English right, German recht, and richtig is recht with the adjective tail -ig, 'right-ish' turned exact. The gh in right and the ch-sound in recht are the same ancient letter — the family that made light/Licht and night/Nacht — and das Recht, 'the right, the law', lives in the idiom Du hast recht, 'you are right'. falsch is the borrowed one: Latin falsus, 'deceived, false' — German took it straight from Latin, English took it through Old French as false; same word, two routes, one meaning. offen and open are the same ancient word — and the shift is right there in its middle: German's great P→PF law turned pipe into Pfeife, and it did the same quiet work here, turning open's p into offen's ff, exactly as it did in pepper/Pfeffer and apple/Apfel. Same word, one shift, and you can hear it every morning. sauber and leer are the honest limitations: no safe English twin has been proven for either — clean and empty are places where English and German walked apart. Sisters share most of their words; they do not share all of them. That is the whole method in five adjectives: two twins, one double purchase, one twin with the shift working in its middle, and two words with no twin at all.",
+    "title": "Five Everyday Adjectives",
+    "content": "Das Glas ist leer. Das Fenster ist offen. Die Zahl ist richtig — oder falsch. Five high-frequency adjectives let you describe almost anything right after sein, with no endings to worry about: richtig (right), falsch (false), offen (open), sauber (clean), and leer (empty). Three of the five are near-twins of English.",
     "footnotes": [
       {
         "marker": "1",

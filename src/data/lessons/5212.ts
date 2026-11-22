@@ -44,8 +44,8 @@ const lesson: Lesson = {
     "seitdem"
   ],
   "hook": {
-    "title": "Cousins, Twins, and One False Twin",
-    "content": "der Herd and English hearth are cousins, not twins: two old words for the fire-place, *herþuz and *kerþą, that wandered apart at the very start — German hardened the old þ to d (Herd), English kept the th (hearth), the same law that made drei out of three. die Seife and soap are genuine twins from Proto-Germanic *saipō — a word so good that Rome bought it: Latin sapo, the Romans' hair-dye soap, is Germanic in origin, and German shifted the P to F (Seife) while English kept it (soap). der Kamm ↔ comb is the plain twin, *kambaz on both sides of the North Sea. die Klingel is klingen made into a thing — and klingen's own cousin is English clink, the same bell-root with an echo. And then the surprise: der Ofen looks like oven because it IS oven's twin — the same ancient Germanic word, on record since the eighth century on both shores (OHG ovan, OE ofen), originally the cooking pot, with English wearing the v where German wears the f. The stranger in this family is English furnace — Latin furnus, a different root entirely — the look-alike that ended up in English, not German. The kitchen is where honesty pays: cousins, twins, and one beautiful false twin — and the false twin is furnace, not Ofen.",
+    "title": "Around the Kitchen & Home",
+    "content": "Eine Sekunde, bitte — der Herd ist heiß! Der Kuchen ist im Ofen, die Klingel ist an der Tür. Five everyday household words let you name what is around the house and warn someone in a second: der Herd (stove, cousin of hearth), die Seife (soap, P→F), der Kamm (comb), der Spiegel (mirror), and die Klingel (doorbell).",
     "footnotes": [
       {
         "interest": true,
