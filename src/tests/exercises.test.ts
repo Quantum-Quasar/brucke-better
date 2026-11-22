@@ -230,6 +230,14 @@ describe("Progressive Bite-Sized Exercise Architecture", () => {
   it("grades transcribed word-order swaps as incorrect, not exact", () => {
     expect(evaluateAnswerAccuracy("Ich will lernen Deutsch", "Ich will Deutsch lernen").accuracy).toBe("incorrect");
     expect(evaluateAnswerAccuracy("Ich will Deutsch lernen", "Ich will Deutsch lernen").accuracy).toBe("exact");
+    const sentInit = evaluateAnswerAccuracy("ich kann morgen kommen", "Ich kann morgen kommen");
+    expect(sentInit.accuracy).toBe("almost");
+    expect(sentInit.warningNote).toContain("Sentences start with a capital letter");
+    expect(sentInit.warningNote).not.toContain("German nouns are capitalized");
+
+    const nounCase = evaluateAnswerAccuracy("Ich trinke kaffee", "Ich trinke Kaffee");
+    expect(nounCase.accuracy).toBe("almost");
+    expect(nounCase.warningNote).toContain("German nouns are capitalized");
   });
   it("is solvable: single-use tiles can actually spell the target (duplicates need duplicate tiles)", () => {
     const stripEnd = (t: string) => t.replace(/[.,!?;:]+$/, "");

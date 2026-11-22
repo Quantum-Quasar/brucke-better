@@ -331,6 +331,13 @@ const foldCommas = (s: string, spec: LanguageGradingSpec) =>
     .replace(/\s{2,}/g, " ")
     .trim();
 
+function germanCaseWarning(user: string, target: string): string {
+  if (target.includes(" ") && user.length === target.length && user.slice(1) === target.slice(1)) {
+    return `Almost right! Sentences start with a capital letter: "${target}"`;
+  }
+  return `Almost right! Note that German nouns are capitalized: "${target}"`;
+}
+
 export function evaluateAnswerAccuracy(
   userInput: string,
   expected: string,
@@ -410,7 +417,7 @@ function evaluateFolded(
     return {
       accuracy: "almost",
       reason: "case",
-      warningNote: `Almost right! Note that German nouns are capitalized: "${target}"`,
+      warningNote: germanCaseWarning(user, target),
     };
   }
 
@@ -435,7 +442,7 @@ function evaluateFolded(
       return {
         accuracy: "almost",
         reason: "case",
-        warningNote: `Almost right! Note that German nouns are capitalized: "${target}"`,
+        warningNote: germanCaseWarning(user, target),
       };
     }
     // German alone distinguishes the sharp s from a plain double s. If the
