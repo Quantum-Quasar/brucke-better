@@ -4,7 +4,7 @@ import React from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
-import { HelpCircle, Star } from "lucide-react";
+import { HelpCircle, Search, Star } from "lucide-react";
 import { ThemeDropdown } from "@/components/common/ThemeDropdown";
 import { HelpPanel } from "@/components/common/HelpPanel";
 import { useAppStore } from "@/lib/store";
@@ -98,6 +98,16 @@ export const TopNav: React.FC = () => {
 
         {/* Right side: customization & guide (navigation lives in the bottom dock) */}
         <div className="flex min-w-0 items-center gap-2 sm:gap-3 font-mono text-xs">
+          <button
+            type="button"
+            aria-label="Search words and lessons"
+            aria-haspopup="dialog"
+            aria-expanded={searchOpen}
+            onClick={() => setSearchOpen(true)}
+            className="sm:hidden inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg border border-[var(--sub-color)]/30 bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--main-color)] cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--main-color)]"
+          >
+            <Search className="w-4 h-4" aria-hidden="true" />
+          </button>
           <input
             ref={searchTriggerRef}
             type="search"
@@ -113,7 +123,7 @@ export const TopNav: React.FC = () => {
                 setSearchOpen(true);
               }
             }}
-            className="min-h-11 min-w-0 w-16 sm:w-40 rounded-lg border border-[var(--sub-color)]/30 bg-[var(--sub-alt-color)] px-3 text-[var(--text-color)] placeholder:text-[var(--sub-color)] cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--main-color)]"
+            className="hidden sm:block min-h-11 min-w-0 sm:w-40 rounded-lg border border-[var(--sub-color)]/30 bg-[var(--sub-alt-color)] px-3 text-[var(--text-color)] placeholder:text-[var(--sub-color)] cursor-pointer focus-visible:outline-2 focus-visible:outline-[var(--main-color)]"
           />
           {mounted && showMasteryCounter && displaySeen > 0 && (
             <div
