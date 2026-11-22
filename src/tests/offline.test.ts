@@ -106,7 +106,7 @@ describe("Offline worker update and outage recovery", () => {
 
   it("isolates media/lesson writes so fonts and sounds never evict app shell chunks", async () => {
     const browser = workerBrowser("V1");
-    browser.setNetwork(async (req) => new Response(`body:${req.url}`));
+    browser.setNetwork(async (req) => new Response(`body:${req}`));
     await browser.lifecycle("install");
     await browser.request("/");
     await browser.request("/_next/static/chunks/app.js", "cors");
