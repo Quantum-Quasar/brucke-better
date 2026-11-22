@@ -52,14 +52,25 @@ export function gradeCard(card: SRSCard, grade: ReviewGrade, now = new Date()): 
     interval = 1;
     lapses += 1;
   } else {
-    // Success (Hard, Good, Easy)
+    // Success (Hard = 3, Good = 4, Easy = 5)
+    // Keep Good on the standard 1 -> 6 -> round(base * EF) curve while ensuring
+    // Hard schedules sooner and Easy schedules later.
     if (repetitions === 0) {
-      interval = 1;
+      interval = grade === 5 ? 4 : 1;
     } else if (repetitions === 1) {
-      interval = 6;
+      interval = grade === 3 ? 3 : grade === 5 ? 9 : 6;
     } else {
       const base = interval > 0 ? interval : 6;
-      interval = Math.max(1, Math.round(base * ease_factor));
+      const goodInterval = Math.max(1, Math.round(base * ease_factor));
+      if (grade === 3) {
+        interval = goodInterval > 1
+          ? Math.max(1, Math.min(goodInterval - 1, Math.round(base * 1.2)))
+          : 1;
+      } else if (grade === 5) {
+        interval = Math.max(goodInterval + 1, Math.round(base * ease_factor * 1.3));
+      } else {
+        interval = goodInterval;
+      }
     }
     repetitions += 1;
 

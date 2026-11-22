@@ -81,4 +81,45 @@ describe("SM-2 Spaced Repetition Engine", () => {
     expect(card.ease_factor).toBe(1.3);
   });
 
+
+  it("schedules Hard sooner than Good and Easy later on learning and mature cards", () => {
+    const today = new Date("2026-09-05");
+    const fresh = createInitialCard("wasser");
+
+    // Rep 0: Easy jumps ahead of Hard/Good
+    const r0Hard = gradeCard(fresh, 3, today);
+    const r0Good = gradeCard(fresh, 4, today);
+    const r0Easy = gradeCard(fresh, 5, today);
+    expect(r0Hard.interval).toBe(1);
+    expect(r0Good.interval).toBe(1);
+    expect(r0Easy.interval).toBeGreaterThan(r0Good.interval);
+
+    // Rep 1: strict Hard < Good < Easy ordering
+    const rep1Card = gradeCard(fresh, 4, today);
+    const r1Hard = gradeCard(rep1Card, 3, today);
+    const r1Good = gradeCard(rep1Card, 4, today);
+    const r1Easy = gradeCard(rep1Card, 5, today);
+    expect(r1Hard.interval).toBeLessThan(r1Good.interval);
+    expect(r1Good.interval).toBeLessThan(r1Easy.interval);
+
+    // Mature card (interval = 10, EF = 2.5): strict Hard < Good < Easy ordering
+    const mature = { ...createInitialCard("haus"), repetitions: 2, interval: 10, ease_factor: 2.5 };
+    const mHard = gradeCard(mature, 3, today);
+    const mGood = gradeCard(mature, 4, today);
+    const mEasy = gradeCard(mature, 5, today);
+    expect(mHard.interval).toBe(12);
+    expect(mGood.interval).toBe(25);
+    expect(mEasy.interval).toBe(33);
+    expect(mHard.interval).toBeLessThan(mGood.interval);
+    expect(mGood.interval).toBeLessThan(mEasy.interval);
+    expect(mHard.due_date < mGood.due_date && mGood.due_date < mEasy.due_date).toBe(true);
+
+    // Mastery still requires repetitions >= 3 and interval >= 7
+    let hardOnly = createInitialCard("tief");
+    hardOnly = gradeCard(hardOnly, 3, today);
+    hardOnly = gradeCard(hardOnly, 3, today);
+    hardOnly = gradeCard(hardOnly, 3, today);
+    expect(hardOnly.repetitions).toBe(3);
+    expect(isMastered(hardOnly)).toBe(false);
+  });
 });
