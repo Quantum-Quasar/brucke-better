@@ -125,7 +125,7 @@ describe("Progressive Bite-Sized Exercise Architecture", () => {
         expect(ex.word_bank).toBeDefined();
         const targetWords = ex.target_answer.split(" ");
         for (const word of targetWords) {
-          expect(ex.word_bank).toContain(word);
+          expect(ex.word_bank).toContain(word.replace(/,$/, ""));
         }
         // …and ≥ 1 plausible distractor — a transcribe without distractors is a syntax_builder in disguise
         expect(ex.word_bank!.length).toBeGreaterThan(targetWords.length);

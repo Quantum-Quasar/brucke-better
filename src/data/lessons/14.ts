@@ -158,9 +158,9 @@ const lesson: Lesson = {
       "id": "l14_e4d",
       "type": "dictation",
       "prompt": "Listen and write the whole sentence.",
-      "spoken": "Ich weiß dass du Deutsch lernst",
+      "spoken": "Ich weiß, dass du Deutsch lernst",
       "replays": 2,
-      "target_answer": "Ich weiß dass du Deutsch lernst",
+      "target_answer": "Ich weiß, dass du Deutsch lernst",
       "meaning": "I know that you are learning German",
       "cues": [
         "Main clause first: Ich weiß",
@@ -179,7 +179,7 @@ const lesson: Lesson = {
         "Main clause first: Ich weiß — verb in position 2",
         "dass opens the basement: die Katze (the cat, feminine), and kommt waits at the very end"
       ],
-      "target_answer": "Ich weiß dass die Katze kommt",
+      "target_answer": "Ich weiß, dass die Katze kommt",
       "meaning": "I know that the cat is coming",
       "vocab_hints": [
         {
