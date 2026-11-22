@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseReviewSession, type ReviewSessionSnapshot } from "@/lib/review-session";
+import { MAX_REVIEW_SESSION_CARDS, parseReviewSession, type ReviewSessionSnapshot } from "@/lib/review-session";
 
 const CARD = {
   word_id: "arm",
@@ -99,5 +99,31 @@ describe("review session snapshots", () => {
     const parsed = parseReviewSession(raw);
     expect(parsed).not.toBeNull();
     expect(Object.keys(parsed!.preGradeSnapshots)).toEqual(["arm"]);
+  });
+
+  it("restores a full German everything/all session above 2,000 cards", () => {
+    const cards = Array.from({ length: 2200 }, (_, i) => ({
+      ...SNAPSHOT.sessionCards[0],
+      word_id: `w_${i}`,
+    }));
+    const fullSnapshot: ReviewSessionSnapshot = {
+      ...SNAPSHOT,
+      activeDeck: "everything",
+      learnedFilter: "all",
+      sessionSize: 0,
+      sessionCards: cards,
+      currentIndex: 142,
+      sessionGrades: cards.map(() => null),
+    };
+    const parsed = parseReviewSession(JSON.stringify(fullSnapshot));
+    expect(parsed).not.toBeNull();
+    expect(parsed?.sessionCards.length).toBe(2200);
+    expect(parsed?.currentIndex).toBe(142);
+
+    const oversized = Array.from({ length: MAX_REVIEW_SESSION_CARDS + 1 }, (_, i) => ({
+      ...SNAPSHOT.sessionCards[0],
+      word_id: `over_${i}`,
+    }));
+    expect(parseReviewSession(JSON.stringify({ ...fullSnapshot, sessionCards: oversized }))).toBeNull();
   });
 });

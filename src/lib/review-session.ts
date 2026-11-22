@@ -9,7 +9,8 @@ import type { ReviewSnapshot } from "@/lib/store/types";
 import type { LearnedFilter, ReviewDeckType, SessionSize } from "@/lib/review-decks";
 
 const STORAGE_PREFIX = "brucke_review_session_v1:";
-const MAX_CARDS = 2000;
+export const MAX_REVIEW_SESSION_CARDS = 5000;
+const MAX_CARDS = MAX_REVIEW_SESSION_CARDS;
 const MAX_TEXT = 200;
 
 const DECK_IDS: ReadonlySet<string> = new Set([
