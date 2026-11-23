@@ -175,7 +175,12 @@ const lesson: Lesson = {
       "cues": [
         "Start with \"Kaltes\" and anchor \"Wasser\" in position 2.",
         "Close the frame with \"Kaffee\"."
-      ]
+      ],
+      "affirmation": "Kaltes Wasser, warmer Kaffee — strong adjective endings echo das and der.",
+      "diagnosis": {
+        "slip": "dropped the strong gender ending on the unpreceded adjective",
+        "cue": "With no article, the adjective carries the gender ending: kaltes (das) Wasser, warmer (der) Kaffee."
+      }
     }
   ],
   "summary": {

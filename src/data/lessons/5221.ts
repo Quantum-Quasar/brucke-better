@@ -51,7 +51,7 @@ const lesson: Lesson = {
   ],
   "hook": {
     "title": "Two Twins and Three Guests at the Table",
-    "content": "The German table's backbone is five nouns, and they arrive by three different roads. der Fisch ↔ the fish is the easy one: the same Proto-Germanic word, *fiskaz, the same sound in both languages — no badge, no story, just a twin. das Fleisch ↔ the flesh is the same word with a narrowing: English pushed flesh toward the body and handed the table to 'meat', while German kept Fleisch doing both jobs. der Käse and die Suppe are Latin guests: Käse is Latin caseus, and English cheese is the same Latin word that walked in through a different door; Suppe is Late Latin suppa, 'bread soaked in broth' — the word behind both soup and the sop you soak in it, and a Latin word that was itself borrowed from Germanic, so soup left home and came back. das Gemüse is the odd one out: no twin, no Latin — it grew inside German from an old word for soft food (Middle High German gemüese, 'mush, food'), and English never borrowed it, which is why German has to lend it to you now.",
+    "content": "Five staples on the German menu: der Fisch (fish), das Fleisch (meat), der Käse (cheese), die Suppe (soup), and das Gemüse (vegetables). Pair them with essen and trinken: Ich esse Fisch mit Gemüse und esse Suppe.",
     "footnotes": [
       {
         "interest": true,

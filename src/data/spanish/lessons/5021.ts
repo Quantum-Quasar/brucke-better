@@ -88,14 +88,10 @@ const lesson: Lesson = {
     },
     {
       "type": "shift_select",
-      "prompt": "Why does Spanish say 'el agua' in the singular even though 'agua' is feminine?",
-      "options": [
-        "To avoid the vocal collision of 'la' before a noun starting with a stressed 'a-' (A-gua)",
-        "Because agua ends in -a",
-        "Because water is masculine in Spanish"
-      ],
-      "target_answer": "To avoid the vocal collision of 'la' before a noun starting with a stressed 'a-' (A-gua)",
-      "meaning": "the water",
+      "prompt": "Which singular phrase correctly pairs the article with 'agua'?",
+      "options": ["la agua fría", "el agua fría", "el agua frío"],
+      "target_answer": "el agua fría",
+      "meaning": "the cold water",
       "explanation": "Feminine nouns starting with stressed /a/ (agua, hambre, águila) take el in the singular while keeping feminine adjectives: el agua fría!",
       "id": "es5021_e3"
     },

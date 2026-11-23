@@ -99,16 +99,11 @@ const lesson: Lesson = {
     {
       "id": "l2401_e2",
       "type": "shift_select",
-      "prompt": "Why are gut/besser and good/better BOTH irregular?",
-      "options": [
-        "Pure chance",
-        "English copied German",
-        "Both replaced their comparative with the same ancient word (*bazizon) before they split",
-        "German copied English"
-      ],
-      "target_answer": "Both replaced their comparative with the same ancient word (*bazizon) before they split",
+      "prompt": "Which comparative form of 'gut' is correct?",
+      "options": ["guter", "besser", "mehr gut", "am gutsten"],
+      "target_answer": "besser",
       "meaning": "Shared suppletion, inherited together",
-      "explanation": "The borrowing happened in Proto-Germanic — both languages inherited the irregularity, then shifted it independently."
+      "explanation": "gut jumps to besser (and am besten), just like good → better → best."
     },
     {
       "id": "l2401_e3",
@@ -188,18 +183,19 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: the -er/-ste Sentence Gym — twenty comparison sentences with als and wie."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"Today that is very good\"",
-    "target_answer": "Heute ist das sehr gut",
+    "prompt": "Without looking back — build in German: \"Tea is good, but coffee is better\"",
+    "target_answer": "Tee ist gut aber Kaffee ist besser",
     "word_bank": [
-      "nicht",
-      "das",
-      "sehr",
+      "Tee",
       "ist",
-      "sehr",
-      "Heute",
-      "gut"
+      "gut",
+      "aber",
+      "Kaffee",
+      "ist",
+      "besser",
+      "mehr"
     ],
-    "explanation": "Building \"Heute ist das sehr gut\" from the lesson's core pattern locks in Twin Suppletions."
+    "explanation": "gut → besser → am besten: German and English share the exact same suppletive jump."
   }
 };
 

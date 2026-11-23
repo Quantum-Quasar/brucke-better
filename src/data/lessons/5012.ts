@@ -125,8 +125,8 @@ const lesson: Lesson = {
     },
     {
       "id": "l5012_e4",
-      "type": "reverse_cognate",
-      "prompt": "Which part of 'Auf Wiedersehen' means SEE?",
+      "type": "derive",
+      "prompt": "Type the German verb for 'to see':",
       "target_answer": "sehen",
       "meaning": "sehen = to see (the Wieder-seen core)",
       "explanation": "Wieder-sehen = re-see: the farewell literally says 'until [we] see [each other] again' — the same logic as French au revoir."

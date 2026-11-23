@@ -193,7 +193,12 @@ const lesson: Lesson = {
       "cues": [
         "Start with \"Der\" and anchor \"Mann\" in position 2.",
         "Close the frame with \"Kaffee\"."
-      ]
+      ],
+      "affirmation": "Der Mann, der Deutsch lernt, trinkt Kaffee — relative clause sends lernt to the end.",
+      "diagnosis": {
+        "slip": "left the relative-clause verb in position 2 instead of sending it to the end",
+        "cue": "Relative pronoun der opens a subordinate clause, pushing lernt to the end before trinkt."
+      }
     }
   ],
   "summary": {

@@ -84,13 +84,9 @@ const lesson: Lesson = {
     },
     {
       "type": "shift_select",
-      "prompt": "Why does 'usted' take 3rd-person verb forms (está, quiere, habla)?",
-      "options": [
-        "It is a plural pronoun",
-        "It evolved from 'Vuestra Merced' ('Your Mercy'), a 3rd-person title",
-        "It comes from Latin tū"
-      ],
-      "target_answer": "It evolved from 'Vuestra Merced' ('Your Mercy'), a 3rd-person title",
+      "prompt": "Which Spanish sentence uses formal 'usted' with the right verb form?",
+      "options": ["Usted estás muy bien", "Usted está muy bien", "Usted estoy muy bien"],
+      "target_answer": "Usted está muy bien",
       "meaning": "you (formal)",
       "explanation": "Addressing someone as 'Your Mercy' naturally used 3rd-person verbs ('How is Your Mercy?').",
       "id": "es9_e2"

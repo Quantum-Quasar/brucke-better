@@ -45,7 +45,7 @@ const lesson: Lesson = {
   ],
   "hook": {
     "title": "Five Jobs, Four Recipes",
-    "content": "der Bäcker is the honest one: backen — English bake, the same Proto-Germanic verb — plus the doer-suffix -er, exactly English's baker. der Verkäufer runs on verkaufen, the shopping verb you already own: ver- + kaufen, and ver- is the prefix English wrote as for- (verboten/forbidden, vergeben/forgive — same old *fra-, 'away'). The gem hides inside: Kauf and English cheap are twins — one old trader-word that German kept as the noun and English narrowed to 'low price', which is why London's old market street is called Cheapside. der Polizist borrows Greek through Latin: Polizei is Greek politeia, 'the city's business' — the same Greek word English took as police, and policy is a cousin; the -ist tail is Greek's agent ending, the same one in artist and dentist. der Schüler borrows a different Greek word: Schule is Greek scholē, 'leisure' — Greek thinking time, turned into lecture, then school; scholar is that same Greek word through Latin. And der Arzt came by the medical door: Latin archiater, 'chief healer', from Greek archi- + iatros — a court physician's title that German heard and kept whole.",
+    "content": "Five everyday professions: der Bäcker (baker, from backen), der Verkäufer (salesperson, from verkaufen), der Polizist (police officer), der Schüler (pupil), and der Arzt (doctor). Use them directly after Ich bin: Ich bin Arzt.",
     "footnotes": [
       {
         "interest": true,

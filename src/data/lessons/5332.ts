@@ -191,19 +191,22 @@ const lesson: Lesson = {
     },
     {
       "id": "l5332_e5",
-      "type": "literal_gloss",
-      "prompt": "Which English follows the German words most closely?",
-      "german": "Im Garten gibt es viele Bäume und Blumen.",
-      "natural": "In the garden there are many trees and flowers.",
-      "options": [
-        "In the garden it gives many trees and flowers",
-        "In the garden there are many trees and flowers",
-        "The garden gives many trees and flowers",
-        "Many trees and flowers give the garden"
+      "type": "syntax_builder",
+      "prompt": "Build in German: \"We sit in the sun and drink water\"",
+      "target_answer": "Wir sitzen in der Sonne und trinken Wasser",
+      "meaning": "We sit in the sun and drink water",
+      "word_bank": [
+        "Wir",
+        "sitzen",
+        "in",
+        "der",
+        "Sonne",
+        "und",
+        "trinken",
+        "Wasser",
+        "die"
       ],
-      "target_answer": "In the garden it gives many trees and flowers",
-      "meaning": "In the garden there are many trees and flowers.",
-      "explanation": "German says es gibt — literally 'it gives' — where English says 'there is/are'. The odd English is the lens; the natural sentence is what you mean."
+      "explanation": "in der Sonne uses dative feminine (der) for static location."
     }
   ],
   "twist": {

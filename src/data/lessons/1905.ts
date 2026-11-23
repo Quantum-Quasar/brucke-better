@@ -151,7 +151,12 @@ const lesson: Lesson = {
         "Ich",
         "konnte"
       ],
-      "explanation": "Modal past in position 2, bare infinitive at the end — the bracket survives the trip into the past intact."
+      "explanation": "Modal past in position 2, bare infinitive at the end — the bracket survives the trip into the past intact.",
+      "affirmation": "Ich konnte gestern nicht kommen — konnte opens the bracket, kommen closes it.",
+      "diagnosis": {
+        "slip": "kept the infinitive kommen right next to konnte",
+        "cue": "Simple past modal konnte takes position 2 and sends the infinitive kommen to the end."
+      }
     }
   ],
   "summary": {

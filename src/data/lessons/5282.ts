@@ -83,7 +83,7 @@ const lesson: Lesson = {
   ],
   "hook": {
     "title": "The -er Machine, and One Family Reunion",
-    "content": "Three of today's jobs are the -er machine running on verbs you already own. der Fahrer is fahren + -er — and fahren is English fare: the same verb that survives in wayfarer and seafarer, so a Fahrer is literally a farer, one who fares. der Sänger is singen + -er, and singen is sing wearing its full ablaut — singen, sang, gesungen against sing, sang, sung: the same seven vowel steps in the same order, the strongest evidence on the course that these two languages are one verb system. der Student is the Latin import: studieren was already yours (Latin studēre, 'to study'), and der Student is that verb's person — Latin made the noun out of the present participle, 'the one studying'. Then the family gem: der Bauer is the -er of bauen, which originally meant not to build but to dwell. A Bauer is a dweller — and English kept the same dweller-word twice: in neighbor, the old near-dweller (nigh + bur), and in boor, the bare dweller that became an insult. Farmer, neighbor and boor are one word at three distances. der Arbeiter is the honest one: die Arbeit has no English cognate — English lost whatever twin it had, and work's true German twin is Werk, a different word entirely.",
+    "content": "Build job names by adding -er to verbs you know: fahren → der Fahrer (driver), singen → der Sänger (singer), arbeiten → der Arbeiter (worker). Add der Student (student) and der Bauer (farmer — same root as neighbor) to talk about what people do.",
     "footnotes": [
       {
         "marker": "1",

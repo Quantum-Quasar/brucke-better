@@ -158,18 +158,21 @@ const lesson: Lesson = {
     },
     {
       "id": "l1402_e5",
-      "type": "literal_gloss",
-      "prompt": "Which English is built the German way?",
-      "german": "Ich weiß, dass er Angst hat.",
-      "natural": "I know that he is afraid.",
-      "options": [
-        "I know that he is afraid.",
-        "I know that he fear has.",
-        "I know that fear he has."
+      "type": "syntax_builder",
+      "prompt": "Build in German: \"I know that he is afraid (has fear)\"",
+      "target_answer": "Ich weiß dass er Angst hat",
+      "meaning": "I know that he has fear",
+      "word_bank": [
+        "Ich",
+        "weiß",
+        "dass",
+        "er",
+        "Angst",
+        "hat",
+        "haben",
+        "weil"
       ],
-      "target_answer": "I know that he fear has.",
-      "meaning": "I know that he is afraid.",
-      "explanation": "Read it the German way: 'I know that he fear has.' The verb hat waits in the basement of the dass-clause — and Angst is English's own loanword: fear with a German passport."
+      "explanation": "dass kicks the conjugated verb (hat) to the end of the clause."
     }
   ],
   "summary": {
@@ -182,17 +185,19 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: zu + infinitive ladders — Ich habe vor, Deutsch zu lernen: the bracket with a zu-glue."
   },
   "twist": {
-    "prompt": "Without looking back — rebuild the core sentence from weil & dass: the Verb Waits (Today that is very good):",
-    "target_answer": "Heute ist das sehr gut",
+    "prompt": "Without looking back — build in German: \"I am coming because I have time\"",
+    "target_answer": "Ich komme weil ich Zeit habe",
     "word_bank": [
-      "ist",
-      "gut",
-      "Heute",
-      "nicht",
-      "das",
-      "sehr"
+      "Ich",
+      "komme",
+      "weil",
+      "ich",
+      "Zeit",
+      "habe",
+      "dass",
+      "kann"
     ],
-    "explanation": "Re-assembling \"Heute ist das sehr gut\" from scratch locks in the structural pattern of weil & dass: the Verb Waits without relying on short-term echo."
+    "explanation": "Subordinating weil sends the conjugated verb (habe) to the end."
   }
 };
 

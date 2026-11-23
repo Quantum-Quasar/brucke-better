@@ -190,18 +190,18 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: the Case Trigger Gym — twenty prompts deciding accusative or dative after two-way prepositions."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"Today that is very good\"",
-    "target_answer": "Heute ist das sehr gut",
+    "prompt": "Without looking back — build in German: \"We are talking about the forest\"",
+    "target_answer": "Wir sprechen über den Wald",
     "word_bank": [
-      "Heute",
-      "nicht",
-      "ist",
-      "sehr",
-      "gut",
-      "sehr",
-      "das"
+      "Wir",
+      "sprechen",
+      "über",
+      "den",
+      "Wald",
+      "dem",
+      "unter"
     ],
-    "explanation": "Building \"Heute ist das sehr gut\" from the lesson's core pattern locks in über, unter, durch: Metaphor Set."
+    "explanation": "Metaphorical über ('about') always takes accusative (den Wald)."
   }
 };
 

@@ -171,17 +171,18 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: Ablaut Families I — the e→i and a→o classes drilled with geben, sprechen and fahren."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"We sing here today\"",
-    "target_answer": "Wir singen heute hier",
+    "prompt": "Without looking back — build in German: \"We drank water yesterday\"",
+    "target_answer": "Wir haben gestern Wasser getrunken",
     "word_bank": [
-      "sehr",
-      "singen",
       "Wir",
-      "nicht",
-      "heute",
-      "hier"
+      "haben",
+      "gestern",
+      "Wasser",
+      "getrunken",
+      "trinken",
+      "heute"
     ],
-    "explanation": "Building \"Wir singen heute hier\" from the lesson's core pattern locks in sing/sang/sung Mirrors."
+    "explanation": "Strong verb trinken shifts to getrunken in the perfect tense."
   }
 };
 

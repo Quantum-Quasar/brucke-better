@@ -166,19 +166,20 @@ const lesson: Lesson = {
     },
     {
       "id": "l5352_e5",
-      "type": "literal_gloss",
-      "prompt": "Which English follows the German words most closely?",
-      "german": "Er hat gesagt, dass er krank ist.",
-      "natural": "He said that he is sick.",
-      "options": [
-        "He has said that he sick is",
-        "He said that he is sick",
-        "He says that he was sick",
-        "He said that he is healthy"
+      "type": "syntax_builder",
+      "prompt": "Build in German: \"On Monday I stay at home\"",
+      "target_answer": "Am Montag bleibe ich zu Hause",
+      "meaning": "On Monday I stay at home",
+      "word_bank": [
+        "Am",
+        "Montag",
+        "bleibe",
+        "ich",
+        "zu",
+        "Hause",
+        "im"
       ],
-      "target_answer": "He has said that he sick is",
-      "meaning": "He said that he is sick.",
-      "explanation": "The dass-clause sends the verb to the end: ... dass er krank ist = literally 'that he sick is'. English keeps 'that he is sick'; German keeps 'is' last."
+      "explanation": "When Am Montag starts the sentence, the verb bleibe stays in position 2 before ich."
     }
   ],
   "twist": {

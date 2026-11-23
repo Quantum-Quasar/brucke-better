@@ -157,19 +157,14 @@ const lesson: Lesson = {
     {
       "id": "l5292_e2",
       "type": "shift_select",
-      "prompt": "One of today's five is German's straight purchase from English — a word German had never had before the nineteenth century. Which?",
-      "options": [
-        "tanzen",
-        "das Lied",
-        "der Sport",
-        "die Musik"
-      ],
+      "prompt": "Which German word means 'sport'?",
+      "options": ["das Spiel", "der Sport", "der Ball", "das Team"],
       "target_answer": "der Sport",
-      "meaning": "der Sport ← English sport ← Old French desport: German's 19th-century purchase",
-      "explanation": "die Musik is a Greek loan both languages made separately; das Lied is native Germanic; tanzen is French, the same purchase as dance. der Sport is the odd one: English shortened Old French desport to sport, and German bought the short English form in the nineteenth century.",
+      "meaning": "der Sport = sport (masculine)",
+      "explanation": "der Sport is masculine and matches English sport.",
       "diagnosis": {
-        "slip": "guessing die Musik because it looks modern",
-        "cue": "die Musik is the oldest word here — Greek via Latin; the modern-looking one is the loan from English"
+        "slip": "picking a different sports noun instead of der Sport",
+        "cue": "der Sport is the direct match for 'sport'; das Spiel is 'game', der Ball is 'ball', and das Team is 'team'."
       }
     },
     {

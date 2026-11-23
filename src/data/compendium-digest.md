@@ -59,7 +59,7 @@
 | da | da | there / since | - | core |
 | dunkel | dunkel | dark / dusk | - | colors |
 | erde | Erde | earth | die | nature |
-| darm | Darm | gut / tharm | der | body |
+| darm | Darm | gut / intestine | der | body |
 | dach | Dach | thatch / roof | das | home |
 | tag | Tag | day | der | time |
 | tür | Tür | door | die | home |
@@ -231,7 +231,7 @@
 | warnen | warnen | to warn | - | core |
 | hungern | hungern | to hunger / starve | - | body |
 | morgen | morgen | tomorrow / morrow | - | time |
-| pferd | Pferd | horse / palfrey | das | nature |
+| pferd | Pferd | horse | das | nature |
 | zwilling | Zwilling | twin | der | family |
 | zwerg | Zwerg | dwarf | der | core |
 | zweimal | zweimal | twice | - | numbers |
@@ -307,7 +307,7 @@
 | hinter | hinter | behind / hind | - | directions |
 | neben | neben | beside / near | - | directions |
 | zwischen | zwischen | between | - | directions |
-| stadt | Stadt | city / stead | die | travel |
+| stadt | Stadt | city / town | die | travel |
 | schön | schön | beautiful / sheen | - | core |
 | anrufen | anrufen | to call up | - | core |
 | verboten | verboten | forbidden | - | core |
@@ -460,7 +460,7 @@
 | hier | hier | here | - | directions |
 | nähe | Nähe | nearness | die | directions |
 | weit | weit | far / wide | - | directions |
-| fern | fern | far / remote (twin: far) | - | directions |
+| fern | fern | far / remote | - | directions |
 | mitte | Mitte | middle | die | directions |
 | geld | Geld | money (kin: yield) | das | shopping |
 | kosten | kosten | to cost | - | shopping |
@@ -510,7 +510,7 @@
 | jetzt | jetzt | now | - | time |
 | minute | Minute | minute | die | time |
 | stunde | Stunde | hour | die | time |
-| monat | Monat | month (twin: month) | der | time |
+| monat | Monat | month | der | time |
 | jahr | Jahr | year | das | time |
 | moment | Moment | moment | der | time |
 | dauern | dauern | to last / take (time) | - | time |
@@ -543,7 +543,7 @@
 | schrank | Schrank | cupboard / wardrobe | der | home |
 | wohnen | wohnen | to live / reside | - | home |
 | lesen | lesen | to read | - | hobbies |
-| tanzen | tanzen | to dance (twin: dance) | - | hobbies |
+| tanzen | tanzen | to dance | - | hobbies |
 | musik | Musik | music | die | hobbies |
 | kino | Kino | cinema | das | hobbies |
 | film | Film | film / movie | der | hobbies |
@@ -583,7 +583,7 @@
 | schlecht | schlecht | bad (twin: slight) | - | adjectives |
 | lang | lang | long | - | adjectives |
 | kurz | kurz | short (kin: curt) | - | adjectives |
-| leicht | leicht | easy / light (twin: light) | - | adjectives |
+| leicht | leicht | easy / light | - | adjectives |
 | schwer | schwer | heavy / difficult | - | adjectives |
 | richtig | richtig | correct / right (kin: right) | - | adjectives |
 | falsch | falsch | wrong (kin: false) | - | adjectives |
@@ -621,10 +621,10 @@
 | heißen | heißen | to be called | - | survival |
 | buchstabieren | buchstabieren | to spell | - | survival |
 | freuen | freuen | to rejoice / be glad | - | emotions |
-| fühlen | fühlen | to feel (twin: feel) | - | emotions |
+| fühlen | fühlen | to feel | - | emotions |
 | anziehen | anziehen | to put on / get dressed (an + ziehen) | - | clothing |
-| wenn | wenn | if / when(ever) (twin: when) | - | core |
-| ob | ob | whether / if (twin: if) | - | core |
+| wenn | wenn | if / when(ever) | - | core |
+| ob | ob | whether / if | - | core |
 | banane | Banane | banana | die | food |
 | zitrone | Zitrone | lemon | die | food |
 | kirsche | Kirsche | cherry | die | food |

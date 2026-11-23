@@ -92,13 +92,9 @@ const lesson: Lesson = {
     },
     {
       "type": "shift_select",
-      "prompt": "Why does Spanish say 'Se lo doy' instead of *Le lo doy for 'I give it to him/her'?",
-      "options": [
-        "Whenever le or les is followed by lo/la/los/las, Spanish changes le/les to se to avoid two L-pronouns in a row",
-        "Because se means 'I'",
-        "Because doy is reflexive"
-      ],
-      "target_answer": "Whenever le or les is followed by lo/la/los/las, Spanish changes le/les to se to avoid two L-pronouns in a row",
+      "prompt": "How do you say 'I give it to him/her' in Spanish?",
+      "options": ["Le lo doy", "Se lo doy", "Lo le doy"],
+      "target_answer": "Se lo doy",
       "meaning": "I give it to him / her / usted",
       "explanation": "Two L-pronouns in a row (*le lo, *les la) are forbidden in Spanish — the first one always transforms into se!",
       "id": "es22_e3"

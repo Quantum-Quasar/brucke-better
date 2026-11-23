@@ -98,7 +98,7 @@ const lesson: Lesson = {
         },
         {
           "id": "db7",
-          "english": "gut (archaic: tharm)",
+          "english": "gut / intestine",
           "german": "Darm"
         },
         {
@@ -128,7 +128,7 @@ const lesson: Lesson = {
         }
       ],
       "target_answer": "Donner, Bad, du, danken, Mund, Monat, Darm, der Pflug, eine Pfeife, scharf und stumpf, greifen und treffen, Wir können einsteigen",
-      "meaning": "thunder; bath; thou; to thank; mouth; month; gut (archaic: tharm); the plough; a pipe; sharp and blunt; to grasp and to meet; We can get in",
+      "meaning": "thunder; bath; thou; to thank; mouth; month; gut / intestine; the plough; a pipe; sharp and blunt; to grasp and to meet; We can get in",
       "shift_hint": "TH → D",
       "explanation": "Every German d here answers to an English th — including the god of thunder himself. Darm is the old tharm: English moved to 'gut', German kept the hardened th."
     },

@@ -82,13 +82,9 @@ const lesson: Lesson = {
     },
     {
       "type": "shift_select",
-      "prompt": "Why do we say 'buenos días' with -os instead of *-as?",
-      "options": [
-        "Because días is an adverb",
-        "Because el día is grammatically masculine (from Latin diēs)",
-        "Because morning is longer than night"
-      ],
-      "target_answer": "Because el día is grammatically masculine (from Latin diēs)",
+      "prompt": "Which morning greeting has the right gender agreement?",
+      "options": ["¡Buenas días!", "¡Buenos días!", "¡Buen días!"],
+      "target_answer": "¡Buenos días!",
       "meaning": "good morning",
       "explanation": "el día is masculine despite ending in -a, so its adjective takes masculine plural -os: buenos días.",
       "id": "es902_e2"

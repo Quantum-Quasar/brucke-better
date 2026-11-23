@@ -78,13 +78,9 @@ const lesson: Lesson = {
     },
     {
       "type": "shift_select",
-      "prompt": "Why do we say 'Muchas gracias' with feminine plural '-as'?",
-      "options": [
-        "Because la gracia ('grace/favor') is a feminine noun in the plural (las gracias)",
-        "Because muchas is an adverb",
-        "Because gracias is a verb"
-      ],
-      "target_answer": "Because la gracia ('grace/favor') is a feminine noun in the plural (las gracias)",
+      "prompt": "Which phrase correctly says 'Thank you very much'?",
+      "options": ["Muchos gracias", "Muchas gracias", "Mucha gracias"],
+      "target_answer": "Muchas gracias",
       "meaning": "thank you very much",
       "explanation": "las gracias is feminine plural, so mucho becomes muchas: muchas gracias.",
       "id": "es5011_e2"

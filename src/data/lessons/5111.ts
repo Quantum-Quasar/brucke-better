@@ -170,7 +170,12 @@ const lesson: Lesson = {
         "Wenn",
         "sind"
       ],
-      "explanation": "wenn builds the clause and the verb goes to the basement: regnet waits, lese waits — weil's rule, one more employee."
+      "explanation": "wenn builds the clause and the verb goes to the basement: regnet waits, lese waits — weil's rule, one more employee.",
+      "affirmation": "Wenn es regnet, lese ich — the main verb lese follows right after the comma.",
+      "diagnosis": {
+        "slip": "put ich before lese after the leading Wenn-clause",
+        "cue": "A leading Wenn-clause takes position 1, so the main clause verb lese comes immediately after the comma."
+      }
     }
   ],
   "summary": {

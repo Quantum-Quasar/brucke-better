@@ -99,16 +99,11 @@ const lesson: Lesson = {
     {
       "id": "l5142_e2",
       "type": "shift_select",
-      "prompt": "Which month is Latin septem — 'seven' — even though it is the ninth month of our year?",
-      "options": [
-        "September",
-        "Juli",
-        "August",
-        "Juni"
-      ],
+      "prompt": "Which German month comes after August?",
+      "options": ["Januar", "August", "September", "Oktober"],
       "target_answer": "September",
-      "meaning": "September hides the Roman number seven",
-      "explanation": "The old Roman year began in March, so September really was the seventh month (septem) and Oktober the eighth (octo). When January moved to the front, the names kept their old numbers — a fossil count you now own in two languages."
+      "meaning": "September = September (the month after August)",
+      "explanation": "September comes right after August in German, just as in English."
     },
     {
       "id": "l5142_e3",

@@ -127,7 +127,7 @@ const lesson: Lesson = {
     {
       "id": "l11_e3",
       "type": "derive",
-      "prompt": "Negate the possession: 'Ich habe _____ Zeit' (kein + feminine die Zeit):",
+      "prompt": "Complete: 'Ich habe ___ Zeit.' (I have no time):",
       "english_hint": "kein takes -e for feminine nouns",
       "target_answer": "keine",
       "meaning": "Ich habe keine Zeit = I have no time",
@@ -159,7 +159,12 @@ const lesson: Lesson = {
         "meine",
         "Das"
       ],
-      "explanation": "One sentence, four cognates — the demonstrative system you already spoke in King James English, now pointing at a window."
+      "explanation": "One sentence, four cognates — the demonstrative system you already spoke in King James English, now pointing at a window.",
+      "affirmation": "Das ist mein Fenster — neuter ein-words stay bare in the nominative.",
+      "diagnosis": {
+        "slip": "added an -e ending to a neuter ein-word",
+        "cue": "Das Fenster is neuter (das), so mein takes no ending in the nominative."
+      }
     }
   ],
   "summary": {

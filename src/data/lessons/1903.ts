@@ -178,17 +178,18 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: hatte & war — the fortress pasts of haben and sein, the storyteller's tense."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"We think here today\"",
-    "target_answer": "Wir denken heute hier",
+    "prompt": "Without looking back — build in German: \"We thought of you\"",
+    "target_answer": "Wir haben an dich gedacht",
     "word_bank": [
-      "sehr",
-      "nicht",
       "Wir",
-      "hier",
+      "haben",
+      "an",
+      "dich",
+      "gedacht",
       "denken",
       "heute"
     ],
-    "explanation": "Building \"Wir denken heute hier\" from the lesson's core pattern locks in dachte & the Suppletive Irregulars."
+    "explanation": "denken shifts to dachte / gedacht — the vowel changes and k becomes ch."
   }
 };
 

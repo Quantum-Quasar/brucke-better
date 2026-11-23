@@ -162,16 +162,11 @@ const lesson: Lesson = {
     {
       "id": "l5312_e2",
       "type": "shift_select",
-      "prompt": "One of today's five is a Latin loan that English also bought. Which?",
-      "options": [
-        "falsch",
-        "leer",
-        "richtig",
-        "sauber"
-      ],
+      "prompt": "Which German word means 'false / wrong'?",
+      "options": ["richtig", "wahr", "falsch", "klar"],
       "target_answer": "falsch",
-      "meaning": "falsch ← Latin falsus → false: the double purchase",
-      "explanation": "richtig and offen are inherited twins; sauber and leer have no proven twin. falsch is the purchase: Latin falsus, taken directly into German and through Old French into English as false."
+      "meaning": "falsch = false / wrong",
+      "explanation": "falsch means false or wrong."
     },
     {
       "id": "l5312_e3",

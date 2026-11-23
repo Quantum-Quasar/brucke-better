@@ -154,19 +154,20 @@ const lesson: Lesson = {
     },
     {
       "id": "l5342_e5",
-      "type": "literal_gloss",
-      "prompt": "Which English follows the German words most closely?",
-      "german": "Er kommt zu spät.",
-      "natural": "He arrives too late.",
-      "options": [
-        "He comes too late",
-        "He arrives too late",
-        "He comes too early",
-        "He comes too fast"
+      "type": "syntax_builder",
+      "prompt": "Build in German: \"The train arrives too late today\"",
+      "target_answer": "Der Zug kommt heute zu spät",
+      "meaning": "The train arrives too late today",
+      "word_bank": [
+        "Der",
+        "Zug",
+        "kommt",
+        "heute",
+        "zu",
+        "spät",
+        "früh"
       ],
-      "target_answer": "He comes too late",
-      "meaning": "He arrives too late.",
-      "explanation": "German kommen covers both 'come' and 'arrive'. zu spät is 'too late'. The literal English 'comes too late' is the bridge to the natural 'arrives too late'."
+      "explanation": "zu spät = too late; time adverb heute sits right after the verb."
     }
   ],
   "twist": {

@@ -99,9 +99,10 @@ const lesson: Lesson = {
     {
       "id": "fr1_e2",
       "type": "reverse_cognate",
-      "prompt": "veux (I want) hides inside a common English word about wanting to help. Which one?",
-      "target_answer": "volunteer",
-      "meaning": "a volunteer is the one who wants to do",
+      "prompt": "What does 'veux' mean in 'je veux un café'?",
+      "target_answer": "want",
+      "accepted_answers": ["I want", "to want", "wants"],
+      "meaning": "veux = want (from vouloir)",
       "explanation": "Latin volo 'I want' gives vouloir in French and voluntary, benevolent, volunteer in English. The want-root never left."
     },
     {

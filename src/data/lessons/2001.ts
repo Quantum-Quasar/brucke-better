@@ -121,7 +121,7 @@ const lesson: Lesson = {
     {
       "id": "l2001_e2",
       "type": "shift_select",
-      "prompt": "Which article completes the dative row: 'mit _____ Mann' (with the man — masculine)?",
+      "prompt": "Complete: 'Ich gehe mit ___ Mann.' (I go with the man):",
       "options": [
         "dem",
         "den",
@@ -129,13 +129,13 @@ const lesson: Lesson = {
         "des"
       ],
       "target_answer": "dem",
-      "meaning": "mit dem Mann — with the man (dative)",
+      "meaning": "Ich gehe mit dem Mann = I go with the man (dative)",
       "explanation": "Masculine dative = dem — the same m you hear in him, whom, and 'em. Wünschen (wish — the twin) hands its gift TO someone: Ich wünsche dir Glück — the wish travels dative."
     },
     {
       "id": "l2001_e3",
       "type": "shift_select",
-      "prompt": "'Ich helfe _____ Frau.' (I help the woman — dative):",
+      "prompt": "Complete: 'Ich helfe ___ Frau.' (I help the woman):",
       "options": [
         "den",
         "der",

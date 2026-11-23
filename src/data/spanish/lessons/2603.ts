@@ -77,13 +77,9 @@ const lesson: Lesson = {
     },
     {
       "type": "shift_select",
-      "prompt": "Why does 'ojalá' ALWAYS require a subjunctive verb after it (e.g., ¡Ojalá tengas tiempo!)?",
-      "options": [
-        "Because ojalá is past tense",
-        "Because ojalá is an adjective",
-        "Because ojalá comes from Arabic 'may God will it' — it is inherently a wish/hope rather than a declared fact!"
-      ],
-      "target_answer": "Because ojalá comes from Arabic 'may God will it' — it is inherently a wish/hope rather than a declared fact!",
+      "prompt": "Which sentence uses 'ojalá' with the required subjunctive?",
+      "options": ["¡Ojalá tienes tiempo!", "¡Ojalá tengas tiempo!", "¡Ojalá tener tiempo!"],
+      "target_answer": "¡Ojalá tengas tiempo!",
       "meaning": "hopefully / God willing",
       "explanation": "A wish projects a desired world rather than stating a plain indicative fact, so ojalá always takes the subjunctive.",
       "id": "es2603_e2"

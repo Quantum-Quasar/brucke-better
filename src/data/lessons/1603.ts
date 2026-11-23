@@ -196,7 +196,12 @@ const lesson: Lesson = {
       "cues": [
         "Start with \"Ich\" and anchor \"fühle\" in position 2.",
         "Close the frame with \"gut\"."
-      ]
+      ],
+      "affirmation": "Ich fühle mich gut — reflexive sich/mich stays right after the verb.",
+      "diagnosis": {
+        "slip": "dropped the reflexive pronoun mich",
+        "cue": "to say how you feel, sich fühlen pairs with a reflexive pronoun: ich → mich, du → dich."
+      }
     }
   ],
   "summary": {

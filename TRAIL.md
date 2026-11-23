@@ -106,8 +106,6 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 *Unlocking fluent sentences with 'can', 'must', and 'want'*
 
-**Shifts:** `T → S / SS / Z`
-
 **The Lazy Speaker's Secret Weapon** — Conjugating dozens of German verbs can feel intimidating. Modal auxiliary verbs are your shortcut: conjugate just ONE modal verb in Position 2, and the rest of your thought travels to the end as…
 
 > 🔭 **Next:** the will ≠ will drills — separating ich will (free will) from the future, with sollen ↔ shall.
@@ -209,7 +207,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Ein Pfund Pfeffer, bitte. — *A pound of pepper, please.*
 - 🧭 Word-initial English p exploded into German pf in native words — Pf- is English p- with the shift receipt attached.
 
-**Table:** der Pfad — *path* · das Pfund — *pound* · der Pfeffer — *pepper* · die Pfeife — *pipe / whistle* · der Pflug — *plow* · das Pferd — *horse / palfrey* · die Pfanne — *pan* · der Apfel — *apple* · der Pfirsich — *peach* · einsteigen — *to get on, board* · aussteigen — *to get off* · das Fernsehen — *television / watching TV* · der Hagel — *hail* · der Busch — *bush* · hoffentlich — *hopefully* · der Fußballspieler — *footballer*
+**Table:** der Pfad — *path* · das Pfund — *pound* · der Pfeffer — *pepper* · die Pfeife — *pipe / whistle* · der Pflug — *plow* · das Pferd — *horse* · die Pfanne — *pan* · der Apfel — *apple* · der Pfirsich — *peach* · einsteigen — *to get on, board* · aussteigen — *to get off* · das Fernsehen — *television / watching TV* · der Hagel — *hail* · der Busch — *bush* · hoffentlich — *hopefully* · der Fußballspieler — *footballer*
 
 ### 🔸 302 · P→F Discrimination Drills
 
@@ -260,7 +258,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Ich mag das Kleid. — *I like the dress.*
 - 🧭 German culture words carry the shift: Donner = thunder, Bad = bath, du = thou — and final -d sounds like [t].
 
-**Table:** der Donner — *thunder* · das Bad — *bath* · du — *thou / you* · danken — *to thank* · denken — *to think* · der Mund — *mouth* · das Kleid — *dress* · der Monat — *month (twin: month)* · der Bruder — *brother* · drei — *three* · der Darm — *gut / tharm* · der Pfirsich — *peach* · die Pflanze — *plant* · noch — *still; yet* · kostenlos — *free of charge* · der Diebstahl — *theft*
+**Table:** der Donner — *thunder* · das Bad — *bath* · du — *thou / you* · danken — *to thank* · denken — *to think* · der Mund — *mouth* · das Kleid — *dress* · der Monat — *month* · der Bruder — *brother* · drei — *three* · der Darm — *gut / intestine* · der Pfirsich — *peach* · die Pflanze — *plant* · noch — *still; yet* · kostenlos — *free of charge* · der Diebstahl — *theft*
 
 ### 🔸 402 · TH→D Discrimination Drills
 
@@ -311,7 +309,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Zwei Glas Wasser, bitte. — *Two glasses of water, please.*
 - 🧭 English tw- wears the /ts/ costume in German: zwei, Zwilling, Zwerg, zweimal, zwanzig.
 
-**Table:** zwei — *two* · der Zwilling — *twin* · der Zwerg — *dwarf* · zweimal — *twice* · zwanzig — *twenty* · zu — *to / too* · das Wasser — *water* · die Zunge — *tongue* · der Mund — *mouth* · das Kleid — *dress* · der Monat — *month (twin: month)* · der Darm — *gut / tharm* · die Pflanze — *plant* · die Wassermelone — *watermelon* · der Aufzug — *elevator* · zwar — *indeed; admittedly* · die Walnuss — *walnut*
+**Table:** zwei — *two* · der Zwilling — *twin* · der Zwerg — *dwarf* · zweimal — *twice* · zwanzig — *twenty* · zu — *to / too* · das Wasser — *water* · die Zunge — *tongue* · der Mund — *mouth* · das Kleid — *dress* · der Monat — *month* · der Darm — *gut / intestine* · die Pflanze — *plant* · die Wassermelone — *watermelon* · der Aufzug — *elevator* · zwar — *indeed; admittedly* · die Walnuss — *walnut*
 
 ### 🔸 502 · Eszett & the Sharp S
 
@@ -326,7 +324,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Das Kleid ist zu groß. — *The dress is too big.*
 - 🧭 ß is the written receipt of T→SS after long vowels; after short vowels German writes ss.
 
-**Table:** groß — *great / big* · die Straße — *street* · heiß — *hot* · der Fuß — *foot* · müssen — *must / to have to* · besser — *better* · das Wasser — *water* · das Salz — *salt* · süß — *sweet* · die Zunge — *tongue* · der Mund — *mouth* · das Kleid — *dress* · der Monat — *month (twin: month)* · der Darm — *gut / tharm* · das Wohnzimmer — *living room* · der Hass — *hatred, hate* · der Fußgänger — *pedestrian*
+**Table:** groß — *great / big* · die Straße — *street* · heiß — *hot* · der Fuß — *foot* · müssen — *must / to have to* · besser — *better* · das Wasser — *water* · das Salz — *salt* · süß — *sweet* · die Zunge — *tongue* · der Mund — *mouth* · das Kleid — *dress* · der Monat — *month* · der Darm — *gut / intestine* · das Wohnzimmer — *living room* · der Hass — *hatred, hate* · der Fußgänger — *pedestrian*
 
 #### 🌿 Side path — False Friends Preview
 
@@ -404,7 +402,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 *the table's backbone — two sound twins, two Latin guests, and one word English never touched*
 
-**Two Twins and Three Guests at the Table** — The German table's backbone is five nouns, and they arrive by three different roads. der Fisch ↔ the fish is the easy one: the same Proto-Germanic word, *fiskaz, the same sound in both languages —…
+**Two Twins and Three Guests at the Table** — Five staples on the German menu: der Fisch (fish), das Fleisch (meat), der Käse (cheese), die Suppe (soup), and das Gemüse (vegetables). Pair them with essen and trinken: Ich esse Fisch mit Gemüse…
 
 > 🔭 **Next:** fruit and vegetables — die Kartoffel named after an Italian truffle, die Tomate from Nahuatl, and das Obst, the Latin shelf-label.
 
@@ -447,7 +445,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 *the one meal with its own noun — and butter coming back as a compound*
 
-**Two Languages, Two Recipes for One Meal** — English and German built their breakfast word at home, from different parts. English breakfast is break + fast — the meal named for the fast it ends.
+**Two Languages, Two Recipes for One Meal** — Order a German breakfast: das Frühstück (breakfast), das Brötchen (bread roll), die Butter (butter), die Marmelade (jam), and der Toast (toast). Put them straight to work: Ich esse ein Brötchen…
 
 > 🔭 **Next:** Farben I — rot, blau, grün, schwarz, bunt, where German hardens red's d into rot's t.
 
@@ -697,7 +695,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Max läuft in die Stadt. Paul sucht ihn überall. — *Max runs into the city. Paul searches for him everywhere.*
 - 🧭 A story is a chain of small sentences: who does what, where it happens, and how it ends. You do not need every word to follow the chain.
 
-**Table:** der Hund — *dog* · die Stadt — *city / stead* · laufen — *to run* · schnell — *fast* · klein — *small / clean* · braun — *brown* · müde — *tired* · der Abend — *evening / eve* · der Garten — *garden* · die Tür — *door* · offen — *open (kin: open)* · suchen — *to seek / search* · finden — *to find* · traurig — *sad* · lachen — *to laugh* · hören — *to hear* · wieder — *again* · laut — *loud* · die Nacht — *night* · das Bett — *bed* · das Haus — *house*
+**Table:** der Hund — *dog* · die Stadt — *city / town* · laufen — *to run* · schnell — *fast* · klein — *small / clean* · braun — *brown* · müde — *tired* · der Abend — *evening / eve* · der Garten — *garden* · die Tür — *door* · offen — *open (kin: open)* · suchen — *to seek / search* · finden — *to find* · traurig — *sad* · lachen — *to laugh* · hören — *to hear* · wieder — *again* · laut — *loud* · die Nacht — *night* · das Bett — *bed* · das Haus — *house*
 
 ### 🔸 1001 · den / einen / ihn Case Gym
 
@@ -731,7 +729,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Shifts:** `TH → D`
 
-**Every German 'the' is somebody you already know** — You have spent two lessons meeting the accusative through pronouns: er becomes ihn, just as English 'he' becomes 'him'. Here is the bigger secret underneath it.
+**Every German 'the' is somebody you already know** — German articles are pronouns wearing a D- hat: die = D- + sie (she / they), der = D- + er (he), das = D- + es (it). In the accusative, only der → den changes (mirroring er → ihn), while die and…
 
 > 🔭 **Next:** the article grid proper — the whole determiner family at once, and possessive mein is simply mine.
 
@@ -906,14 +904,14 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Shifts:** `K → CH`
 
-**The Row That Brings Its Own Article** — Länder I gave you five names that travel bare — nach Deutschland, aus Spanien. The second row splits in two: Österreich, Polen and Irland stay bare, while die Schweiz and die Türkei insist on…
+**The Row That Brings Its Own Article** — Most countries travel bare without an article (nach Österreich, aus Polen, in Irland). Two important exceptions carry die: die Schweiz (Switzerland) and die Türkei (Turkey) — so you say in die…
 
 > 🔭 **Next:** die Sprache and the four language names — and the ending -isch that turns out to be English's own -ish.
 
 - 🗝️ Im März fahre ich nach Österreich — im Januar war ich in der Schweiz. — *In March I am traveling to Austria — in January I was in Switzerland.*
 - 🧭 die Schweiz and die Türkei wear die; Österreich, Polen and Irland go bare. Österreich is 'eastern realm' with rich inside it, die Türkei is Türk + -ei like Bäckerei, and Irland kept Ireland's name.
 
-**Table:** die Schweiz — *Switzerland* · Österreich — *Austria* · die Türkei — *Turkey* · Polen — *Poland* · das Irland — *Ireland* · früh — *early* · der Januar — *January* · der Februar — *February* · der März — *March* · der Feiertag — *public holiday* · das Datum — *date* · der November — *November* · grau — *gray / grey* · der Dezember — *December* · das Hotel — *hotel* · fern — *far / remote (twin: far)* · die Karte — *card, ticket* · die Fähre — *ferry* · die Mütze — *cap* · lila — *purple / lilac* · rosa — *pink* · die Farbe — *color; paint* · grün — *green* · Frankreich — *France* · Italien — *Italy* · Spanien — *Spain* · der Osten — *east* · der Fisch — *fish* · die Fahrkarte — *ticket* · die Abfahrt — *departure* · die Ankunft — *arrival* · der Flughafen — *airport* · der Ausflug — *excursion, day trip* · der Tourist — *tourist* · England — *England* · Deutschland — *Germany* · der Urlaub — *vacation (twin: leave)* · fahren — *to drive / fare* · die Familie — *family* · reich — *rich / realm* · die Sache — *thing / sake* · reichen — *to reach / hand*
+**Table:** die Schweiz — *Switzerland* · Österreich — *Austria* · die Türkei — *Turkey* · Polen — *Poland* · das Irland — *Ireland* · früh — *early* · der Januar — *January* · der Februar — *February* · der März — *March* · der Feiertag — *public holiday* · das Datum — *date* · der November — *November* · grau — *gray / grey* · der Dezember — *December* · das Hotel — *hotel* · fern — *far / remote* · die Karte — *card, ticket* · die Fähre — *ferry* · die Mütze — *cap* · lila — *purple / lilac* · rosa — *pink* · die Farbe — *color; paint* · grün — *green* · Frankreich — *France* · Italien — *Italy* · Spanien — *Spain* · der Osten — *east* · der Fisch — *fish* · die Fahrkarte — *ticket* · die Abfahrt — *departure* · die Ankunft — *arrival* · der Flughafen — *airport* · der Ausflug — *excursion, day trip* · der Tourist — *tourist* · England — *England* · Deutschland — *Germany* · der Urlaub — *vacation (twin: leave)* · fahren — *to drive / fare* · die Familie — *family* · reich — *rich / realm* · die Sache — *thing / sake* · reichen — *to reach / hand*
 
 ### 🌿 5272 · Sprachen: die Sprache, französisch, englisch, spanisch, italienisch
 
@@ -985,14 +983,14 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Shifts:** `Ablaut · T → S / SS / Z`
 
-**The King's Game, the Kithara, and Free Time** — The past-time set, and every word is a passport stamp. die Party is English party bought back — and English party is Old French partie, 'a part, a side': first the people on your side, then the…
+**The King's Game, the Kithara, and Free Time** — Talk about your free time in German: die Freizeit (free time), Gitarre spielen (play guitar), Schach spielen (play chess), reiten (to ride), and eine Party feiern (throw a party). Most of this set…
 
 > 🔭 **Next:** the people around the music — wir, die Schule, der Gast, die Gruppe, der Held.
 
 - 🗝️ Endlich kommt die Freizeit — wir tanzen auf der Party. — *Finally the free time comes — we dance at the party.*
 - 🧭 die Gitarre and guitar share a Greek kithara, das Schach is the Persian shāh, reiten ritt geritten is ride rode ridden — and die Freizeit is free + tide.
 
-**Table:** die Party — *party* · die Gitarre — *guitar* · reiten — *to ride (horseback)* · das Schach — *chess* · die Freizeit — *free time* · endlich — *finally* · das Radio — *radio* · das Klavier — *piano* · das Hobby — *hobby* · das Taxi — *taxi* · das Theater — *theater* · der Friseur — *hairdresser / barber* · der Beruf — *profession, occupation* · der Sänger — *singer* · der Sport — *sport* · die Musik — *music* · das Lied — *song* · tanzen — *to dance (twin: dance)* · die Schokolade — *chocolate* · der Keks — *cookie* · die Torte — *torte, fancy cake* · das Brötchen — *bread roll* · der Toast — *toast* · malen — *to paint*
+**Table:** die Party — *party* · die Gitarre — *guitar* · reiten — *to ride (horseback)* · das Schach — *chess* · die Freizeit — *free time* · endlich — *finally* · das Radio — *radio* · das Klavier — *piano* · das Hobby — *hobby* · das Taxi — *taxi* · das Theater — *theater* · der Friseur — *hairdresser / barber* · der Beruf — *profession, occupation* · der Sänger — *singer* · der Sport — *sport* · die Musik — *music* · das Lied — *song* · tanzen — *to dance* · die Schokolade — *chocolate* · der Keks — *cookie* · die Torte — *torte, fancy cake* · das Brötchen — *bread roll* · der Toast — *toast* · malen — *to paint*
 
 ### 🌿 5302 · Menschen: wir, die Schule, der Gast, die Gruppe, der Held
 
@@ -1000,7 +998,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Shifts:** `TH → D`
 
-**The Guest, the Group, and the Hero English Lost** — wir is the only new pronoun the A1 shelf adds: ich, du, er, sie, es — wir. It is English we with one letter moved, and it has been the same word since before either language existed.
+**The Guest, the Group, and the Hero English Lost** — Meet wir (we), plus four everyday people and places: die Schule (school), der Gast (guest), die Gruppe (group), and der Held (hero). Pair wir with the -en verb form you already know: Wir lernen…
 
 > 🔭 **Next:** the feelings — die Liebe, nett, wütend, stolz, die Freude: love, nice, fury, pride and joy.
 
@@ -1144,7 +1142,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Das Klavier ist groß und schwer — im Kino sehen wir einen Film. — *The piano is big and heavy — at the cinema we watch a film.*
 - 🧭 Sofa, Radio, Klavier, Computer, Kino — Arabic, Latin and Greek roots, with Computer the English-built one — that German writes like English and says like German; four of the five are das.
 
-**Table:** das Sofa — *sofa* · das Radio — *radio* · das Klavier — *piano* · der Computer — *computer* · das Kino — *cinema* · das Auto — *car / auto* · der Hund — *dog* · sitzen — *to sit* · der Film — *film / movie* · das Haus — *house* · neu — *new* · schwer — *heavy / difficult* · die Stadt — *city / stead* · das Ende — *end* · lehren — *to teach*
+**Table:** das Sofa — *sofa* · das Radio — *radio* · das Klavier — *piano* · der Computer — *computer* · das Kino — *cinema* · das Auto — *car / auto* · der Hund — *dog* · sitzen — *to sit* · der Film — *film / movie* · das Haus — *house* · neu — *new* · schwer — *heavy / difficult* · die Stadt — *city / town* · das Ende — *end* · lehren — *to teach*
 
 ### 🌿 5182 · Lehnwörter II: Hotel, Taxi, Bus, Theater, das Hobby
 
@@ -1157,7 +1155,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Wir nehmen ein Taxi zum Hotel — der Bus kommt um sechs Uhr. — *We take a taxi to the hotel — the bus comes at six o'clock.*
 - 🧭 Hotel, Taxi, Bus, Theater, Hobby — hospitale, taxa, omnibus, théatron and English itself; Bus is short and blunt, Theater is te-A-ter, and das rules the shelf except der Bus.
 
-**Table:** das Hotel — *hotel* · das Taxi — *taxi* · der Bus — *bus* · das Theater — *theater* · das Hobby — *hobby* · nehmen — *to take* · fahren — *to drive / fare* · gehen — *to go* · teuer — *expensive (twin: dear)* · schwimmen — *to swim* · die Stadt — *city / stead* · fünf — *five* · sechs — *six* · der Ärger — *annoyance, trouble* · fangen — *to catch*
+**Table:** das Hotel — *hotel* · das Taxi — *taxi* · der Bus — *bus* · das Theater — *theater* · das Hobby — *hobby* · nehmen — *to take* · fahren — *to drive / fare* · gehen — *to go* · teuer — *expensive (twin: dear)* · schwimmen — *to swim* · die Stadt — *city / town* · fünf — *five* · sechs — *six* · der Ärger — *annoyance, trouble* · fangen — *to catch*
 
 ---
 
@@ -1215,7 +1213,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Ich fühle mich gut und freue mich. — *I feel good and I am glad.*
 - 🧭 The reflexive is your accusative pronoun bounced back — mich, dich, uns — with sich covering he/she/it/they/Sie.
 
-**Table:** waschen — *to wash* · erinnern — *to remember* · freuen — *to rejoice / be glad* · fühlen — *to feel (twin: feel)* · treffen — *to hit / meet / strike* · uns — *us* · verdienen — *to earn* · beginnen — *to begin* · bezahlen — *to pay (a bill)* · das Fieber — *fever* · vielleicht — *maybe / perhaps* · fröhlich — *cheerful; merry* · die Uniform — *uniform* · einige — *some; a few* · angeln — *to fish, to angle*
+**Table:** waschen — *to wash* · erinnern — *to remember* · freuen — *to rejoice / be glad* · fühlen — *to feel* · treffen — *to hit / meet / strike* · uns — *us* · verdienen — *to earn* · beginnen — *to begin* · bezahlen — *to pay (a bill)* · das Fieber — *fever* · vielleicht — *maybe / perhaps* · fröhlich — *cheerful; merry* · die Uniform — *uniform* · einige — *some; a few* · angeln — *to fish, to angle*
 
 ### 🔸 1604 · Reflexive Daily Routines · ⚑ required
 
@@ -1379,7 +1377,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Im April regnet es oft — ein Monat hat vier Wochen. — *In April it often rains — a month has four weeks.*
 - 🧭 Der Januar, der Februar, der März, der April, der Mai — masculine, bare after im, and always stressed on the first syllable.
 
-**Table:** der Januar — *January* · der Februar — *February* · der März — *March* · der April — *April* · der Mai — *May* · der Monat — *month (twin: month)* · das Jahr — *year* · die Woche — *week* · oft — *often* · vier — *four* · der Garten — *garden* · das Kinderzimmer — *children's room* · das Schaf — *sheep* · die Überraschung — *surprise* · fett — *fat, fatty*
+**Table:** der Januar — *January* · der Februar — *February* · der März — *March* · der April — *April* · der Mai — *May* · der Monat — *month* · das Jahr — *year* · die Woche — *week* · oft — *often* · vier — *four* · der Garten — *garden* · das Kinderzimmer — *children's room* · das Schaf — *sheep* · die Überraschung — *surprise* · fett — *fat, fatty*
 
 ### 🌿 5142 · Kalender II: Juni bis Oktober
 
@@ -1392,7 +1390,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Im August ist es heiß — im Oktober fallen die Blätter. — *In August it is hot — in October the leaves fall.*
 - 🧭 Der Juni, der Juli, der August, der September, der Oktober — masculine, bare after im, stressed on the first syllable, with septem and octo still counting inside.
 
-**Table:** der Juni — *June* · der Juli — *July* · der August — *August* · der September — *September* · der Oktober — *October* · der Monat — *month (twin: month)* · das Jahr — *year* · warm — *warm* · regnen — *to rain* · vier — *four* · zehn — *ten* · oft — *often* · der Käfer — *beetle* · der Rentner — *retiree, pensioner* · die Vorfreude — *anticipation*
+**Table:** der Juni — *June* · der Juli — *July* · der August — *August* · der September — *September* · der Oktober — *October* · der Monat — *month* · das Jahr — *year* · warm — *warm* · regnen — *to rain* · vier — *four* · zehn — *ten* · oft — *often* · der Käfer — *beetle* · der Rentner — *retiree, pensioner* · die Vorfreude — *anticipation*
 
 ### 🌿 5143 · Kalender III: November, Dezember, Feiertag, Ostern, Wochentag
 
@@ -1492,7 +1490,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 *five jobs for a first conversation — one Greek double-door, one bake, and the prefix English wrote as for-*
 
-**Five Jobs, Four Recipes** — der Bäcker is the honest one: backen — English bake, the same Proto-Germanic verb — plus the doer-suffix -er, exactly English's baker. der Verkäufer runs on verkaufen, the shopping verb you…
+**Five Jobs, Four Recipes** — Five everyday professions: der Bäcker (baker, from backen), der Verkäufer (salesperson, from verkaufen), der Polizist (police officer), der Schüler (pupil), and der Arzt (doctor). Use them…
 
 > 🔭 **Next:** the -er jobs — der Student, der Fahrer, der Sänger, der Bauer, der Arbeiter — and the dweller-family hiding inside Bauer.
 
@@ -1507,7 +1505,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Shifts:** `Ablaut`
 
-**The -er Machine, and One Family Reunion** — Three of today's jobs are the -er machine running on verbs you already own. der Fahrer is fahren + -er — and fahren is English fare: the same verb that survives in wayfarer and seafarer, so a…
+**The -er Machine, and One Family Reunion** — Build job names by adding -er to verbs you know: fahren → der Fahrer (driver), singen → der Sänger (singer), arbeiten → der Arbeiter (worker). Add der Student (student) and der Bauer (farmer —…
 
 > 🔭 **Next:** the borrowed row — der Ingenieur, der Friseur, der Pilot, der Kellner — and der Beruf, which is vocation translated rather than inherited.
 
@@ -1544,7 +1542,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Mein Hobby ist Musik — ich tanze selten, ich singe oft. — *My hobby is music — I seldom dance, I often sing.*
 - 🧭 die Musik is the Muses' art, der Sport is English's own word sold back to German, das Lied's Old English twin leod is lost — and tanzen/dance are the same French purchase.
 
-**Table:** die Musik — *music* · der Sport — *sport* · das Lied — *song* · tanzen — *to dance (twin: dance)* · malen — *to paint* · das Radio — *radio* · das Klavier — *piano* · das Hobby — *hobby* · der Schuh — *shoe* · das Kino — *cinema* · der Termin — *appointment* · der Wochentag — *weekday* · selten — *rare; seldom* · der Verkäufer — *seller / salesman* · der Bauer — *farmer / peasant* · die Türkei — *Turkey* · das Irland — *Ireland* · italienisch — *Italian* · der Arzt — *doctor* · rosa — *pink* · die Sprache — *language* · das Frühstück — *breakfast (lit. early bite)* · die Socke — *sock* · das Fahrrad — *bicycle* · der Beruf — *profession, occupation* · der Feiertag — *public holiday* · der Sänger — *singer*
+**Table:** die Musik — *music* · der Sport — *sport* · das Lied — *song* · tanzen — *to dance* · malen — *to paint* · das Radio — *radio* · das Klavier — *piano* · das Hobby — *hobby* · der Schuh — *shoe* · das Kino — *cinema* · der Termin — *appointment* · der Wochentag — *weekday* · selten — *rare; seldom* · der Verkäufer — *seller / salesman* · der Bauer — *farmer / peasant* · die Türkei — *Turkey* · das Irland — *Ireland* · italienisch — *Italian* · der Arzt — *doctor* · rosa — *pink* · die Sprache — *language* · das Frühstück — *breakfast (lit. early bite)* · die Socke — *sock* · das Fahrrad — *bicycle* · der Beruf — *profession, occupation* · der Feiertag — *public holiday* · der Sänger — *singer*
 
 ---
 
@@ -1726,7 +1724,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Ich sehe ihn, und ich helfe ihm. — *I see him (acc), and I help him (dat).*
 - 🧭 helfen, danken, gefallen, folgen, gehören — the dative club acts TOWARD; sehen, finden, nehmen act ON.
 
-**Table:** helfen — *to help* · danken — *to thank* · gefallen — *to please* · geben — *to give* · sehen — *to see* · finden — *to find* · mir — *to me (dative)* · dir — *to thee (dative)* · schmecken — *to taste* · wünschen — *to wish* · das Glück — *luck / happiness* · der Mut — *courage* · der Wunsch — *wish, desire* · der Mechaniker — *mechanic* · amerikanisch — *American*
+**Table:** helfen — *to help* · danken — *to thank* · gefallen — *to please* · geben — *to give* · sehen — *to see* · finden — *to find* · mir — *to me (dative)* · ihm — *to him (dative)* · dir — *to thee (dative)* · schmecken — *to taste* · wünschen — *to wish* · das Glück — *luck / happiness* · der Mut — *courage* · der Wunsch — *wish, desire* · der Mechaniker — *mechanic* · amerikanisch — *American*
 
 #### 🌿 Side path — Kleidung & Anziehen
 
@@ -2055,7 +2053,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Das geht schneller als mit dem Auto, und es ist gut für meine Gesundheit. — *That is faster than by car, and it is good for my health.*
 - 🧭 Comparisons carry a story's argument: schneller als, langsamer als, gleich schnell wie. Find the hinge word and you find the claim.
 
-**Table:** das Rad — *wheel* · die Gesundheit — *health* · das Fahrrad — *bicycle* · das Auto — *car / auto* · teuer — *expensive (twin: dear)* · schnell — *fast* · langsam — *slow* · gleich — *same* · die Bäckerei — *bakery* · der Bäcker — *baker* · die Stadt — *city / stead* · der Freund — *friend* · danke — *thanks* · die Minute — *minute* · die Stunde — *hour* · das Geld — *money (kin: yield)* · der Zug — *pull / train*
+**Table:** das Rad — *wheel* · die Gesundheit — *health* · das Fahrrad — *bicycle* · das Auto — *car / auto* · teuer — *expensive (twin: dear)* · schnell — *fast* · langsam — *slow* · gleich — *same* · die Bäckerei — *bakery* · der Bäcker — *baker* · die Stadt — *city / town* · der Freund — *friend* · danke — *thanks* · die Minute — *minute* · die Stunde — *hour* · das Geld — *money (kin: yield)* · der Zug — *pull / train*
 
 ### 🔸 2401 · Twin Suppletions
 
@@ -2119,14 +2117,14 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Shifts:** `V / F → B`
 
-**Love, Neat Gone Warm, and the Two With No Twin** — die Liebe is the twin you already own: love and Liebe are the same ancient root — Proto-Germanic *leub-, 'to hold dear' — with English turning the b-sound to v (give/geben, live/leben,…
+**Love, Neat Gone Warm, and the Two With No Twin** — Say how you feel right away: Ich bin stolz (I am proud), Du bist nett (You are nice), Er ist wütend (He is angry). Notice the love/Liebe twin (v ↔ b, like give/geben) and Freude (joy) — and when…
 
 > 🔭 **Next:** five high-value adjectives — richtig, falsch, sauber, leer, offen — the last new words of the campaign.
 
 - 🗝️ Ich bin stolz auf das Haus — die Musik macht Freude. — *I am proud of the house — the music brings joy.*
 - 🧭 die Liebe is love's twin with the b, nett is neat gone warm, die Freude is frolic's German home — and stolz has no twin: English bought French proud.
 
-**Table:** die Liebe — *love* · nett — *nice / kind (kin: neat)* · wütend — *furious / angry* · stolz — *proud* · die Freude — *joy / delight* · der Arzt — *doctor* · der Bauer — *farmer / peasant* · der Honig — *honey* · die Musik — *music* · der Sport — *sport* · das Lied — *song* · tanzen — *to dance (twin: dance)* · der Pilot — *pilot* · der Ingenieur — *engineer* · wir — *we* · die Schule — *school* · der Gast — *guest* · die Gruppe — *group* · der Held — *hero* · die Party — *party* · die Gitarre — *guitar* · reiten — *to ride (horseback)* · das Schach — *chess* · die Freizeit — *free time*
+**Table:** die Liebe — *love* · nett — *nice / kind (kin: neat)* · wütend — *furious / angry* · stolz — *proud* · die Freude — *joy / delight* · der Arzt — *doctor* · der Bauer — *farmer / peasant* · der Honig — *honey* · die Musik — *music* · der Sport — *sport* · das Lied — *song* · tanzen — *to dance* · der Pilot — *pilot* · der Ingenieur — *engineer* · wir — *we* · die Schule — *school* · der Gast — *guest* · die Gruppe — *group* · der Held — *hero* · die Party — *party* · die Gitarre — *guitar* · reiten — *to ride (horseback)* · das Schach — *chess* · die Freizeit — *free time*
 
 ### 🌿 5312 · Adjektive: richtig, falsch, sauber, leer, offen
 
@@ -2311,7 +2309,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Der Bus war kaputt, und Lukas ist zu spät gekommen. — *The bus was broken, and Lukas arrived too late.*
 - 🧭 A story's mood can turn on one sentence. Sarah's laughter changes 'angry girlfriend' into 'joke' — read for that turn.
 
-**Table:** das Geschenk — *present / gift* · die Entschuldigung — *excuse me / apology* · die Stunde — *hour* · spät — *late* · der Regen — *rain* · nass — *wet* · der Bus — *bus* · der Zug — *pull / train* · der Nachbar — *neighbor* · der Geburtstag — *birthday* · der Freund — *friend* · die Tasche — *bag / pocket* · die Uhr — *clock / o'clock* · die Stadt — *city / stead* · die Straße — *street* · das Wetter — *weather* · blau — *blue*
+**Table:** das Geschenk — *present / gift* · die Entschuldigung — *excuse me / apology* · die Stunde — *hour* · spät — *late* · der Regen — *rain* · nass — *wet* · der Bus — *bus* · der Zug — *pull / train* · der Nachbar — *neighbor* · der Geburtstag — *birthday* · der Freund — *friend* · die Tasche — *bag / pocket* · die Uhr — *clock / o'clock* · die Stadt — *city / town* · die Straße — *street* · das Wetter — *weather* · blau — *blue*
 
 ### 🔸 2701 · über, unter, durch: Metaphor Set
 
@@ -2337,7 +2335,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Die Katze geht unter den Tisch. — *The cat goes under the table.*
 - 🧭 wohin? → accusative (motion); wo? → dative (location) — and the contractions im/ins report the case for free.
 
-**Table:** über — *over* · unter — *under / among* · vor — *before / in front of* · der Tisch — *table / dish* · das Haus — *house* · die Stadt — *city / stead* · in — *in* · auf — *on / up* · die Straße — *street* · der Platz — *square, place* · die Ecke — *corner (twin: edge)* · die Mitte — *middle* · der Strand — *beach* · der Hafen — *harbor, port* · der Wald — *forest* · die Brücke — *bridge*
+**Table:** über — *over* · unter — *under / among* · vor — *before / in front of* · der Tisch — *table / dish* · das Haus — *house* · die Stadt — *city / town* · in — *in* · auf — *on / up* · die Straße — *street* · der Platz — *square, place* · die Ecke — *corner (twin: edge)* · die Mitte — *middle* · der Strand — *beach* · der Hafen — *harbor, port* · der Wald — *forest* · die Brücke — *bridge*
 
 ### 🔸 2703 · Preposition Sentence Ladders
 
@@ -2350,7 +2348,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Morgen fahre ich mit dem Zug nach Berlin. — *Tomorrow I travel by train to Berlin.*
 - 🧭 Time, Manner, Place — each phrase with its own case law, stacked on a V2 spine. The last drill; the sentences build themselves now.
 
-**Table:** in — *in* · auf — *on / up* · über — *over* · mit — *with* · durch — *through* · aus — *out* · unter — *under / among* · vor — *before / in front of* · bei — *by / at* · zu — *to / too* · das Haus — *house* · der Tisch — *table / dish* · die Stadt — *city / stead* · der Zug — *pull / train* · die Fahrt — *drive / ride / journey* · der Fluss — *river* · der Markt — *market* · die Wand — *wall* · der Hafen — *harbor, port* · der Wald — *forest* · die Brücke — *bridge* · der Platz — *square, place*
+**Table:** in — *in* · auf — *on / up* · über — *over* · mit — *with* · durch — *through* · aus — *out* · unter — *under / among* · vor — *before / in front of* · bei — *by / at* · zu — *to / too* · das Haus — *house* · der Tisch — *table / dish* · die Stadt — *city / town* · der Zug — *pull / train* · die Fahrt — *drive / ride / journey* · der Fluss — *river* · der Markt — *market* · die Wand — *wall* · der Hafen — *harbor, port* · der Wald — *forest* · die Brücke — *bridge* · der Platz — *square, place*
 
 #### 🌿 Side path — Two-Way Preposition Drill Isle
 
@@ -2414,7 +2412,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Gehen Sie geradeaus — die Kirche ist links, wir wohnen oben. — *Go straight ahead — the church is on the left, we live upstairs.*
 - 🧭 rechts/right is one word (*rehtaz, with recht, Licht, Nacht, acht), links has no English twin, geradeaus is gerade+aus, and oben/unten are the adverbs of über/over and unter/under.
 
-**Table:** links — *left* · rechts — *right (direction)* · geradeaus — *straight ahead* · oben — *up / above* · unten — *down / below* · hier — *here* · drüben — *over there* · dort — *there* · die Familie — *family* · wohnen — *to live / reside* · das Auto — *car / auto* · die Kirche — *church* · der Garten — *garden* · fünf — *five* · sechs — *six* · manchmal — *sometimes* · endlich — *finally* · leicht — *easy / light (twin: light)* · richten — *to right / straighten*
+**Table:** links — *left* · rechts — *right (direction)* · geradeaus — *straight ahead* · oben — *up / above* · unten — *down / below* · hier — *here* · drüben — *over there* · dort — *there* · die Familie — *family* · wohnen — *to live / reside* · das Auto — *car / auto* · die Kirche — *church* · der Garten — *garden* · fünf — *five* · sechs — *six* · manchmal — *sometimes* · endlich — *finally* · leicht — *easy / light* · richten — *to right / straighten*
 
 #### 🌿 Side path — Die Himmelsrichtungen & die Ferne
 
@@ -2433,7 +2431,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Der Zug kommt um zehn Uhr aus dem Süden. — *The train comes from the south at ten o'clock.*
 - 🧭 hinten is behind's twin — German built it with a t-suffix, not the D→T shift; Norden, Osten, Westen and Süden are pure sky twins — dawn, evening, sun-side and the left hand.
 
-**Table:** hinten — *at the back* · der Norden — *north* · der Osten — *east* · der Westen — *west* · der Süden — *south* · der Garten — *garden* · das Auto — *car / auto* · der Zug — *pull / train* · die Stadt — *city / stead* · die Kirche — *church* · die Brücke — *bridge* · links — *left* · rechts — *right (direction)* · geradeaus — *straight ahead* · eins — *one* · vier — *four* · zehn — *ten* · die Haustür — *front door* · der Teich — *pond*
+**Table:** hinten — *at the back* · der Norden — *north* · der Osten — *east* · der Westen — *west* · der Süden — *south* · der Garten — *garden* · das Auto — *car / auto* · der Zug — *pull / train* · die Stadt — *city / town* · die Kirche — *church* · die Brücke — *bridge* · links — *left* · rechts — *right (direction)* · geradeaus — *straight ahead* · eins — *one* · vier — *four* · zehn — *ten* · die Haustür — *front door* · der Teich — *pond*
 
 ### 🌿 5172 · Entfernung: die Nähe, weit, fern, quer, entlang
 
@@ -2446,7 +2444,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Wie weit ist der Strand? — Zehn Minuten zu Fuß. — *How far is the beach? — Ten minutes on foot.*
 - 🧭 die Nähe ↔ nigh, weit ↔ wide, fern ↔ far, entlang = ent + lang — one axis, two path words, and entlang always last.
 
-**Table:** die Nähe — *nearness* · weit — *far / wide* · fern — *far / remote (twin: far)* · quer — *crosswise, across* · entlang — *along* · der Norden — *north* · der Osten — *east* · der Westen — *west* · der Süden — *south* · der Weg — *way / path* · die Straße — *street* · der Fluss — *river* · der Strand — *beach* · der Umweg — *detour* · geradeaus — *straight ahead* · eins — *one* · vier — *four* · zehn — *ten* · die Hälfte — *half*
+**Table:** die Nähe — *nearness* · weit — *far / wide* · fern — *far / remote* · quer — *crosswise, across* · entlang — *along* · der Norden — *north* · der Osten — *east* · der Westen — *west* · der Süden — *south* · der Weg — *way / path* · die Straße — *street* · der Fluss — *river* · der Strand — *beach* · der Umweg — *detour* · geradeaus — *straight ahead* · eins — *one* · vier — *four* · zehn — *ten* · die Hälfte — *half*
 
 #### 🌿 Side path — Reisen I: Fahrrad, Koffer, Karte, Haltestelle, Dorf
 
@@ -2465,7 +2463,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Ich fahre mit dem Fahrrad ins Dorf — der Koffer ist zu schwer. — *I go to the village by bike — the suitcase is too heavy.*
 - 🧭 Fahrrad = fahren + Rad; Koffer is coffin's Latin cousin (cophinus); Karte is card/chart from charta; Haltestelle hides halten (hold, D→T); Dorf is thorpe with the TH→D badge.
 
-**Table:** das Fahrrad — *bicycle* · der Koffer — *suitcase* · die Karte — *card, ticket* · die Haltestelle — *bus stop* · das Dorf — *village* · hier — *here* · drüben — *over there* · der Umweg — *detour* · gegenüber — *opposite* · links — *left* · rechts — *right (direction)* · quer — *crosswise, across* · entlang — *along* · die Wohnung — *apartment, flat* · fahren — *to drive / fare* · der Zug — *pull / train* · die Uhr — *clock / o'clock* · die Stadt — *city / stead* · der Fluss — *river* · der Berg — *mountain* · klein — *small / clean* · alt — *old*
+**Table:** das Fahrrad — *bicycle* · der Koffer — *suitcase* · die Karte — *card, ticket* · die Haltestelle — *bus stop* · das Dorf — *village* · hier — *here* · drüben — *over there* · der Umweg — *detour* · gegenüber — *opposite* · links — *left* · rechts — *right (direction)* · quer — *crosswise, across* · entlang — *along* · die Wohnung — *apartment, flat* · fahren — *to drive / fare* · der Zug — *pull / train* · die Uhr — *clock / o'clock* · die Stadt — *city / town* · der Fluss — *river* · der Berg — *mountain* · klein — *small / clean* · alt — *old*
 
 ### 🌿 5252 · Reisen II: die Fahrkarte, der Fahrplan, die Abfahrt, die Ankunft, der Flughafen
 
@@ -2505,14 +2503,14 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 
 **Shifts:** `TH → D · K → CH`
 
-**The Map Split in Two** — England both languages kept, and for the best reason in this course: the Angles were a Germanic tribe from Angeln, a small peninsula in Schleswig, and when they sailed west their name became…
+**The Map Split in Two** — Say where you are from or going: Deutschland (Germany), Frankreich (France), England (England), Spanien (Spain), Italien (Italy). Use aus for origin (Ich komme aus Deutschland) and nach for…
 
 > 🔭 **Next:** the neighbors — and the two countries whose names insist on bringing their own article.
 
 - 🗝️ Ich wohne in Deutschland — mein Bruder wohnt in England. — *I live in Germany — my brother lives in England.*
 - 🧭 England is the Angles' land from Angeln; deutsch and Dutch are one word (*þiudiskaz, TH→D); reich is rich (k→ch); Frankreich is the Franks' realm; Spanien and Italien are Rome's own names.
 
-**Table:** Deutschland — *Germany* · Frankreich — *France* · England — *England* · Spanien — *Spain* · Italien — *Italy* · der Norden — *north* · der Süden — *south* · der Westen — *west* · braun — *brown* · fern — *far / remote (twin: far)* · die Karte — *card, ticket* · die Fähre — *ferry* · rot — *red* · der Juni — *June* · der Juli — *July* · deutsch — *German* · reich — *rich / realm* · der Bruder — *brother* · wohnen — *to live / reside* · der Freund — *friend* · der Urlaub — *vacation (twin: leave)* · die Stadt — *city / stead* · schön — *beautiful / sheen* · der Knoblauch — *garlic* · der Bach — *stream, brook*
+**Table:** Deutschland — *Germany* · Frankreich — *France* · England — *England* · Spanien — *Spain* · Italien — *Italy* · der Norden — *north* · der Süden — *south* · der Westen — *west* · braun — *brown* · fern — *far / remote* · die Karte — *card, ticket* · die Fähre — *ferry* · rot — *red* · der Juni — *June* · der Juli — *July* · deutsch — *German* · reich — *rich / realm* · der Bruder — *brother* · wohnen — *to live / reside* · der Freund — *friend* · der Urlaub — *vacation (twin: leave)* · die Stadt — *city / town* · schön — *beautiful / sheen* · der Knoblauch — *garlic* · der Bach — *stream, brook*
 
 ---
 
@@ -2794,7 +2792,7 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Wann kommst du? — Wenn es regnet, lese ich. — *When are you coming? — When it rains, I read.*
 - 🧭 wann asks, als marks the once-only past (and 'than'), wenn repeats and conditions — and all three park the verb.
 
-**Table:** wann — *when* · als — *than / as / else* · wenn — *if / when(ever) (twin: when)* · regnen — *to rain* · lesen — *to read* · kommen — *to come* · das Kind — *child* · gestern — *yesterday* · die Zeit — *time / tide* · der Lehrer — *teacher* · die Person — *person* · der Freund — *friend* · die Küste — *coast* · der Professor — *professor* · der Erwachsener — *adult*
+**Table:** wann — *when* · als — *than / as / else* · wenn — *if / when(ever)* · regnen — *to rain* · lesen — *to read* · kommen — *to come* · das Kind — *child* · gestern — *yesterday* · die Zeit — *time / tide* · der Lehrer — *teacher* · die Person — *person* · der Freund — *friend* · die Küste — *coast* · der Professor — *professor* · der Erwachsener — *adult*
 
 ### 🌿 5112 · ob: Whether or Not · ⚑ required
 
@@ -2807,6 +2805,6 @@ Now try lernen — "to learn." Build it from lern + en, then use it in a sentenc
 - 🗝️ Ich weiß nicht, ob er kommt — wenn er kommt, lese ich. — *I don't know whether he's coming — if he comes, I'll read.*
 - 🧭 ob asks the open yes/no ('or not' test), wenn builds the condition — and ob is English if, disguised.
 
-**Table:** ob — *whether / if (twin: if)* · wenn — *if / when(ever) (twin: when)* · wissen — *to know (a fact)* · haben — *to have* · kommen — *to come* · mögen — *may / to like* · die Zeit — *time / tide* · der Freund — *friend* · das Haar — *hair* · das Abendessen — *dinner / supper* · das Müsli — *muesli* · schlimm — *bad; serious* · hungrig — *hungry* · der Autor — *author* · die Weste — *vest, waistcoat*
+**Table:** ob — *whether / if* · wenn — *if / when(ever)* · wissen — *to know (a fact)* · haben — *to have* · kommen — *to come* · mögen — *may / to like* · die Zeit — *time / tide* · der Freund — *friend* · das Haar — *hair* · das Abendessen — *dinner / supper* · das Müsli — *muesli* · schlimm — *bad; serious* · hungrig — *hungry* · der Autor — *author* · die Weste — *vest, waistcoat*
 
 *End of the trail — willkommen auf der anderen Seite der Brücke.* 🌉

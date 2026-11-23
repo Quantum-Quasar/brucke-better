@@ -7,6 +7,7 @@ import {
   syncThemeColor,
   themeDisplayName,
 } from "@/lib/theme-runtime";
+import { writeStorageJson } from "@/lib/safe-storage";
 
 export interface MonkeytypeTheme {
   bg: string;
@@ -1805,24 +1806,17 @@ export function applyTheme(themeId: string): void {
 
   // Persist the resolved palette so the blocking head script can restore it before
   // first paint on the next hard load (otherwise a non-default theme flashes Alduin).
-  if (typeof window !== "undefined" && window.localStorage) {
-    try {
-      window.localStorage.setItem(
-        THEME_VARS_CACHE_KEY,
-        JSON.stringify({
-          id: resolvedId,
-          vars: {
-            "--bg-color": theme.bg,
-            "--main-color": theme.main,
-            "--caret-color": theme.caret,
-            "--sub-color": theme.sub,
-            "--sub-alt-color": theme.subAlt,
-            "--text-color": theme.text,
-            "--error-color": theme.error,
-          },
-          scheme: isDark ? "dark" : "light",
-        })
-      );
-    } catch {}
-  }
+  writeStorageJson(THEME_VARS_CACHE_KEY, {
+    id: resolvedId,
+    vars: {
+      "--bg-color": theme.bg,
+      "--main-color": theme.main,
+      "--caret-color": theme.caret,
+      "--sub-color": theme.sub,
+      "--sub-alt-color": theme.subAlt,
+      "--text-color": theme.text,
+      "--error-color": theme.error,
+    },
+    scheme: isDark ? "dark" : "light",
+  });
 }

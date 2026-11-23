@@ -43,10 +43,15 @@ export interface CustomizationSettings {
   capsLockWarning: boolean;
   showMasteryCounter: boolean;
   increasedContrast: boolean;
+  largerText: boolean;
+  reducedText: boolean;
 
   // Posture (TM-4): how the course asks to be taken
   showPostureCues: boolean;
   posturePrimerSeen: boolean;
+
+  // Cross-language bridge: Dutch for German speakers
+  dutchFromGerman: boolean;
 
   // Listening (TM-6): Epoch ms until which dictation exercises are skipped.
   // One skip silences every dictation for 15 minutes — a learner in a quiet
@@ -70,7 +75,7 @@ export const DEFAULT_SETTINGS: CustomizationSettings = {
   showCharBar: "always",
 
   soundVolume: 0.5,
-  playSoundOnClick: "18", // Cherry MX Black ABS default mechanical click
+  playSoundOnClick: "off", // quiet by default; learners can opt in to mechanical click sounds in Settings
   playSoundOnError: "1", // Damage tone
   pronunciationByLanguage: {},
 
@@ -78,9 +83,13 @@ export const DEFAULT_SETTINGS: CustomizationSettings = {
   capsLockWarning: true,
   showMasteryCounter: true,
   increasedContrast: false,
+  largerText: false,
+  reducedText: false,
 
   showPostureCues: true,
   posturePrimerSeen: false,
+
+  dutchFromGerman: false,
 
   listeningSkippedUntil: 0,
 };

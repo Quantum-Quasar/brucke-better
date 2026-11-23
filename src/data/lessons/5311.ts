@@ -63,7 +63,7 @@ const lesson: Lesson = {
   ],
   "hook": {
     "title": "Love, Neat Gone Warm, and the Two With No Twin",
-    "content": "die Liebe is the twin you already own: love and Liebe are the same ancient root — Proto-Germanic *leub-, 'to hold dear' — with English turning the b-sound to v (give/geben, live/leben, love/Liebe). The family is bigger than it looks: archaic English lief, 'dear', is the same word, and English believe and German glauben are the same root with the same prefix pattern — one prefix slot filled on each side, be- in English, ge- in German — all built on the root of love. nett is the double purchase: French net, 'clean, pure', from Latin nitidus, 'shining' — English bought it as neat and kept it tidy; German bought it as nett and warmed it into 'nice'. Same French word, two temperatures. die Freude is the joy of froh, 'glad' — and English frolic is the same word through Dutch vrolijk, 'merry'. wütend is die Wut, rage, wearing the adjective ending — Old English had the same word, wōd 'furious', which survives in archaic English wood, 'mad'; the dictionaries record it even though everyday English forgot it. And stolz is the honest limitation: no safe English twin exists — English proud came from Old French prud, 'valiant', a completely different family. When English needed 'proud', it bought French.",
+    "content": "Say how you feel right away: Ich bin stolz (I am proud), Du bist nett (You are nice), Er ist wütend (He is angry). Notice the love/Liebe twin (v ↔ b, like give/geben) and Freude (joy) — and when no twin exists (stolz), pair it with sein (+ auf + accusative): Ich bin stolz auf dich.",
     "footnotes": [
       {
         "marker": "1",

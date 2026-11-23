@@ -160,19 +160,20 @@ const lesson: Lesson = {
     },
     {
       "id": "l5362_e5",
-      "type": "literal_gloss",
-      "prompt": "Which English follows the German words most closely?",
-      "german": "Der See ist größer als der Fluss.",
-      "natural": "The lake is bigger than the river.",
-      "options": [
-        "The lake is bigger than the river",
-        "The river is bigger than the lake",
-        "The lake is as big as the river",
-        "The lake is smaller than the river"
+      "type": "syntax_builder",
+      "prompt": "Build in German: \"We go to the lake today\"",
+      "target_answer": "Wir gehen heute zum See",
+      "meaning": "We go to the lake today",
+      "word_bank": [
+        "Wir",
+        "gehen",
+        "heute",
+        "zum",
+        "See",
+        "im",
+        "morgen"
       ],
-      "target_answer": "The lake is bigger than the river",
-      "meaning": "The lake is bigger than the river.",
-      "explanation": "größer is the comparative of groß; als marks the second item. The river is the smaller one here."
+      "explanation": "zum (zu + dem) marks direction toward a masculine noun like der See."
     }
   ],
   "twist": {

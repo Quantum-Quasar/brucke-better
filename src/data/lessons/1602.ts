@@ -132,7 +132,7 @@ const lesson: Lesson = {
     {
       "id": "l1602_e4",
       "type": "reverse_cognate",
-      "prompt": "What English verb is the true twin of 'beginnen'?",
+      "prompt": "What does 'beginnen' mean in English?",
       "target_answer": "begin",
       "meaning": "begin ↔ beginnen (be- in both!)",
       "explanation": "Both *biginnan: the be- prefix is Germanic heritage, not a German invention — English's begin kept it too."

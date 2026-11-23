@@ -180,7 +180,12 @@ const lesson: Lesson = {
       ],
       "target_answer": "The car stands before to-the house.",
       "meaning": "The car stands in front of the house.",
-      "explanation": "Read it the German way: 'before to-the house.' vor is before/fore, and dem is the dative 'the' that a motion-less scene demands — the case is on the page, where English hides it in word order."
+      "explanation": "Read it the German way: 'before to-the house.' vor is before/fore, and dem is the dative 'the' that a motion-less scene demands — the case is on the page, where English hides it in word order.",
+      "affirmation": "vor dem Haus — static location takes dative (dem = to-the).",
+      "diagnosis": {
+        "slip": "missed the dative case for static location",
+        "cue": "Static location after vor takes dative (dem Haus), not accusative."
+      }
     }
   ],
   "summary": {

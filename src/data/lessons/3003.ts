@@ -143,16 +143,11 @@ const lesson: Lesson = {
     {
       "id": "l3003_e3",
       "type": "shift_select",
-      "prompt": "Culture round: 'Donnerstag, Mittwoch, Sonntag' — what system are these from?",
-      "options": [
-        "The Germanic god-calendar, calqued from the Latin planetary week",
-        "The Greek Olympics",
-        "Random German names",
-        "The French revolutionary calendar"
-      ],
-      "target_answer": "The Germanic god-calendar, calqued from the Latin planetary week",
+      "prompt": "Which German day means 'Wednesday'?",
+      "options": ["Donnerstag", "Mittwoch", "Sonntag", "Dienstag"],
+      "target_answer": "Mittwoch",
       "meaning": "Thunder-day, mid-week, sun-day",
-      "explanation": "One pantheon, two calendars — and you know the story of every single day."
+      "explanation": "Mittwoch literally means mid-week (Wednesday)."
     },
     {
       "id": "l3003_e4",

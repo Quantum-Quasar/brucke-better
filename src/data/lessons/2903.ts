@@ -203,18 +203,18 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: the Capstone sprigs — the full Berlin reading with tap-to-inspect words and the whole-trail review game."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"Today that is very good\"",
-    "target_answer": "Heute ist das sehr gut",
+    "prompt": "Without looking back — build in German: \"Are you cold today?\"",
+    "target_answer": "Ist dir heute kalt",
     "word_bank": [
-      "nicht",
-      "das",
-      "sehr",
-      "gut",
-      "ist",
-      "sehr",
-      "Heute"
+      "Ist",
+      "dir",
+      "heute",
+      "kalt",
+      "du",
+      "bist",
+      "warm"
     ],
-    "explanation": "Building \"Heute ist das sehr gut\" from the lesson's core pattern locks in Mir ist kalt: Dative Feelings."
+    "explanation": "Dative feeling phrases put the person in the dative (dir) with ist."
   }
 };
 

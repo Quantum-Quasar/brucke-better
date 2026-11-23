@@ -154,7 +154,12 @@ const lesson: Lesson = {
         "Komm",
         "nicht"
       ],
-      "explanation": "Two bare-stem commands chained with und — the way real German dialogue strings orders: Komm! Trink!"
+      "explanation": "Two bare-stem commands chained with und — the way real German dialogue strings orders: Komm! Trink!",
+      "affirmation": "Komm und trink Tee — informal du commands drop both du and -st.",
+      "diagnosis": {
+        "slip": "kept du or the -st ending in an informal command",
+        "cue": "For du-imperatives, drop the pronoun du and the -st ending: komm, trink."
+      }
     }
   ],
   "summary": {

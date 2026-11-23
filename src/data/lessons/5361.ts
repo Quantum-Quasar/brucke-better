@@ -165,19 +165,20 @@ const lesson: Lesson = {
     },
     {
       "id": "l5361_e5",
-      "type": "literal_gloss",
-      "prompt": "Which English follows the German words most closely?",
-      "german": "Der Junge findet den Schal unter einem Tisch.",
-      "natural": "The boy finds the scarf under a table.",
-      "options": [
-        "The boy finds the scarf under a table",
-        "The scarf finds the boy under a table",
-        "The boy loses the scarf under a table",
-        "The boy finds the table under a scarf"
+      "type": "syntax_builder",
+      "prompt": "Build in German: \"The red scarf is warm\"",
+      "target_answer": "Der rote Schal ist warm",
+      "meaning": "The red scarf is warm",
+      "word_bank": [
+        "Der",
+        "rote",
+        "Schal",
+        "ist",
+        "warm",
+        "das",
+        "rotes"
       ],
-      "target_answer": "The boy finds the scarf under a table",
-      "meaning": "The boy finds the scarf under a table.",
-      "explanation": "finden takes an accusative object (den Schal), and unter einem Tisch is the dative place where it was hiding."
+      "explanation": "After der, the masculine adjective takes -e: der rote Schal."
     }
   ],
   "twist": {

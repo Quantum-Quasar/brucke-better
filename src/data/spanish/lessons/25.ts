@@ -87,14 +87,10 @@ const lesson: Lesson = {
     },
     {
       "type": "shift_select",
-      "prompt": "Why do we say 'Me GUSTA el café' (without -n) but 'Me GUSTAN los libros' (with -n)?",
-      "options": [
-        "Because the thing liked is the grammatical subject: singular el café takes 3rd-person singular gusta, while plural los libros takes 3rd-person plural gustan!",
-        "Because me is plural",
-        "Because libros is masculine"
-      ],
-      "target_answer": "Because the thing liked is the grammatical subject: singular el café takes 3rd-person singular gusta, while plural los libros takes 3rd-person plural gustan!",
-      "meaning": "I like coffee vs I like books",
+      "prompt": "Which sentence correctly says 'I like the books'?",
+      "options": ["Me gusta los libros", "Me gustan los libros", "Yo gusto los libros"],
+      "target_answer": "Me gustan los libros",
+      "meaning": "I like the books",
       "explanation": "The verb gustar agrees with the thing that pleases you, never with the person!",
       "id": "es25_e3"
     },

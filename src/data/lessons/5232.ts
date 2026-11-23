@@ -79,7 +79,7 @@ const lesson: Lesson = {
   ],
   "hook": {
     "title": "Two Languages, Two Recipes for One Meal",
-    "content": "English and German built their breakfast word at home, from different parts. English breakfast is break + fast — the meal named for the fast it ends. das Frühstück is früh + Stück — 'early piece' — the first piece of bread taken early in the day, which is exactly what a breakfast roll still is. Same meal, two descriptions: English names what the meal ends, German names when you eat it. das Brötchen is Brot with the diminutive -chen — the little bread — the same job English does with -let (booklet), and German -chen is a true cousin of English -kin (lambkin). die Marmelade came from Portuguese marmelo, 'quince', and the quince's own name is Greek melímēlon — 'honey-apple' — so there is honey hiding in every jar of jam. der Toast is English toast, from Latin tostare, 'to scorch': English kept the Latin roast-word, and German borrowed it back from English. And the payoff is a compound you can already read: das Butterbrot — butter + Brot — the word for what English calls a sandwich, built out of two words you have owned since lesson 101.",
+    "content": "Order a German breakfast: das Frühstück (breakfast), das Brötchen (bread roll), die Butter (butter), die Marmelade (jam), and der Toast (toast). Put them straight to work: Ich esse ein Brötchen mit Butter und Marmelade.",
     "footnotes": [
       {
         "marker": "1",

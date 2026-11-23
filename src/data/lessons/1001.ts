@@ -130,7 +130,7 @@ const lesson: Lesson = {
     {
       "id": "l1001_e2",
       "type": "shift_select",
-      "prompt": "Complete: 'Wir halten _____ Löffel' (we hold the spoon):",
+      "prompt": "Complete: 'Wir halten ___ Löffel.' (We hold the spoon):",
       "options": [
         "der",
         "den",
@@ -144,21 +144,21 @@ const lesson: Lesson = {
     {
       "id": "l1001_e3",
       "type": "shift_select",
-      "prompt": "Which sentence has NO accusative change — and why?",
+      "prompt": "Complete: 'Ich öffne ___ Fenster.' (I open the window):",
       "options": [
-        "Ich habe dem Fenster — dative for windows",
-        "Ich habe den Fenster — the -n toll applies to all",
-        "Ich habe das Fenster — neuter objects stay unchanged",
-        "Ich habe des Fensters — genitive in rooms"
+        "das",
+        "den",
+        "dem",
+        "der"
       ],
-      "target_answer": "Ich habe das Fenster — neuter objects stay unchanged",
-      "meaning": "Neuter and feminine ride free in the accusative",
+      "target_answer": "das",
+      "meaning": "Ich öffne das Fenster = I open the window",
       "explanation": "Only masculine singular marks the direct object. das Fenster, das Wasser, die Zeit — no flag change, ever."
     },
     {
       "id": "l1001_e4",
       "type": "derive",
-      "prompt": "Complete: 'Ich suche _____ Kaffee' (ein + the Him-Case):",
+      "prompt": "Complete: 'Ich suche ___ Kaffee.' (I am looking for a coffee):",
       "english_hint": "ein + en",
       "target_answer": "einen",
       "meaning": "Ich suche einen Kaffee = I am looking for a coffee",

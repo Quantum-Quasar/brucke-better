@@ -70,16 +70,11 @@ const lesson: Lesson = {
     {
       "id": "l1403_e2",
       "type": "shift_select",
-      "prompt": "Why 'to learn' and 'zu lernen' feel like twins:",
-      "options": [
-        "zu is the past of to",
-        "Pure coincidence",
-        "German borrowed 'to' from English",
-        "to and zu are the same ancient preposition (the sibilant shift split them)"
-      ],
-      "target_answer": "to and zu are the same ancient preposition (the sibilant shift split them)",
+      "prompt": "Which sentence uses the zu-infinitive correctly?",
+      "options": ["Ich habe vor, morgen zu kommen", "Ich habe vor, morgen kommen zu", "Ich habe vor, zu morgen kommen"],
+      "target_answer": "Ich habe vor, morgen zu kommen",
       "meaning": "to ↔ zu: one preposition, two jobs",
-      "explanation": "Proto-Germanic *tō: English wore it as to, German hardened it to zu (T→Z). The to-infinitive is ancient shared kit."
+      "explanation": "zu sits directly before the infinitive at the end: morgen zu kommen."
     },
     {
       "id": "l1403_e3",

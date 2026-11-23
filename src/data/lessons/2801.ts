@@ -156,17 +156,18 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: ziehen & nehmen Dynasties — the tow/tug root and the nim root radiate too."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"We drive / fare here today\"",
-    "target_answer": "Wir fahren heute hier",
+    "prompt": "Without looking back — build in German: \"We drove by car\"",
+    "target_answer": "Wir sind mit dem Auto gefahren",
     "word_bank": [
-      "fahren",
-      "nicht",
-      "heute",
-      "sehr",
-      "hier",
-      "Wir"
+      "Wir",
+      "sind",
+      "mit",
+      "dem",
+      "Auto",
+      "gefahren",
+      "haben"
     ],
-    "explanation": "Building \"Wir fahren heute hier\" from the lesson's core pattern locks in fahren & its Dynasty."
+    "explanation": "Motion with fahren takes sein (Wir sind ... gefahren)."
   }
 };
 

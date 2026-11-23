@@ -139,16 +139,11 @@ const lesson: Lesson = {
     {
       "id": "l5041_e3",
       "type": "shift_select",
-      "prompt": "Which room holds the REDUPLICATING relic (once *le-lōb-style forms)?",
-      "options": [
-        "Room V — geben",
-        "Room VII — schlafen, schlief; fallen, fiel",
-        "Room I — schreiben",
-        "Room II — ziehen"
-      ],
-      "target_answer": "Room VII — schlafen, schlief; fallen, fiel",
+      "prompt": "Which pair shows the past form of 'schlafen'?",
+      "options": ["schlafen → schloft", "schlafen → schlief", "schlafen → schlafte"],
+      "target_answer": "schlafen → schlief",
       "meaning": "The oldest room in the hall",
-      "explanation": "Class VII reduplicated its past in the ancient language; German smoothed it to a vowel change, Gothic kept the doubling."
+      "explanation": "schlafen shifts its stem vowel to ie in the simple past: schlief."
     },
     {
       "id": "l5041_e4",
@@ -194,17 +189,18 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: Motion → Accusative, Location → Dative — the two-way preposition drill isle."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"We sing here today\"",
-    "target_answer": "Wir singen heute hier",
+    "prompt": "Without looking back — build in German: \"We slept well last night\"",
+    "target_answer": "Wir haben gestern gut geschlafen",
     "word_bank": [
-      "nicht",
-      "heute",
       "Wir",
-      "singen",
-      "hier",
-      "sehr"
+      "haben",
+      "gestern",
+      "gut",
+      "geschlafen",
+      "schlafen",
+      "sind"
     ],
-    "explanation": "Building \"Wir singen heute hier\" from the lesson's core pattern locks in Tour of the 7 Strong Verb Classes."
+    "explanation": "Class VII strong verb schlafen keeps its stem vowel in geschlafen."
   }
 };
 

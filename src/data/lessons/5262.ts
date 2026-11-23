@@ -64,7 +64,7 @@ const lesson: Lesson = {
   ],
   "hook": {
     "title": "The Map Split in Two",
-    "content": "England both languages kept, and for the best reason in this course: the Angles were a Germanic tribe from Angeln, a small peninsula in Schleswig, and when they sailed west their name became England — the Angles' land — and their tongue became English. You are not studying a foreign cousin; English is a Germanic dialect that moved next door and borrowed a Roman wardrobe. Deutschland German built from deutsch: Proto-Germanic *þiudiskaz, 'of the (our) people', with the same þ→d hardening that made drei out of three and Bruder out of brother — while English borrowed the Dutch form of that very word as Dutch, pointed it at the Netherlands, and took Germany's own name from Latin Germani instead. Frankreich is the Franks' realm: reich is English rich wearing the k→ch badge (Buch/book, brechen/break), and the Franks were so famously the free men of Gaul that English borrowed their very name as the adjective frank. Spanien and Italien are simply Rome's names — Hispania and Italia — which both languages kept as Rome left them.",
+    "content": "Say where you are from or going: Deutschland (Germany), Frankreich (France), England (England), Spanien (Spain), Italien (Italy). Use aus for origin (Ich komme aus Deutschland) and nach for destination (Ich fahre nach Spanien).",
     "footnotes": [
       {
         "interest": true,

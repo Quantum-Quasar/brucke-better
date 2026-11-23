@@ -167,18 +167,19 @@ const lesson: Lesson = {
     "curiosity_teaser": "The drill isle ends here — next branch: first introductions, the first words Germans actually speak."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"Today that is very good\"",
-    "target_answer": "Heute ist das sehr gut",
+    "prompt": "Without looking back — build in German: \"I am putting the book on the table\"",
+    "target_answer": "Ich lege das Buch auf den Tisch",
     "word_bank": [
-      "sehr",
-      "nicht",
-      "sehr",
-      "gut",
-      "Heute",
+      "Ich",
+      "lege",
       "das",
-      "ist"
+      "Buch",
+      "auf",
+      "den",
+      "Tisch",
+      "dem"
     ],
-    "explanation": "Building \"Heute ist das sehr gut\" from the lesson's core pattern locks in Wechselpräpositionen Sentence Gym."
+    "explanation": "Directed motion onto a surface takes accusative: auf den Tisch."
   }
 };
 

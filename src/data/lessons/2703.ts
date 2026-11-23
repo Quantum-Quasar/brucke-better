@@ -185,18 +185,20 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: verb families & root radiations — one root, many words: fahren/Fahrt, ziehen/Zug, like stand/understand."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"Today that is very good\"",
-    "target_answer": "Heute ist das sehr gut",
+    "prompt": "Without looking back — build in German: \"Today I am going into the city with friends\"",
+    "target_answer": "Heute fahre ich mit Freunden in die Stadt",
     "word_bank": [
-      "sehr",
-      "gut",
-      "nicht",
-      "ist",
-      "das",
-      "sehr",
-      "Heute"
+      "Heute",
+      "fahre",
+      "ich",
+      "mit",
+      "Freunden",
+      "in",
+      "die",
+      "Stadt",
+      "der"
     ],
-    "explanation": "Building \"Heute ist das sehr gut\" from the lesson's core pattern locks in Preposition Sentence Ladders."
+    "explanation": "Time (Heute) → Verb (fahre) → Subject (ich) → Manner (mit Freunden) → Place (in die Stadt)."
   }
 };
 

@@ -85,7 +85,7 @@ const lesson: Lesson = {
   ],
   "hook": {
     "title": "The Guest, the Group, and the Hero English Lost",
-    "content": "wir is the only new pronoun the A1 shelf adds: ich, du, er, sie, es — wir. It is English we with one letter moved, and it has been the same word since before either language existed. die Schule and school are the same purchase from Rome: Latin schola, from Greek scholē — a word that first meant 'leisure', the time held free for learning. der Gast is the gorgeous one: guest and Gast are the same Proto-Germanic word, and the family goes back to an ancient Indo-European word for 'stranger' that Latin adopted as hostis — whence English hostile. The stranger at your door is either the guest you welcome or the enemy you fight; one root, both futures. die Gruppe is a newer, lighter purchase: French groupe, probably from Italian gruppo, 'knot, bunch' — English bought the same French word as group. And der Held is the word English lost: Held and Old English hæleþ, 'man, warrior', are one and the same word — Germany kept it, England let it die and had to borrow Greek hērōs as hero. The hero of the German lesson is not a loan at all; it is the native Germanic champion that English still misses.",
+    "content": "Meet wir (we), plus four everyday people and places: die Schule (school), der Gast (guest), die Gruppe (group), and der Held (hero). Pair wir with the -en verb form you already know: Wir lernen zusammen.",
     "footnotes": [
       {
         "interest": true,

@@ -177,7 +177,12 @@ const lesson: Lesson = {
         "ich",
         "in"
       ],
-      "explanation": "Gestern fronts the adverb, hatte holds position 2 — the fortress past running a verb-second main clause."
+      "explanation": "Gestern fronts the adverb, hatte holds position 2 — the fortress past running a verb-second main clause.",
+      "affirmation": "Gestern hatte ich keine Zeit — V2 holds hatte right after Gestern.",
+      "diagnosis": {
+        "slip": "put ich before hatte after Gestern",
+        "cue": "When Gestern opens the sentence, hatte stays in position 2 before ich."
+      }
     }
   ],
   "summary": {

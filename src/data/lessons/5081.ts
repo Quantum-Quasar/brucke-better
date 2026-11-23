@@ -183,7 +183,12 @@ const lesson: Lesson = {
         "ich",
         "weil"
       ],
-      "explanation": "Two would-world verbs in one breath: hätte closes the Wenn-clause (verb-final!), wäre carries the main clause."
+      "explanation": "Two would-world verbs in one breath: hätte closes the Wenn-clause (verb-final!), wäre carries the main clause.",
+      "affirmation": "Wenn ich Zeit hätte, wäre ich froh — umlaut marks the would-world.",
+      "diagnosis": {
+        "slip": "used plain hatte/war instead of the umlauted hätte/wäre",
+        "cue": "hatte → hätte and war → wäre add an umlaut for hypothetical if/would clauses."
+      }
     }
   ],
   "summary": {

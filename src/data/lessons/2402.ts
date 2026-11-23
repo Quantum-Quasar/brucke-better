@@ -164,18 +164,18 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: adjective endings — the article's echo: der kalte Tag vs ein kalter Tag."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"Today that is very good\"",
-    "target_answer": "Heute ist das sehr gut",
+    "prompt": "Without looking back — build in German: \"My brother is taller than I\"",
+    "target_answer": "Mein Bruder ist größer als ich",
     "word_bank": [
-      "nicht",
-      "gut",
-      "sehr",
-      "sehr",
+      "Mein",
+      "Bruder",
       "ist",
-      "Heute",
-      "das"
+      "größer",
+      "als",
+      "wie",
+      "ich"
     ],
-    "explanation": "Building \"Heute ist das sehr gut\" from the lesson's core pattern locks in -er/-ste Sentence Gym."
+    "explanation": "Use als (than) after a comparative (-er) and wie (as) after so + adjective."
   }
 };
 

@@ -169,19 +169,21 @@ const lesson: Lesson = {
     },
     {
       "id": "l5322_e5",
-      "type": "literal_gloss",
-      "prompt": "Which English follows the German words most closely?",
-      "german": "Der Hund läuft schnell zu dem Mann.",
-      "natural": "The dog runs quickly over to the man.",
-      "options": [
-        "The dog runs fast to the man",
-        "The dog runs quickly over to the man",
-        "The man runs fast to the dog",
-        "The dog slowly leaves the man"
+      "type": "syntax_builder",
+      "prompt": "Build in German: \"The little dog runs in the park\"",
+      "target_answer": "Der kleine Hund läuft im Park",
+      "meaning": "The little dog runs in the park",
+      "word_bank": [
+        "Der",
+        "kleine",
+        "Hund",
+        "läuft",
+        "im",
+        "Park",
+        "die",
+        "groß"
       ],
-      "target_answer": "The dog runs fast to the man",
-      "meaning": "The dog runs fast to the man.",
-      "explanation": "zu dem Mann is literally 'to the man' — the dative destination. The natural English 'over to the man' adds a direction word German does not need."
+      "explanation": "Subject der kleine Hund + verb läuft + location im Park."
     }
   ],
   "twist": {

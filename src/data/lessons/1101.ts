@@ -72,28 +72,28 @@ const lesson: Lesson = {
     {
       "id": "l1101_e1",
       "type": "shift_select",
-      "prompt": "Flag check: _____ Haus",
+      "prompt": "Complete: '___ Haus ist groß.' (The house is big — nominative):",
       "options": [
         "das",
         "der",
         "die"
       ],
       "target_answer": "das",
-      "meaning": "das Haus — the house",
-      "explanation": "das Haus — the neuter flag, green in the app's colors."
+      "meaning": "Das Haus ist groß — The house is big",
+      "explanation": "das Haus — neuter nominative, green in the app's colors."
     },
     {
       "id": "l1101_e2",
       "type": "shift_select",
-      "prompt": "Flag check: _____ Zeit",
+      "prompt": "Complete: '___ Zeit ist kurz.' (The time is short — nominative):",
       "options": [
         "der",
         "die",
         "das"
       ],
       "target_answer": "die",
-      "meaning": "die Zeit — the time",
-      "explanation": "die Zeit — and most -e nouns share the rose flag, though the proof is always the word itself."
+      "meaning": "Die Zeit ist kurz — The time is short",
+      "explanation": "die Zeit — feminine nominative (rose flag); most -e nouns share it, though the proof is always the word itself."
     },
     {
       "id": "l1101_e3",

@@ -109,16 +109,11 @@ const lesson: Lesson = {
     {
       "id": "l5211_e2",
       "type": "shift_select",
-      "prompt": "Which of these table words wears the T→Z badge that turned *mati into mezzi-, food into meat's German twin?",
-      "options": [
-        "das Messer",
-        "die Flasche",
-        "der Becher",
-        "die Kanne"
-      ],
+      "prompt": "Which German word means 'the knife'?",
+      "options": ["die Gabel", "der Löffel", "das Messer", "der Teller"],
       "target_answer": "das Messer",
-      "meaning": "messer's first half wears the T→Z badge: *mati → mezzi",
-      "explanation": "das Messer is ancient *matisahsą: *mati 'food' + *sahs 'blade'. English meat kept the T of *mati; German hardened it to a Z-sound, exactly as in zwei/two and zehn/ten. The second half, *sahs 'blade', survives intact in Old Norse sax — the meat-saw that became das Messer. die Flasche, der Becher and die Kanne wear no shift badge; they are loans."
+      "meaning": "das Messer = the knife",
+      "explanation": "das Messer is the knife."
     },
     {
       "id": "l5211_e3",

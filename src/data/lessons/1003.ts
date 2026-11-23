@@ -37,7 +37,7 @@ const lesson: Lesson = {
   ],
   "hook": {
     "title": "Every German 'the' is somebody you already know",
-    "content": "You have spent two lessons meeting the accusative through pronouns: er becomes ihn, just as English 'he' becomes 'him'. Here is the bigger secret underneath it. The three German words for 'the' are not three unrelated words to memorise — they are the pronouns you already speak, wearing a D- hat.\n\nLong ago, English said the so softly that it rhymed with 'thee' — the same throaty TH you still hear if you insist on it. German took that sound and hardened it into D, exactly as it did in think → denken and thank → danken. So the first half of every German article is a D, and the second half is a pronoun you own outright:\n\n· die = D- + sie (she / they)\n· der = D- + er (he)\n· das = D- + es (it)\n\nThat is the whole nominative grid. Three words, no memorising — and the reason it matters is that it never stops working. The pronoun test you used for the accusative is the same test the dative, the genitive and every adjective ending will use again. Today you install the decoder; topics 11 and 19 spend the rest of the trail cashing it in.",
+    "content": "German articles are pronouns wearing a D- hat: die = D- + sie (she / they), der = D- + er (he), das = D- + es (it). In the accusative, only der → den changes (mirroring er → ihn), while die and das stay the same.",
     "footnotes": [
       {
         "marker": "1",

@@ -128,16 +128,11 @@ const lesson: Lesson = {
     {
       "id": "l5143_e3",
       "type": "shift_select",
-      "prompt": "Dezember is Latin decem. Which German number is hiding inside it — the same ancient word as English ten?",
-      "options": [
-        "drei",
-        "zwölf",
-        "zwei",
-        "zehn"
-      ],
+      "prompt": "Which German number means 'ten'?",
+      "options": ["neun", "zehn", "elf", "zwölf"],
       "target_answer": "zehn",
-      "meaning": "decem ↔ zehn: the same ancient 'ten', by different roads",
-      "explanation": "Latin decem and German zehn both descend from the same Proto-Indo-European 'ten' — and in zehn you can watch the shift do its work: the T hardened to a Z-sound, exactly as in zwei/two and zu/to. Dezember is a later, learned borrowing, so its z is just German's spelling for the Latin c (as in Zentrum). Either way the number never left the name: it was the tenth month of the old Roman count."
+      "meaning": "zehn = ten",
+      "explanation": "zehn is ten (twin of English ten via T → Z)."
     },
     {
       "id": "l5143_e4",

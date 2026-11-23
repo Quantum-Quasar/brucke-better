@@ -190,17 +190,18 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: the Guess-the-Gender Game — unseen words, suffix laws, explanation feedback."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"We warn here today\"",
-    "target_answer": "Wir warnen heute hier",
+    "prompt": "Without looking back — build in German: \"Freedom and friendship are important\"",
+    "target_answer": "Freiheit und Freundschaft sind wichtig",
     "word_bank": [
-      "sehr",
-      "Wir",
-      "warnen",
-      "hier",
-      "heute",
-      "nicht"
+      "Freiheit",
+      "und",
+      "Freundschaft",
+      "sind",
+      "wichtig",
+      "ist",
+      "klein"
     ],
-    "explanation": "Building \"Wir warnen heute hier\" from the lesson's core pattern locks in The Feminine Squad."
+    "explanation": "Both -heit and -schaft nouns are always feminine (die Freiheit, die Freundschaft)."
   }
 };
 

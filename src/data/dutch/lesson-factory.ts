@@ -130,33 +130,126 @@ function withDistractors(answer: string, extra = 2): string[] {
   return bank;
 }
 
-function wrongSwap(sentence: string): string {
-  if (/\bde\s/.test(sentence)) return sentence.replace(/\bde\s/, "het ");
-  if (/\bhet\s/.test(sentence)) return sentence.replace(/\bhet\s/, "de ");
-  if (/\bniet\b/.test(sentence)) return sentence.replace(/\bniet\b/, "geen");
-  if (/\bgeen\b/.test(sentence)) return sentence.replace(/\bgeen\b/, "niet");
-  return `niet ${sentence}`;
+const DUTCH_PERTURBATION_SWAPS: Array<[RegExp, string]> = [
+  [/\bde\s/, "het "],
+  [/\bDe\s/, "Het "],
+  [/\bhet\s/, "de "],
+  [/\bHet\s/, "De "],
+  [/\bniet\b/, "geen"],
+  [/\bgeen\b/, "niet"],
+  [/\bben\b/, "is"],
+  [/\bis\b/, "zijn"],
+  [/\bzijn\b/, "is"],
+  [/\bheb\b/, "heeft"],
+  [/\bheeft\b/, "hebben"],
+  [/\bhebben\b/, "heeft"],
+  [/\bkan\b/, "kunnen"],
+  [/\bga\b/, "gaat"],
+  [/\bgaat\b/, "gaan"],
+  [/\bkom\b/, "komt"],
+  [/\bkomt\b/, "komen"],
+  [/\bwil\b/, "willen"],
+  [/\bmoet\b/, "moeten"],
+  [/\bMijn\b/, "Zijn"],
+  [/\bmijn\b/, "zijn"],
+  [/\bIk\b/, "Wij"],
+  [/\bWij\b/, "Zij"],
+  [/\bHij\b/, "Zij"],
+  [/\bZij\b/, "Hij"],
+  [/\been\s/, "het "],
+  [/\bEen\s/, "Het "],
+  [/\bdeze\b/, "dit"],
+  [/\bdit\b/, "deze"],
+  [/\bdie\b/, "dat"],
+  [/\bdat\b/, "die"],
+];
+
+function dutchVerbOrderPerturbation(sentence: string): string | null {
+  const punctMatch = sentence.match(/([.!?])$/);
+  const punct = punctMatch ? punctMatch[1] : "";
+  const body = punct ? sentence.slice(0, -1).trim() : sentence.trim();
+  const words = body.split(/\s+/);
+  if (words.length < 3) return null;
+  // Move the finite verb (position 2) to the end to create a plausible word-order distractor.
+  const moved = [words[0], ...words.slice(2), words[1]].join(" ") + punct;
+  return moved !== sentence ? moved : null;
 }
+
+function dutchPerturbations(sentence: string): string[] {
+  const candidates: string[] = [];
+  const reordered = dutchVerbOrderPerturbation(sentence);
+  if (reordered) candidates.push(reordered);
+  for (const [pattern, replacement] of DUTCH_PERTURBATION_SWAPS) {
+    if (pattern.test(sentence)) {
+      const next = sentence.replace(pattern, replacement);
+      if (next !== sentence && !candidates.includes(next)) {
+        candidates.push(next);
+      }
+    }
+    if (candidates.length >= 4) break;
+  }
+  return candidates;
+}
+
+const DUTCH_FALLBACK_POOL = [
+  "Wij gaan vandaag naar huis.",
+  "Zij drinkt koud water aan tafel.",
+  "Hij leest morgen een klein boek.",
+];
+
+const ENGLISH_GLOSS_FALLBACK_POOL = [
+  "We are not going home today.",
+  "She drinks cold water at the table.",
+  "They read the small book tomorrow.",
+  "He speaks slowly with a friend.",
+];
+
+const COMMON_ENGLISH_OPENERS =
+  /^(A|An|My|Our|Your|His|Her|Their|This|That|These|Those|Today|Tomorrow|Yesterday|Here|There|Now|Then|Always|Never|Sometimes|Often|Please|Good|Many|Some|All|Every)\b/;
 
 function altLiteral(sentence: DutchSentence): string {
   if (sentence.literalWrong) return sentence.literalWrong;
-  const literal = sentence.literal ?? sentence.en;
-  if (literal.startsWith("I ")) return `You ${literal.slice(2)}`;
-  if (literal.startsWith("you ")) return `I ${literal.slice(4)}`;
-  return `not ${literal}`;
+  const literal = (sentence.literal ?? sentence.en).trim();
+  if (/^I am\b/.test(literal)) return literal.replace(/^I am\b/, "We are");
+  if (/^I'm\b/.test(literal)) return literal.replace(/^I'm\b/, "We're");
+  if (/^I was\b/.test(literal)) return literal.replace(/^I was\b/, "We were");
+  if (/^I\b/.test(literal)) return literal.replace(/^I\b/, "We");
+  if (/^You are\b/i.test(literal)) return literal.replace(/^You are\b/i, "They are");
+  if (/^You were\b/i.test(literal)) return literal.replace(/^You were\b/i, "They were");
+  if (/^You\b/i.test(literal)) return literal.replace(/^You\b/i, "We");
+  if (/^He is\b/.test(literal)) return literal.replace(/^He is\b/, "She is not");
+  if (/^He was\b/.test(literal)) return literal.replace(/^He was\b/, "She was not");
+  if (/^She is\b/.test(literal)) return literal.replace(/^She is\b/, "He is not");
+  if (/^She was\b/.test(literal)) return literal.replace(/^She was\b/, "He was not");
+  if (/^It is\b/.test(literal)) return literal.replace(/^It is\b/, "It is not");
+  if (/^It was\b/.test(literal)) return literal.replace(/^It was\b/, "It was not");
+  if (/^We are\b/.test(literal)) return literal.replace(/^We are\b/, "They are not");
+  if (/^We were\b/.test(literal)) return literal.replace(/^We were\b/, "They were not");
+  if (/^The\b/.test(literal)) return literal.replace(/^The\b/, "Another");
+  if (literal.endsWith("?")) {
+    if (/^Where\b/.test(literal)) return literal.replace(/^Where\b/, "When");
+    if (/^When\b/.test(literal)) return literal.replace(/^When\b/, "Where");
+    if (/^What\b/.test(literal)) return literal.replace(/^What\b/, "Who");
+    if (/^Who\b/.test(literal)) return literal.replace(/^Who\b/, "What");
+    if (/^How\b/.test(literal)) return literal.replace(/^How\b/, "Why");
+    if (/^Why\b/.test(literal)) return literal.replace(/^Why\b/, "How");
+    if (/^Do you\b/.test(literal)) return literal.replace(/^Do you\b/, "Does he");
+    if (/^Are you\b/.test(literal)) return literal.replace(/^Are you\b/, "Is he");
+    if (/^Can you\b/.test(literal)) return literal.replace(/^Can you\b/, "Can they");
+    if (/^Is\b/.test(literal)) return literal.replace(/^Is\b/, "Was");
+    return `Actually, ${literal}`;
+  }
+  if (COMMON_ENGLISH_OPENERS.test(literal)) {
+    return `No, ${literal.charAt(0).toLowerCase()}${literal.slice(1)}`;
+  }
+  return `No, ${literal}`;
 }
 
-function uniqueOptions(correct: string, others: string[]): string[] {
+function uniqueOptions(correct: string, others: string[], fallbackPool: string[]): string[] {
   const options = [correct];
-  for (const candidate of others) {
+  for (const candidate of [...others, ...fallbackPool]) {
     if (options.length >= 3) break;
     if (candidate && !options.includes(candidate)) options.push(candidate);
-  }
-  let filler = 1;
-  while (options.length < 3) {
-    const candidate = `${correct} (${filler})`;
-    if (!options.includes(candidate)) options.push(candidate);
-    filler += 1;
   }
   return options;
 }
@@ -193,7 +286,11 @@ export function buildDutchLesson(
   };
 
   const selectOptions = (sentence: DutchSentence): string[] =>
-    uniqueOptions(sentence.nl, sentence.wrong ?? ([wrongSwap(sentence.nl), `niet ${sentence.nl}`] as [string, string]));
+    uniqueOptions(
+      sentence.nl,
+      sentence.wrong ?? dutchPerturbations(sentence.nl),
+      DUTCH_FALLBACK_POOL
+    );
 
   const plan: DutchExerciseSpec[] = spec.exercises ?? [
     { kind: "matching" },
@@ -260,7 +357,11 @@ export function buildDutchLesson(
           prompt: "Which English sentence is built the Dutch way?",
           german: sentence.nl,
           natural: sentence.en,
-          options: uniqueOptions(sentence.literal ?? sentence.en, [sentence.en, altLiteral(sentence)]),
+          options: uniqueOptions(
+            sentence.literal ?? sentence.en,
+            [sentence.en, altLiteral(sentence)],
+            ENGLISH_GLOSS_FALLBACK_POOL
+          ),
           target_answer: sentence.literal ?? sentence.en,
           meaning: sentence.en,
           explanation: `“${sentence.nl}” is word-for-word “${sentence.literal ?? sentence.en}”. The odd English is the lesson — never a model to produce. Pattern: ${spec.patternTitle}.`,

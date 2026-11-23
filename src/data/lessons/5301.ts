@@ -64,7 +64,7 @@ const lesson: Lesson = {
   ],
   "hook": {
     "title": "The King's Game, the Kithara, and Free Time",
-    "content": "The past-time set, and every word is a passport stamp. die Party is English party bought back — and English party is Old French partie, 'a part, a side': first the people on your side, then the gathering itself. die Gitarre took the grand tour: Spanish guitarra, on loan from Greek kithara, the concert lyre of Apollo — and English guitar is the same Spanish purchase, so the word crossed the Mediterranean twice and landed in both languages. reiten is the native one, and it conjugates strong: reiten, ritt, geritten — ride, rode, ridden — the same vowel-ablaut both languages inherited, still turning on the same hinge. das Schach is royalty in hiding: Persian shāh, 'king', carried through Arabic into French échec and German Schach — and when you say checkmate, you are saying the Persian sentence shāh māt, 'the king is helpless'. Check, Schach, checkmate: one king, three coins. And die Freizeit is the compound engine at full power: frei + Zeit — frei is English free, and Zeit is English tide in its older meaning of 'time' (time and tide wait for no man). German glues it on and builds Freizeitpark, Freizeitstress, Freizeitprogramm — free time as an industry.",
+    "content": "Talk about your free time in German: die Freizeit (free time), Gitarre spielen (play guitar), Schach spielen (play chess), reiten (to ride), and eine Party feiern (throw a party). Most of this set is already recognizable on sight.",
     "footnotes": [
       {
         "interest": true,

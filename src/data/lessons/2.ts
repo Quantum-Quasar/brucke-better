@@ -6,9 +6,7 @@ const lesson: Lesson = {
   "title": "Modal Auxiliaries & The Bracket",
   "subtitle": "Unlocking fluent sentences with 'can', 'must', and 'want'",
   "phase": 1,
-  "shift_categories": [
-    "t_to_s_ss_z"
-  ],
+  "shift_categories": [],
   "word_ids": [
     "können",
     "müssen",
@@ -160,7 +158,7 @@ const lesson: Lesson = {
       "id": "l2_e5",
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "you're telling me your plans for visiting: you can come tomorrow",
+      "idea": "you're telling me your plans for visiting: I can come tomorrow",
       "cues": [
         "Who can? → ich kann (can = know-how, as in 'beyond my ken')",
         "When? → morgen, riding inside the bracket",

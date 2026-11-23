@@ -159,17 +159,18 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: sein, motion & the idiomatic mindset — ist↔is, war↔was, and Wie geht's = 'How goes it?'"
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"We tug / pull here today\"",
-    "target_answer": "Wir ziehen heute hier",
+    "prompt": "Without looking back — build in German: \"We are taking the train today\"",
+    "target_answer": "Wir nehmen heute den Zug",
     "word_bank": [
       "Wir",
-      "nicht",
-      "sehr",
-      "ziehen",
-      "hier",
-      "heute"
+      "nehmen",
+      "heute",
+      "den",
+      "Zug",
+      "dem",
+      "mit"
     ],
-    "explanation": "Building \"Wir ziehen heute hier\" from the lesson's core pattern locks in ziehen & nehmen Dynasties."
+    "explanation": "nehmen is plural-regular (wir nehmen), while er/sie/es shifts to nimmt."
   }
 };
 

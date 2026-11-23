@@ -166,18 +166,19 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: the Wechselpräpositionen Sentence Gym — twenty picture-prompt sentences switching cases."
   },
   "twist": {
-    "prompt": "Without looking back — build in German: \"Today that is very good\"",
-    "target_answer": "Heute ist das sehr gut",
+    "prompt": "Without looking back — build in German: \"The cat is sleeping on the table\"",
+    "target_answer": "Die Katze schläft auf dem Tisch",
     "word_bank": [
-      "nicht",
-      "sehr",
-      "gut",
-      "sehr",
-      "ist",
-      "Heute",
+      "Die",
+      "Katze",
+      "schläft",
+      "auf",
+      "dem",
+      "Tisch",
+      "den",
       "das"
     ],
-    "explanation": "Building \"Heute ist das sehr gut\" from the lesson's core pattern locks in Motion → Accusative, Location → Dative."
+    "explanation": "Static location (sleeping on the table) takes dative: auf dem Tisch."
   }
 };
 

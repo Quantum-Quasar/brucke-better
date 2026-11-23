@@ -15,6 +15,7 @@ const lesson: Lesson = {
     "sehen",
     "finden",
     "mir",
+    "ihm",
     "dir",
     "schmecken",
     "wünschen",
@@ -30,6 +31,7 @@ const lesson: Lesson = {
     "sehen",
     "finden",
     "mir",
+    "ihm",
     "dir",
     "schmecken",
     "wünschen",
@@ -130,18 +132,20 @@ const lesson: Lesson = {
     },
     {
       "id": "l2003_e5",
-      "type": "literal_gloss",
-      "prompt": "Which English is built the German way?",
-      "german": "Ich sehe ihn, und ich helfe ihm.",
-      "natural": "I see him, and I help him.",
-      "options": [
-        "I see to-him, and I help to-him.",
-        "I see him, and I help to-him.",
-        "I see him, and I help him."
+      "type": "syntax_builder",
+      "prompt": "Build in German: \"I help you and thank him\"",
+      "target_answer": "Ich helfe dir und danke ihm",
+      "meaning": "I help you and thank him",
+      "word_bank": [
+        "Ich",
+        "helfe",
+        "dir",
+        "und",
+        "danke",
+        "dich",
+        "ihm"
       ],
-      "target_answer": "I see him, and I help to-him.",
-      "meaning": "I see him, and I help him.",
-      "explanation": "One letter apart, two clubs: sehen acts ON him (ihn, accusative), helfen acts TO him (ihm, dative). Read it the German way — 'help to-him' — and the case stops being invisible."
+      "explanation": "Both helfen and danken take the dative (dir, ihm), never accusative dich."
     }
   ],
   "summary": {
@@ -154,17 +158,18 @@ const lesson: Lesson = {
     "curiosity_teaser": "Next: compound noun engineering — Handschuh is hand-shoe: German builds words like Lego, and so did English."
   },
   "twist": {
-    "prompt": "Without looking back — rebuild the core sentence from Dative Verbs: helfen, danken, gefallen (Today that is very good):",
-    "target_answer": "Heute ist das sehr gut",
+    "prompt": "Without looking back — build in German: \"The book pleases me very much\"",
+    "target_answer": "Das Buch gefällt mir sehr",
     "word_bank": [
-      "ist",
-      "Heute",
+      "Das",
+      "Buch",
+      "gefällt",
+      "mir",
       "sehr",
-      "nicht",
-      "gut",
-      "das"
+      "mich",
+      "gut"
     ],
-    "explanation": "Re-assembling \"Heute ist das sehr gut\" from scratch locks in the structural pattern of Dative Verbs: helfen, danken, gefallen without relying on short-term echo."
+    "explanation": "gefallen takes dative mir — literally: the book is pleasing to me."
   }
 };
 

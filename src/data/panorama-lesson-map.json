@@ -1,0 +1,106 @@
+{
+  "de": {
+    "2": {
+      "desc": "the modal opens position 2 and the infinitive closes the sentence.",
+      "href": "/panorama"
+    },
+    "10": {
+      "desc": "the pronoun test behind the whole article table.",
+      "href": "/panorama"
+    },
+    "11": {
+      "desc": "der/die/das read as D- plus er, sie, es.",
+      "href": "/panorama"
+    },
+    "14": {
+      "desc": "dass and weil send the verb to the basement.",
+      "href": "/panorama"
+    },
+    "15": {
+      "desc": "the prefix that flies to the end — still a verb in the bracket.",
+      "href": "/panorama"
+    },
+    "18": {
+      "desc": "haben/sein plus participle: the past a learner actually speaks.",
+      "href": "/panorama"
+    },
+    "19": {
+      "desc": "sing/sang/gesungen — where aß and ging come from.",
+      "href": "/panorama"
+    },
+    "20": {
+      "desc": "dem/den/dem — the same pronoun test, one case later.",
+      "href": "/panorama"
+    },
+    "2403": {
+      "desc": "why the adjective only waves a flag after der/die/das and ein.",
+      "href": "/panorama"
+    },
+    "2404": {
+      "desc": "großer Baum, großes Haus — the adjective carrying the definite feeling alone.",
+      "href": "/panorama"
+    }
+  },
+  "fr": {
+    "4": {
+      "desc": "wrapping negation around the first verb.",
+      "href": "/panorama"
+    },
+    "17": {
+      "desc": "the passé composé built on avoir, with the participle outside the clamp.",
+      "href": "/panorama"
+    },
+    "18": {
+      "desc": "the motion verbs that build the same past on être.",
+      "href": "/panorama"
+    },
+    "22": {
+      "desc": "the locative and partitive slots: j'y vais, j'en veux.",
+      "href": "/panorama"
+    },
+    "23": {
+      "desc": "le, la, les, lui, leur before the conjugated verb — the clitic magnet.",
+      "href": "/panorama"
+    }
+  },
+  "es": {
+    "5": {
+      "desc": "essence versus state and physical location.",
+      "href": "/panorama"
+    },
+    "17": {
+      "desc": "haber plus -ado/-ido: the unbreakable compound past.",
+      "href": "/panorama"
+    },
+    "22": {
+      "desc": "pronouns stacking before the verb, and le lo becoming se lo.",
+      "href": "/panorama"
+    },
+    "23": {
+      "desc": "which slot takes lo/la and which takes le/les.",
+      "href": "/panorama"
+    },
+    "1203": {
+      "desc": "why the pronoun walks left of the conjugated verb but hooks onto an infinitive.",
+      "href": "/panorama"
+    }
+  },
+  "nl": {
+    "9": {
+      "desc": "two articles, no noun case, and the adjective -e.",
+      "href": "/panorama"
+    },
+    "12": {
+      "desc": "V2 in main clauses and inversion after a fronted word.",
+      "href": "/panorama"
+    },
+    "19": {
+      "desc": "hebben or zijn plus the ge- participle.",
+      "href": "/panorama"
+    },
+    "24": {
+      "desc": "existential, locative and partitive er.",
+      "href": "/panorama"
+    }
+  }
+}

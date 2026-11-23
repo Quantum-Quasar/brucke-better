@@ -97,7 +97,7 @@ const lesson: Lesson = {
   ],
   "hook": {
     "title": "The Row That Brings Its Own Article",
-    "content": "Länder I gave you five names that travel bare — nach Deutschland, aus Spanien. The second row splits in two: Österreich, Polen and Irland stay bare, while die Schweiz and die Türkei insist on carrying die. And the names themselves are little history lessons. die Schweiz is a country named after one canton: Schwyz was a member of the 1291 confederation, its people were so loud in the alliance's story that by the fifteenth century the whole union answered to their valley's name. Österreich is a compass reading: Ost + Reich, 'eastern realm' — the same Ost as your compass word der Osten, and the same reich you met inside Frankreich, the k→ch twin of English rich; the old royal names kept it too, as the -ric in Theodoric. die Türkei is built with the place-suffix -ei, the same one that turns backen into die Bäckerei: the place of the Turks. Polen keeps its Slavic story — the Polanie, 'the plain-dwellers', the people of the open field. And Irland is English Ireland with one letter gone: German heard the name and simply kept it, with the purest cognate pair in the language at the end, Land ↔ land.",
+    "content": "Most countries travel bare without an article (nach Österreich, aus Polen, in Irland). Two important exceptions carry die: die Schweiz (Switzerland) and die Türkei (Turkey) — so you say in die Schweiz or aus der Schweiz.",
     "footnotes": [
       {
         "interest": true,

@@ -127,7 +127,7 @@ const lesson: Lesson = {
     {
       "id": "l1_e4",
       "type": "reverse_cognate",
-      "prompt": "What native English verb shares the exact root of 'singen'?",
+      "prompt": "Which English verb means 'singen'?",
       "target_answer": "sing",
       "meaning": "to sing (twin of German singen)",
       "explanation": "German 'singen' is the direct twin of English 'to sing'."
