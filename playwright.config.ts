@@ -21,6 +21,7 @@ export default defineConfig({
   // machine, and the first goto in a run pays for it. Keep the budget generous
   // but bounded so a genuinely hung page still fails.
   timeout: 150_000,
+  workers: process.env.CI ? undefined : 1,
   expect: { timeout: 15_000 },
   retries: process.env.CI ? 1 : 0,
   reporter: [["list"]],
@@ -28,6 +29,7 @@ export default defineConfig({
     baseURL: EXTERNAL_BASE_URL || `http://localhost:${PORT}`,
     headless: true,
     screenshot: "only-on-failure",
+    actionTimeout: 30_000,
     navigationTimeout: 120_000,
     ...(executablePath ? { launchOptions: { executablePath } } : {}),
   },

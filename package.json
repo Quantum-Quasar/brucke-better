@@ -15,6 +15,7 @@
     "start": "next start",
     "test": "bun run export-data && vitest run",
     "test:e2e": "playwright test",
+    "test:e2e:smoke": "playwright test --grep @smoke",
     "test:product": "PLAYWRIGHT_PRODUCTION=1 PLAYWRIGHT_WEB_SERVER='bun run start' playwright test product-quality.spec.ts",
     "lint": "oxlint -c .oxlintrc.json src tests scripts next.config.mjs postcss.config.mjs playwright.config.ts vitest.config.ts",
     "typecheck": "tsc --noEmit"

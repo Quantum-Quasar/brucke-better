@@ -74,7 +74,7 @@ jobs:
       - name: Build (SSG output under test)
         run: bun run build
 
-      - name: Browser smoke suite
+      - name: Full browser regression suite
         run: bun run test:e2e
         env:
           PLAYWRIGHT_WEB_SERVER: bun run start

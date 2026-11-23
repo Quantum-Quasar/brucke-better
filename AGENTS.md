@@ -110,7 +110,8 @@ bun run build              # parse-data + export-data + next build (production S
 bun run test               # vitest — every file in src/tests/ (see docs-sync for the pinned count)
 bun run lint               # oxlint
 bun run typecheck          # tsc --noEmit
-bun run test:e2e           # playwright smoke suite (tests/e2e/)
+bun run test:e2e:smoke     # three core browser checks for local iteration
+bun run test:e2e           # full Playwright regression suite (path argument narrows it)
 bun run trail              # scripts/export-trail.ts -> TRAIL.md
 ```
 

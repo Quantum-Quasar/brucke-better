@@ -128,7 +128,7 @@ async function openRecentReviewSession(page: Page) {
 }
 
 test.describe("browser smoke", () => {
-  test("landing page offers the intro and skipping stays dismissed after reload", async ({ page }) => {
+  test("landing page offers the intro and skipping stays dismissed after reload", { tag: "@smoke" }, async ({ page }) => {
     await page.goto("/");
 
     // First visit is a landing page, not a modal wall. Wait for React hydration
@@ -158,27 +158,20 @@ test.describe("browser smoke", () => {
     // Each test seeds the persisted state it needs *before* the first page
     // script runs; a shared beforeEach would win the "seed only an empty
     // store" race and the per-test progress would never be applied.
-    test("lesson wizard advances a segment and persists progress across reload", async ({ page }) => {
+    test("lesson wizard advances a segment and persists progress across reload", { tag: "@smoke" }, async ({ page }) => {
       await seedAppState(page);
-      await page.goto("/trail/1");
+      await page.goto("/?lesson=1&lang=de");
       const nextPattern = page.getByRole("button", { name: /next: pattern/i });
-      await expect(nextPattern).toBeVisible();
-
-      // On a fresh dev-server page the click can land before React hydrates
-      // and get swallowed — retry until the wizard actually advances.
       const nextTable = page.getByRole("button", { name: /next: transformation table/i });
-      await expect(async () => {
-        await nextPattern.click();
-        await expect(nextTable).toBeVisible();
-      }).toPass({ timeout: 30_000 });
+      await expect(nextPattern).toBeVisible();
+      await nextPattern.click();
+      await expect(nextTable).toBeVisible();
 
       const state = await readAppState(page);
       expect(state?.lessonProgress?.["1"]?.segment).toBe("pattern");
 
-      // progress survives a reload; the open view itself is intentionally not
-      // restored, so re-open the lesson and confirm it resumes at the segment
+      // The lesson URL restores the overlay at the saved segment.
       await page.reload();
-      await page.goto("/trail/1");
       await expect(nextTable).toBeVisible();
     });
 
@@ -228,7 +221,7 @@ test.describe("browser smoke", () => {
       });
     });
 
-    test("review session: keyboard reveal + SM-2 grading persist to SRS storage", async ({ page }) => {
+    test("review session: keyboard reveal + SM-2 grading persist to SRS storage", { tag: "@smoke" }, async ({ page }) => {
       await seedAppState(page, THREE_FINISHED_LESSONS);
       await openRecentReviewSession(page);
 

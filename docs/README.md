@@ -69,11 +69,24 @@ Executes the full Vitest suite and reports its current totals:
 bun run test
 ```
 
-Browser smoke suite (Playwright) — onboarding, segment progression, SRS persistence, static routes, the `/panorama` surfaces, and the non-German course path (`tests/e2e/language-routes.spec.ts`: French/Spanish review + atlas fetch their own `/data/<lang>/*.json`):
+Use Vitest for content and logic changes. For a quick browser check before pushing UI
+changes, run onboarding persistence, lesson resume, and keyboard review in one worker:
 
 ```bash
-bun run test:e2e
+taskset -c 1 nice -n 19 bun run test:e2e:smoke
 ```
+
+Add a spec path to `bun run test:e2e` to run only the affected browser tests, or omit it
+for the full regression suite. Both commands start Next dev on `:3111` by default.
+To avoid cold compiles when a dev server is already running, point Playwright at it:
+
+```bash
+PLAYWRIGHT_BASE_URL=http://localhost:3000 taskset -c 1 nice -n 19 bun run test:e2e:smoke
+```
+
+The CPU and niceness settings only apply to processes this command starts. CI runs the
+full suite against a production build, including offline and performance checks; you
+don't need to duplicate that full run before every push.
 
 Production product checks (build first): `NEXT_PUBLIC_SITE_URL=https://your-public-origin.example bun run build && bun run test:product`.
 They cover keyboard-only Lesson 1 completion with a blocking word drawer, shortcut

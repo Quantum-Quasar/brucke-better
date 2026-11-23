@@ -129,6 +129,7 @@ describe("Unlock & recommendation logic", () => {
   });
 
   it("recommends missed side lessons before later spine lessons", () => {
+    expect(getTrailState([1], {}).recommendedId).toBe(101);
     expect(getTrailState([1, 2, 3], {}).recommendedId).toBe(101);
     expect(getTrailState([1, 101], {}).recommendedId).toBe(102);
   });

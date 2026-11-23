@@ -47,15 +47,6 @@ test("Tab focuses the next-lesson bar and Enter opens the lesson without trappin
   await expect(page.getByRole("button", { name: "Pattern", exact: true })).toHaveCount(0);
 });
 
-test("the default recommendation includes the first side lesson rather than skipping to core 2", async ({ page }) => {
-  await seed(page, { completedLessons: [1] });
-  await page.goto("/");
-  const bar = page.getByRole("region", { name: "Next recommended lesson" });
-  await expect(bar).toContainText("Hidden Twins: Body & World");
-  await bar.locator("[data-next-lesson-start]").click();
-  await expect(page.getByRole("dialog", { name: "Lesson 101", exact: true })).toBeVisible();
-});
-
 test("three explicit continue-ahead choices stop resurfacing older gaps without marking them complete", async ({ page }) => {
   await seed(page, { completedLessons: [1, 2, 3] });
   await page.goto("/");

@@ -12,8 +12,9 @@ import { spanishCompendium } from "@/data/spanish/compendium-es";
 import { dutchCompendium } from "@/data/dutch/compendium-nl";
 import { withFrequencyMetadata } from "../../scripts/lib/frequency-payload";
 import { FREQUENCY_CHECKSUMS, FREQUENCY_REVISION, frequencySourceUrl } from "../../scripts/lib/frequency-manifest";
-import type { LessonIndexEntry, LessonPayload } from "@/lib/types";
+import type { CompendiumData, LessonIndexEntry, LessonPayload } from "@/lib/types";
 import { getLessonExerciseCount } from "@/lib/lesson-effort";
+import { getAtlasFamilies, getAtlasFamily, getFamilyOwnerLanguageIds, UNSHIFTED_FAMILY_ID } from "@/lib/atlas-families";
 
 let outputRoot: string;
 const LANGUAGES = ["de", "fr", "es", "nl"] as const;
@@ -106,6 +107,27 @@ describe("client content boundaries", () => {
     expect(rehydrated).toEqual(expected);
     const index = readJson<LessonIndexEntry[]>(`data/${language}/lesson-index.json`);
     expect(fs.readdirSync(path.join(outputRoot, "data", language, "lessons"))).toHaveLength(index.length);
+  });
+
+  it.each(LANGUAGES)("%s atlas families resolve and cover the exported vocabulary", (language) => {
+    const payload = readJson<Omit<CompendiumData, "wordList">>(`data/${language}/compendium.json`);
+    const data = { ...payload, wordList: Object.values(payload.words) };
+    const families = getAtlasFamilies(data);
+    const assigned = new Set(Object.values(data.shifts).flatMap((family) => family.word_ids));
+    expect(families.map((family) => family.id).sort()).toEqual([...Object.keys(data.shifts), UNSHIFTED_FAMILY_ID].sort());
+    for (const family of families) {
+      const label = `${language}/${family.id}`;
+      expect(getFamilyOwnerLanguageIds(family.id), label).toContain(language);
+      expect(getAtlasFamily(data, family.id)?.word_ids, label).toEqual(family.word_ids);
+      expect(family.word_ids.some((id) => Object.hasOwn(data.words, id)), label).toBe(true);
+    }
+
+    const unshifted = getAtlasFamily(data, UNSHIFTED_FAMILY_ID);
+    expect(unshifted?.word_ids).toEqual(data.wordList.filter((word) => !assigned.has(word.id)).map((word) => word.id));
+    for (const word of data.wordList) {
+      const cells = [word.english_meaning, word.target_word, word.shift_rule, word.context_phrase, word.context_translation];
+      expect(cells.every((cell) => cell.trim()), `${language}/${word.id}: incomplete atlas row`).toBe(true);
+    }
   });
 
   it("generates pinned frequency attribution on an empty output directory without a corpus download", () => {

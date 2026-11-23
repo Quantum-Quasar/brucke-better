@@ -23,6 +23,7 @@ Open <http://localhost:3000>.
 
 ```bash
 bun run test       # Vitest; reports current suite totals
+bun run test:e2e:smoke  # three core browser checks; CI runs the full suite
 NEXT_PUBLIC_SITE_URL=https://your-public-origin.example bun run build
 ```
 

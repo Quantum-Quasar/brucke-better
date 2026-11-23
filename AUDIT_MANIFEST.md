@@ -189,8 +189,9 @@ bun scripts/audit-wording.ts      # adjacent-lesson wording report; not a mandat
 bun scripts/audit-vocab-balance.ts --strict
 bun scripts/audit-recurrence.ts --strict # assessed German retrieval floor, including lesson/exercise-type report
 
-# 6. Browser smoke suite (Playwright; starts its own dev server on :3111)
-bun run test:e2e
+# 6. Browser verification (Playwright; starts its own dev server on :3111)
+bun run test:e2e:smoke          # local onboarding, lesson resume and keyboard review
+bun run test:e2e                # full browser suite; CI runs it against production
 bun run test:product             # after build: keyboard completion, widget accessibility, mobile 4G budgets
 ```
 

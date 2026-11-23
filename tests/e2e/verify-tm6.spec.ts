@@ -255,23 +255,6 @@ test("panorama renders five structure diagrams and is reachable from the dock", 
   await expect(page.getByRole("link", { name: /panorama/i }).first()).toBeVisible();
 });
 
-test("sprig 1003 plants the D- + pronoun frame, the trap note and the foreshadow", async ({ page }) => {
-  await seed(page);
-  await page.goto("/trail/1003");
-  await expect(page.getByRole("heading", { name: "The Articles Are Pronouns in Disguise" })).toBeVisible();
-  await expect(page.getByText(/wearing a D- hat/i).first()).toBeVisible();
-  await expect(page.getByText(/D- \+ sie/).first()).toBeVisible();
-  // the open loop is planted on the hook card itself
-  await expect(page.getByText(/you have not met the case that moves die/i).first()).toBeVisible();
-
-  // the name-the-shortcut panel only exists on the pattern segment
-  await clickStage(page, /next: pattern/i, /the shortcut your mind will offer/i);
-  await expect(
-    page.getByText(/Your mind will offer: .the article depends on whether the thing is male or female/i).first()
-  ).toBeVisible();
-  await expect(page.getByText(/die Hand is a she-word/i).first()).toBeVisible();
-});
-
 test("the listening drill plays audio and one skip silences it for 15 minutes", async ({ page }) => {
   const errs: string[] = [];
   page.on("pageerror", (e) => errs.push(e.message));

@@ -409,15 +409,15 @@ describe("TM-6: the article-as-pronoun reframe is installed before the grid uses
     expect(trailIndex.get(1003)!).toBeGreaterThan(trailIndex.get(10)!);
   });
 
-  it("teaches the D- + pronoun decomposition in its own words", () => {
-    const l = lessonIndex.get(1003)!;
-    const body = [l.hook.content, l.pattern.content, ...l.exercises.map((e) => e.explanation ?? "")]
-      .join(" ")
-      .toLowerCase();
-    expect(body).toContain("d-");
-    expect(body).toContain("sie");
-    expect(body).toContain("er");
-    expect(body).toContain("es");
+  it("introduces the pronoun test in the hook, then corrects the gender misconception in the pattern", () => {
+    const { hook, pattern, foreshadow } = lessonIndex.get(1003)!;
+    expect(hook.content).toMatch(/\bD-\s*\+\s*sie\b/i);
+    expect(hook.content).toMatch(/\bD-\s*\+\s*er\b/i);
+    expect(hook.content).toMatch(/\bD-\s*\+\s*es\b/i);
+    expect(pattern.trap_note).toMatch(/\bdie Hand\b/i);
+    expect(pattern.trap_note).toMatch(/\bword class\b/i);
+    expect(foreshadow?.line).toMatch(/\bdie\b.*\bder\b/i);
+    expect(foreshadow?.resolvedIn).toBe(20);
   });
 
   it("grades no vocabulary that is only introduced later on the trail", () => {

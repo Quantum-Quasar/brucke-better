@@ -37,48 +37,50 @@ async function closeDialog(page: Page, dialog: Locator, trigger: Locator) {
   await expect(trigger).toBeFocused();
 }
 
-for (const [language, languageName] of [["de", "German"], ["fr", "French"], ["es", "Spanish"], ["nl", "Dutch"]]) {
-  test(`${languageName} constellations all expose a complete vocabulary table and the shared drill`, async ({ page }) => {
+for (const [language, languageName, familyId] of [
+  ["de", "German", "unshifted"],
+  ["fr", "French", "ion"],
+  ["es", "Spanish", "cion"],
+  ["nl", "Dutch", "sch_sh"],
+]) {
+  test(`${languageName} atlas table, filter and branch drill work by keyboard`, async ({ page, request }) => {
     await seed(page, language);
-    const response = await page.request.get(`/data/${language}/compendium.json`);
+    const response = await request.get(`/data/${language}/compendium.json`);
     expect(response.ok()).toBe(true);
     const data = await response.json() as CompendiumData;
     const assigned = new Set(Object.values(data.shifts).flatMap((family) => family.word_ids));
-    const families = [
-      ...Object.values(data.shifts),
-      { id: "unshifted", word_ids: Object.keys(data.words).filter((id) => !assigned.has(id)) },
-    ];
-    for (const family of families) {
-      await page.goto(`/atlas?family=${family.id}&lang=${language}`);
-      const dialog = page.getByRole("dialog", { name: "Atlas family", exact: true });
-      await keyboardActivate(page, dialog.getByRole("button", { name: "Table view", exact: true }));
-      const table = dialog.getByRole("table");
-      for (const heading of ["English", languageName, "Shift", "Example sentence"]) {
-        await expect(table.getByRole("columnheader", { name: heading, exact: true })).toBeVisible();
-      }
-      const words = family.word_ids.map((id) => data.words[id]).filter(Boolean);
-      await expect(table.getByRole("row")).toHaveCount(Math.min(60, words.length) + 1);
-      if (words.length) {
-        const word = words[0];
-        const row = table.getByRole("row").nth(1);
-        await expect(row).toContainText(word.english_meaning);
-        await expect(row).toContainText(word.target_word);
-        await expect(row).toContainText(word.shift_rule);
-        await expect(row).toContainText(word.context_phrase);
-        await expect(row).toContainText(word.context_translation);
-        const last = words[words.length - 1];
-        await dialog.getByRole("textbox", { name: "Filter constellation vocabulary" }).fill(last.target_word);
-        await expect(table.getByRole("button", { name: last.target_word, exact: true }).first()).toBeVisible();
-        const practice = dialog.getByRole("button", { name: /practice this branch/ });
-        await keyboardActivate(page, practice);
-        const drill = page.getByRole("dialog", { name: /^Branch Practice:/ });
-        await expect(drill).toBeVisible();
-        await expect(page.getByText(`question 1 of ${Math.min(5, words.length)}`, { exact: true })).toBeVisible();
-        await closeDialog(page, drill, practice);
-      }
-      await keyboardActivate(page, dialog.getByRole("button", { name: "Visual view", exact: true }));
-      await expect(dialog.getByRole("button", { name: /practice this branch/ })).toBeVisible();
+    const ids = familyId === "unshifted"
+      ? Object.keys(data.words).filter((id) => !assigned.has(id))
+      : data.shifts[familyId].word_ids;
+    const words = ids.map((id) => data.words[id]).filter(Boolean);
+
+    await page.goto(`/atlas?family=${familyId}&lang=${language}`);
+    const dialog = page.getByRole("dialog", { name: "Atlas family", exact: true });
+    await keyboardActivate(page, dialog.getByRole("button", { name: "Table view", exact: true }));
+    const table = dialog.getByRole("table");
+    for (const heading of ["English", languageName, "Shift", "Example sentence"]) {
+      await expect(table.getByRole("columnheader", { name: heading, exact: true })).toBeVisible();
     }
+    await expect(table.getByRole("row")).toHaveCount(Math.min(60, words.length) + 1);
+    const word = words[0];
+    const row = table.getByRole("row").nth(1);
+    await expect(row).toContainText(word.english_meaning);
+    await expect(row).toContainText(word.target_word);
+    await expect(row).toContainText(word.shift_rule);
+    await expect(row).toContainText(word.context_phrase);
+    await expect(row).toContainText(word.context_translation);
+    const last = words[words.length - 1];
+    await dialog.getByRole("textbox", { name: "Filter constellation vocabulary" }).fill(last.target_word);
+    await expect(table.getByRole("button", { name: last.target_word, exact: true }).first()).toBeVisible();
+    const practice = dialog.getByRole("button", { name: /practice this branch/ });
+    await keyboardActivate(page, practice);
+    const drill = page.getByRole("dialog", { name: /^Branch Practice:/ });
+    await expect(drill).toBeVisible();
+    await expect(page.getByText(`question 1 of ${Math.min(5, words.length)}`, { exact: true })).toBeVisible();
+    await closeDialog(page, drill, practice);
+
+    await keyboardActivate(page, dialog.getByRole("button", { name: "Visual view", exact: true }));
+    await expect(dialog.getByRole("button", { name: /practice this branch/ })).toBeVisible();
   });
 }
 
