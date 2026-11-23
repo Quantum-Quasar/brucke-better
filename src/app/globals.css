@@ -260,3 +260,35 @@ html[data-contrast="increased"].light {
     font-size: 16px;
   }
 }
+
+@media print {
+  :root {
+    --bg-color: #ffffff !important;
+    --text-color: #111111 !important;
+    --sub-color: #444444 !important;
+    --main-color: #000000 !important;
+    --sub-alt-color: #ffffff !important;
+  }
+  header, nav, aside, footer, .no-print {
+    display: none !important;
+  }
+  body {
+    background: #ffffff !important;
+    color: #111111 !important;
+  }
+  main {
+    max-width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+}
+
+/* Accessibility display modes (#36) */
+html[data-text-scale="large"] {
+  font-size: 112.5%;
+}
+
+html[data-text-density="reduced"] details.optional-notes,
+html[data-text-density="reduced"] aside details {
+  display: none;
+}

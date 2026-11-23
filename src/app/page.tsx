@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, PlayCircle, Clock } from "lucide-react";
 import { DailyInsightCard } from "@/components/common/DailyInsightCard";
+import { WeeklyPracticeBadge } from "@/components/common/WeeklyPracticeBadge";
 import { TrailMap } from "@/components/trail/TrailMap";
 import { useAppStore } from "@/lib/store";
 import { isModifiedClick, useAppNavigation } from "@/lib/app-navigation";
@@ -68,10 +69,19 @@ export default function HomePage() {
   return (
     <div className="max-w-5xl mx-auto px-4 pt-3 pb-6 font-sans">
       {/* compact trail heading — stars/flawless live in the title bar */}
-      <div className="flex items-center justify-between gap-3 py-1.5">
+      <div className="flex flex-wrap items-center justify-between gap-2 py-1.5">
         <h1 className="text-[11px] font-mono text-[var(--main-color)] font-semibold uppercase tracking-wider">
           the trail
         </h1>
+        <div className="flex flex-wrap items-center gap-2">
+          <WeeklyPracticeBadge />
+          <Link
+            href="/mistakes"
+            className="text-[11px] font-mono text-[var(--sub-color)] hover:text-[var(--main-color)] transition underline decoration-dotted"
+          >
+            mistake notebook
+          </Link>
+        </div>
       </div>
 
       {language.status === "available" ? (

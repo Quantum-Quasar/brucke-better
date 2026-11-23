@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Volume2, EyeOff, Sliders, Keyboard, Palette, ShieldAlert, Search, Zap, Download, Languages } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { SettingItem } from "@/components/settings/SettingItem";
+import { SegButton } from "@/components/settings/SegButton";
 import { BehaviorSettings } from "@/components/settings/BehaviorSettings";
 import { InputSettings } from "@/components/settings/InputSettings";
 import { SoundSettings } from "@/components/settings/SoundSettings";
@@ -28,7 +29,10 @@ const SECTIONS = [
  *  matching setting is hidden entirely while filtering instead of leaving a
  *  bare heading and unrelated banners behind. */
 const SECTION_TERMS: Record<string, string[]> = {
-  language: ["language", "german", "spanish", "french", "dutch", "switch language", "learning language"],
+  language: [
+    "language", "german", "spanish", "french", "dutch", "switch language", "learning language",
+    "bridge", "german speaker", "german-to-dutch", "cognate", "false friends",
+  ],
   behavior: [
     "quick restart", "esc", "restart", "behavior", "lazy mode", "umlaut", "accent", "tolerance",
     "ae", "oe", "ue", "ss", "capitalization", "noun", "lowercase", "posture", "cues",
@@ -51,12 +55,12 @@ const SECTION_TERMS: Record<string, string[]> = {
   hide_elements: [
     "key tips", "hotkey badges", "shortcuts", "hide", "caps lock warning", "caps lock",
     "mastery counter", "progress counter", "badge", "nav", "contrast", "readability",
-    "muted text", "accessibility",
+    "muted text", "accessibility", "larger text", "font size", "reduced text",
   ],
   danger_zone: [
     "backup", "export", "import", "restore", "json", "progress", "reset settings", "default",
     "restore defaults", "reset progress", "clear data", "delete progress",
-    "offline", "install", "persistent", "storage", "eviction", "protection",
+    "download", "offline", "install", "persistent", "storage", "eviction", "protection",
   ],
 };
 
@@ -66,6 +70,8 @@ export default function SettingsPage() {
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
+  const settings = useAppStore((s) => s.settings);
+  const updateSetting = useAppStore((s) => s.updateSetting);
   const setActiveLanguage = useAppStore((s) => s.setActiveLanguage);
   const completeOnboarding = useAppStore((s) => s.completeOnboarding);
   const activeLanguage = getLanguageDefinition(activeLanguageId);
@@ -243,10 +249,39 @@ export default function SettingsPage() {
               ))}
             </div>
           </SettingItem>
+
+          <SettingItem
+            id="dutch-from-german"
+            icon={Languages}
+            title="German speaker bridge (Dutch)"
+            description={
+              activeLanguageId === "nl"
+                ? "Show German cognate twins, articles (der/die/das), sound correspondences (ij↔ei, ui↔au, oe↔u), and false-friend warnings alongside Dutch words and lessons."
+                : "For learners who already know German: shows German cognate twins, articles, and false-friend warnings whenever you study Dutch."
+            }
+            matchesSearch={matches(["german speaker bridge", "dutch", "german", "bridge", "cognate", "false friends", "language"])}
+          >
+            <div className="flex items-center gap-1.5">
+              {activeLanguageId !== "nl" && (
+                <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--sub-color)] border border-[var(--sub-color)]/25 rounded px-1.5 py-0.5">
+                  Dutch mode
+                </span>
+              )}
+              {[false, true].map((val) => (
+                <SegButton
+                  key={String(val)}
+                  selected={settings.dutchFromGerman === val}
+                  onClick={() => updateSetting("dutchFromGerman", val)}
+                >
+                  {val ? "on" : "off"}
+                </SegButton>
+              ))}
+            </div>
+          </SettingItem>
         </section>
         )}
 
-        <BehaviorSettings matches={matches} sectionVisible={sectionVisible} />
+        <BehaviorSettings matches={matches} sectionVisible={sectionVisible} normalizedQuery={normalizedQuery} />
         <InputSettings matches={matches} sectionVisible={sectionVisible} />
         <SoundSettings matches={matches} sectionVisible={sectionVisible} normalizedQuery={normalizedQuery} />
         <ThemeSettings matches={matches} sectionVisible={sectionVisible} />

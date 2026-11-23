@@ -2,7 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { ArrowLeft, Share2 } from "lucide-react";
-import { MasterConstellation } from "@/components/atlas/MasterConstellation";
+import dynamic from "next/dynamic";
+
+const MasterConstellation = dynamic(
+  () => import("@/components/atlas/MasterConstellation").then((m) => m.MasterConstellation),
+  { ssr: false, loading: () => <div className="flex h-full items-center justify-center font-mono text-xs text-[var(--sub-color)]">loading constellation...</div> }
+);
 
 export function MasterView({ onBack }: { onBack: () => void }) {
   const [view, setView] = useState<"visual" | "table">("visual");

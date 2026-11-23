@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect } from "react";
 import { X, Check } from "lucide-react";
 import { ExerciseWidget } from "@/components/lesson/ExerciseWidgets";
 import { useAppStore } from "@/lib/store";
+import { useWordDetails } from "@/lib/content-client";
 import { getLanguageDefinition } from "@/data/languages";
 import { generateMCQOptions, generateWordTiles } from "@/lib/review-modes";
 import type { CompendiumData, ShiftFamily, ExerciseItem } from "@/lib/types";
@@ -24,6 +25,7 @@ export const BranchDrillModal: React.FC<BranchDrillModalProps> = ({ family, data
   const [currentQuestionFailed, setCurrentQuestionFailed] = useState(false);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
+  const wordDetails = useWordDetails(activeLanguageId, isOpen);
 
   useBackDismiss(isOpen, onClose);
 
@@ -66,6 +68,7 @@ export const BranchDrillModal: React.FC<BranchDrillModalProps> = ({ family, data
       .slice(0, 5);
 
     return words.map((w, idx) => {
+      const explanation = w.etymology_derivation || wordDetails[w.id] || "";
       if (idx === 0) {
         return {
           id: `drill_${w.id}_${idx}`,
@@ -75,7 +78,7 @@ export const BranchDrillModal: React.FC<BranchDrillModalProps> = ({ family, data
           shift_hint: family.symbol,
           target_answer: w.target_word,
           options: generateMCQOptions(w, data.wordList, 4),
-          explanation: w.etymology_derivation,
+          explanation,
         };
       }
       if (idx === 1) {
@@ -88,7 +91,7 @@ export const BranchDrillModal: React.FC<BranchDrillModalProps> = ({ family, data
           shift_hint: family.symbol,
           target_answer: w.target_word,
           tile_options: tileData.tiles,
-          explanation: w.etymology_derivation,
+          explanation,
         };
       }
       if (idx === 3) {
@@ -100,7 +103,7 @@ export const BranchDrillModal: React.FC<BranchDrillModalProps> = ({ family, data
           shift_hint: family.symbol,
           target_answer: w.target_word,
           options: generateMCQOptions(w, data.wordList, 4),
-          explanation: w.etymology_derivation,
+          explanation,
         };
       }
       return {
@@ -110,10 +113,10 @@ export const BranchDrillModal: React.FC<BranchDrillModalProps> = ({ family, data
         english_hint: `${w.english_cognate} (${family.symbol})`,
         shift_hint: family.symbol,
         target_answer: w.target_word,
-        explanation: w.etymology_derivation,
+        explanation,
       };
     });
-  }, [family, data, language.name]);
+  }, [family, data, language.name, wordDetails]);
 
   if (!isOpen) return null;
 

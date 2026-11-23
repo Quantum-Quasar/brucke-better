@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Clock, RefreshCw, RotateCcw } from "lucide-react";
+import { CheckCircle2, Clock, Download, RefreshCw, RotateCcw } from "lucide-react";
 import { GenderGuideBanner } from "@/components/common/GenderGuideBanner";
 import { useAppStore } from "@/lib/store";
 import { useCompendium, useLessonIndex } from "@/lib/content-client";
@@ -10,6 +10,7 @@ import { ReviewSessionCard } from "@/components/review/ReviewSessionCard";
 import { ReviewDeckSelector } from "@/components/review/ReviewDeckSelector";
 import { ReviewStyleDialog } from "@/components/review/ReviewStyleDialog";
 import { SentenceReviewDeck } from "@/components/review/SentenceReviewDeck";
+import { downloadReviewExport } from "@/lib/review-export";
 
 
 export default function ReviewPage() {
@@ -66,7 +67,17 @@ function ReviewHub(props: ReviewHubProps) {
     recallSource, mounted, language, activeDeck, hasAnyCards, masteredCount, activeCount, dueCards,
     hasSeenGenderIntro, reviewMode, setReviewMode, setPreferredReviewMode, setIsModeSelectorOpen,
     currentCard, currentWord, sessionComplete, sessionStats, completedDeck, dueCount, weakestCount, startDeck,
+    srsCards, starredWordIds, allWordsMap,
   } = controller;
+
+  const handleExport = (format: "csv" | "tsv") => {
+    const queueIds = Array.from(new Set([...Object.keys(srsCards), ...starredWordIds]));
+    const wordsToExport =
+      queueIds.length > 0
+        ? queueIds.map((id) => allWordsMap[id]).filter((w): w is NonNullable<typeof w> => Boolean(w))
+        : props.data.wordList;
+    downloadReviewExport(props.activeLanguageId, wordsToExport, srsCards, format, queueIds.length > 0 ? "my-queue" : "vocabulary");
+  };
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8 space-y-8">
@@ -76,10 +87,36 @@ function ReviewHub(props: ReviewHubProps) {
           <RotateCcw className="w-3.5 h-3.5" />
           <span>spaced repetition</span>
         </div>
-        <h1 className="text-2xl font-bold font-mono text-[var(--text-color)] tracking-tight">review</h1>
-        <p className="text-[var(--sub-color)] text-sm font-mono">
-          recall practice powered by {recallSource} — hard words come back sooner, easy ones later.
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h1 className="text-2xl font-bold font-mono text-[var(--text-color)] tracking-tight">review</h1>
+            <p className="text-[var(--sub-color)] text-sm font-mono">
+              recall practice powered by {recallSource} — hard words come back sooner, easy ones later.
+            </p>
+          </div>
+          {language.status === "available" && !activeDeck && (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => handleExport("csv")}
+                className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-[var(--sub-color)]/25 bg-[var(--sub-alt-color)] px-3 py-1.5 text-xs font-mono font-semibold text-[var(--text-color)] hover:border-[var(--main-color)] hover:text-[var(--main-color)] transition cursor-pointer"
+                title="Download vocabulary and SRS schedule as CSV"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Export CSV</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => handleExport("tsv")}
+                className="inline-flex min-h-10 items-center gap-1.5 rounded-lg border border-[var(--sub-color)]/25 bg-[var(--sub-alt-color)] px-3 py-1.5 text-xs font-mono font-semibold text-[var(--text-color)] hover:border-[var(--main-color)] hover:text-[var(--main-color)] transition cursor-pointer"
+                title="Download Anki-ready tab-separated deck (.tsv)"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Export Anki</span>
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
 
