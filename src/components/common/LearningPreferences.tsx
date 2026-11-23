@@ -6,7 +6,9 @@ import { PlacementCheck } from "./PlacementCheck";
 
 export function LearningPreferences({ languageId, topicCount }: { languageId: string; topicCount: number }) {
   const settings = useAppStore((s) => s.settings);
+  const placedAtTopic = useAppStore((s) => s.placedAtTopic);
   const updateSetting = useAppStore((s) => s.updateSetting);
+  const setPlacedAtTopic = useAppStore((s) => s.setPlacedAtTopic);
 
   return (
     <details className="rounded-lg border border-[var(--sub-color)]/25 p-4 font-mono text-xs text-[var(--sub-color)]" data-onboarding-local-keys>
@@ -36,10 +38,10 @@ export function LearningPreferences({ languageId, topicCount }: { languageId: st
         <PlacementCheck key={languageId} languageId={languageId} />
         <div className="space-y-2">
           <label htmlFor="placement-topic" className="block font-bold text-[var(--text-color)]">Preferred starting topic (override the suggestion)</label>
-          <select id="placement-topic" value={Math.min(settings.placementTopic, topicCount)} onChange={(event) => updateSetting("placementTopic", Number(event.target.value))} className="min-h-11 rounded border border-[var(--sub-color)]/30 bg-[var(--bg-color)] px-3 text-[var(--text-color)]">
+          <select id="placement-topic" value={Math.min(placedAtTopic, topicCount)} onChange={(event) => setPlacedAtTopic(Number(event.target.value))} className="min-h-11 rounded border border-[var(--sub-color)]/30 bg-[var(--bg-color)] px-3 text-[var(--text-color)]">
             {Array.from({ length: topicCount }, (_, index) => index + 1).map((topic) => <option key={topic} value={topic}>Topic {topic}</option>)}
           </select>
-          <p>This is a trail recommendation only. Start with lesson 1 or follow your existing progress; completing lessons and checkpoints is still how topics unlock.</p>
+          <p>Choosing a topic unlocks earlier topics and checkpoints up to that point so you can start there immediately. Earlier lessons stay available to revisit anytime.</p>
         </div>
       </div>
     </details>

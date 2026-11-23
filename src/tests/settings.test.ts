@@ -15,7 +15,7 @@ describe("Settings & Store Architecture", () => {
     expect(DEFAULT_SETTINGS.capitalizationTolerance).toBe(false);
     expect(DEFAULT_SETTINGS.stopOnError).toBe("off");
     expect(DEFAULT_SETTINGS.confidenceMode).toBe("off");
-    expect(DEFAULT_SETTINGS.playSoundOnClick).toBe("18"); // Cherry MX Black ABS
+    expect(DEFAULT_SETTINGS.playSoundOnClick).toBe("off");
     expect(DEFAULT_SETTINGS.playSoundOnError).toBe("1");
     expect(DEFAULT_SETTINGS.soundVolume).toBe(0.5);
     expect(DEFAULT_SETTINGS.showCharBar).toBe("always");

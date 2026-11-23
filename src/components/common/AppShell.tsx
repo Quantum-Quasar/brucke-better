@@ -5,12 +5,14 @@ import dynamic from "next/dynamic";
 import { usePathname } from "next/navigation";
 import { TopNav } from "@/components/navigation/TopNav";
 import { BottomNav } from "@/components/navigation/BottomNav";
+import { SectionSubNav } from "@/components/navigation/SectionSubNav";
 import { StorageWarningBanner } from "@/components/common/StorageWarningBanner";
 import { LazyLoadBoundary } from "@/components/common/LazyLoadBoundary";
 import { SubviewOverlay } from "@/components/common/SubviewOverlay";
 import { DeepLinkRestorer } from "@/components/common/DeepLinkRestorer";
 import { useAppStore } from "@/lib/store";
-import { STORAGE_KEY } from "@/lib/storage-keys";
+import { STORAGE_COOKIE_KEY, STORAGE_KEY } from "@/lib/storage-keys";
+import { readStorageString } from "@/lib/safe-storage";
 import { flushSave } from "@/lib/store/persistence";
 import { useViewStore, flushViewState } from "@/lib/view-store";
 import { useScrollMemory } from "@/lib/scroll-memory";
@@ -113,7 +115,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   // Hydrate local progress from localStorage and cookies on client mount
   useEffect(() => {
+    const hadSavedProgress =
+      Boolean(readStorageString(STORAGE_KEY)) ||
+      (typeof document !== "undefined" && document.cookie.includes(STORAGE_COOKIE_KEY));
     useAppStore.getState().hydrateFromStorage();
+    if (
+      !hadSavedProgress &&
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(pointer: coarse)").matches &&
+      !useAppStore.getState().settings.lazyMode
+    ) {
+      useAppStore.getState().updateSetting("lazyMode", true);
+    }
     useViewStore.getState().hydrateViewState();
     // The first visit paints from globals.css without loading the palette
     // table, so align the browser chrome with whatever --bg-color is active.
@@ -174,6 +187,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <StorageWarningBanner />
       <OfflineSupport />
       <TopNav />
+      <SectionSubNav />
       {!subView && !isOnboardingOpen && <BackupReminder />}
 
       {/* Main Content Viewport (bottom padding clears the fixed game-style dock) */}

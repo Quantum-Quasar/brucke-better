@@ -32,7 +32,8 @@ async function startLearnedReview(page: Page, mode: "flashcard" | "typing") {
   });
   await page.goto("/review");
   await expect(page.locator("html")).toHaveAttribute("data-app-ready", "true");
-  await activateWithKeyboard(page, page.getByRole("button", { name: "Review learned words", exact: true }));
+  await page.getByRole("button", { name: "Show all decks", exact: true }).click();
+  await activateWithKeyboard(page, page.getByRole("button", { name: "review learned words", exact: true }));
   await expect(page.getByText(/^card 1 \/ 1$/i)).toBeVisible();
   return () => page.evaluate(() => performance.getEntriesByName("product-pronunciation-request").length);
 }

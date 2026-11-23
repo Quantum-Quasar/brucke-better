@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { arrangeTilesDeterministically } from "@/components/lesson/exercise-tiles";
+import {
+  arrangeTilesDeterministically,
+  lowercaseSentenceStarterTiles,
+} from "@/components/lesson/exercise-tiles";
 import { hashSeed, seededShuffle } from "@/lib/prng";
 
 // These helpers moved out of ExerciseWidgets so the lesson route does not load
@@ -39,5 +42,69 @@ describe("exercise tile helpers", () => {
     expect(
       arrangeTilesDeterministically(["ich", "lerne", "deutsch"], "y", "ich lerne deutsch")
     ).toEqual(["ich", "deutsch", "lerne"]);
+  });
+
+  it("lowercases non-noun sentence starters while preserving German nouns", () => {
+    expect(lowercaseSentenceStarterTiles(["Ich", "habe", "einen", "Hund"])).toEqual([
+      "ich",
+      "habe",
+      "einen",
+      "Hund",
+    ]);
+    expect(lowercaseSentenceStarterTiles(["Heute", "trinke", "ich", "Wasser"])).toEqual([
+      "heute",
+      "trinke",
+      "ich",
+      "Wasser",
+    ]);
+  });
+
+  it("preserves German nouns/formal Ihr and scopes sentence starters by language", () => {
+    expect(lowercaseSentenceStarterTiles(["Morgen", "Dank", "Haar", "Ihr", "Ich"], "de")).toEqual([
+      "Morgen",
+      "Dank",
+      "Haar",
+      "Ihr",
+      "ich",
+    ]);
+    expect(lowercaseSentenceStarterTiles(["Morgen", "Dank", "Haar", "Ik"], "nl")).toEqual([
+      "morgen",
+      "dank",
+      "haar",
+      "ik",
+    ]);
+  });
+
+  it("capitalizes assembled tile answers when the target starts with an uppercase letter", async () => {
+    const { capitalizeAssembledTileAnswer } = await import("@/components/lesson/exercise-tiles");
+    const { gradeLessonAnswer } = await import("@/lib/lesson-grading");
+    const assembled = capitalizeAssembledTileAnswer("ich habe einen Hund", "Ich habe einen Hund");
+    expect(assembled).toBe("Ich habe einen Hund");
+    expect(
+      gradeLessonAnswer([assembled], ["Ich habe einen Hund"], {
+        languageId: "de",
+        umlautTolerance: false,
+        capitalizationTolerance: false,
+      }).result.accuracy
+    ).toBe("exact");
+  });
+
+  it("uses language-scoped STRUCTURAL_FOILS for Dutch de/het without een->het", async () => {
+    const { generateWordTiles } = await import("@/lib/review-modes");
+    const nlCard = {
+      id: "sentence_nl_1",
+      target_word: "De hond is groot",
+      english_cognate: "The dog is big",
+      english_meaning: "The dog is big",
+      gender: null,
+      ipa: "",
+      sound_shift_ids: [],
+      shift_rule: "",
+      context_phrase: "De hond is groot.",
+      context_translation: "The dog is big.",
+      etymology_derivation: "",
+    };
+    const nlTiles = generateWordTiles(nlCard, [], "nl");
+    expect(nlTiles.tiles).toContain("het");
   });
 });

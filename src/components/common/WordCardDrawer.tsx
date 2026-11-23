@@ -6,13 +6,15 @@ import { WordFrequency } from "@/components/common/WordFrequency";
 import { WordCardContextDetails, WordCardShiftDetails } from "@/components/common/WordCardLearningDetails";
 import React, { useMemo } from "react";
 import Link from "next/link";
-import { X, ExternalLink, Compass, BookOpen, CheckCircle2, Circle, Disc, Minus, Volume2 } from "lucide-react";
+import { X, ExternalLink, Compass, BookOpen, CheckCircle2, Circle, Disc, Minus, Volume2, Star } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { isModifiedClick, useAppNavigation } from "@/lib/app-navigation";
 import { GenderBadge } from "@/components/common/GenderBadge";
 import { playTargetAudio } from "@/lib/audio";
 import { getLanguageDefinition } from "@/data/languages";
 import { wordWithArticle } from "@/lib/gender";
+import { pluralForWord } from "@/data/noun-plurals";
+import { getLessonMetadata } from "@/lib/lesson-metadata";
 import { useCompendium, useLessonIndex } from "@/lib/content-client";
 import { buildWordEntityMaps, lookupWordEntity } from "@/lib/word-entities-core";
 import { lessonHref } from "@/lib/routes";
@@ -32,6 +34,8 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
     activeWordId ? s.wordMastery[activeWordId] || "unexplored" : "unexplored"
   );
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
+  const isStarred = useAppStore((s) => (s.starredWordIds[s.activeLanguageId] ?? []).includes(activeWordId));
+  const toggleStarWord = useAppStore((s) => s.toggleStarWord);
   const language = getLanguageDefinition(activeLanguageId);
   const compendium = useCompendium(activeLanguageId);
   const lessonIndex = useLessonIndex(activeLanguageId);
@@ -106,14 +110,16 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
   const sourceLesson = lessonId
     ? lessonIndex.data.find((lesson) => lesson.id === lessonId)
     : undefined;
-  const lessonLabel = sourceLesson
-    ? sourceLesson.spineStory
+  const plural = pluralForWord(activeLanguageId, word);
+  const sourceMeta = sourceLesson ? getLessonMetadata(sourceLesson) : null;
+  const lessonLabel = sourceLesson && sourceMeta
+    ? sourceLesson.spineStory || sourceMeta.kind === "story"
       ? `Story ${sourceLesson.label ?? ""} — ${sourceLesson.title}`
-      : sourceLesson.id <= 30
-      ? `Topic ${sourceLesson.id} — ${sourceLesson.title}`
-      : sourceLesson.id >= 5000
+      : sourceMeta.kind === "core"
+      ? `Topic ${sourceMeta.topicId ?? sourceLesson.id} — ${sourceLesson.title}`
+      : sourceMeta.kind === "branch"
       ? `Branch — ${sourceLesson.title}`
-      : `Topic ${Math.floor(sourceLesson.id / 100)} · Sprig ${sourceLesson.id % 100} — ${sourceLesson.title}`
+      : `Topic ${sourceMeta.topicId ?? Math.floor(sourceLesson.id / 100)} · Sprig ${sourceLesson.id % 100} — ${sourceLesson.title}`
     : lessonId
     ? `Lesson ${lessonId}`
     : null;
@@ -194,12 +200,31 @@ const WordCardDrawerContent: React.FC<{ activeWordId: string }> = ({ activeWordI
               >
                 <Volume2 className="w-4 h-4" />
               </button>
+              <button
+                type="button"
+                onClick={() => toggleStarWord(word.id)}
+                aria-pressed={isStarred}
+                aria-label={isStarred ? `Remove ${word.target_word} from My Words` : `Star ${word.target_word} to My Words`}
+                title={isStarred ? "Remove from My Words" : "Star word to My Words"}
+                className={`shrink-0 p-1.5 rounded border transition cursor-pointer ${
+                  isStarred
+                    ? "bg-[var(--main-color)]/15 text-[var(--main-color)] border-[var(--main-color)]/40"
+                    : "bg-[var(--sub-alt-color)] text-[var(--sub-color)] hover:text-[var(--main-color)] border-[var(--sub-color)]/20"
+                }`}
+              >
+                <Star className={`w-4 h-4 ${isStarred ? "fill-current" : ""}`} />
+              </button>
             </div>
             <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-[var(--sub-color)] font-mono">
               <span>{word.ipa}</span>
               <span>·</span>
               <span className="text-[var(--text-color)]">&quot;{word.english_meaning}&quot;</span>
             </div>
+            {plural && (
+              <div className="mt-1.5 text-xs font-mono text-[var(--sub-color)]">
+                singular: <span className="text-[var(--text-color)]">{spokenWord}</span> · plural: <span className="text-[var(--main-color)] font-semibold">{plural}</span>
+              </div>
+            )}
             <WordFrequency word={word} />
           </div>
 

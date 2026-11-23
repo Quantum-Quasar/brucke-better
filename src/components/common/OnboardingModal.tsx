@@ -13,8 +13,6 @@ import { useAppStore } from "@/lib/store";
 import { useAppNavigation } from "@/lib/app-navigation";
 import { LANGUAGES, getLanguageDefinition, isValidLanguageId } from "@/data/languages";
 import { getCourseCounts } from "@/data/word-counts";
-import { THEME_COUNT } from "@/lib/theme-runtime";
-import { FONT_LIST } from "@/data/fonts";
 import { ShiftPair } from "@/components/common/ShiftPair";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
 import { ModalDialog } from "@/components/common/ModalDialog";
@@ -28,6 +26,7 @@ export const OnboardingModal: React.FC = () => {
   const setActiveLanguage = useAppStore((s) => s.setActiveLanguage);
   const onboardingIntroLanguage = useAppStore((s) => s.onboardingIntroLanguage);
   const storeLanguageId = useAppStore((s) => s.activeLanguageId);
+  const placedAtTopic = useAppStore((s) => s.placedAtTopic);
   const pathname = usePathname();
   const { openLesson } = useAppNavigation();
 
@@ -93,7 +92,7 @@ export const OnboardingModal: React.FC = () => {
     // Starting the course is only the right move when the visitor is already
     // on the homepage. A shared /trail/5 link keeps them on the shared lesson.
     if (wasFirstRun && pathname === "/" && language.status === "available") {
-      openLesson(effectiveLanguageId, 1);
+      openLesson(effectiveLanguageId, placedAtTopic > 1 ? placedAtTopic : 1);
     }
   };
 
@@ -153,7 +152,7 @@ export const OnboardingModal: React.FC = () => {
             title={isGuide ? "Close guide (Esc)" : "Skip introduction (Esc)"}
           >
             <span>{isGuide ? "close" : "skip"}</span>
-            <span className="keycap text-[10px]">esc</span>
+            <span className="keycap text-[10px] hidden sm:inline">esc</span>
           </button>
         </div>
 
@@ -335,13 +334,13 @@ export const OnboardingModal: React.FC = () => {
 
               <div className="p-4 rounded-lg border border-[var(--sub-color)]/20 bg-[var(--bg-color)] font-mono text-xs text-[var(--sub-color)] space-y-1.5">
                 <div className="text-[var(--main-color)] font-bold">quick guide</div>
-                <p>
-                  • <strong className="text-[var(--text-color)]">themes</strong>: {THEME_COUNT} colour
-                  schemes in the top-right palette control, with {FONT_LIST.length} fonts in settings.
+                <p className="hidden sm:block">
+                  • <strong className="text-[var(--text-color)]">keyboard</strong>: esc, space and 1–4 work
+                  inside lessons and review.
                 </p>
                 <p>
-                  • <strong className="text-[var(--text-color)]">keyboard</strong>: esc, space and 1–4 work
-                  inside lessons and review; they are not global shortcuts.
+                  • <strong className="text-[var(--text-color)]">themes &amp; settings</strong>: customize themes,
+                  fonts, and typing strictness anytime in settings.
                 </p>
                 <p>
                   • <strong className="text-[var(--text-color)]">progress</strong>: stored in this browser,
@@ -381,6 +380,19 @@ export const OnboardingModal: React.FC = () => {
               </button>
             )}
 
+            {step === 0 && !isGuide && isAvailable && (
+              <button
+                type="button"
+                onClick={() => {
+                  closeOnboarding();
+                  completeOnboarding();
+                  if (pathname === "/") openLesson(language.id, 1);
+                }}
+                className="px-3.5 py-2 rounded border border-[var(--main-color)]/40 text-[var(--main-color)] hover:bg-[var(--main-color)]/10 text-xs font-mono font-bold transition cursor-pointer"
+              >
+                start lesson 1 →
+              </button>
+            )}
             {step === 0 ? (
               <button
                 type="button"
@@ -412,7 +424,9 @@ export const OnboardingModal: React.FC = () => {
                     : pathname !== "/"
                     ? "keep exploring this page"
                     : isAvailable
-                    ? "start lesson 1"
+                    ? placedAtTopic > 1
+                      ? `start topic ${placedAtTopic}`
+                      : "start lesson 1"
                     : "explore the app"}
                 </span>
                 <ArrowRight className="w-3 h-3" />

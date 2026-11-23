@@ -205,4 +205,26 @@ describe("dutch course content", () => {
     const duplicated = [...seen.entries()].filter(([, n]) => n > 1);
     expect(duplicated.map(([t]) => t.slice(0, 80))).toEqual([]);
   });
+
+  it("never emits placeholder options like (1), You am, niet-prefixes, or English fallback strings in Dutch MCQs", () => {
+    const englishFallbacks = new Set([
+      "We are not going home today.",
+      "She drinks cold water at the table.",
+      "They read the small book tomorrow.",
+      "He speaks slowly with a friend.",
+    ]);
+    for (const lesson of NL_LESSONS) {
+      for (const ex of lesson.exercises) {
+        for (const opt of ex.options ?? []) {
+          expect(opt, `${lesson.id}/${ex.id}`).not.toMatch(/\(\d+\)$/);
+          expect(opt, `${lesson.id}/${ex.id}`).not.toMatch(/\bYou am\b/);
+          expect(opt, `${lesson.id}/${ex.id}`).not.toMatch(/^not [A-Z]/);
+          expect(opt, `${lesson.id}/${ex.id}`).not.toMatch(/^niet [A-Z]/);
+          if (ex.type === "shift_select") {
+            expect(englishFallbacks.has(opt), `${lesson.id}/${ex.id} leaked English fallback "${opt}"`).toBe(false);
+          }
+        }
+      }
+    }
+  });
 });

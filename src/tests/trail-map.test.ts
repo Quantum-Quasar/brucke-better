@@ -195,19 +195,18 @@ describe("Star gates", () => {
     expect(state.litEdges.has("7-8")).toBe(false);
   });
 
-  it("requires both the region stars and a checkpoint pass", () => {
-    // 7 cores + 7 side lessons across topics 1–7 = 14 stars
+  it("opens once the stretch spine is complete and the checkpoint is passed without forcing side-lesson stars", () => {
+    // 7 cores + 7 side lessons without checkpoint pass still stays closed
     const completed = [...coreRange(1, 7), 101, 102, 103, 201, 202, 301, 302];
     const starsOnly = getTrailState(completed, {});
     expect(starsOnly.gates.get(1)).toMatchObject({ stars: 14, passed: false, open: false });
     expect(starsOnly.nodes.get(8)!.status).toBe("locked");
-    const passOnly = getTrailState(coreRange(1, 7), {}, undefined, undefined, [1]);
-    expect(passOnly.gates.get(1)).toMatchObject({ stars: 7, passed: true, open: false });
-    const state = getTrailState(completed, {}, undefined, undefined, [1]);
-    expect(state.gates.get(1)!.open).toBe(true);
-    expect(state.nodes.get(8)!.status).toBe("available");
-    expect(state.nodes.get(8)!.gate).toBeUndefined();
-    expect(state.litEdges.has("7-8")).toBe(true);
+    // Completing the spine + passing the checkpoint opens the gate immediately
+    const spineAndPass = getTrailState(coreRange(1, 7), {}, undefined, undefined, [1]);
+    expect(spineAndPass.gates.get(1)).toMatchObject({ stars: 7, passed: true, open: true });
+    expect(spineAndPass.nodes.get(8)!.status).toBe("available");
+    expect(spineAndPass.nodes.get(8)!.gate).toBeUndefined();
+    expect(spineAndPass.litEdges.has("7-8")).toBe(true);
   });
 
   it("counts stars only inside its own stretch", () => {
@@ -339,5 +338,17 @@ describe("Thinking Method trail invariants", () => {
       expect(core, `core lesson ${topic} exists`).toBeDefined();
       expect(core!.twist, `core ${topic} has a twist`).toBeDefined();
     }
+  });
+
+  it("clamps placedAtTopic to 1..maxTopicId and keeps gate regionStars equal to real completions", () => {
+    const clamped = getTrailState([], {}, undefined, undefined, [], { placedAtTopic: 9999 });
+    expect(clamped.nodes.get(30)?.status).toBe("available");
+    expect(clamped.gates.get(1)?.stars).toBe(0);
+
+    // Mid-region placement (Topic 9 sits between Gate 1 after 7 and Gate 2 after 10):
+    // Gate 2 stars must reflect real completions (0), not inflated placedPriorStars.
+    const midRegion = getTrailState([], {}, undefined, undefined, [], { placedAtTopic: 9 });
+    expect(midRegion.gates.get(2)?.stars).toBe(0);
+    expect(midRegion.gates.get(2)?.open).toBe(false);
   });
 });

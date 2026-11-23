@@ -1,7 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { BookOpen, Check, Share2, X } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { BookOpen, Check, Share2, Sparkles, Volume2, X } from "lucide-react";
+import { getLanguageDefinition } from "@/data/languages";
+import { playTargetAudio } from "@/lib/audio";
+import { useCompendium } from "@/lib/content-client";
+import { wordWithArticle } from "@/lib/gender";
+import { readStorageString, writeStorageString } from "@/lib/safe-storage";
+import { useAppStore } from "@/lib/store";
 import type { DailyInsight } from "@/lib/types";
 
 interface DailyInsightCardProps {
@@ -12,6 +19,22 @@ interface DailyInsightCardProps {
 }
 
 const DISMISSED_KEY = "brucke_etymology_note_dismissed";
+
+function localDateKey(): string {
+  const now = new Date();
+  const y = now.getFullYear();
+  const m = String(now.getMonth() + 1).padStart(2, "0");
+  const d = String(now.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function hashDateKey(dateKey: string): number {
+  let h = 0;
+  for (let i = 0; i < dateKey.length; i++) {
+    h = (h * 31 + dateKey.charCodeAt(i)) >>> 0;
+  }
+  return h;
+}
 
 /**
  * Small corner note on the trail home. It is deliberately out of the page flow
@@ -25,22 +48,46 @@ export const DailyInsightCard: React.FC<DailyInsightCardProps> = ({
 }) => {
   const [copied, setCopied] = useState(false);
   const [visible, setVisible] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
+  const activeLanguageId = useAppStore((s) => s.activeLanguageId);
+  const wordMastery = useAppStore((s) => s.wordMastery);
+  const openWordDrawer = useAppStore((s) => s.openWordDrawer);
+  const language = getLanguageDefinition(activeLanguageId);
+
   const dismissKey = `${languageName}:${insight.day}`;
   const storageKey = `${DISMISSED_KEY}:${languageName}`;
 
   useEffect(() => {
-    try {
-      setVisible(localStorage.getItem(storageKey) !== dismissKey);
-    } catch {
-      setVisible(true);
-    }
+    setVisible(readStorageString(storageKey) !== dismissKey);
   }, [dismissKey, storageKey]);
+
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
+    const mq = window.matchMedia("(min-width: 640px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  // Gate the ~496 KB compendium fetch so mobile or dismissed cards never download it.
+  const { data: compendium } = useCompendium(visible && isDesktop ? activeLanguageId : "");
+
+  const wordOfTheDay = useMemo(() => {
+    if (!compendium) return null;
+    const learnedIds = Object.entries(wordMastery)
+      .filter(([, state]) => state === "encountered" || state === "mastered")
+      .map(([id]) => id)
+      .filter((id) => Boolean(compendium.words?.[id]))
+      .sort();
+    if (learnedIds.length === 0) return null;
+    const idx = hashDateKey(localDateKey()) % learnedIds.length;
+    return compendium.words[learnedIds[idx]] ?? null;
+  }, [wordMastery, compendium]);
 
   const handleDismiss = () => {
     setVisible(false);
-    try {
-      localStorage.setItem(storageKey, dismissKey);
-    } catch {}
+    writeStorageString(storageKey, dismissKey);
   };
 
   const handleShare = async () => {
@@ -76,7 +123,7 @@ Principle: ${insight.takeaway_principle}`;
       <div className="flex items-center justify-between gap-2">
         <span className="flex min-w-0 items-center gap-1.5 font-mono text-[10px] uppercase tracking-widest text-[var(--sub-color)]">
           <BookOpen className="h-3.5 w-3.5 shrink-0 text-[var(--main-color)]" />
-          <span className="truncate">etymology · entry {insight.day}</span>
+          <span className="truncate">{wordOfTheDay ? "word of the day" : `etymology · entry ${insight.day}`}</span>
         </span>
         <div className="flex shrink-0 items-center">
           <button
@@ -118,6 +165,41 @@ Principle: ${insight.takeaway_principle}`;
       <p className="mt-1.5 line-clamp-3 border-t border-[var(--sub-color)]/15 pt-1.5 font-mono text-[10px] leading-snug text-[var(--sub-color)]">
         heuristic: {insight.takeaway_principle}
       </p>
+      {wordOfTheDay && (
+        <div className="mt-2.5 pt-2.5 border-t border-[var(--sub-color)]/15 space-y-1.5">
+          <div className="flex items-center justify-between gap-2">
+            <button
+              type="button"
+              onClick={() => openWordDrawer(wordOfTheDay.id)}
+              title={`${wordOfTheDay.target_word} — ${wordOfTheDay.english_meaning}`}
+              className="text-left font-mono text-xs font-bold text-[var(--main-color)] hover:underline cursor-pointer truncate"
+            >
+              {wordOfTheDay.target_word} — {wordOfTheDay.english_meaning}
+            </button>
+            <button
+              type="button"
+              onClick={() =>
+                playTargetAudio(
+                  wordWithArticle(wordOfTheDay.gender, wordOfTheDay.target_word, activeLanguageId),
+                  language.ttsLocale
+                )
+              }
+              className="shrink-0 rounded p-1 text-[var(--sub-color)] transition hover:bg-[var(--sub-color)]/10 hover:text-[var(--main-color)] cursor-pointer"
+              aria-label={`Listen to ${wordOfTheDay.target_word}`}
+              title={`Listen to ${wordOfTheDay.target_word}`}
+            >
+              <Volume2 className="h-3.5 w-3.5" aria-hidden="true" />
+            </button>
+          </div>
+          <Link
+            href="/review"
+            className="inline-flex items-center gap-1 rounded border border-[var(--main-color)]/30 bg-[var(--main-color)]/10 px-2 py-1 font-mono text-[10px] font-bold text-[var(--main-color)] hover:bg-[var(--main-color)]/20 transition"
+          >
+            <Sparkles className="h-3 w-3" />
+            <span>Practice in Review →</span>
+          </Link>
+        </div>
+      )}
     </aside>
   );
 };

@@ -1,17 +1,47 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { filterThemes, type ThemeFilterTab, type ThemeMeta } from "@/data/themes";
+import { useEffect, useMemo, useState } from "react";
+import {
+  POPULAR_THEMES_META,
+  type ThemeFilterTab,
+  type ThemeMeta,
+} from "@/data/popular-themes";
+
+type FilterFn = (query: string, tab: ThemeFilterTab, selectedTheme?: string) => ThemeMeta[];
+
+const POPULAR_IDS = new Set(POPULAR_THEMES_META.map((t) => t.id));
 
 /** Shared search/tab state for the dropdown panel and the full grid modal. */
 export function useThemeFilter(selectedTheme?: string) {
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState<ThemeFilterTab>("popular");
-  const filteredThemes = useMemo(
-    () => filterThemes(query, activeTab, selectedTheme),
-    [activeTab, query, selectedTheme],
-  );
-  return { query, setQuery, activeTab, setActiveTab, filteredThemes };
+  const [fullFilter, setFullFilter] = useState<FilterFn | null>(null);
+  const selectedOutsidePopular = Boolean(selectedTheme && !POPULAR_IDS.has(selectedTheme));
+  const needsFullCatalog = activeTab !== "popular" || query.trim().length > 0 || selectedOutsidePopular;
+
+  useEffect(() => {
+    if (!needsFullCatalog || fullFilter) return;
+    let active = true;
+    void import("@/data/themes").then((m) => {
+      if (active) setFullFilter(() => m.filterThemes);
+    });
+    return () => {
+      active = false;
+    };
+  }, [needsFullCatalog, fullFilter]);
+
+  const filteredThemes = useMemo(() => {
+    if (fullFilter) return fullFilter(query, activeTab, selectedTheme);
+    if (!needsFullCatalog) return POPULAR_THEMES_META;
+    const q = query.trim().toLowerCase();
+    return POPULAR_THEMES_META.filter((t) => {
+      if (activeTab === "dark" && !t.isDark) return false;
+      if (activeTab === "light" && t.isDark) return false;
+      return !q || t.name.toLowerCase().includes(q) || t.id.toLowerCase().includes(q);
+    });
+  }, [fullFilter, needsFullCatalog, activeTab, query, selectedTheme]);
+
+  return { query, setQuery, activeTab, setActiveTab, filteredThemes, isCatalogLoading: needsFullCatalog && !fullFilter };
 }
 
 /** The 3-dot palette preview shared by both theme pickers. */

@@ -190,7 +190,7 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 
 ### 5.6 AI prose self-review
 - **Applies when:** you generated long prose (hooks, patterns, summaries).
-- **Action:** re-read your own output for "self-correcting" garbage that leaks from generation: `"...wait — ..."`, `"...? no — ..."`, half-deleted alternatives, sentence fragments mid-explanation. These pass all tests and embarrass the product. Several such passages had to be repaired post-hoc; catch them before commit.
+- **Action:** `scripts/audit-wording.ts` automatically flags leaked AI self-correction tics (`"...wait —"`, `"? no —"`); still re-read generated prose for half-deleted alternatives or fragments.
 
 ---
 
@@ -273,3 +273,5 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 ---
 
 *If you find a new trap, add it here with its condition — this file is the institutional memory that keeps agents from re-learning the same lessons.*
+
+- **Noun plurals from Lesson 1 (all languages):** Every language course must populate `plural` in `src/data/noun-plurals.ts` (or on `WordEntity.plural`) for countable nouns from Lesson 1 onward so beginners see `singular · plural` immediately.

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { SettingItem } from "./SettingItem";
 import { RotateCcw, Type, Zap } from "lucide-react";
@@ -7,13 +8,52 @@ import { getLanguageDefinition } from "@/data/languages";
 import type { QuickRestart } from "@/data/settings";
 import { SegButton } from "./SegButton";
 
-export function BehaviorSettings({ matches, sectionVisible }: {
+export function BehaviorSettings({ matches, sectionVisible, normalizedQuery = "" }: {
   matches: (keywords: string[]) => boolean;
   sectionVisible: (id: string) => boolean;
+  normalizedQuery?: string;
 }) {
   const settings = useAppStore((s) => s.settings);
   const updateSetting = useAppStore((s) => s.updateSetting);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
+  const advancedOpen = showAdvanced || Boolean(normalizedQuery);
+  const activePreset =
+    settings.confidenceMode === "off" &&
+    settings.lazyMode &&
+    settings.capitalizationTolerance &&
+    settings.stopOnError === "off"
+      ? "forgiving"
+      : settings.confidenceMode === "off" &&
+          !settings.lazyMode &&
+          !settings.capitalizationTolerance &&
+          settings.stopOnError === "letter"
+        ? "strict"
+        : settings.confidenceMode === "off" &&
+            settings.lazyMode &&
+            !settings.capitalizationTolerance &&
+            settings.stopOnError === "off"
+          ? "standard"
+          : "custom";
+
+  const applyPreset = (preset: "forgiving" | "standard" | "strict") => {
+    if (preset === "forgiving") {
+      updateSetting("lazyMode", true);
+      updateSetting("capitalizationTolerance", true);
+      updateSetting("stopOnError", "off");
+      updateSetting("confidenceMode", "off");
+    } else if (preset === "standard") {
+      updateSetting("lazyMode", true);
+      updateSetting("capitalizationTolerance", false);
+      updateSetting("stopOnError", "off");
+      updateSetting("confidenceMode", "off");
+    } else {
+      updateSetting("lazyMode", false);
+      updateSetting("capitalizationTolerance", false);
+      updateSetting("stopOnError", "letter");
+      updateSetting("confidenceMode", "off");
+    }
+  };
   const activeLanguage = getLanguageDefinition(activeLanguageId);
   const specialChars = activeLanguage.specialChars.map(([char]) => char).join(", ");
 
@@ -24,6 +64,31 @@ export function BehaviorSettings({ matches, sectionVisible }: {
             <span>behavior</span>
           </div>
 
+          {/* typing preset */}
+          <SettingItem
+            id="typing-preset"
+            icon={Type}
+            title="typing strictness"
+            description="Forgiving accepts ae/oe/ue and lowercase nouns; Standard checks noun capitalization; Strict requires exact accents and stops on wrong letters."
+            matchesSearch={matches(["typing", "preset", "forgiving", "standard", "strict", "umlaut", "behavior"])}
+          >
+            {(["forgiving", "standard", "strict"] as const).map((preset) => (
+              <SegButton key={preset} selected={activePreset === preset} onClick={() => applyPreset(preset)}>
+                {preset}
+              </SegButton>
+            ))}
+          </SettingItem>
+
+          <button
+            type="button"
+            aria-expanded={advancedOpen}
+            onClick={() => setShowAdvanced((v) => !v)}
+            className="text-xs font-mono text-[var(--sub-color)] hover:text-[var(--main-color)] underline underline-offset-4 cursor-pointer"
+          >
+            {advancedOpen ? "Hide advanced typing & behavior toggles" : "Show advanced typing & behavior toggles"}
+          </button>
+
+          {advancedOpen && (<>
           {/* quick restart */}
           <SettingItem
             id="quick-restart"
@@ -108,6 +173,7 @@ export function BehaviorSettings({ matches, sectionVisible }: {
               </SegButton>
             ))}
           </SettingItem>
+          </>)}
         </section>
   );
 }

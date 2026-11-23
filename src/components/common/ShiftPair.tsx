@@ -14,6 +14,7 @@ interface ShiftPairProps {
   english: string;
   german: string;
   gender?: Gender | null;
+  plural?: string;
   rule?: string;
   wordId?: string;
   className?: string;
@@ -24,6 +25,7 @@ export const ShiftPair: React.FC<ShiftPairProps> = React.memo(({
   english,
   german,
   gender,
+  plural,
   rule,
   wordId,
   className = "",
@@ -96,6 +98,11 @@ export const ShiftPair: React.FC<ShiftPairProps> = React.memo(({
             </span>
           ))}
         </span>
+        {plural && (
+          <span className="text-[11px] font-mono font-normal text-[var(--sub-color)]" title="Plural form">
+            · pl. {plural}
+          </span>
+        )}
       </button>
 
       {/* Audio Pronunciation Button */}

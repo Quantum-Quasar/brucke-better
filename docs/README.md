@@ -87,7 +87,7 @@ word alone correctly opens recognition-first review, not the selected production
 
 ### Production Build
 
-Pre-renders six top-level tabs — 6 static routes: `/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about` — plus canonical lesson reference pages at `/trail/<lang>/<id>`. There are 193 unique ids (179 German plus 14 French/Spanish-only ids; Dutch reuses the shared lesson-id space), 530 per-lesson payloads, and 37 atlas families. Practice and atlas details still open as instant overlays: opening, changing or closing one replaces the current history entry with a language-explicit query URL (`/?lesson=1&lang=de`, `/atlas?family=th_to_d&lang=de`, `/atlas?master=1&lang=de`). Reload restores that view; Back follows top-level tab history. Canonical lesson pages render introductions, patterns, vocabulary and outcomes for readers and search engines, with `LearningResource` structured data, `sitemap.xml` and `robots.txt`. `bun run build` regenerates ignored `public/data/` payloads before `next build`; these distribution copies are not committed.
+Pre-renders 10 static routes: `/`, `/atlas`, `/panorama`, `/review`, `/read`, `/practice`, `/cando`, `/mistakes`, `/settings`, `/about` — plus canonical lesson reference pages at `/trail/<lang>/<id>`. There are 193 unique ids (179 German plus 14 French/Spanish-only ids; Dutch reuses the shared lesson-id space), 530 per-lesson payloads, and 37 atlas families. Practice and atlas details still open as instant overlays: opening, changing or closing one replaces the current history entry with a language-explicit query URL (`/?lesson=1&lang=de`, `/atlas?family=th_to_d&lang=de`, `/atlas?master=1&lang=de`). Reload restores that view; Back follows top-level tab history. Canonical lesson pages render introductions, patterns, vocabulary and outcomes for readers and search engines, with `LearningResource` structured data, `sitemap.xml` and `robots.txt`. `bun run build` regenerates ignored `public/data/` payloads before `next build`; these distribution copies are not committed.
 
 ```bash
 NEXT_PUBLIC_SITE_URL=https://your-public-origin.example bun run build
@@ -107,7 +107,7 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
 
 1. **The Trail Map (`/` — the homepage)**:
    - Baba Is You-style node map: 30 topic clusters on one linear spine, with extra-practice nodes ("sprigs") and support-material branches hanging off each cluster.
-   - Required spine cores and reading stories unlock sequentially; sprigs/branches cannot bypass a missing core. Each gate also requires its stretch's star quota and a passed checkpoint test.
+   - Required spine cores and reading stories unlock sequentially; sprigs/branches cannot bypass a missing core. Each checkpoint gate opens once its stretch's main-path lessons are complete and its checkpoint test is passed (side lessons remain optional).
    - **Required grammar:** seven core-grammar containers are required and cannot be bypassed or left out of completion — the imperative branch (5060, topic 9), the reflexives (1603/1604), Präteritum (1904/1905) and adjective-declension (2403/2404) sprigs, and the three post-capstone branches (5080 Konjunktiv II, 5100 relative clauses, 5110 als/wenn/ob), which render as the required **"Part 2: Complex sentences"** region below topic 30 and unlock only after the pre-capstone spine completes. The id list is pinned by `src/tests/required-grammar.test.ts`.
    - Topic 1 starts at the bottom; the learner climbs upward. The pulsing selector and minimalist next-lesson bar share the same recommendation.
    - The entire curriculum is authored — 30 cores + 79 sprigs + 65 branch lessons + 5 required reading stories = 179 lessons, each with a title, plan and full `Lesson` object (`src/data/curriculum.ts`, `src/data/lessons.ts`).
@@ -119,7 +119,7 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
    - Taught German vocabulary has assessed retrieval in at least two distinct trail lessons. Declarations, hints, banks and duplicate surfaces do not count; `bun scripts/audit-recurrence.ts --strict` reports the encounter map by lesson and exercise type. This is a minimum practice floor, not a promise of retention.
    - 5-part card-by-card lesson wizard (Hook, Pattern, Transformation Table, Bite-Sized Practice, Summary & Retries) in the in-page lesson reader.
    - Vocabulary tables separate **Focus words for this lesson** from collapsed **Extra words to explore**. Reading-story word banks stay fully visible as reading support; extra words are not a memorisation requirement.
-   - Scaffolded exercises across 13 types (`ExerciseType` in `src/lib/types.ts`): morpheme tiles, matching pairs, shift select, syntax builder, derivation typing, reverse-cognate typing, **transcribe** production drills (thought + lexicon + cue ladder), **literal gloss** direct translations, **dictation** listening drills (played audio, capped replays, a 15-minute listening skip), **family grid** prefix × base matrices, **variant English** "every honest rendering" drills, **pronoun compression**, and **spoken turn reply**.
+   - Scaffolded exercises across 13 types (`ExerciseType` in `src/lib/types.ts`): morpheme tiles, matching pairs, shift select, syntax builder, derivation typing, reverse-cognate typing, **transcribe** production drills (thought + lexicon + cue ladder), **literal gloss** direct translations, **dictation** listening drills (played audio, capped replays, a per-item text fallback and a 15-minute listening skip), **family grid** prefix × base matrices, **variant English** "every honest rendering" drills, **pronoun compression**, and **spoken turn reply**.
    - A lesson's final eligible sentence-building task starts with typed recall before showing its word bank. **Show words / help** is always available without a new star penalty; retries start with support visible. Earlier scaffolds, vocabulary hints and the optional Twist remain unchanged.
    - Every authored lesson ends with an ungraded, skippable **Twist** card and may whisper up to two **posture cues**. Onboarding offers optional goals, daily minutes and a ten-question placement recommendation; placement never invents completion or opens a locked core. Lesson previews show approximate time, exercise count and the possibility of retries.
    - Pre-exercise vocabulary hints (`vocab_hints`) for auxiliary words (e.g., `mit`).
@@ -133,10 +133,10 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
 3. **Grammar Panorama (`/panorama`)**: the second atlas — consultable diagrams of German *structure* instead of sound. Opt-in reference layer: no levels, no progress, no gating.
 
 4. **Multi-Modal Review Hub (`/review`)**:
-   - Algorithmic spaced repetition powered by SuperMemo SM-2.
-   - Beginner actions are **Continue lesson**, **Review learned words**, and **Practise difficult words**, followed by Due Today. **More practice options** contains family/domain filters, recent lessons, compounds/traps, sentence patterns, article drills and everything.
-   - There are **10 review deck types** for vocabulary and example-sentence entities: due, learned, shift family, domain, weakest words, recent lessons, compounds & traps, sentence patterns, article & gender, and everything (`DECK_CAPABILITIES` in `src/lib/review-decks.ts`). Failed sentence processes use a separate replay queue, not another word deck or review style.
-   - Word-review sessions offer 5 / 10 / 20 / All cards (default 10), including Learned Words; the old special 20-card cap is gone. Bury hides a card until the next local day; Suspend requires manual resumption. Five lapses move a card to **Relearn**, outside normal queues, with a teaching-lesson link where available and explicit resumption after relearning. Mastery does not stop future scheduling.
+   - Algorithmic spaced repetition powered by FSRS-4.5 (21-day mastery threshold, interval fuzz).
+   - Primary actions are **Due today** and **Weak words** (plus **Continue your lesson**), paired with a daily review budget and a 4-tab bottom navigation (`learn`, `review`, `explore`, `me`). **Show all decks** reveals learned words, starred words, listening review, family/domain filters, recent lessons, compounds/traps, sentence patterns, article & gender clozes, and everything.
+   - There are **12 review deck types** for vocabulary and example-sentence entities: due, learned, shift family, domain, weakest words, recent lessons, compounds & traps, sentence patterns, article & gender, and everything (`DECK_CAPABILITIES` in `src/lib/review-decks.ts`). Failed sentence processes use a separate replay queue, not another word deck or review style.
+   - Word-review sessions offer 5 / 10 / 20 / All cards (default 10), including Learned Words; the old special 20-card cap is gone. Bury hides a card until the next local day; Suspend requires manual resumption. Five lapses move a card to **Relearn**, outside normal queues, with a teaching-lesson link and quick inline relearn option where available, plus explicit resumption after relearning. Mastery does not stop future scheduling.
    - Table-only or otherwise unpractised words begin with target-word → English **recognition-first Quick Flip**, even when typing or tiles is selected. Completed lesson focus words and successfully reviewed words use the chosen style. **Good/Easy** enables later production; **Again** does not, and Back undoes promotion.
    - The article drill covers the usual singular definite article for gendered nouns in German, Dutch, French and Spanish; a fixed-width blank marks the missing article. It does not practise cases or articles in sentence context.
    - 4 review styles are available overall: *Quick Flip*, *Multiple Choice (MCQ)*, *Tile Builder*, and *Derivation Typing*. Article & Gender uses MCQ only. Sentence cards offer MCQ only with explicitly authored invalid choices; otherwise they retain Quick Flip, tiles and typing.
@@ -175,14 +175,14 @@ The whole surface is themeable and typable, and the app never leaves the browser
   - *sound* — master volume, click pack, error cue, plus a per-language pronunciation voice picker, Slow/Normal/Faster playback and a deliberate preview. Missing saved voices fall back automatically; changing a preference never starts speech.
   - *theme* — theme and font pickers, plus an increased-contrast toggle that strengthens muted text and error colors without discarding the selected theme (`src/lib/appearance.ts`).
   - *visibility* — key tips, caps-lock warning, and the `mastered / total` counter badge in the top nav.
-  - *danger zone* — JSON backup export/import, reset settings, reset learning progress.
+  - *danger zone* — JSON backup export/import (with last-backup timestamp), app/data build versions + non-private diagnostic copy, reset settings, reset learning progress.
 - **JSON backup import/export** (`src/components/settings/`): backups include settings, per-language learning progress, word SRS and sentence-process cards. Imports validate the payload and remain compatible with older backups. The settings page composes separate behavior, input, sound, theme, visibility and danger-zone components.
 - **Mechanical-keyboard sound engine** (`src/lib/sound.ts`): selectable Monkeytype click packs (`cherrymx black abs`, `tealios v2`, `razer green`, …) plus `off`, and 4 error cues, shipped as `.mp3` files under `public/sounds/` and served with a one-year immutable `Cache-Control`. Decoded buffers are held in a 24-entry cache and failed URLs are negatively cached so a missing sample is never refetched in a loop. Every pack and cue is verified on disk by `src/tests/assets-and-routes.test.ts`.
 - **Six-tab bottom dock** (`src/components/navigation/BottomNav.tsx`): trail, atlas, panorama, review (with a due-count badge), settings, about.
 - **Word and lesson search** in the top nav (`/` outside inputs/dialogs): target words, English cognates/meanings, lesson titles, shift families and domains. Results open the word drawer or the lesson that teaches it; language indexes load on demand.
 - **Optional speaking practice** in sound settings uses browser recognition when supported. Feedback is lenient and never gates progress. Starting requires an explicit gesture and warns that the browser/provider may process audio online; the app stores no recordings or transcripts. Missing target-language TTS voices trigger a one-time install guide and fallback warning, not a learning block.
 
-The regenerated `public/` inventory is **17,181,619 raw bytes (16.39 MiB), 741 files**.
+The regenerated `public/` inventory is **8,350,829 raw bytes (7.96 MiB), 729 files**.
 This is available disk content, not an initial download: only requested lesson data,
 selected sound samples and selected/previewed fonts load. Reproduce with
 `bun run export-data && bun run audit:assets`; [category breakdown](../scripts/README.md#public-asset-inventory-and-request-audit).
@@ -216,7 +216,7 @@ src/
 ├── data/
 │   ├── compendium.json   # Generated from word_connections.md (never hand-edit)
 │   ├── compendium.ts     # Typed view over the raw JSON
-│   ├── curriculum.ts     # 30 topic clusters: cores, sprigs, branches, 6 star gates
+│   ├── curriculum.ts     # 30 topic clusters: cores, sprigs, branches, 6 checkpoint gates
 │   ├── lessons.ts        # ordered German aggregate; individual lessons in lessons/<id>.ts, including stories
 │   ├── insights.json     # Daily insights (generated by parse-data)
 │   ├── french/ spanish/ dutch/   # Typed modules for the sibling courses (docs/courses.md)
@@ -229,12 +229,12 @@ src/
 │   ├── letter-diff.ts    # Letter-by-letter diff + three-tier grading
 │   ├── shift-annotator.ts, shift-diagnosis.ts   # Sound-shift aligner; wrong-answer diagnosis
 │   ├── review-decks.ts, review-modes.ts, review-session.ts   # Review decks, styles, lifecycle
-│   ├── srs.ts            # SuperMemo SM-2 interval scheduler
+│   ├── srs.ts            # FSRS-4.5 interval scheduler (21-day mastery)
 │   ├── sentence-review*.ts # Failed-process scheduling and resumable replay sessions
 │   ├── store.ts, store/  # composed Zustand slices, validation and persistence
 │   ├── trail-map.ts      # Map graph, responsive layout engine, unlock/recommend/gate logic
 │   ├── word-entities-core.ts # Unified word / compound / trap / sentence entities
-│   ├── retry-variation.ts, listening.ts   # Retry surface rotation; 15-minute listening skip
+│   ├── retry-variation.ts, listening.ts   # Retry surface rotation; per-item fallback & 15-minute listening skip
 │   ├── types.ts          # Core domain TypeScript interfaces
 │   └── ...
 └── tests/                # Vitest unit and integration suites

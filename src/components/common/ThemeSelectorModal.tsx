@@ -3,7 +3,7 @@
 import React, { useRef } from "react";
 import { Palette, X } from "lucide-react";
 import { useAppStore } from "@/lib/store";
-import { THEME_LIST } from "@/data/themes";
+import { TOTAL_THEME_COUNT } from "@/data/popular-themes";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
 import { ModalDialog } from "@/components/common/ModalDialog";
 import { ThemeBrowser } from "@/components/common/ThemeBrowser";
@@ -31,7 +31,7 @@ export const ThemeSelectorModal: React.FC = () => {
             <Palette className="w-4 h-4 text-[var(--main-color)]" />
             <h2 id="theme-selector-title" className="text-base font-bold tracking-tight">Select Theme</h2>
             <span className="text-xs font-mono text-[var(--sub-color)] px-2 py-0.5 rounded bg-[var(--sub-alt-color)]">
-              {THEME_LIST.length} themes
+              {TOTAL_THEME_COUNT} themes
             </span>
           </div>
 

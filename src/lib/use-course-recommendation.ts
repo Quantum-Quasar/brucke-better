@@ -15,6 +15,7 @@ export function useCourseRecommendation(languageId: string, afterLessonId?: numb
   const lessonProgress = useAppStore((s) => s.lessonProgress);
   const stars = useAppStore((s) => s.lessonStars);
   const passedGateIds = useAppStore((s) => s.passedGateIds);
+  const placedAtTopic = useAppStore((s) => s.placedAtTopic);
   const resetAt = useAppStore((s) => s.progressResetAt);
   const position = useViewStore((s) => s.trailByLanguage[languageId] ?? EMPTY_TRAIL_POSITION);
   const setTrailPosition = useViewStore((s) => s.setTrailPosition);
@@ -28,8 +29,8 @@ export function useCourseRecommendation(languageId: string, afterLessonId?: numb
   }), [curriculum]);
   const state = useMemo(() => getTrailState(
     afterLessonId && !completed.includes(afterLessonId) ? [...completed, afterLessonId] : completed,
-    stars, undefined, trailData, passedGateIds, { lessonProgress, bypasses }
-  ), [afterLessonId, completed, stars, trailData, passedGateIds, lessonProgress, bypasses]);
+    stars, undefined, trailData, passedGateIds, { lessonProgress, bypasses, placedAtTopic }
+  ), [afterLessonId, completed, stars, trailData, passedGateIds, lessonProgress, bypasses, placedAtTopic]);
   const lessons = useMemo(() => orderedTrailLessons(curriculum.topics, curriculum.trailBranches), [curriculum]);
   const nextLesson = lessons.find((lesson) => lesson.id === state.recommendedId) ?? null;
   const forwardLesson = state.forwardId !== state.recommendedId

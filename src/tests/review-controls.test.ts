@@ -98,16 +98,27 @@ describe("review controls and relearning", () => {
   });
 
   it("keeps mastered words scheduled and grows their intervals on later success", () => {
-    const store = useAppStore.getState();
-    for (let i = 0; i < 3; i++) store.recordReview("hand", 4);
-    const mastered = useAppStore.getState().srsCards.hand;
-    expect(useAppStore.getState().wordMastery.hand).toBe("mastered");
-    expect(getDueCards({ hand: mastered }, mastered.due_date)).toEqual([mastered]);
-    store.recordReview("hand", 4);
-    expect(useAppStore.getState().srsCards.hand.interval).toBeGreaterThan(mastered.interval);
-    store.recordReview("hand", 1);
-    expect(useAppStore.getState().wordMastery.hand).toBe("mastered");
-    expect(useAppStore.getState().srsCards.hand.interval).toBe(1);
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(new Date("2026-11-01T10:00:00Z"));
+      const store = useAppStore.getState();
+      store.recordReview("hand", 4);
+      vi.advanceTimersByTime(1 * 86_400_000);
+      store.recordReview("hand", 4);
+      vi.advanceTimersByTime(Math.max(1, useAppStore.getState().srsCards.hand.interval) * 86_400_000);
+      store.recordReview("hand", 4);
+      const mastered = useAppStore.getState().srsCards.hand;
+      expect(useAppStore.getState().wordMastery.hand).toBe("mastered");
+      expect(getDueCards({ hand: mastered }, mastered.due_date)).toEqual([mastered]);
+      vi.advanceTimersByTime(Math.max(1, mastered.interval) * 86_400_000);
+      store.recordReview("hand", 4);
+      expect(useAppStore.getState().srsCards.hand.interval).toBeGreaterThan(mastered.interval);
+      store.recordReview("hand", 1);
+      expect(useAppStore.getState().wordMastery.hand).toBe("mastered");
+      expect(useAppStore.getState().srsCards.hand.interval).toBe(1);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("round-trips suspend/bury through persistence and backup without modifying schedules", () => {
@@ -235,8 +246,8 @@ describe("every vocabulary deck shares the chosen session limit", () => {
   const cards: SRSCard[] = Array.from({ length: 30 }, (_, index) => ({ ...createInitialCard(`w${index}`), due_date: "2020-01-01" }));
   const ids = cards.map((card) => card.word_id);
   const blankCard = (id: string) => cards.find((card) => card.word_id === id)!;
-  const sources = { dueCards: cards, weakestCards: cards, learnedCards: cards, recentWordIds: ids, scopedCompoundCards: cards, sentenceCards: cards, articleCards: cards, shiftIds: () => ids, domainIds: () => ids, everythingIds: () => ids, blankCard, sessionSize: 5 as const, shuffleSession: false };
-  it.each<ReviewDeckType>(["due", "weakest", "learned", "shift", "recent", "compounds", "sentences", "articles", "domain", "everything"])("caps %s without a hidden 20-card learned limit", (deck) => {
+  const sources = { dueCards: cards, weakestCards: cards, learnedCards: cards, recentWordIds: ids, scopedCompoundCards: cards, sentenceCards: cards, articleCards: cards, listeningCards: cards, starredCards: cards, shiftIds: () => ids, domainIds: () => ids, everythingIds: () => ids, blankCard, sessionSize: 5 as const, shuffleSession: false };
+  it.each<ReviewDeckType>(["due", "weakest", "learned", "shift", "recent", "compounds", "sentences", "articles", "listening", "starred", "domain", "everything"])("caps %s without a hidden 20-card learned limit", (deck) => {
     expect(orderReviewDeck(deck, sources)).toHaveLength(5);
     expect(orderReviewDeck(deck, { ...sources, sessionSize: 10 })).toHaveLength(10);
     expect(orderReviewDeck(deck, { ...sources, sessionSize: 20 })).toHaveLength(20);

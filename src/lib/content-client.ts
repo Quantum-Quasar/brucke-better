@@ -22,7 +22,7 @@ const AVAILABLE_LANGUAGES = new Set(
 // the server mark /data/* immutable without risking stale content after a deploy.
 const CONTENT_VERSION = process.env.NEXT_PUBLIC_CONTENT_VERSION;
 
-function dataUrl(languageId: string, file: string): string {
+export function dataUrl(languageId: string, file: string): string {
   const base = `/data/${languageId}/${file}`;
   return CONTENT_VERSION ? `${base}?v=${CONTENT_VERSION}` : base;
 }
@@ -115,6 +115,7 @@ function contentKeyPath(key: string): { languageId: string; file: string } | nul
   if (!languageId) return null;
   if (kind === "compendium") return { languageId, file: "compendium.json" };
   if (kind === "lesson-index") return { languageId, file: "lesson-index.json" };
+  if (kind === "word-details" && languageId !== "empty") return { languageId, file: "word-details.json" };
   if (kind === "lesson" && /^\d+$/.test(lessonId ?? "")) {
     return { languageId, file: `lessons/${lessonId}.json` };
   }
@@ -169,4 +170,26 @@ export function prefetchAtlasContent(languageId: string): void {
 /** Warm one lesson payload before the learner commits to opening it. */
 export function prefetchLesson(languageId: string, lessonId: number): void {
   void loadLesson(languageId, lessonId).catch(() => {});
+}
+
+export function loadWordDetails(languageId: string): Promise<Record<string, string>> {
+  if (!AVAILABLE_LANGUAGES.has(languageId)) {
+    return Promise.resolve({});
+  }
+  return loadJson<Record<string, string>>(dataUrl(languageId, "word-details.json")).catch(() => ({}));
+}
+
+const EMPTY_DETAILS: Record<string, string> = {};
+
+function loadWordDetailsKey(key: string): Promise<Record<string, string>> {
+  if (key === "word-details:empty") return Promise.resolve(EMPTY_DETAILS);
+  return loadWordDetails(key.slice("word-details:".length));
+}
+
+export function useWordDetails(languageId: string, enabled = true): Record<string, string> {
+  const { data } = useAsyncResource<Record<string, string>>(
+    enabled && AVAILABLE_LANGUAGES.has(languageId) ? `word-details:${languageId}` : "word-details:empty",
+    loadWordDetailsKey,
+  );
+  return data ?? EMPTY_DETAILS;
 }

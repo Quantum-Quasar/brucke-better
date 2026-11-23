@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { Check, Moon, Search, Sparkles, Sun, X } from "lucide-react";
 import { useAppStore } from "@/lib/store";
-import { POPULAR_THEMES, THEME_LIST } from "@/data/themes";
+import { POPULAR_THEMES_META, TOTAL_THEME_COUNT } from "@/data/popular-themes";
 import { ThemeSwatch, useThemeFilter } from "@/components/common/theme-picker";
 
 interface ThemeBrowserProps {
@@ -42,7 +42,7 @@ export function ThemeBrowser({ compact = false, autoFocus = false, onPick }: The
             type="text"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder={compact ? `Search ${THEME_LIST.length} themes...` : "Search themes by name (e.g. nord, dracula, serika, cyberpunk)..."}
+            placeholder={compact ? `Search ${TOTAL_THEME_COUNT} themes...` : "Search themes by name (e.g. nord, dracula, serika, cyberpunk)..."}
             className={`min-h-11 w-full rounded bg-[var(--bg-color)] border border-[var(--sub-color)]/30 font-mono text-[var(--text-color)] placeholder-[var(--sub-color)] outline-none focus:border-[var(--main-color)] transition ${compact ? "pl-8 pr-7 py-1.5 text-xs" : "pl-9 pr-4 py-2 text-sm"}`}
           />
           {query && (
@@ -60,18 +60,18 @@ export function ThemeBrowser({ compact = false, autoFocus = false, onPick }: The
         <div className={`flex items-center gap-1 font-mono overflow-x-auto pb-0.5 ${compact ? "text-[10px]" : "gap-1.5 text-xs"}`}>
           <button type="button" onClick={() => setActiveTab("popular")} aria-pressed={activeTab === "popular"} className={tabClass(activeTab === "popular")}>
             <Sparkles className={compact ? "w-2.5 h-2.5" : "w-3 h-3"} />
-            <span>Recommended ({POPULAR_THEMES.length})</span>
+            <span>Recommended ({POPULAR_THEMES_META.length})</span>
           </button>
           <button type="button" onClick={() => setActiveTab("dark")} aria-pressed={activeTab === "dark"} className={tabClass(activeTab === "dark")}>
             <Moon className={compact ? "w-2.5 h-2.5" : "w-3 h-3"} />
-            <span>Dark{compact ? "" : ` (${THEME_LIST.filter((theme) => theme.isDark).length})`}</span>
+            <span>Dark</span>
           </button>
           <button type="button" onClick={() => setActiveTab("light")} aria-pressed={activeTab === "light"} className={tabClass(activeTab === "light")}>
             <Sun className={compact ? "w-2.5 h-2.5" : "w-3 h-3"} />
-            <span>Light{compact ? "" : ` (${THEME_LIST.filter((theme) => !theme.isDark).length})`}</span>
+            <span>Light</span>
           </button>
           <button type="button" onClick={() => setActiveTab("all")} aria-pressed={activeTab === "all"} className={tabClass(activeTab === "all")}>
-            <span>Show all ({THEME_LIST.length})</span>
+            <span>Show all ({TOTAL_THEME_COUNT})</span>
           </button>
         </div>
       </div>

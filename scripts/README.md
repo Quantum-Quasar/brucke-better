@@ -100,11 +100,11 @@ Inventory after the audio, font, image and JSON optimisations:
 
 | Public group | Files / available URLs | Raw bytes |
 | --- | ---: | ---: |
-| All `public/` | 729 | 8,354,849 |
-| `data/` | 539 | 7,289,151 |
+| All `public/` | 729 | 8,350,829 |
+| `data/` | 539 | 7,283,524 |
 | `sounds/` | 145 | 274,068 |
 | `webfonts/` | 40 | 758,916 |
-| Other public files | 5 | 32,714 |
+| Other public files | 5 | 34,321 |
 
 The largest public asset is the German compendium (647,639 bytes); a learner who
 opens a lesson fetches its smaller lesson payload instead. Regenerate and rerun
@@ -134,7 +134,7 @@ claims that every file was downloaded in a browser session:
   preview requires the explicit “Load all previews” action. `fonts.test.ts`
   pins single-family injection.
 - **Offline:** `public/sw.js` installs only the offline page, manifest and two
-  app icons. Fonts, sounds, data and Next assets enter the bounded cache only
+  app icons. Fonts, sounds and data enter the bounded 200-entry media cache while routes and Next chunks enter the separate 120-entry shell cache, only
   after requests (including already-requested bootstrap assets). There is no
   whole-course, sound-pack or font-catalog precache. A warm asset hit in the
   current cache avoids another Cache Storage write and eviction scan.
@@ -144,7 +144,7 @@ claims that every file was downloaded in a browser session:
 | Script | Run via | What it writes |
 | --- | --- | --- |
 | `export-trail.ts` | `bun run trail` | Writes `TRAIL.md` at the repo root — the German trail in reading order. Run it after any lesson or teaser change. |
-| `export-naturalness-review.ts` | `bun run audit:naturalness-export` | Writes the checker-facing **naturalness review packet** to `naturalness-review/`, organized as **two passes**: pass 1 — one sentence grid per structure bucket (`<bucket>.md`), pass 2 — `mixed-prose.md`, a trail-ordered skim of the whole teaching paragraphs. Plus `all-sentences.csv` (with a `pass` column), `SUMMARY.md` (totals, bucket counts, provenance coverage, method notes) and `SPEAKER-BRIEFING.md` (the protocol every speaker gets). Every learner-facing German sentence in the German course plus the compendium example sentences, with English pairing, per-row provenance (`<lessonId> · <surface>` / `compendium:<id> · <surface>`) and free-text speaker fields. Read-only on content; output is a list of suspects to discuss, never auto-fixes. Run on demand by the human before a speaker round — deliberately **not** wired into build, test or CI, and the generated packet is not gitignored (version-controlling it is the human's call). Logic lives in `src/lib/naturalness-extract.ts` and is pinned by `src/tests/naturalness-extract.test.ts`; the export is deterministic, so re-runs diff cleanly. |
+| `export-naturalness-review.ts` | `bun run audit:naturalness-export` | Writes the checker-facing **naturalness review packet** to `naturalness-review/`, organized as **two passes**: pass 1 — one sentence grid per structure bucket (`<bucket>.md`), pass 2 — `mixed-prose.md`, a trail-ordered skim of the whole teaching paragraphs. Plus `all-sentences.csv` (with a `pass` column), `SUMMARY.md` (totals, bucket counts, provenance coverage, method notes) and `SPEAKER-BRIEFING.md` (the protocol every speaker gets). Every learner-facing German sentence in the German course plus the compendium example sentences, with English pairing, per-row provenance (`<lessonId> · <surface>` / `compendium:<id> · <surface>`) and free-text speaker fields. Read-only on content; output is a list of suspects to discuss, never auto-fixes. Run on demand by the human before a speaker round — deliberately **not** wired into build, test or CI, and the generated packet (`naturalness-review/`) is gitignored. Logic lives in `src/lib/naturalness-extract.ts` and is pinned by `src/tests/naturalness-extract.test.ts`; the export is deterministic, so re-runs diff cleanly. |
 
 ---
 

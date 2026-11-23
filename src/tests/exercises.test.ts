@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { LESSONS } from "../data/lessons";
 import { compendium } from "../data/compendium";
+import { NOUN_PLURALS } from "../data/noun-plurals";
+import { getLanguageContent } from "../data/language-content";
 import { evaluateAnswerAccuracy } from "../lib/letter-diff";
 
 describe("Progressive Bite-Sized Exercise Architecture", () => {
@@ -210,6 +212,14 @@ describe("Progressive Bite-Sized Exercise Architecture", () => {
 
   // --- TM-3: affirmations and authored diagnoses ride on the exercises ---
 
+  it("ban generic template Twists across German lessons", () => {
+    const templateTwists = LESSONS
+      .filter((l) => l.twist)
+      .filter((l) => l.twist!.target_answer === "Heute ist das sehr gut" || /^Wir .* heute hier$/i.test(l.twist!.target_answer))
+      .map((l) => l.id);
+    expect(templateTwists).toEqual([]);
+  });
+
   it("keeps authored affirmations short and diagnoses paired", () => {
     for (const lesson of LESSONS) {
       for (const ex of lesson.exercises) {
@@ -354,6 +364,19 @@ describe("Prefix × base family grids teach the prefix law", () => {
           known.has(cell.toLowerCase()) || hinted.has(cell.toLowerCase()),
           `${ex.id} cell "${cell}" must be a compendium word or introduced in vocab_hints`
         ).toBe(true);
+      }
+    }
+  });
+
+  it("verifies every key in NOUN_PLURALS exists in its language compendium", () => {
+    for (const [lang, plurals] of Object.entries(NOUN_PLURALS)) {
+      const langCompendium = getLanguageContent(lang as "de" | "fr" | "es" | "nl").compendium;
+      expect(langCompendium, `${lang} compendium must be loaded`).not.toBeNull();
+      for (const key of Object.keys(plurals)) {
+        expect(
+          langCompendium!.words[key],
+          `NOUN_PLURALS.${lang}.${key} must exist in ${lang} compendium`
+        ).toBeDefined();
       }
     }
   });

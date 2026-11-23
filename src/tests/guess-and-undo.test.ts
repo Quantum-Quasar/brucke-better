@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeEach, beforeAll, afterAll, vi } from "vitest";
 import { LocalStorageMock } from "./storage-fixture";
 import { useAppStore } from "../lib/store";
 import { isMastered, gradeCard } from "../lib/srs";
@@ -41,16 +41,24 @@ describe("flagGuessed — honest, scoped, mastery-consistent", () => {
   });
 
   it("promotes mastery when the guess re-grade crosses the mastery threshold", () => {
-    const store = useAppStore.getState();
-    store.recordReview("milch", 4);
-    store.recordReview("milch", 4);
-    expect(useAppStore.getState().wordMastery["milch"]).toBe("encountered");
-    expect(isMastered(useAppStore.getState().srsCards["milch"])).toBe(false);
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(new Date("2026-09-01T10:00:00Z"));
+      const store = useAppStore.getState();
+      store.recordReview("milch", 5);
+      vi.advanceTimersByTime(useAppStore.getState().srsCards["milch"].interval * 86_400_000);
+      store.recordReview("milch", 5);
+      expect(useAppStore.getState().wordMastery["milch"]).toBe("encountered");
+      expect(isMastered(useAppStore.getState().srsCards["milch"])).toBe(false);
 
-    store.flagGuessed(["milch"]);
-    expect(isMastered(useAppStore.getState().srsCards["milch"])).toBe(true);
-    expect(useAppStore.getState().wordMastery["milch"]).toBe("mastered");
-    expect(useAppStore.getState().srsCards["milch"].guessed).toBe(1);
+      vi.advanceTimersByTime(useAppStore.getState().srsCards["milch"].interval * 86_400_000);
+      store.flagGuessed(["milch"]);
+      expect(isMastered(useAppStore.getState().srsCards["milch"])).toBe(true);
+      expect(useAppStore.getState().wordMastery["milch"]).toBe("mastered");
+      expect(useAppStore.getState().srsCards["milch"].guessed).toBe(1);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("increments the guess counter on repeat flags", () => {

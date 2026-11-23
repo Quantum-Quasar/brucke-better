@@ -91,4 +91,9 @@ describe("backup reminder timing", () => {
     vi.stubGlobal("localStorage", { getItem: () => { throw new Error("blocked"); } });
     expect(isBackupReminderDue(true, readBackupReminder(), now)).toBe(true);
   });
+
+  it("reads valid reminder timestamps from globalThis.localStorage in Node environments", () => {
+    vi.stubGlobal("localStorage", { getItem: () => JSON.stringify({ downloadedAt: 123456, remindAfter: 789012 }) });
+    expect(readBackupReminder()).toEqual({ downloadedAt: 123456, remindAfter: 789012 });
+  });
 });

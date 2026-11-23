@@ -78,6 +78,36 @@ export function VisibilitySettings({ matches, sectionVisible }: {
               </SegButton>
             ))}
           </SettingItem>
+
+          {/* larger text */}
+          <SettingItem
+            id="larger-text"
+            icon={Eye}
+            title="larger text"
+            description="Scale up reading and exercise typography for more comfortable reading on phones and desktops."
+            matchesSearch={matches(["larger text", "font size", "text size", "zoom", "readability", "accessibility"])}
+          >
+            {[true, false].map((val) => (
+              <SegButton key={String(val)} selected={settings.largerText === val} onClick={() => updateSetting("largerText", val)}>
+                {val ? "on" : "off"}
+              </SegButton>
+            ))}
+          </SettingItem>
+
+          {/* reduced text */}
+          <SettingItem
+            id="reduced-text"
+            icon={EyeOff}
+            title="reduced text mode"
+            description="Hide optional background footnotes and side notes during lessons so you only see the essentials."
+            matchesSearch={matches(["reduced text", "less text", "compact", "minimal", "hide", "accessibility"])}
+          >
+            {[true, false].map((val) => (
+              <SegButton key={String(val)} selected={settings.reducedText === val} onClick={() => updateSetting("reducedText", val)}>
+                {val ? "on" : "off"}
+              </SegButton>
+            ))}
+          </SettingItem>
         </section>
   );
 }

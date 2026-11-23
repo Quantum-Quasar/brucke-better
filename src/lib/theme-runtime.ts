@@ -3,6 +3,8 @@
 // script already restores the last palette before first paint, so a normal
 // boot never needs it.
 
+import { readStorageJson } from "@/lib/safe-storage";
+
 export const DEFAULT_THEME = "alduin";
 export const THEME_VARS_CACHE_KEY = "brucke_theme_vars";
 
@@ -30,7 +32,7 @@ export function syncThemeColor(color?: string): void {
   meta.setAttribute("content", value);
 }
 
-/** The only non-theme root attribute the settings screen owns. */
+/** Non-theme root appearance attributes owned by the settings screen. */
 export function applyAppearanceSettings(settings: import("@/data/settings").CustomizationSettings): void {
   if (typeof document === "undefined" || !document?.documentElement) return;
   const root = document.documentElement;
@@ -38,6 +40,16 @@ export function applyAppearanceSettings(settings: import("@/data/settings").Cust
     root.setAttribute("data-contrast", "increased");
   } else {
     root.removeAttribute("data-contrast");
+  }
+  if (settings.largerText) {
+    root.setAttribute("data-text-scale", "large");
+  } else {
+    root.removeAttribute("data-text-scale");
+  }
+  if (settings.reducedText) {
+    root.setAttribute("data-text-density", "reduced");
+  } else {
+    root.removeAttribute("data-text-density");
   }
 }
 
@@ -50,12 +62,8 @@ export function themeDisplayName(id: string): string {
 }
 
 function cachedThemeId(): string | null {
-  try {
-    const cached = JSON.parse(window.localStorage.getItem(THEME_VARS_CACHE_KEY) || "null");
-    return cached && typeof cached.id === "string" ? cached.id : null;
-  } catch {
-    return null;
-  }
+  const cached = readStorageJson<{ id?: unknown } | null>(THEME_VARS_CACHE_KEY, null);
+  return cached && typeof cached.id === "string" ? cached.id : null;
 }
 
 /**

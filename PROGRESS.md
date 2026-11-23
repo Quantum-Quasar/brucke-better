@@ -1,8 +1,7 @@
-# PROGRESS — required-grammar promotion (working tree, no commits)
+# PROGRESS — required-grammar promotion (shipped in `4e32632`)
 
-Task: promote core grammar out of "skippable" (see task brief + `docs/grammar-gap-placement.md`).
+Completed campaign record: promoted core grammar out of "skippable" (see `docs/grammar-gap-placement.md`).
 Previous campaign's record (sibling parity) is complete and lives in `docs/sibling-parity-audit.md`.
-Leave the working tree uncommitted for human review.
 
 ## Final mapping (implemented)
 

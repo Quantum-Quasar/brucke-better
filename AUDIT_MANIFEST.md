@@ -58,8 +58,8 @@ Use a familiar word or a clear pattern to make new German easier to remember, th
 - **Accessible alternative**: each family exposes a semantic English/target/shift/example table with the same drill. Atlas nodes and Trail lesson buttons are keyboard reachable with visible focus; reduced motion disables animated/pulsing decoration.
 
 ### Pillar 3: Spaced Repetition Review Hub (`/review`)
-- **Algorithm**: Unified SuperMemo SM-2 interval scheduler (`src/lib/srs.ts`) tracking repetitions, ease factors, lapses, intervals, and due dates.
-- **10 review deck types** for vocabulary/example entities (`DECK_CAPABILITIES` in `src/lib/review-decks.ts`); beginner actions lead, advanced filters are disclosed on demand. Failed sentence processes have a separate additive queue:
+- **Algorithm**: Unified FSRS-4.5 interval scheduler (`src/lib/srs.ts`) with 21-day mastery threshold, interval fuzz, and tracking for stability, difficulty, repetitions, lapses, intervals, and due dates.
+- **12 review deck types** for vocabulary/example entities (`DECK_CAPABILITIES` in `src/lib/review-decks.ts`); beginner actions lead, advanced filters are disclosed on demand. Failed sentence processes have a separate additive queue:
   1. **Due Today**: Spaced repetition queue filtered by algorithmic due date.
   2. **By Shift Family**: Filterable practice by individual consonant shift.
   3. **By Domain**: Words grouped by the `domain` column of the compendium.
@@ -72,7 +72,7 @@ Use a familiar word or a clear pattern to make new German easier to remember, th
   10. **Learned Words**: Encountered/mastered words, independent of advanced new-word filters.
   All ordinary decks use the learner's 5/10/20/All session limit (default 10), rather than a hidden Learned-only cap. Suspend persists until manual resumption; Bury lasts through the current local day. Five lapses since relearning move the card to the separate Relearn queue; mapped cards link back to a teaching lesson, dictionary-only cards offer contextual relearning. Mastery does not stop future scheduling.
 - **4 review styles overall** (Article & Gender uses MCQ only; other decks support all four):
-  - `flashcard` (Quick Flip): Recall in mind $\rightarrow$ Space/Enter reveals $\rightarrow$ 1–4 SM-2 grade.
+  - `flashcard` (Quick Flip): Recall in mind $\rightarrow$ Space/Enter reveals $\rightarrow$ 1–4 FSRS grade.
   - `mcq` (Multiple Choice): Pick target word from 4 options (hotkeys 1–4).
   - `tiles` (Tile Builder): Assemble morphemes into words (mouse click or desktop keyboard typing + Backspace).
   - `typing` (Derivation Typing): Type full derivation with on-screen umlaut bar.
@@ -98,7 +98,7 @@ Use a familiar word or a clear pattern to make new German easier to remember, th
    - Embedded speaker buttons across `ShiftPair`, `WordCardDrawer`, `ReviewPage`, and `LessonReader`, plus keyboard shortcut `[R]` / `[A]`.
    - Optional browser speech recognition is explicitly enabled and started by the learner, with a provider/online-processing disclosure. Transcript feedback is lenient and non-gating; the app stores no audio/transcripts.
 3. **Desktop Keyboard First Ergonomics**:
-   - `1`, `2`, `3`, `4`: Select MCQ options or grade SM-2 cards (Again, Hard, Good, Easy).
+   - `1`, `2`, `3`, `4`: Select MCQ options or grade FSRS cards (Again, Hard, Good, Easy).
    - `Space` / `Enter`: Reveal cards, advance lessons, check answers.
    - `Backspace`: Unpick tiles in Tile Builder.
    - `[a-z, ä, ö, ü, ß]`: Type directly to snap matching tiles in Tile Builder.
@@ -119,7 +119,7 @@ A short map of where things live; list the directories yourself for the full tre
 ├── scripts/                   # Build + audit tooling — see scripts/README.md
 ├── public/data/<lang>/        # Generated per-language payloads (bun run export-data)
 ├── src/
-│   ├── app/                   # Six static routes: /, /atlas, /panorama, /review, /settings, /about
+│   ├── app/                   # Ten static routes: /, /atlas, /panorama, /review, /read, /practice, /cando, /mistakes, /settings, /about
 │   ├── components/            # common/ (AppShell, ShiftPair, WordCardDrawer…), lesson/ (LessonView,
 │   │                          #   LessonReader, one widget per exercise type), atlas/, trail/, navigation/
 │   ├── lib/                   # types.ts, store.ts, srs.ts, letter-diff.ts, shift-annotator.ts,
@@ -140,7 +140,7 @@ In-page views: lessons and atlas details are rendered by `AppShell.tsx` (`Lesson
 - **`WordEntity`**: Primary vocabulary item with meaning, pronunciation, context, domain and optional `frequencyRank` (`null` for an unmatched corpus form). Article and example-sentence entities do not borrow a lexical rank.
 - **`ShiftFamily`**: Consonant shift definition. Fields: `id`, `name`, `symbol`, `phonetic_rule`, `historical_linguistics`, `philological_note`, `literature_source`, `word_ids`.
 - **`SRSCard`**: Spaced repetition tracking card. Fields: `word_id`, `interval`, `repetitions`, `ease_factor`, `due_date`, `lapses`, `last_reviewed`.
-- **`SentenceCard`**: Failed-process schedule keyed by `id`, with `lessonId`, `exerciseId` and SM-2 interval/repetition/ease/lapse/date fields. Stored separately from word `srsCards` in the active language slice.
+- **`SentenceCard`**: Failed-process schedule keyed by `id`, with `lessonId`, `exerciseId` and FSRS interval/stability/difficulty/repetition/lapse/date fields. Stored separately from word `srsCards` in the active language slice.
 - **`Lesson`**: Curriculum unit. Fields: `id`, `slug`, `title`, `subtitle`, `phase`, `shift_categories`, `word_ids`, `hook`, `pattern`, `table_word_ids`, `exercises` (typed by `ExerciseType`), `summary`, and an optional `twist`.
 - **`CompoundCalque`**: Transparent compound nouns. Fields: `id`, `compound`, `gender`, `literal_morphemes`, `real_meaning`, `english_counterpart`, `lore`.
 - **`FalseFriend`**: Deceptive cognate traps. Fields: `id`, `german_word`, `looks_like`, `actual_meaning`, `trap_note`.
@@ -150,7 +150,7 @@ In-page views: lessons and atlas details are rendered by `AppShell.tsx` (`Lesson
 ## 7. Performance & Resource Optimization Highlights
 
 1. **100% Pre-rendered Static Site Generation (SSG)**:
-   - The app ships 6 static routes (`/`, `/atlas`, `/panorama`, `/review`, `/settings`, `/about`), plus canonical `/trail/<lang>/<id>` lesson reference pages with introductions, patterns, vocabulary and outcomes. Lessons (193 unique lessons across 530 per-lesson payloads) and atlas families (37 atlas families across four atlases) retain instant practice/reference overlays.
+   - The app ships 10 static routes (`/`, `/atlas`, `/panorama`, `/review`, `/read`, `/practice`, `/cando`, `/mistakes`, `/settings`, `/about`), plus canonical `/trail/<lang>/<id>` lesson reference pages with introductions, patterns, vocabulary and outcomes. Lessons (193 unique lessons across 530 per-lesson payloads) and atlas families (37 atlas families across four atlases) retain instant practice/reference overlays.
    - Overlays replace the current history entry with language-explicit query URLs; copied links and reloads restore them. Canonical lesson pages carry `LearningResource` data and appear in the sitemap; robots points to it. Builds regenerate ignored `public/data/` distribution files from committed content, rather than storing those copies in git.
 2. **Shift Alignment Memoization**:
    - `alignShiftPair` aligns whole spellings before highlighting known correspondences, handles double shifts and uses a bounded 500-entry cache. Twenty golden alignments pin the actual highlighted spans, including V/F→B and Y/GH→G/CH.
@@ -212,4 +212,4 @@ When auditing the codebase, verify:
   - Cookie backup stays within safe browser limits (lean payload ≤ 2048 URL-encoded bytes).
 - [ ] **Build & Tests**:
   - `bun run test` (Vitest) passes with 0 failures; use its report for current test and file totals.
-  - `bun run build` generates all static pages (6 static routes + 500 lesson payloads) without TypeScript or Turbopack errors.
+  - `bun run build` generates all static pages (10 static routes + 530 lesson payloads) without TypeScript or Turbopack errors.

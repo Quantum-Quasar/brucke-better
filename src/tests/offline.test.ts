@@ -120,7 +120,7 @@ describe("Offline worker update and outage recovery", () => {
     expect(await shellCache.match("https://brucke.test/")).toBeDefined();
     expect(await shellCache.match("https://brucke.test/_next/static/chunks/app.js")).toBeDefined();
 
-    const mediaCache = await browser.open("brucke-media-V1");
+    const mediaCache = await browser.open("brucke-media-shared");
     expect((await mediaCache.keys()).length).toBeLessThanOrEqual(200);
   });
 
@@ -129,15 +129,54 @@ describe("Offline worker update and outage recovery", () => {
     await (await browser.open("brucke-offline-A")).put("/", new Response("old A"));
     await (await browser.open("brucke-media-A")).put("/sounds/a.wav", new Response("a"));
     await (await browser.open("brucke-offline-B")).put("/", new Response("usable B"));
-    await (await browser.open("brucke-media-B")).put("/data/de/lessons/1.json", new Response("{}"));
+    await (await browser.open("brucke-media-shared")).put("/data/de/lessons/1.json", new Response("{}"));
 
     await browser.lifecycle("install");
     await browser.lifecycle("activate");
 
     expect([...browser.caches.keys()].sort()).toEqual([
-      "brucke-media-B",
+      "brucke-media-shared",
       "brucke-offline-B",
       "brucke-offline-C",
     ]);
+  });
+
+  it("preserves cached lessons across app deploys in the shared media cache", async () => {
+    const browser = workerBrowser("B");
+    const media = await browser.open("brucke-media-shared");
+    await media.put("/data/de/lessons/1.json", new Response(JSON.stringify({ id: 1 })));
+    await browser.lifecycle("install");
+    await browser.lifecycle("activate");
+    expect(await (await browser.request("/data/de/lessons/1.json", "cors")).text()).toBe(JSON.stringify({ id: 1 }));
+  });
+
+  it("serves downloaded course payloads (including word-details.json) offline without eviction", async () => {
+    const browser = workerBrowser("V2");
+    const courses = await browser.open("brucke-offline-courses");
+    await courses.put("/data/de/lessons/1.json?v=abc", new Response(JSON.stringify({ id: 1 })));
+    await courses.put("/data/de/word-details.json?v=abc", new Response(JSON.stringify({ wasser: "water" })));
+
+    await browser.lifecycle("install");
+    await browser.lifecycle("activate");
+
+    // Flood brucke-media-shared past its 200-entry limit
+    browser.setNetwork(async (req) => new Response(`body:${req}`));
+    for (let i = 0; i < 220; i++) {
+      await browser.request(`/sounds/click${i}.wav`, "cors");
+    }
+
+    // Go offline and verify downloaded course files + new routes still work
+    browser.setNetwork(async () => { throw new Error("offline"); });
+    expect(await (await browser.request("/data/de/lessons/1.json?v=abc", "cors")).text()).toBe(
+      JSON.stringify({ id: 1 })
+    );
+    expect(await (await browser.request("/data/de/word-details.json?v=abc", "cors")).text()).toBe(
+      JSON.stringify({ wasser: "water" })
+    );
+    for (const route of ["/read", "/practice", "/cando", "/mistakes"]) {
+      const shell = await browser.open("brucke-offline-V2");
+      await shell.put(route, new Response(`cached:${route}`));
+      expect(await (await browser.request(route)).text()).toBe(`cached:${route}`);
+    }
   });
 });

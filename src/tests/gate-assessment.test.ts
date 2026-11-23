@@ -3,7 +3,13 @@ import { LESSONS } from "@/data/lessons";
 import { FR_LESSONS } from "@/data/french/lessons-fr";
 import { ES_LESSONS } from "@/data/spanish/lessons-es";
 import { NL_LESSONS } from "@/data/dutch/lessons-nl";
-import { hasPassedGateAssessment, scoreGateAnswers, selectGateQuestion } from "@/lib/gate-assessment";
+import {
+  assembleGateQuestions,
+  getMissedGateLessons,
+  hasPassedGateAssessment,
+  scoreGateAnswers,
+  selectGateQuestion,
+} from "@/lib/gate-assessment";
 import type { ExerciseItem } from "@/lib/types";
 
 const exercise = (data: Partial<ExerciseItem>): ExerciseItem => ({
@@ -18,6 +24,7 @@ describe("gate assessment", () => {
     ]);
     expect(question?.prompt).toBe("Choose");
     expect(question?.options).toContain("yes");
+    expect(question?.lessonId).toBe(2);
   });
 
   it("includes the original sentence for literal glosses and rejects exposed answers", () => {
@@ -47,11 +54,95 @@ describe("gate assessment", () => {
     expect(hasPassedGateAssessment([])).toBe(false);
   });
 
+  it("prefers clean production items and varies exercise types when assembling a gate", () => {
+    const questions = assembleGateQuestions([
+      {
+        id: 3,
+        title: "The P -> F Shift",
+        exercises: [
+          exercise({ id: "e1", type: "shift_select", prompt: "Pick one", options: ["Schiff", "Boot"], target_answer: "Schiff" }),
+          exercise({ id: "e2", type: "derive", prompt: "Shift 'ship' into German:", target_answer: "Schiff" }),
+        ],
+      },
+      {
+        id: 4,
+        title: "The Dental Hardening",
+        exercises: [
+          exercise({ id: "e3", type: "derive", prompt: "Shift 'thank' into German:", target_answer: "danken" }),
+          exercise({ id: "e4", type: "shift_select", prompt: "Which matches 'three'?", options: ["drei", "frei"], target_answer: "drei" }),
+        ],
+      },
+    ]);
+
+    expect(questions).toHaveLength(2);
+    expect(questions[0].mode).toBe("typed");
+    expect(questions[0].sourceType).toBe("derive");
+    expect(questions[1].sourceType).toBe("shift_select");
+    expect(scoreGateAnswers(questions, ["  schiff. ", "drei"])).toEqual([true, true]);
+  });
+
+  it("maps missed gate questions back to up to 3 exact source lessons for remediation", () => {
+    const q1 = selectGateQuestion("The P -> F Shift", 3, [exercise({ options: ["Schiff", "Boot"], target_answer: "Schiff" })])!;
+    const q2 = selectGateQuestion("The Dental Hardening", 4, [exercise({ options: ["danken", "tanken"], target_answer: "danken" })])!;
+    const q3 = selectGateQuestion("The Sibilant Shift", 5, [exercise({ options: ["Wasser", "Wetter"], target_answer: "Wasser" })])!;
+    const q4 = selectGateQuestion("The Velar Shift", 6, [exercise({ options: ["Buch", "Bauch"], target_answer: "Buch" })])!;
+
+    const missed = getMissedGateLessons(
+      [q1, q2, q3, q4, q2],
+      [false, false, true, false, false],
+      3,
+    );
+
+    expect(missed).toEqual([
+      { lessonId: 4, title: "The Dental Hardening", missedCount: 2 },
+      { lessonId: 3, title: "The P -> F Shift", missedCount: 1 },
+      { lessonId: 6, title: "The Velar Shift", missedCount: 1 },
+    ]);
+  });
+
   it("can select a supported question for every course core and German spine story", () => {
     for (const lessons of [LESSONS, FR_LESSONS, ES_LESSONS, NL_LESSONS]) {
       for (const lesson of lessons.filter((item) => (item.id >= 1 && item.id <= 30) || item.spineStory)) {
         expect(selectGateQuestion(lesson.title, lesson.id, lesson.exercises), `${lesson.id}: ${lesson.title}`).not.toBeNull();
       }
     }
+  });
+
+  it("never leaks english_hint on typed gate questions and grades diacritics/ß/accepted_answers leniently", () => {
+    const question = selectGateQuestion(
+      "The Dental Hardening",
+      4,
+      [
+        exercise({
+          id: "l4_e4",
+          type: "derive",
+          prompt: "Apply TH -> D: 'door' -> German noun:",
+          english_hint: "th·ink -> d·enk·en",
+          target_answer: "Tür",
+          accepted_answers: ["die Tür", "Tuer"],
+        }),
+      ],
+      { preferProduction: true },
+    )!;
+
+    expect(question).not.toBeNull();
+    expect(question.mode).toBe("typed");
+    expect(question.hint).toBeUndefined();
+    expect(question.acceptedAnswers).toEqual(["die Tür", "Tuer"]);
+
+    // Diacritic omission and accepted_answers both pass
+    expect(scoreGateAnswers([question], ["Tur"])).toEqual([true]);
+    expect(scoreGateAnswers([question], ["die Tür"])).toEqual([true]);
+    expect(scoreGateAnswers([question], ["Tuer"])).toEqual([true]);
+    expect(scoreGateAnswers([question], ["Hund"])).toEqual([false]);
+
+    // ß <-> ss tolerance on typed gate answers
+    const sharpS = selectGateQuestion(
+      "Sibilant Shift",
+      5,
+      [exercise({ id: "l5_e4", type: "derive", prompt: "German for 'big':", target_answer: "groß" })],
+      { preferProduction: true },
+    )!;
+    expect(scoreGateAnswers([sharpS], ["gross"])).toEqual([true]);
   });
 });

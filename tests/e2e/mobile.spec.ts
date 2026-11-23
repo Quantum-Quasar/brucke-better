@@ -106,7 +106,7 @@ test.describe("mobile shell", () => {
   test("lesson URLs keep mobile history clean and Back follows tab history", async ({ page }) => {
     await page.goto("/review");
     await waitForApp(page);
-    const trail = page.getByRole("navigation", { name: /main navigation/i }).getByRole("link", { name: /^trail$/i });
+    const trail = page.getByRole("navigation", { name: /main navigation/i }).getByRole("link", { name: /^learn$/i });
     await trail.focus();
     await trail.press("Enter");
     await page.waitForURL((url) => url.pathname === "/");

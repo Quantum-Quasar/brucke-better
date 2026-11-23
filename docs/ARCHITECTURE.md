@@ -106,7 +106,7 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   node 1 starts unlocked. Optional sprigs/branches remain skippable and cannot substitute
   for a missing core; applicable gates must also pass. Completing an already-reachable
   side lesson does not unlock the next topic around its core.
-- **Six star gates** (`TRAIL_GATES` in `src/data/curriculum.ts`) sit at family boundaries
+- **Six checkpoint gates** (`TRAIL_GATES` in `src/data/curriculum.ts`) sit at family boundaries (opened by spine completion plus passing the checkpoint, without star quotas)
   and count stars earned only inside their stretch, plus a passed checkpoint test:
   Shift (after topic 7, 14★), Grammar (10, 6★), Verb-Complex (16, 11★), Past (20, 9★),
   Atlas (26, 11★), Capstone (29, 9★). A closed gate hard-locks the spine edge but leaves
@@ -190,7 +190,7 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   the verb bracket, adjective endings, tense map); no levels, no gating.
   [`german-panorama.md`](./german-panorama.md) is its repo-side map, read by
   `src/tests/tm6-ideas.test.ts`.
-- **Review Hub (`/review`)** runs SM-2 (`src/lib/srs.ts`) over unified word entities
+- **Review Hub (`/review`)** runs FSRS-4.5 (`src/lib/srs.ts`, 21-day mastery) over unified word entities
   (`src/lib/word-entities-core.ts`: words, compounds, false-friend traps and lesson
   example sentences). Grades 1/3/4/5; below 3 resets repetitions, interval to 1 day and
   adds a lapse; ease factor `EF' = EF + 0.1 − (5−g)(0.08 + (5−g)·0.02)` floored at 1.3;
@@ -213,8 +213,9 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   Learned Words. Suspend excludes a card until manual resumption; Bury excludes it
   until the next local calendar day, including DST changes. Five lapses since relearning
   move the card to a separate Relearn management queue rather than another failed loop.
-  Mapped cards link to their teaching lesson and require a new completion before explicit
-  resumption; dictionary-only cards offer contextual relearning without invented links.
+  Mapped cards link to their teaching lesson and also offer a quick inline meaning-and-example
+  relearn path before explicit resumption; dictionary-only cards use contextual relearning
+  without invented links.
   Relearning preserves lesson completion, stars and mastery. Mastered words still schedule.
 - **Sentence process review** is additive to the word/entity decks: first incorrect
   sentence answers create language-scoped `SentenceCard`s; existing widgets replay
@@ -260,24 +261,27 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
   backspace), lazy mode (`ae`/`oe`/`ue`/`ss`), capitalisation tolerance, caps-lock
   warning, quick restart (`off`/`esc`), German character bar (focus-preserving).
   The page composes separate behavior, input, sound, theme, visibility and danger-zone sections.
-- **JSON backup export/import** and a two-step danger zone (reset settings / reset
-  progress).
+- **JSON backup export/import** with a visible "Last backup download started" timestamp,
+  app/data build versions, non-private diagnostic copy, and a two-step danger zone
+  (reset settings / reset progress).
 - **Local-first safety:** a nonblocking reminder offers a portable JSON backup
   after learning progress exists, then weekly after download; dismissal snoozes
   for a day. Settings can request persistent storage, but explicitly warns that
   it cannot prevent manual deletion or device loss.
 - **Install/offline:** `manifest.webmanifest` enables home-screen installation.
   Production registers `public/sw.js` over HTTPS (localhost works for testing).
-  A build-versioned cache keeps requested pages, data and chunks, capped at 240
-  entries plus the offline fallback. Installation fetches only the fallback,
+  Two build-versioned caches isolate requested app shells/chunks (`brucke-offline-<v>`,
+  capped at 120 entries plus `/offline.html`) from lesson payloads, fonts and sounds
+  (`brucke-media-<v>`, capped at 200 entries), retaining paired previous-build caches together. Installation fetches only the fallback,
   manifest and icons—not lessons. Open segments and exercises online before
   relying on them offline; unopened or evicted content still needs a connection.
   Activation retains the previous build for offline navigation and exact asset URLs; older caches
   are pruned on activation only when no tabs may need them. Cached navigation also survives
   transient HTTP 5xx failures without masking legitimate 404 responses.
   Native pronunciation depends on installed device voices.
-  The 15-minute listening pause is a persisted absolute timestamp, not a component
-  timer; reload/tab closure preserve it and expiry does not renew it.
+  Dictation offers both a per-item text fallback and a 15-minute listening pause
+  (stored as a persisted absolute timestamp, not a component timer; reload/tab closure
+  preserve it and expiry does not renew it).
 
 ## 8. Storage and safety
 

@@ -90,7 +90,7 @@ test.describe("French, Spanish and Dutch courses", () => {
     await page.goto("/review");
 
     await expect(page.getByRole("heading", { name: /due today/i })).toBeVisible();
-    await page.getByText("More practice options", { exact: true }).click();
+    await page.getByText("Show all decks", { exact: true }).click();
     await expect(page.getByRole("button", { name: /review recent/i })).toBeEnabled();
     await expect(page.locator("header")).toContainText(/dutch through english/i);
 
@@ -156,7 +156,7 @@ test.describe("French, Spanish and Dutch courses", () => {
 
     // the hub only renders once both JSON payloads resolved
     await expect(page.getByRole("heading", { name: /due today/i })).toBeVisible();
-    await page.getByText("More practice options", { exact: true }).click();
+    await page.getByText("Show all decks", { exact: true }).click();
     await expect(page.getByRole("button", { name: /review recent/i })).toBeEnabled();
     await expect(page.locator("header")).toContainText(/french through english/i);
 

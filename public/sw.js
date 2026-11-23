@@ -1,16 +1,28 @@
-/* Cache only requested content; never download a course in the background. */
+/* Cache requested content and explicit offline course downloads; never download a course in the background. */
 const version = new URL(self.location.href).searchParams.get("v") || "1";
 const shellPrefix = "brucke-offline-";
 const mediaPrefix = "brucke-media-";
 const shellCacheName = `${shellPrefix}${version}`;
-const mediaCacheName = `${mediaPrefix}${version}`;
-const routes = new Set(["/", "/atlas", "/panorama", "/review", "/settings", "/about"]);
+const mediaCacheName = `${mediaPrefix}shared`;
+const offlineCoursesCacheName = "brucke-offline-courses";
+const routes = new Set([
+  "/",
+  "/atlas",
+  "/panorama",
+  "/review",
+  "/settings",
+  "/about",
+  "/read",
+  "/practice",
+  "/cando",
+  "/mistakes",
+]);
 const shellLimit = 120;
 const mediaLimit = 200;
 
 function isMediaAsset(url) {
   return url.origin === self.location.origin && (
-    /^\/data\/(de|fr|es|nl)\/(compendium\.json|lesson-index\.json|lessons\/\d+\.json)$/.test(url.pathname) ||
+    /^\/data\/(de|fr|es|nl)\/(compendium\.json|lesson-index\.json|word-details\.json|lessons\/\d+\.json)$/.test(url.pathname) ||
     url.pathname.startsWith("/webfonts/") ||
     url.pathname.startsWith("/sounds/")
   );
@@ -55,7 +67,9 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil((async () => {
     const allKeys = await caches.keys();
-    const previousShells = allKeys.filter((key) => key.startsWith(shellPrefix) && key !== shellCacheName);
+    const previousShells = allKeys.filter(
+      (key) => key.startsWith(shellPrefix) && key !== shellCacheName && key !== offlineCoursesCacheName
+    );
     const previousMedia = allKeys.filter((key) => key.startsWith(mediaPrefix) && key !== mediaCacheName);
     // Keep the last usable build (shell + paired media); open tabs may still need older chunks.
     const clients = await self.clients.matchAll({ includeUncontrolled: true });
@@ -72,7 +86,7 @@ self.addEventListener("activate", (event) => {
         }
       }
       const keepShell = usableVersion ? `${shellPrefix}${usableVersion}` : null;
-      const keepMedia = usableVersion ? `${mediaPrefix}${usableVersion}` : null;
+      const keepMedia = mediaCacheName;
       for (const key of previousShells) {
         if (key !== keepShell) await caches.delete(key);
       }
@@ -105,12 +119,25 @@ self.addEventListener("fetch", (event) => {
     const shellUrl = navigation ? new URL(url.pathname, url.origin).href : null;
     const current = await cache.match(request) ?? (shellUrl ? await cache.match(shellUrl) : undefined);
     let saved = current;
+    let fromOfflineCourse = false;
+    if (!saved && isMediaAsset(url)) {
+      const courseCache = await caches.open(offlineCoursesCacheName);
+      saved = await courseCache.match(request);
+      if (saved) fromOfflineCourse = true;
+    }
     if (!saved) {
       const allKeys = await caches.keys();
-      const previous = allKeys.filter((key) => key.startsWith(targetPrefix) && key !== targetName).reverse();
+      const previous = allKeys.filter(
+        (key) => key.startsWith(targetPrefix) && key !== targetName && key !== offlineCoursesCacheName
+      ).reverse();
       // For media assets, also check pre-split shell caches as a fallback during upgrades.
       const fallbackKeys = targetPrefix === mediaPrefix
-        ? [...previous, ...allKeys.filter((key) => key.startsWith(shellPrefix) && key !== shellCacheName).reverse()]
+        ? [
+            ...previous,
+            ...allKeys
+              .filter((key) => key.startsWith(shellPrefix) && key !== shellCacheName && key !== offlineCoursesCacheName)
+              .reverse(),
+          ]
         : previous;
       for (const key of fallbackKeys) {
         saved = await (await caches.open(key)).match(request);
@@ -120,8 +147,9 @@ self.addEventListener("fetch", (event) => {
     }
     if (asset && saved) {
       // Only promote into current cache if served from a previous build cache
-      // (avoids redundant disk write + full cache.keys() scan on every warm hit).
-      if (!current) {
+      // (avoids redundant disk write + full cache.keys() scan on every warm hit
+      // and avoids copying dedicated offline-course entries into the 200-item media cache).
+      if (!current && !fromOfflineCourse) {
         event.waitUntil(remember(request, saved.clone()).catch(() => {}));
       }
       return saved;

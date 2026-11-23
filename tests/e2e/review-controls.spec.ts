@@ -8,7 +8,7 @@ test("bounded article review keeps suspended and buried nouns identifiable after
   const size = page.getByRole("group", { name: "Review session length" });
   await expect(size.getByRole("button", { name: "10", exact: true })).toHaveAttribute("aria-pressed", "true");
   await size.getByRole("button", { name: "5", exact: true }).click();
-  await page.getByText("More practice options", { exact: true }).click();
+  await page.getByText("Show all decks", { exact: true }).click();
   await page.getByRole("button", { name: "start article mcq", exact: true }).click();
   await expect(page.getByText("card 1 / 5", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Suspend", exact: true }).click();

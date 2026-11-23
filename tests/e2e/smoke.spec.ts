@@ -116,7 +116,7 @@ function gradedWordId(before: any, after: any): string {
 /** Open the "recent lessons" deck in recall (flashcard) mode. */
 async function openRecentReviewSession(page: Page) {
   await page.goto("/review");
-  await page.getByText("More practice options", { exact: true }).click();
+  await page.getByText("Show all decks", { exact: true }).click();
   // enabled only when at least one lesson has been completed
   const recent = page.getByRole("button", { name: /review recent/i });
   await expect(recent).toBeEnabled();
@@ -192,7 +192,7 @@ test.describe("browser smoke", () => {
       await page.getByRole("button", { name: "komm", exact: true }).click();
       await page.getByRole("button", { name: "en", exact: true }).click();
       await page.getByRole("button", { name: /verify/i }).click();
-      await expect(page.getByText("sound shift breakdown")).toBeVisible();
+      await expect(page.getByText("not quite")).toBeVisible();
       expect((await readAppState(page)).lessonProgress["1"].retryExerciseIds).toEqual(["l1_e1"]);
 
       await page.reload();
@@ -310,7 +310,7 @@ test.describe("browser smoke", () => {
         srsCards: { [DUE_CARD.word_id]: DUE_CARD },
       });
       await page.goto("/review");
-      await page.getByText("More practice options", { exact: true }).click();
+      await page.getByText("Show all decks", { exact: true }).click();
 
       // a deck click starts the session in the stored style — no picker gate
       const recent = page.getByRole("button", { name: /review recent/i });
@@ -389,7 +389,7 @@ test("Back and Forward restore the lesson URL without a lesson history entry", a
   await seedAppState(page);
   await page.goto("/review");
   const before = await page.evaluate(() => history.length);
-  await page.getByRole("navigation", { name: /main navigation/i }).getByRole("link", { name: /^trail$/i }).click();
+  await page.getByRole("navigation", { name: /main navigation/i }).getByRole("link", { name: /^learn$/i }).click();
   await expect(page.locator("[data-next-lesson-start]")).toBeVisible();
   await page.locator("[data-next-lesson-start]").click();
   await expect(page).toHaveURL(/\/\?lesson=1&lang=de$/);
@@ -408,7 +408,7 @@ test("tab switches add one history entry and Back returns", async ({ page }) => 
   const before = await page.evaluate(() => history.length);
   await page
     .getByRole("navigation", { name: /main navigation/i })
-    .getByRole("link", { name: /^atlas$/i })
+    .getByRole("link", { name: /^explore$/i })
     .click();
   await expect(page).toHaveURL(/\/atlas\/?$/);
   expect(await page.evaluate(() => history.length)).toBe(before + 1);
@@ -478,7 +478,7 @@ test("tab scroll position survives switching tabs", async ({ page }) => {
   const nav = page.getByRole("navigation", { name: /main navigation/i });
   await nav.getByRole("link", { name: /review/i }).click();
   await expect(page).toHaveURL(/\/review/);
-  await nav.getByRole("link", { name: /atlas/i }).click();
+  await nav.getByRole("link", { name: /explore/i }).click();
   await expect(page).toHaveURL(/\/atlas/);
 
   await expect
@@ -497,7 +497,7 @@ test("an in-progress review session survives a tab switch", async ({ page }) => 
   await page.waitForTimeout(200);
 
   const nav = page.getByRole("navigation", { name: /main navigation/i });
-  await nav.getByRole("link", { name: /atlas/i }).click();
+  await nav.getByRole("link", { name: /explore/i }).click();
   await expect(page).toHaveURL(/\/atlas/);
   await nav.getByRole("link", { name: /review/i }).click();
   await expect(page).toHaveURL(/\/review/);

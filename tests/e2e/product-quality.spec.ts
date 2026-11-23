@@ -106,7 +106,7 @@ test("keyboard-only: a fresh learner finishes every Lesson 1 exercise from the h
 });
 
 async function expectErrorDialog(page: Page, target: string) {
-  const feedback = page.getByRole("dialog", { name: "sound shift breakdown", exact: true });
+  const feedback = page.getByRole("dialog", { name: "not quite", exact: true });
   await expect(feedback).toBeVisible();
   await expect(feedback).toHaveAttribute("aria-modal", "true");
   await expect(feedback.getByText(target, { exact: true })).toBeVisible();

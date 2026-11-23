@@ -19,6 +19,27 @@ interface GermanCharBarProps {
  * language registry, so other languages get their own accents for free.)
  */
 export const GermanCharBar: React.FC<GermanCharBarProps> = ({ inputRef, value, onChange, className = "" }) => {
+  const [inputFocused, setInputFocused] = React.useState(false);
+
+  React.useEffect(() => {
+    const onFocusIn = (e: FocusEvent) => {
+      if (inputRef.current && e.target === inputRef.current) {
+        setInputFocused(true);
+      }
+    };
+    const onFocusOut = (e: FocusEvent) => {
+      if (inputRef.current && e.target === inputRef.current) {
+        setInputFocused(false);
+      }
+    };
+    setInputFocused(Boolean(inputRef.current && document.activeElement === inputRef.current));
+    document.addEventListener("focusin", onFocusIn);
+    document.addEventListener("focusout", onFocusOut);
+    return () => {
+      document.removeEventListener("focusin", onFocusIn);
+      document.removeEventListener("focusout", onFocusOut);
+    };
+  }, [inputRef]);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
 
@@ -38,7 +59,7 @@ export const GermanCharBar: React.FC<GermanCharBarProps> = ({ inputRef, value, o
   };
 
   return (
-    <div className={`flex flex-wrap items-center gap-1.5 p-1.5 rounded bg-[var(--sub-alt-color)]/50 border border-[var(--sub-color)]/20 ${className}`}>
+    <div className={`${inputFocused ? "flex" : "hidden sm:flex"} flex-wrap items-center gap-1.5 p-1.5 rounded bg-[var(--sub-alt-color)]/50 border border-[var(--sub-color)]/20 ${className}`}>
       <span className="text-[10px] font-mono uppercase tracking-wider text-[var(--sub-color)] px-1.5 hidden sm:inline">
         {language.charBarLabel}:
       </span>
@@ -46,6 +67,7 @@ export const GermanCharBar: React.FC<GermanCharBarProps> = ({ inputRef, value, o
         <button
           key={char}
           type="button"
+          onPointerDown={(e) => e.preventDefault()}
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => insert(char)}
           title={`Insert ${char}${digraph ? ` (or type "${digraph}" with lazy mode on)` : ""}`}

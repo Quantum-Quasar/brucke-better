@@ -44,7 +44,7 @@ test("Tab focuses the next-lesson bar and Enter opens the lesson without trappin
   await history.locator("summary").focus();
   await page.keyboard.press("Enter");
   await expect(history).toHaveAttribute("open", "");
-  await expect(page.getByRole("button", { name: "Pattern, locked", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Pattern", exact: true })).toHaveCount(0);
 });
 
 test("the default recommendation includes the first side lesson rather than skipping to core 2", async ({ page }) => {
@@ -127,7 +127,8 @@ test("learned-word review starts directly, persists its grade, and can be replay
   await seed(page, { completedLessons: [1], wordMastery: { lernen: "encountered" }, preferredReviewMode: "flashcard" });
   await page.goto("/review");
   await expect(page.getByRole("button", { name: "review recent", exact: true })).toBeHidden();
-  await page.getByRole("button", { name: "Review learned words", exact: true }).click();
+  await page.getByRole("button", { name: "Show all decks", exact: true }).click();
+  await page.getByRole("button", { name: "review learned words", exact: true }).click();
   await page.getByRole("button", { name: "show answer", exact: true }).click();
   await page.getByRole("button", { name: "good", exact: true }).click();
   await expect.poll(async () => (await progress(page)).srsCards.lernen.repetitions).toBe(1);
@@ -138,7 +139,8 @@ test("learned-word review starts directly, persists its grade, and can be replay
 test("tile review cannot grade a missing infinitive ending as Good", async ({ page }) => {
   await seed(page, { completedLessons: [1], wordMastery: { lernen: "encountered" }, preferredReviewMode: "tiles" });
   await page.goto("/review");
-  await page.getByRole("button", { name: "Review learned words", exact: true }).click();
+  await page.getByRole("button", { name: "Show all decks", exact: true }).click();
+  await page.getByRole("button", { name: "review learned words", exact: true }).click();
   await page.getByRole("button", { name: "lern", exact: true }).click();
   await page.getByRole("button", { name: "check", exact: true }).click();
   await page.keyboard.press("Space");
@@ -157,7 +159,7 @@ test("one failed sentence attempt persists once and its replay never awards less
   const initial = page.locator('[data-exercise-type="syntax_builder"]');
   await initial.getByRole("textbox").fill(exercise.target_answer.split(" ")[0]);
   await initial.getByRole("button", { name: "verify", exact: true }).click();
-  await expect(page.getByRole("dialog", { name: "sound shift breakdown", exact: true })).toBeVisible();
+  await expect(page.getByRole("dialog", { name: "not quite", exact: true })).toBeVisible();
   await expect.poll(async () => (await progress(page)).sentenceCards?.[id]?.lapses).toBe(1);
   await page.reload();
   await expect.poll(async () => (await progress(page)).sentenceCards?.[id]?.lapses).toBe(1);
@@ -199,11 +201,11 @@ test("replaying practice from the table cannot skip straight back to summary for
     },
   });
   await page.goto("/?lang=de&lesson=1");
-  await page.getByRole("button", { name: "Table, completed", exact: true }).click();
+  await page.getByRole("button", { name: "Table", exact: true }).click();
   await page.getByRole("button", { name: /^start exercises/i }).click();
   await expect(page.getByText(/problem 1 of 5/i)).toBeVisible();
   // The old summary mark must not survive the replay: otherwise the summary CTA
   // completes the lesson with a fresh everQueued=false and upgrades gold to purple.
-  await expect(page.getByRole("button", { name: "Summary, locked", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Summary", exact: true })).toHaveCount(0);
   expect((await progress(page)).lessonStars[1]).toBe("gold");
 });

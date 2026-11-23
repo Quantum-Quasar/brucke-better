@@ -100,8 +100,10 @@ Activation retains the previous usable cache; open tabs keep older resources ava
 With no open tabs, activation prunes superseded caches while retaining the latest build with a cached application page, not a fallback-only installation.
 Cached navigation is used for disconnections and transient HTTP 5xx errors, not legitimate 404s.
 
-Only requested pages, lesson data and chunks are cached, with a 240-entry cap
-per build plus a small offline fallback. Visit each lesson segment/exercise online before
+Only requested pages, chunks, lesson data and media are cached, split into a
+protected build-versioned shell cache (120 entries for routes/chunks/icons plus
+`/offline.html`) and a separate media/data cache (200 entries for lessons, fonts
+and sounds), retaining paired caches for the previous usable build. Visit each lesson segment/exercise online before
 relying on it offline. New or evicted content and non-installed TTS voices still
 need a connection. The whole course is never downloaded at installation.
 

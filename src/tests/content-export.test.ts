@@ -5,6 +5,7 @@ import os from "node:os";
 import { exportClientData } from "../../scripts/export-client-data";
 import sourceProvenance from "@/data/frequency-provenance.json";
 import ranks from "@/data/frequency-ranks.json";
+import committedPanoramaMap from "@/data/panorama-lesson-map.json";
 import { compendium } from "@/data/compendium";
 import { frenchCompendium } from "@/data/french/compendium-fr";
 import { spanishCompendium } from "@/data/spanish/compendium-es";
@@ -20,7 +21,12 @@ const COMPENDIUMS = { de: compendium, fr: frenchCompendium, es: spanishCompendiu
 
 beforeAll(() => {
   outputRoot = fs.mkdtempSync(path.join(os.tmpdir(), "brucke-content-export-"));
-  exportClientData(path.join(outputRoot, "data"), path.join(outputRoot, "shift-names.json"));
+  exportClientData(
+    path.join(outputRoot, "data"),
+    path.join(outputRoot, "shift-names.json"),
+    path.join(outputRoot, "lesson-exercise-counts.json"),
+    path.join(outputRoot, "panorama-lesson-map.json")
+  );
 });
 
 afterAll(() => {
@@ -86,7 +92,18 @@ describe("client content boundaries", () => {
 
   it.each(LANGUAGES)("%s derives the complete export from committed language sources", (language) => {
     const { wordList: _wordList, ...expected } = withFrequencyMetadata(COMPENDIUMS[language], ranks[language]);
-    expect(readJson(`data/${language}/compendium.json`)).toEqual(expected);
+    const exportedCompendium = readJson<typeof expected>(`data/${language}/compendium.json`);
+    const exportedDetails = readJson<Record<string, string>>(`data/${language}/word-details.json`);
+    const rehydrated = {
+      ...exportedCompendium,
+      words: Object.fromEntries(
+        Object.entries(exportedCompendium.words).map(([id, w]) => [
+          id,
+          { ...w, etymology_derivation: w.etymology_derivation || exportedDetails[id] || "" },
+        ])
+      ),
+    };
+    expect(rehydrated).toEqual(expected);
     const index = readJson<LessonIndexEntry[]>(`data/${language}/lesson-index.json`);
     expect(fs.readdirSync(path.join(outputRoot, "data", language, "lessons"))).toHaveLength(index.length);
   });
@@ -103,5 +120,10 @@ describe("client content boundaries", () => {
         forms: 50_000,
       });
     }
+  });
+
+  it("keeps committed panorama-lesson-map.json in sync with exported PANORAMA_LINKS", () => {
+    const exportedPanoramaMap = readJson<typeof committedPanoramaMap>("panorama-lesson-map.json");
+    expect(committedPanoramaMap).toEqual(exportedPanoramaMap);
   });
 });

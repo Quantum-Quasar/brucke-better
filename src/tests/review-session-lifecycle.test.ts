@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeEach, beforeAll, afterAll, vi } from "vitest";
 import { LocalStorageMock } from "./storage-fixture";
 import { useAppStore } from "../lib/store";
 import { compendium } from "../data/compendium";
@@ -71,50 +71,67 @@ describe("Full Review Session Lifecycle Integration", () => {
   });
 
   it("simulates a multi-card session tracking grade effects, intervals, and mastery transitions", () => {
-    const store = useAppStore.getState();
-    const wordId = "apfel";
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(new Date("2026-09-01T10:00:00Z"));
+      const store = useAppStore.getState();
+      const wordId = "apfel";
 
-    // Start with an unexplored word
-    expect(store.wordMastery[wordId] || "unexplored").toBe("unexplored");
+      // Start with an unexplored word
+      expect(store.wordMastery[wordId] || "unexplored").toBe("unexplored");
 
-    // Card 1 Review: Grade 1 (Again/Fail)
-    store.recordReview(wordId, 1);
-    let state = useAppStore.getState();
-    let card = state.srsCards[wordId];
-    expect(card).toBeDefined();
-    expect(card.repetitions).toBe(0);
-    expect(card.lapses).toBe(1);
-    expect(card.interval).toBe(1);
-    expect(state.wordMastery[wordId]).toBe("encountered");
-    expect(isMastered(card)).toBe(false);
+      // Card 1 Review: Grade 1 (Again/Fail)
+      store.recordReview(wordId, 1);
+      let state = useAppStore.getState();
+      let card = state.srsCards[wordId];
+      expect(card).toBeDefined();
+      expect(card.repetitions).toBe(0);
+      expect(card.lapses).toBe(1);
+      expect(card.interval).toBe(1);
+      expect(state.wordMastery[wordId]).toBe("encountered");
+      expect(isMastered(card)).toBe(false);
 
-    // Card 2 Review: Grade 3 (Hard)
-    store.recordReview(wordId, 3);
-    state = useAppStore.getState();
-    card = state.srsCards[wordId];
-    expect(card.repetitions).toBe(1);
-    expect(card.interval).toBe(1);
-    expect(card.ease_factor).toBeLessThan(2.5); // Ease decreases on Hard
-    expect(state.wordMastery[wordId]).toBe("encountered");
-    expect(isMastered(card)).toBe(false);
+      // Card 2 Review (next day): Grade 3 (Hard)
+      vi.advanceTimersByTime(1 * 86_400_000);
+      store.recordReview(wordId, 3);
+      state = useAppStore.getState();
+      card = state.srsCards[wordId];
+      expect(card.repetitions).toBe(1);
+      expect(card.interval).toBe(1);
+      expect(card.ease_factor).toBeLessThan(2.5); // Ease decreases on Hard
+      expect(state.wordMastery[wordId]).toBe("encountered");
+      expect(isMastered(card)).toBe(false);
 
-    // Card 3 Review: Grade 4 (Good)
-    store.recordReview(wordId, 4);
-    state = useAppStore.getState();
-    card = state.srsCards[wordId];
-    expect(card.repetitions).toBe(2);
-    expect(card.interval).toBe(6); // Second successful interval is 6 days
-    expect(state.wordMastery[wordId]).toBe("encountered");
-    expect(isMastered(card)).toBe(false);
+      // Card 3 Review (next day): Grade 4 (Good)
+      vi.advanceTimersByTime(1 * 86_400_000);
+      store.recordReview(wordId, 4);
+      state = useAppStore.getState();
+      card = state.srsCards[wordId];
+      expect(card.repetitions).toBe(2);
+      expect(card.interval).toBeGreaterThanOrEqual(4); // Second successful interval grows under FSRS
+      expect(state.wordMastery[wordId]).toBe("encountered");
+      expect(isMastered(card)).toBe(false);
 
-    // Card 4 Review: Grade 5 (Easy) -> Triggers Mastery
-    store.recordReview(wordId, 5);
-    state = useAppStore.getState();
-    card = state.srsCards[wordId];
-    expect(card.repetitions).toBe(3);
-    expect(card.interval).toBeGreaterThanOrEqual(7);
-    expect(isMastered(card)).toBe(true);
-    expect(state.wordMastery[wordId]).toBe("mastered");
+      // Card 4 Review (when due): Grade 5 (Easy) grows interval substantially
+      vi.advanceTimersByTime(card.interval * 86_400_000);
+      store.recordReview(wordId, 5);
+      state = useAppStore.getState();
+      card = state.srsCards[wordId];
+      expect(card.repetitions).toBe(3);
+      expect(card.interval).toBeGreaterThan(10);
+
+      // Card 5 Review (when due): Grade 4 (Good) -> Crosses 21-day mastery after earlier lapse
+      vi.advanceTimersByTime(card.interval * 86_400_000);
+      store.recordReview(wordId, 4);
+      state = useAppStore.getState();
+      card = state.srsCards[wordId];
+      expect(card.repetitions).toBe(4);
+      expect(card.interval).toBeGreaterThanOrEqual(21);
+      expect(isMastered(card)).toBe(true);
+      expect(state.wordMastery[wordId]).toBe("mastered");
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("calculates session statistics and persists daily activity marks", () => {
@@ -210,25 +227,34 @@ describe("Full Review Session Lifecycle Integration", () => {
   });
 
   it("restoring a card rolls back the mastery a too-generous grade had awarded", () => {
-    const store = useAppStore.getState();
-    store.markWordEncountered("milch");
-    const before = { ...useAppStore.getState().srsCards["milch"] };
-    const masteryBefore = useAppStore.getState().wordMastery["milch"] ?? null;
+    vi.useFakeTimers();
+    try {
+      vi.setSystemTime(new Date("2026-09-01T10:00:00Z"));
+      const store = useAppStore.getState();
+      store.markWordEncountered("milch");
+      const before = { ...useAppStore.getState().srsCards["milch"] };
+      const masteryBefore = useAppStore.getState().wordMastery["milch"] ?? null;
 
-    // drive the word to mastery with the session's grades
-    store.recordReview("milch", 4);
-    store.recordReview("milch", 4);
-    store.recordReview("milch", 4);
-    store.recordReview("milch", 5);
-    expect(isMastered(useAppStore.getState().srsCards["milch"])).toBe(true);
-    expect(useAppStore.getState().wordMastery["milch"]).toBe("mastered");
+      // drive the word to mastery across spaced review days
+      store.recordReview("milch", 4);
+      vi.advanceTimersByTime(1 * 86_400_000);
+      store.recordReview("milch", 4);
+      vi.advanceTimersByTime(useAppStore.getState().srsCards["milch"].interval * 86_400_000);
+      store.recordReview("milch", 4);
+      vi.advanceTimersByTime(useAppStore.getState().srsCards["milch"].interval * 86_400_000);
+      store.recordReview("milch", 5);
+      expect(isMastered(useAppStore.getState().srsCards["milch"])).toBe(true);
+      expect(useAppStore.getState().wordMastery["milch"]).toBe("mastered");
 
-    // the word is no longer graded in the session after "back", so the card
-    // must go back to its pre-session state instead of staying mastered
-    store.restoreSrsCard("milch", { card: before, mastery: masteryBefore });
-    const card = useAppStore.getState().srsCards["milch"];
-    expect(card.repetitions).toBe(before.repetitions);
-    expect(isMastered(card)).toBe(false);
-    expect(useAppStore.getState().wordMastery["milch"]).toBe(masteryBefore);
+      // the word is no longer graded in the session after "back", so the card
+      // must go back to its pre-session state instead of staying mastered
+      store.restoreSrsCard("milch", { card: before, mastery: masteryBefore });
+      const card = useAppStore.getState().srsCards["milch"];
+      expect(card.repetitions).toBe(before.repetitions);
+      expect(isMastered(card)).toBe(false);
+      expect(useAppStore.getState().wordMastery["milch"]).toBe(masteryBefore);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

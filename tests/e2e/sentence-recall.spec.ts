@@ -82,7 +82,7 @@ test("a retry keeps its word support and stays finishable after another failure"
   await expect(group.getByTestId("sentence-word-bank")).toBeVisible();
   await group.getByRole("textbox").fill("falsch");
   await group.getByRole("button", { name: "verify", exact: true }).click();
-  await page.getByRole("dialog", { name: "sound shift breakdown", exact: true }).getByRole("button", { name: "continue", exact: true }).click();
+  await page.getByRole("dialog", { name: "not quite", exact: true }).getByRole("button", { name: "continue", exact: true }).click();
   await expect(group.getByTestId("sentence-word-bank")).toBeVisible();
   await group.getByRole("textbox").fill(lessonOne.exercises[4].target_answer);
   await group.getByRole("button", { name: "verify", exact: true }).click();

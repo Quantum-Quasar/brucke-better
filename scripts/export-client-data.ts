@@ -13,6 +13,7 @@ import { LESSONS } from "../src/data/lessons";
 import { FR_LESSONS } from "../src/data/french/lessons-fr";
 import { ES_LESSONS } from "../src/data/spanish/lessons-es";
 import { NL_LESSONS } from "../src/data/dutch/lessons-nl";
+import { PANORAMA_LINKS } from "../src/data/panorama-links";
 import { trimCompendium } from "../src/lib/lesson-payload";
 import { buildWordEntityMaps } from "../src/lib/word-entities-core";
 import type { CompendiumData, Lesson, LessonIndexEntry, ShiftFamily } from "../src/lib/types";
@@ -83,7 +84,8 @@ function shiftNameEntries(compendium: CompendiumData) {
 export function exportClientData(
   outDir = OUT_DIR,
   shiftNamesPath = SHIFT_NAMES_PATH,
-  exerciseCountsPath = path.join(path.dirname(shiftNamesPath), "lesson-exercise-counts.json")
+  exerciseCountsPath = path.join(path.dirname(shiftNamesPath), "lesson-exercise-counts.json"),
+  panoramaMapPath = path.join(process.cwd(), "src", "data", "panorama-lesson-map.json")
 ) {
   const shiftNames: Record<string, Array<{ id: string; symbol: string; name: string }>> = {};
   const exerciseCounts: Record<string, Record<number, number>> = {};
@@ -92,6 +94,7 @@ export function exportClientData(
 
   fs.mkdirSync(path.dirname(shiftNamesPath), { recursive: true });
   fs.mkdirSync(path.dirname(exerciseCountsPath), { recursive: true });
+  fs.mkdirSync(path.dirname(panoramaMapPath), { recursive: true });
 
   for (const language of LANGUAGES) {
     const langDir = path.join(outDir, language.id);
@@ -113,8 +116,20 @@ export function exportClientData(
     const compendium = withFrequencyMetadata(language.compendium, ranks);
     const entities = buildWordEntityMaps(language.id, compendium, language.lessons).entities;
     const { wordList: _wordList, ...payload } = compendium;
+    const wordDetails = Object.fromEntries(
+      Object.entries(payload.words)
+        .filter(([, w]) => Boolean(w.etymology_derivation))
+        .map(([id, w]) => [id, w.etymology_derivation])
+    );
+    const leanPayload = {
+      ...payload,
+      words: Object.fromEntries(
+        Object.entries(payload.words).map(([id, w]) => [id, { ...w, etymology_derivation: "" }])
+      ),
+    };
 
-    totalBytes += writeJsonIfChanged(path.join(langDir, "compendium.json"), payload);
+    totalBytes += writeJsonIfChanged(path.join(langDir, "compendium.json"), leanPayload);
+    totalBytes += writeJsonIfChanged(path.join(langDir, "word-details.json"), wordDetails);
     totalBytes += writeJsonIfChanged(path.join(langDir, "lesson-index.json"), indexEntries);
 
     for (let i = 0; i < language.lessons.length; i++) {
@@ -137,6 +152,22 @@ export function exportClientData(
   totalBytes += writeJsonIfChanged(path.join(outDir, "frequency-provenance.json"), frequencyProvenance);
   writeJsonIfChanged(shiftNamesPath, shiftNames);
   writeJsonIfChanged(exerciseCountsPath, exerciseCounts);
+
+  const panoramaLessonMap: Record<string, Record<string, { desc: string; href: string }>> = {};
+  for (const [langId, links] of Object.entries(PANORAMA_LINKS)) {
+    const byLesson: Record<string, { desc: string; href: string }> = {};
+    for (const link of links) {
+      if (link.lessonId !== null && !(String(link.lessonId) in byLesson)) {
+        byLesson[String(link.lessonId)] = { desc: link.desc, href: "/panorama" };
+      }
+    }
+    panoramaLessonMap[langId] = byLesson;
+  }
+  const nextMapJson = JSON.stringify(panoramaLessonMap, null, 2) + "\n";
+  if (!fs.existsSync(panoramaMapPath) || fs.readFileSync(panoramaMapPath, "utf8") !== nextMapJson) {
+    fs.writeFileSync(panoramaMapPath, nextMapJson);
+  }
+
   return { languages: LANGUAGES.length, lessonPayloads, totalBytes };
 }
 

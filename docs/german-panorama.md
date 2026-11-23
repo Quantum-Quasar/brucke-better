@@ -109,6 +109,15 @@ The passive is out of the trail's declared scope, so `inferred` here means "not 
 | `kein` declines like `ein` | 12, 1201 | taught |
 | `sondern` for negate-and-correct | 1202 | taught |
 
+## 9. Address register
+
+| Structure | Taught in | Status |
+|---|---|---|
+| Formal `Sie` vs. informal `du` / `ihr` (capitalized `Sie`, verb matches `wir`/`sie`) | 1603, 5071 | taught |
+| Formal possessive `Ihr` | 1103 | taught |
+| Imperative register switch (`du` / `ihr` / `Sie`) | 5061, 5062, 5063 | taught |
+| Polite requests with `Könnten Sie` / `würde` | 5082 | taught |
+
 ---
 
 ## The honest backlog
@@ -126,3 +135,4 @@ The `status` column is a judgement call, so it needs a check that fails loudly. 
 ```bash
 bun run test
 ```
+
