@@ -168,8 +168,8 @@ test("one failed sentence attempt persists once and its replay never awards less
   await page.goto("/review");
   await page.getByRole("button", { name: "review sentence processes", exact: true }).click();
   const replay = page.getByRole("region", { name: "Sentence process review" }).locator('[data-exercise-type="syntax_builder"]');
-  for (const word of exercise.target_answer.split(/\s+/)) {
-    await replay.getByRole("button", { name: word.replace(/[.,!?;:]+$/, ""), exact: true }).click();
+  for (const tile of ["ich", "lerne", "Deutsch", "mit", "Brücke"]) {
+    await replay.getByRole("button", { name: tile, exact: true }).click();
   }
   await replay.getByRole("button", { name: "verify", exact: true }).click();
   await page.getByRole("dialog", { name: "correct", exact: true }).getByRole("button", { name: /^continue/i }).click();

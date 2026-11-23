@@ -1,10 +1,12 @@
 import { AlertCircle, Check, Sparkles } from "lucide-react";
+import type { RefObject } from "react";
 import type { ExerciseStatus } from "./classic-exercise-types";
 
-export function ProductionAnswerActions({ status, feedback, onVerify, action, showKeyTips = false }: {
+export function ProductionAnswerActions({ status, feedback, onVerify, inputRef, action, showKeyTips = false }: {
   status: ExerciseStatus;
   feedback: string | null;
   onVerify: () => void;
+  inputRef: RefObject<HTMLInputElement | null>;
   action: string;
   showKeyTips?: boolean;
 }) {
@@ -22,7 +24,15 @@ export function ProductionAnswerActions({ status, feedback, onVerify, action, sh
         )}
       </div>
       {!complete && (
-        <button type="button" onClick={onVerify} className="px-5 py-2 rounded-lg bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] font-mono font-bold text-xs transition cursor-pointer ml-auto flex items-center gap-1.5">
+        <button
+          type="button"
+          onPointerDown={(event) => {
+            // Blurring the input can collapse its character bar and move this button before click.
+            if (event.button === 0 && document.activeElement === inputRef.current) event.preventDefault();
+          }}
+          onClick={onVerify}
+          className="px-5 py-2 rounded-lg bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] font-mono font-bold text-xs transition cursor-pointer ml-auto flex items-center gap-1.5"
+        >
           <span>{action}</span>
           {showKeyTips && <span aria-hidden="true" className="keycap text-[10px]">enter</span>}
         </button>

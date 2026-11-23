@@ -51,6 +51,8 @@ pin the actual coloured spans; `ShiftPair.tsx` renders the result.
   so heavy lesson data stays out of the shared chunk. Only authored exercise counts
   are bundled via generated `src/data/lesson-exercise-counts.json`; trail effort
   estimates require no JSON request, while lesson headers use the loaded exercises.
+  On the trail, the desktop daily insight requests the course compendium only
+  when the card is visible and there is an encountered or mastered word to show.
 - **Lesson code is split by segment and input.** `LessonReader` renders lazy
   `segments/` views; `use-lesson-session.ts` owns progression and retries.
   `ExerciseWidgets` dispatches to lazy exercise implementations; classic input
@@ -260,6 +262,8 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
 - **Typing mechanics** (`/settings`, six sections): stop-on-error, confidence mode (no
   backspace), lazy mode (`ae`/`oe`/`ue`/`ss`), capitalisation tolerance, caps-lock
   warning, quick restart (`off`/`esc`), German character bar (focus-preserving).
+  Pressing Verify keeps the typing input focused until the answer is submitted,
+  so the character bar cannot collapse under the pointer.
   The page composes separate behavior, input, sound, theme, visibility and danger-zone sections.
 - **JSON backup export/import** with a visible "Last backup download started" timestamp,
   app/data build versions, non-private diagnostic copy, and a two-step danger zone

@@ -240,7 +240,7 @@ export const SpokenTurnReplyExercise: React.FC<SpokenTurnReplyExerciseProps> = (
       )}
 
       {/* Footer */}
-      <ProductionAnswerActions status={status} feedback={feedbackNote} onVerify={handleVerify} action="reply" />
+      <ProductionAnswerActions status={status} feedback={feedbackNote} onVerify={handleVerify} inputRef={inputRef} action="reply" />
 
       {showErrorSheet && (
         <ErrorFeedbackSheet

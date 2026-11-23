@@ -70,20 +70,24 @@ export const DailyInsightCard: React.FC<DailyInsightCardProps> = ({
     return () => mq.removeEventListener("change", update);
   }, []);
 
-  // Gate the ~496 KB compendium fetch so mobile or dismissed cards never download it.
-  const { data: compendium } = useCompendium(visible && isDesktop ? activeLanguageId : "");
+  const learnedIds = useMemo(() => {
+    const ids: string[] = [];
+    for (const id of Object.keys(wordMastery)) {
+      const state = wordMastery[id];
+      if (state === "encountered" || state === "mastered") ids.push(id);
+    }
+    return ids.sort();
+  }, [wordMastery]);
+  const { data: compendium } = useCompendium(
+    visible && isDesktop && learnedIds.length > 0 ? activeLanguageId : ""
+  );
 
   const wordOfTheDay = useMemo(() => {
     if (!compendium) return null;
-    const learnedIds = Object.entries(wordMastery)
-      .filter(([, state]) => state === "encountered" || state === "mastered")
-      .map(([id]) => id)
-      .filter((id) => Boolean(compendium.words?.[id]))
-      .sort();
-    if (learnedIds.length === 0) return null;
-    const idx = hashDateKey(localDateKey()) % learnedIds.length;
-    return compendium.words[learnedIds[idx]] ?? null;
-  }, [wordMastery, compendium]);
+    const knownIds = learnedIds.filter((id) => Boolean(compendium.words[id]));
+    if (knownIds.length === 0) return null;
+    return compendium.words[knownIds[hashDateKey(localDateKey()) % knownIds.length]] ?? null;
+  }, [learnedIds, compendium]);
 
   const handleDismiss = () => {
     setVisible(false);

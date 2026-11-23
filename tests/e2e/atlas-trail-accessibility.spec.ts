@@ -99,7 +99,7 @@ test("trail nodes and gates remain keyboard operable, and optional completions c
     await expect(drawer).toBeVisible();
     await closeDialog(page, drawer, node);
   }
-  const gate = page.getByRole("button", { name: /The Shift Gate star gate:/ });
+  const gate = page.getByRole("button", { name: /The Shift Gate checkpoint.*locked/ });
   await keyboardActivate(page, gate);
   const gateDrawer = page.getByRole("dialog");
   await expect(gateDrawer).toBeVisible();

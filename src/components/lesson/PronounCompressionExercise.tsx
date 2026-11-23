@@ -280,7 +280,7 @@ export const PronounCompressionExercise: React.FC<PronounCompressionExerciseProp
       </div>
 
       {/* Footer */}
-      <ProductionAnswerActions status={status} feedback={feedbackNote} onVerify={handleVerify} action="fold & check" />
+      <ProductionAnswerActions status={status} feedback={feedbackNote} onVerify={handleVerify} inputRef={inputRef} action="fold & check" />
 
       {showErrorSheet && (
         <ErrorFeedbackSheet

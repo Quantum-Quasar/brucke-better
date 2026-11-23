@@ -285,6 +285,7 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
         status={status}
         feedback={feedbackNote}
         onVerify={handleVerify}
+        inputRef={inputRef}
         action="verify"
         showKeyTips={settings.showKeyTips}
       />
