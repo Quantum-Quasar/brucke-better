@@ -41,10 +41,17 @@ test("loads only the opened lesson and resumes visited practice after an offline
     const state = JSON.parse(localStorage.getItem(key) ?? "{}");
     return state.progressByLanguage?.de?.lessonProgress?.[1];
   }, STORAGE_KEY)).toMatchObject({ segment: "practice", practiceIndex: 1 });
-  await page.waitForFunction(async () => {
-    const urls = [location.origin + "/", ...performance.getEntriesByType("resource").map((entry) => entry.name).filter((url) => /\/_next\/static\/|\/data\//.test(url))];
-    return (await Promise.all(urls.map((url) => caches.match(url)))).every(Boolean);
-  });
+  // Poll the resolved CacheStorage reads; waitForFunction treats a returned
+  // Promise as truthy even when it resolves to false.
+  await expect.poll(() => page.evaluate(async () => {
+    const urls = new Set([
+      location.origin + "/",
+      ...performance.getEntriesByType("resource").map((entry) => entry.name)
+        .filter((url) => url.startsWith(`${location.origin}/`) && /\/_next\/static\/|\/data\//.test(url)),
+    ]);
+    const missing = await Promise.all([...urls].map(async (url) => await caches.match(url) ? null : url));
+    return missing.filter((url) => url !== null);
+  }), { message: "The visited page, lesson, and scripts must be cached before going offline" }).toEqual([]);
   await context.setOffline(true);
   await page.reload();
   // The URL's ?lesson=1&lang=de is restored by DeepLinkRestorer, so the app
