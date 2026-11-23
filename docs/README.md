@@ -88,6 +88,18 @@ The CPU and niceness settings only apply to processes this command starts. CI ru
 full suite against a production build, including offline and performance checks; you
 don't need to duplicate that full run before every push.
 
+To reproduce a GitHub browser failure locally, build first, then run the affected spec
+against `next start` rather than Next dev:
+
+```bash
+NEXT_PUBLIC_SITE_URL=https://brucke-ten.vercel.app taskset -c 1 nice -n 19 bun run build
+PLAYWRIGHT_WEB_SERVER='bun run start' PLAYWRIGHT_PRODUCTION=1 \
+  taskset -c 1 nice -n 19 bun run test:e2e tests/e2e/local-first.spec.ts --workers=1
+```
+
+CI uses Playwright's bundled Chromium. If local runs pick up system Chromium, set
+`CHROMIUM_PATH` to the bundled browser when comparing results.
+
 Production product checks (build first): `NEXT_PUBLIC_SITE_URL=https://your-public-origin.example bun run build && bun run test:product`.
 They cover keyboard-only Lesson 1 completion with a blocking word drawer, shortcut
 isolation, accessible controls/error feedback for all exercise types, and cold mobile

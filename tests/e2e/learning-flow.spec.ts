@@ -30,13 +30,15 @@ test.use({ viewport: { width: 390, height: 844 } });
 test("Tab focuses the next-lesson bar and Enter opens the lesson without trapping subsequent Tab presses", async ({ page }) => {
   await seed(page);
   await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-app-ready", "true");
   const start = page.locator("[data-next-lesson-start]");
   await expect(start).toBeVisible();
   await page.keyboard.press("Tab");
   await expect(start).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(start).not.toBeFocused();
-  await start.focus();
+  await page.keyboard.press("Shift+Tab");
+  await expect(start).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("dialog", { name: "Lesson 1", exact: true })).toBeVisible();
   const history = page.locator("details").filter({ has: page.locator("summary", { hasText: "historical notes" }) });

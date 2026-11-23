@@ -7,22 +7,22 @@ import type { ExerciseItem, Lesson } from "../../src/lib/types";
 
 const STORAGE_KEY = "brucke_app_state_v1";
 
-const SEED = JSON.stringify({
+const SEED = {
   activeLanguageId: "de",
   hasCompletedOnboarding: true,
   isOnboardingOpen: false,
   seenIntroLanguages: ["de"],
   settings: { posturePrimerSeen: true, showPostureCues: true, listeningSkippedUntil: 0, voiceGuidanceDismissed: ["de", "fr", "es", "nl"] },
-});
+};
 
-async function seed(page: Page) {
+async function seed(page: Page, progress: { placedAtTopic?: number; completedLessons?: number[] } = {}) {
   // Seed once: addInitScript re-runs on every navigation, so only write when the
   // store is absent — otherwise a reload would wipe state the test just set.
   await page.addInitScript(
     ([k, v]) => {
       if (!window.localStorage.getItem(k as string)) window.localStorage.setItem(k as string, v as string);
     },
-    [STORAGE_KEY, SEED] as const
+    [STORAGE_KEY, JSON.stringify({ ...SEED, ...progress })] as const
   );
 }
 
@@ -184,63 +184,22 @@ async function solveMatchingPairs(page: Page, lessonId: number, index: number) {
 
 /* -------------------------------------------------------------------------- */
 
-/**
- * Submit the current answer (when it needs submitting) and dismiss the feedback
- * sheet that follows.
- *
- * The widgets ignore the global Enter shortcut while a button has focus — tile
- * picks leave focus on the last tile — so click the widget's own verify button
- * when it renders one. shift_select and matching_pairs self-submit, so their
- * sheet is already open and no submit click is needed.
- */
 async function settle(page: Page, submit = false) {
-  if (submit) {
-    const verify = page.getByRole("button", { name: /^verify/i }).first();
-    if (await verify.count()) {
-      await verify.click().catch(() => {});
-    } else {
-      await page.keyboard.press("Enter").catch(() => {});
-    }
-    await page.waitForTimeout(600);
-  }
-  for (let i = 0; i < 25; i++) {
-    // Scope to the graded feedback sheet: the locked-preview banner also has a
-    // "Continue: …" button and the sheet can be portaled after it in the DOM.
-    const cont = page
-      .locator(
-        '[role="dialog"][aria-labelledby="success-feedback-title"], [role="dialog"][aria-labelledby="error-feedback-title"]'
-      )
-      .getByRole("button", { name: /^continue/i })
-      .first();
-    if (await cont.count()) {
-      await cont.click().catch(() => {});
-      await page.waitForTimeout(800);
-      return;
-    }
-    await page.waitForTimeout(300);
-  }
-  throw new Error("expected a feedback sheet with a continue button");
+  if (submit) await page.getByRole("button", { name: /^verify/i }).click();
+  const correct = page.getByRole("dialog", { name: "correct", exact: true });
+  await correct.getByRole("button", { name: /^continue/i }).click();
+  await expect(correct).toBeHidden();
 }
 
-/**
- * Click a wizard button, retrying until the next stage is actually rendered: on
- * a cold dev-server page the click can land before React hydrates and be
- * swallowed. The retry returns early once the target stage is already on
- * screen, so a click that worked but rendered slowly cannot be repeated.
- */
-async function clickStage(page: Page, clickLabel: RegExp, waitFor: RegExp) {
-  await expect(async () => {
-    if (await page.getByText(waitFor).first().isVisible().catch(() => false)) return;
-    await page.locator("button").filter({ hasText: clickLabel }).first().click({ timeout: 5_000 });
-    await expect(page.getByText(waitFor).first()).toBeVisible({ timeout: 5_000 });
-  }).toPass({ timeout: 90_000 });
-}
-
-/** Walk hook → pattern → table → the first practice problem. */
-async function startDrill(page: Page, totalExercises: number) {
-  await clickStage(page, /next: pattern/i, /next: transformation table/i);
-  await clickStage(page, /transformation table/i, /start exercises/i);
-  await clickStage(page, /start exercises/i, new RegExp(`problem 1 of ${totalExercises}`, "i"));
+async function startDrill(page: Page, lessonId: number, { skipWarmup = false } = {}) {
+  const lesson = page.getByRole("dialog", { name: `Lesson ${lessonId}`, exact: true });
+  await expect(lesson.getByRole("heading", { name: lessonById(lessonId).title, exact: true })).toBeVisible();
+  await expect(lesson.getByText(/Preview only:/)).toBeHidden();
+  await lesson.getByRole("button", { name: /^next: pattern/i }).click();
+  if (skipWarmup) await lesson.getByRole("button", { name: "Skip to pattern", exact: true }).click();
+  await lesson.getByRole("button", { name: /^next: transformation table/i }).click();
+  await lesson.getByRole("button", { name: /^start exercises/i }).click();
+  await expect(lesson.getByText(`problem 1 of ${lessonById(lessonId).exercises.length}`, { exact: true })).toBeVisible();
 }
 
 test("panorama renders five structure diagrams and is reachable from the dock", async ({ page }) => {
@@ -255,13 +214,21 @@ test("panorama renders five structure diagrams and is reachable from the dock", 
   await expect(page.getByRole("link", { name: /panorama/i }).first()).toBeVisible();
 });
 
-test("the listening drill plays audio and one skip silences it for 15 minutes", async ({ page }) => {
+test("dictation requests speech and a 15-minute mute survives reload and expires", async ({ page }) => {
   const errs: string[] = [];
   page.on("pageerror", (e) => errs.push(e.message));
 
-  await seed(page);
+  await page.addInitScript(() => {
+    const synthesis = window.speechSynthesis;
+    const speak = synthesis.speak.bind(synthesis);
+    synthesis.speak = (utterance) => {
+      speak(utterance);
+      performance.mark("dictation-speak", { detail: utterance.text });
+    };
+  });
+  await seed(page, { placedAtTopic: 11 });
   await page.goto("/trail/1003");
-  await startDrill(page, lessonById(1003).exercises.length);
+  await startDrill(page, 1003);
 
   // e1 — shift_select (submits on selection). The widget shuffles the authored
   // options, so the answer is found by its label, not by an option index. A
@@ -278,21 +245,21 @@ test("the listening drill plays audio and one skip silences it for 15 minutes", 
   await buildTiles(page, 1003, 2);
   await settle(page, true);
 
-  // e4 — the dictation
-  await expect(page.getByText(/^Listen and write/i).first()).toBeVisible({ timeout: 25_000 });
-  const playButton = page.getByRole("button", { name: /^(Play|Listen \(\d+\/\d+ used\))$/i }).first();
-  await expect(playButton).toBeVisible();
+  const dictation = exerciseAt(1003, 3);
+  const spoken = dictation.spoken ?? dictation.target_answer;
+  const speechRequests = () => page.evaluate((text) =>
+    performance.getEntriesByName("dictation-speak", "mark")
+      .filter((entry) => (entry as PerformanceMark).detail === text).length, spoken);
+  await expect.poll(speechRequests).toBe(1); // Autoplay uses the first hearing.
+  await expect(page.getByText(/Replays are capped on purpose/i)).toBeVisible();
+  await page.getByRole("button", { name: /^Listen \(1\/\d+ used\)$/i }).click();
+  await expect.poll(speechRequests).toBe(2);
   expect(errs, `uncaught page errors: ${errs.join(" | ")}`).toEqual([]);
 
-  // the replay budget is stated on the card, and the audio affordance is real
-  await expect(page.getByText(/Replays are capped on purpose/i).first()).toBeVisible();
-  await expect(playButton).toBeEnabled();
-
-  // one skip silences every listening exercise for 15 minutes
-  await page.getByRole("button", { name: /I can.t listen right now/i }).click();
-  await expect(page.getByText(/Listening is off/i).first()).toBeVisible();
-  await expect(page.getByText(/Der Tisch und die Hand und das Buch/).first()).toBeVisible();
-  await expect(page.getByRole("button", { name: /play it anyway/i })).toBeVisible();
+  await page.getByRole("button", { name: "Mute listening for 15 min", exact: true }).click();
+  await expect(page.getByText("Listening is off", { exact: true })).toBeVisible();
+  await expect(page.getByText(spoken, { exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "play it anyway", exact: true })).toBeVisible();
 
   // the skip is persisted state, not component state
   const skippedUntil = (await readAppState(page))?.settings?.listeningSkippedUntil;
@@ -314,15 +281,15 @@ test("the listening drill plays audio and one skip silences it for 15 minutes", 
   // Reopening after expiry must not restart a fresh 15-minute window.
   await reopened.clock.install({ time: new Date(Number(skippedUntil) + 1) });
   await reopened.reload();
-  await expect(reopened.getByRole("heading", { name: lessonById(1003).title, exact: true }).first()).toBeVisible();
-  await expect(reopened.getByText(/listening off for/i)).toHaveCount(0);
+  await expect(reopened.getByRole("button", { name: "Mute listening for 15 min", exact: true })).toBeVisible();
+  await expect(reopened.getByText(/listening off for/i)).toBeHidden();
   expect((await readAppState(reopened))?.settings?.listeningSkippedUntil).toBe(skippedUntil);
 });
 
 test("the 30-second detour trough fires mid-lesson, ungraded and skippable", async ({ page }) => {
-  await seed(page);
+  await seed(page, { completedLessons: [1, 2, 3] });
   await page.goto("/trail/4");
-  await startDrill(page, lessonById(4).exercises.length);
+  await startDrill(page, 4, { skipWarmup: true });
 
   // e1 — morpheme tiles: the tiles are shuffled, so build the authored answer
   // from the tiles that spell it ("dank" + "en" = danken today, not necessarily
@@ -335,19 +302,14 @@ test("the 30-second detour trough fires mid-lesson, ungraded and skippable", asy
   await settle(page);
 
   // the trough sits after the second exercise, before the third
-  await expect(page.getByText(/for interest — not on the test/i).first()).toBeVisible({ timeout: 20_000 });
-  await expect(page.getByText(/Thou\/Thee & Donner/i).first()).toBeVisible();
-  // it is skippable, and skipping is an ordinary dismissal — no grade, no gate
-  await expect(page.getByRole("button", { name: /back to the exercise/i }).first()).toBeVisible();
-  await page.getByRole("button", { name: /back to the exercise/i }).first().click();
-  await page.waitForTimeout(1000);
-  // the trough is gone (the margin-note badge for the same footnote legitimately stays)
-  await expect(page.getByRole("button", { name: /back to the exercise/i })).toHaveCount(0);
-
-  // and the drill is still where it was, at the third exercise
-  const after = await page.locator("body").innerText();
-  const totalExercises = lessonById(4).exercises.length;
-  expect(after, "should be back at the third exercise after dismissing the trough").toMatch(
-    new RegExp(`problem 3 of ${totalExercises}`, "i")
-  );
+  const dismiss = page.getByRole("button", { name: "back to the exercise", exact: true });
+  await expect(page.getByText("30-second detour", { exact: true })).toBeVisible();
+  await expect(page.getByText("for interest — not on the test", { exact: true }).filter({ visible: true })).toBeVisible();
+  await expect(page.getByText("Thou/Thee & Donner", { exact: true })).toBeVisible();
+  await dismiss.click();
+  await expect(dismiss).toBeHidden();
+  await expect(page.getByText(`problem 3 of ${lessonById(4).exercises.length}`, { exact: true })).toBeVisible();
+  await expect.poll(async () => (await readAppState(page))?.lessonProgress?.[4]).toMatchObject({
+    practiceIndex: 2, everQueued: false, retryExerciseIds: [],
+  });
 });

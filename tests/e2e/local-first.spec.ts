@@ -9,9 +9,10 @@ test("loads only the opened lesson and resumes visited practice after an offline
   // voice" sheet (armed 2.5 s after the first lesson opens) would intercept the
   // lesson controls this test is about. Other e2e specs seed the same flag.
   await page.addInitScript((key) => {
-    const state = JSON.parse(localStorage.getItem(key) ?? "{}");
-    state.settings = { ...state.settings, voiceGuidanceDismissed: ["de", "fr", "es", "nl"] };
-    localStorage.setItem(key, JSON.stringify(state));
+    if (localStorage.getItem(key)) return;
+    localStorage.setItem(key, JSON.stringify({
+      settings: { voiceGuidanceDismissed: ["de", "fr", "es", "nl"] },
+    }));
   }, STORAGE_KEY);
   const lessons: string[] = [];
   page.on("request", (request) => {
@@ -34,7 +35,12 @@ test("loads only the opened lesson and resumes visited practice after an offline
   await expect(page.getByText(/problem 2 of 5/i)).toBeVisible();
   expect([...new Set(lessons)]).toEqual(["/data/de/lessons/1.json"]);
 
-  await page.evaluate(() => window.dispatchEvent(new Event("pagehide")));
+  await expect(page).toHaveURL(/\/\?lesson=1&lang=de$/);
+  // The exercise changes before the store's deferred write necessarily lands.
+  await expect.poll(() => page.evaluate((key) => {
+    const state = JSON.parse(localStorage.getItem(key) ?? "{}");
+    return state.progressByLanguage?.de?.lessonProgress?.[1];
+  }, STORAGE_KEY)).toMatchObject({ segment: "practice", practiceIndex: 1 });
   await page.waitForFunction(async () => {
     const urls = [location.origin + "/", ...performance.getEntriesByType("resource").map((entry) => entry.name).filter((url) => /\/_next\/static\/|\/data\//.test(url))];
     return (await Promise.all(urls.map((url) => caches.match(url)))).every(Boolean);

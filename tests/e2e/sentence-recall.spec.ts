@@ -55,20 +55,25 @@ for (const lesson of [lessonOne, lessonTwo]) {
   test(`${exercise.type}: optional words are keyboard accessible, usable and penalty-free`, async ({ page }) => {
     await openFinalSentence(page, lesson.id);
     const group = page.locator(`[data-exercise-type="${exercise.type}"]`);
-    const help = group.getByRole("button", { name: /words \/ help/i });
-    await help.focus();
-    await page.keyboard.press("Enter");
-    await expect(help).toHaveAttribute("aria-expanded", "true");
+    const input = group.getByRole("textbox");
+    await expect(input).toBeFocused();
+    const help = group.getByRole("button", { name: "Show words / help", exact: true });
+    await help.press("Enter");
+    await expect(group.getByRole("button", { name: "Words / help shown", exact: true })).toHaveAttribute("aria-expanded", "true");
     const bank = group.getByTestId("sentence-word-bank");
     await expect(bank).toBeVisible();
     if (lesson.id === 2) await group.getByRole("button", { name: "show me a step", exact: true }).click();
     const state = (await progress(page, lesson.id)).lesson;
     expect(state.everQueued).toBe(false);
     expect(state.retryExerciseIds).toEqual([]);
-    for (const word of exercise.target_answer.split(/\s+/)) {
-      await bank.getByRole("button", { name: word, exact: true }).click();
+    // The bank shows sentence-starter pronouns in lowercase; grading restores
+    // sentence-initial capitalization for answers assembled from the bank.
+    const [starter, ...rest] = exercise.target_answer.split(/\s+/);
+    const words = [starter.toLowerCase(), ...rest];
+    for (const word of words) {
+      await bank.getByRole("button", { name: word, exact: true }).press("Enter");
     }
-    await expect(group.getByRole("textbox")).toHaveValue(exercise.target_answer);
+    await expect(input).toHaveValue(words.join(" "));
     await group.getByRole("button", { name: "verify", exact: true }).click();
     await page.getByRole("dialog", { name: "correct", exact: true }).getByRole("button", { name: /^continue/i }).click();
     await page.getByRole("button", { name: "Skip — I'll meet it in review", exact: true }).click();
