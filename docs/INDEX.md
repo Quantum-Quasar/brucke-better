@@ -13,7 +13,7 @@ Start here. Every file below is maintained; anything not listed is either genera
 
 | If you are… | Read |
 | --- | --- |
-| Changing or adding lessons / words | [`AGENT_PRECAUTIONS.md`](./AGENT_PRECAUTIONS.md) (traps, invariants) → [`content-agent-prompt.md`](./content-agent-prompt.md) (voice, schema, workflow) → [`../word_connections.md`](../word_connections.md) |
+| Changing or adding lessons / words | [`AGENT_PRECAUTIONS.md`](./AGENT_PRECAUTIONS.md) (traps, invariants) → [`content-agent-prompt.md`](./content-agent-prompt.md) (voice, schema, workflow) → [`brucke-lesson-generation-prompt_001.md`](./brucke-lesson-generation-prompt_001.md) (batch lesson generation with Gemini) → [`../word_connections.md`](../word_connections.md) |
 | Understanding how the app works | [`ARCHITECTURE.md`](./ARCHITECTURE.md), then [`../AUDIT_MANIFEST.md`](../AUDIT_MANIFEST.md) for schemas and the auditor checklist |
 | Working on French / Spanish / Dutch | [`courses.md`](./courses.md) and `src/data/<lang>/` |
 | Comparing sibling-course depth or planning parity work | [`sibling-parity-audit.md`](./sibling-parity-audit.md) (measured coverage, exercise inventory, decision memo) |
