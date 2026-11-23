@@ -78,3 +78,6 @@ docs/response.md
 # local-only repo snapshots (never push)
 german-app-better-ux.zip
 *.zip
+
+# Generated on-demand naturalness review packets
+naturalness-review/
