@@ -33,6 +33,9 @@ test("loads only the opened lesson and resumes visited practice after an offline
   await expect(page.getByRole("heading", { name: "correct", exact: true })).toBeVisible();
   await page.getByRole("button", { name: /^continue/i }).click();
   await expect(page.getByText(/problem 2 of 5/i)).toBeVisible();
+  const lesson = page.getByRole("dialog", { name: "Lesson 1", exact: true });
+  const matching = lesson.getByRole("group", { name: "Match each English verb with its German -en twin:" });
+  await expect(matching.getByRole("button", { name: "come", exact: true })).toBeEnabled();
   expect([...new Set(lessons)]).toEqual(["/data/de/lessons/1.json"]);
 
   await expect(page).toHaveURL(/\/\?lesson=1&lang=de$/);
@@ -57,8 +60,10 @@ test("loads only the opened lesson and resumes visited practice after an offline
   // The URL's ?lesson=1&lang=de is restored by DeepLinkRestorer, so the app
   // shell must boot offline straight into that lesson at the saved problem —
   // there is no intermediate "Resume next recommended lesson" button to click.
-  await expect(page.getByRole("dialog", { name: "Lesson 1" })).toBeVisible();
-  await expect(page.getByText(/problem 2 of 5/i)).toBeVisible();
+  await expect(lesson.getByText(/problem 2 of 5/i)).toBeVisible();
+  await matching.getByRole("button", { name: "come", exact: true }).click();
+  await matching.getByRole("button", { name: "kommen", exact: true }).click();
+  await expect(matching.getByRole("button", { name: "kommen, matched", exact: true })).toBeDisabled();
   await expect(page.getByText(/Offline — cached pages/)).toBeVisible();
   await context.setOffline(false);
 });

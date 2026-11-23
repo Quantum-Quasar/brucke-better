@@ -1,19 +1,16 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { Check, AlertCircle, Sparkles, Volume2, Eye, EyeOff } from "lucide-react";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
 import { affirmationFor } from "@/lib/shift-diagnosis";
 import { useClassicExercise } from "./use-classic-exercise";
 import type { ExerciseWidgetProps } from "./exercise-widget-props";
-import { ExerciseLoading } from "./ExerciseLoading";
-
-const MorphemeInput = dynamic(() => import("./inputs/MorphemeInput"), { loading: ExerciseLoading });
-const MatchingInput = dynamic(() => import("./inputs/MatchingInput"), { loading: ExerciseLoading });
-const TypingInput = dynamic(() => import("./inputs/TypingInput"), { loading: ExerciseLoading });
-const ChoiceInput = dynamic(() => import("./inputs/ChoiceInput"), { loading: ExerciseLoading });
-const SyntaxInput = dynamic(() => import("./inputs/SyntaxInput"), { loading: ExerciseLoading });
+import MorphemeInput from "./inputs/MorphemeInput";
+import MatchingInput from "./inputs/MatchingInput";
+import TypingInput from "./inputs/TypingInput";
+import ChoiceInput from "./inputs/ChoiceInput";
+import SyntaxInput from "./inputs/SyntaxInput";
 
 export default function ClassicExercise(props: ExerciseWidgetProps) {
   const controller = useClassicExercise(props);

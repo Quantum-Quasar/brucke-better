@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import ExerciseWidget from "../ExerciseWidgetContent";
 import { Sparkles, HeartHandshake, Zap, Compass as CompassIcon } from "lucide-react";
 import { TwistCard } from "../TwistCard";
 
@@ -11,20 +11,11 @@ import { finalSentenceExerciseId } from "../sentence-recall";
 
 import type { LessonSession } from "../lesson-session-types";
 
-const ExerciseWidget = React.lazy(() => import("../ExerciseWidgets").then((module) => ({ default: module.ExerciseWidget })));
-
 export default function PracticeSegment({ session }: { session: LessonSession }) {
   const { lesson, isReading, setCurrentSegment, practiceIndex, setPracticeIndex, retryQueue, retryIndex, inRetryPhase, setEverQueued, twistPhase, twistCompleted, failCounts, mercyRevealFor, setMercyRevealFor, showPostureCues, flagGuessed, detourFootnote, setDetourDismissed, showDetour, consciousnessLine, whisperCues, handleExerciseError, queueExerciseRetry, handleRetryError, handleTwistDone, drainCurrentRetry, handlePracticeSuccess, currentExercise } = session;
   const recallExerciseId = finalSentenceExerciseId(lesson.exercises);
   return (
             <LazyLoadBoundary label="this exercise">
-              <React.Suspense
-                fallback={
-                  <div className="py-10 text-center font-mono text-xs text-[var(--sub-color)]" role="status">
-                    loading exercise…
-                  </div>
-                }
-              >
             <div className="space-y-4 animate-in fade-in duration-200">
               {/* TM-4b whisper-cue: pacing/framing micro-line, at most twice per lesson */}
               {!inRetryPhase &&
@@ -240,7 +231,6 @@ export default function PracticeSegment({ session }: { session: LessonSession })
                 )}
               </div>
             </div>
-            </React.Suspense>
             </LazyLoadBoundary>
   );
 }

@@ -53,10 +53,11 @@ pin the actual coloured spans; `ShiftPair.tsx` renders the result.
   estimates require no JSON request, while lesson headers use the loaded exercises.
   On the trail, the desktop daily insight requests the course compendium only
   when the card is visible and there is an encountered or mastered word to show.
-- **Lesson code is split by segment and input.** `LessonReader` renders lazy
-  `segments/` views; `use-lesson-session.ts` owns progression and retries.
-  `ExerciseWidgets` dispatches to lazy exercise implementations; classic input
-  surfaces live in `inputs/` with a shared grading controller.
+- **Lesson code is split by segment.** `LessonReader` renders lazy `segments/` views;
+  `use-lesson-session.ts` owns progression and retries. The practice segment loads
+  its renderer and input controls together, so a visited exercise can reload
+  offline without depending on which other routes were prefetched. Atlas drills
+  and sentence review load the same renderer only when an exercise opens.
 - **Root layout:** an inline pre-paint script reads `localStorage` / the fallback cookie
   and applies theme variables before first paint (no FOUC); `darkreader-lock` protects
   the calibrated palettes; a `storage` listener re-hydrates every open tab when
