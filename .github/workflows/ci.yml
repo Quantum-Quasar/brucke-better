@@ -75,7 +75,15 @@ jobs:
         run: bun run build
 
       - name: Full browser regression suite
-        run: bun run test:e2e
+        run: bun run test:e2e --trace retain-on-failure
         env:
           PLAYWRIGHT_WEB_SERVER: bun run start
           PLAYWRIGHT_PRODUCTION: "1"
+
+      - name: Upload browser failure details
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failures
+          path: test-results/
+          retention-days: 7

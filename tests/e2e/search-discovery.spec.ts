@@ -18,6 +18,7 @@ async function seed(page: Page) {
 test("search opens by slash, finds words and lessons, and preserves native link targets", async ({ page, request }) => {
   await seed(page);
   await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-app-ready", "true");
   await expect(page.getByRole("searchbox", { name: "Search words and lessons" })).toBeVisible();
   await page.keyboard.press("/");
   const dialog = page.getByRole("dialog", { name: "Search German words & lessons" });
@@ -61,6 +62,7 @@ test("search reports lazy loading failure and retries real content", async ({ pa
     await route.fulfill({ status: 503, body: "temporarily unavailable" });
   });
   await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-app-ready", "true");
   const failedContent = page.waitForResponse((response) => new URL(response.url()).pathname === "/data/de/compendium.json");
   await page.getByRole("searchbox", { name: "Search words and lessons" }).click();
   const dialog = page.getByRole("dialog", { name: "Search German words & lessons" });
