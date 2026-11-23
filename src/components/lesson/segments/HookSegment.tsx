@@ -1,12 +1,35 @@
 "use client";
 
-import { ArrowRight, Sparkles, TriangleAlert } from "lucide-react";
+import { ArrowRight, Languages, Sparkles, TriangleAlert } from "lucide-react";
+import { useAppStore } from "@/lib/store";
+import {
+  formatGermanDutchPair,
+  lookupGermanBridge,
+  type GermanBridgeEntry,
+} from "@/data/dutch/german-bridge";
 
 import type { LessonSession } from "../lesson-session-types";
 
 
 export default function HookSegment({ session }: { session: LessonSession }) {
-  const { lesson, isReading, markSegmentDone } = session;
+  const { lesson, data, activeLanguageId, isReading, markSegmentDone } = session;
+  const dutchFromGerman = useAppStore((s) => s.settings.dutchFromGerman);
+
+  const bridgeEntries: GermanBridgeEntry[] = [];
+  if (activeLanguageId === "nl" && dutchFromGerman) {
+    const seen = new Set<string>();
+    for (const rawId of [...lesson.word_ids, ...lesson.table_word_ids]) {
+      const id = rawId.toLowerCase();
+      const word = data.words[id];
+      const entry = lookupGermanBridge(id) ?? (word ? lookupGermanBridge(word.target_word) : null);
+      if (entry && !seen.has(entry.dutchId)) {
+        seen.add(entry.dutchId);
+        bridgeEntries.push(entry);
+      }
+    }
+  }
+  const bridgeFalseFriends = bridgeEntries.filter((entry) => entry.falseFriend);
+
   return (
             <div className="p-6 sm:p-8 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-6 shadow-md animate-in fade-in duration-200">
               <div className="flex items-center gap-2 pb-2 border-b border-[var(--sub-color)]/15">
@@ -17,6 +40,25 @@ export default function HookSegment({ session }: { session: LessonSession }) {
               </div>
 
               <p className="text-[var(--sub-color)] text-base leading-relaxed whitespace-pre-line">{lesson.hook.content}</p>
+
+              {/* Dutch for German speakers: compact lesson banner */}
+              {bridgeEntries.length > 0 && (
+                <div
+                  data-testid="german-bridge-banner"
+                  className="p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--main-color)]/30 space-y-1.5 font-mono"
+                >
+                  <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-[var(--main-color)] font-semibold">
+                    <Languages className="w-3.5 h-3.5" /> german speaker bridge active
+                  </div>
+                  <p className="text-xs text-[var(--sub-color)] leading-relaxed">
+                    This lesson has {bridgeEntries.length} DE↔NL {bridgeEntries.length === 1 ? "twin" : "twins"}
+                    {bridgeFalseFriends.length > 0
+                      ? ` (including ${bridgeFalseFriends.length} false ${bridgeFalseFriends.length === 1 ? "friend" : "friends"}: ${bridgeFalseFriends.map((f) => formatGermanDutchPair(f)).join(", ")})`
+                      : ` — e.g. ${formatGermanDutchPair(bridgeEntries[0])}`}
+                    . Inspect any word or check the transformation table for full notes.
+                  </p>
+                </div>
+              )}
 
               {/* TM-6: preventative correction — name the shortcut before the mind takes it (§1.9/§1.10) */}
               {lesson.hook.trap_note && (
@@ -46,7 +88,7 @@ export default function HookSegment({ session }: { session: LessonSession }) {
               )}
 
               {lesson.hook.footnotes && lesson.hook.footnotes.length > 0 && (
-                <details className="p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 space-y-2 lg:hidden font-mono">
+                <details className="optional-notes p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 space-y-2 lg:hidden font-mono">
                   <summary className="min-h-11 cursor-pointer text-xs uppercase tracking-wider text-[var(--sub-color)]">historical notes · optional</summary>
                   {lesson.hook.footnotes.map((fn) => (
                     <div key={fn.marker} className="text-sm text-[var(--sub-color)]">

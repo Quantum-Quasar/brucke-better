@@ -28,6 +28,8 @@ export interface WordEntity {
   english_cognate: string;
   english_meaning: string;
   gender: Gender | null;
+  /** Optional plural form (e.g. "die Arme") shown from Lesson 1 onward. */
+  plural?: string;
   ipa: string;
   sound_shift_ids: string[];
   shift_rule: string;
@@ -45,6 +47,8 @@ export interface WordEntity {
   customMcqOptions?: string[];
   /** Optional custom prompt badge shown on the review card (e.g. "pick the article"). */
   promptLabel?: string;
+  /** Sentence-context cloze prompt with the article blanked out (e.g. "___ Hund ist groß."). */
+  articleCloze?: string;
 }
 
 export interface ShiftFamily {
@@ -108,6 +112,10 @@ export interface SRSCard {
   relearnLapses?: number;
   relearnLessonId?: number;
   relearnLessonCompleted?: boolean;
+  /** FSRS-4.5 memory stability in days (optional for backwards compatibility). */
+  stability?: number;
+  /** FSRS-4.5 card difficulty in [1, 10] (optional for backwards compatibility). */
+  difficulty?: number;
 }
 
 /** A failed sentence process, scheduled independently from words and mastery. */
@@ -272,6 +280,8 @@ export interface LessonSection {
 
 export interface Lesson {
   id: number;
+  kind?: "core" | "sprig" | "story" | "branch";
+  topicId?: number;
   slug: string;
   title: string;
   subtitle: string;

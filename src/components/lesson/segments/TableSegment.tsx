@@ -1,20 +1,42 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Compass, Ear } from "lucide-react";
+import { ArrowRight, Compass, Ear, Languages, TriangleAlert } from "lucide-react";
 import { ShiftPair } from "@/components/common/ShiftPair";
 import { GenderBadge } from "@/components/common/GenderBadge";
 import { isModifiedClick } from "@/lib/app-navigation";
+import { useAppStore } from "@/lib/store";
+import {
+  formatGermanDutchPair,
+  lookupGermanBridge,
+  type GermanBridgeEntry,
+} from "@/data/dutch/german-bridge";
 
 import { importLineFor } from "@/data/sound-imports";
+import { pluralForWord } from "@/data/noun-plurals";
 import type { LessonSession } from "../lesson-session-types";
 
 export default function TableSegment({ session }: { session: LessonSession }) {
   const { lesson, data, genderSystem, isReading, setCurrentSegment, soundImports, primaryShift, startPractice, resumingPractice, openAtlasFamily } = session;
+  const dutchFromGerman = useAppStore((s) => s.settings.dutchFromGerman);
   const focusIds = [...new Set(lesson.word_ids.map((id) => id.toLowerCase()))];
   const focusIdSet = new Set(focusIds);
   const tableIds = [...new Set(lesson.table_word_ids.map((id) => id.toLowerCase()))];
   const extraIds = tableIds.filter((id) => !focusIdSet.has(id));
+
+  const germanBridgeEntries: GermanBridgeEntry[] = [];
+  if (session.activeLanguageId === "nl" && dutchFromGerman) {
+    const seen = new Set<string>();
+    for (const id of [...focusIds, ...extraIds]) {
+      const word = data.words[id];
+      const entry = lookupGermanBridge(id) ?? (word ? lookupGermanBridge(word.target_word) : null);
+      if (entry && !seen.has(entry.dutchId)) {
+        seen.add(entry.dutchId);
+        germanBridgeEntries.push(entry);
+      }
+    }
+  }
+
   const renderWords = (ids: string[]) => (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
       {ids.map((id) => {
@@ -26,6 +48,7 @@ export default function TableSegment({ session }: { session: LessonSession }) {
             english={word.english_cognate}
             german={word.target_word}
             gender={word.gender}
+            plural={pluralForWord(session.activeLanguageId, word)}
             rule={word.shift_rule}
             wordId={word.id}
             className="w-full justify-between py-2 px-3 bg-[var(--sub-alt-color)] hover:border-[var(--main-color)]/40 border-[var(--sub-color)]/20"
@@ -54,7 +77,7 @@ export default function TableSegment({ session }: { session: LessonSession }) {
 
               {genderSystem && (
                 <div className="space-y-1.5 text-xs font-mono text-[var(--sub-color)]">
-                  <div className="uppercase tracking-wider text-[10px]">articles are colour-coded</div>
+                  <div className="uppercase tracking-wider text-[10px]">articles are colour-coded · nouns show singular · plural (one vs. many)</div>
                   <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5">
                     {genderSystem.articles.map((article, index) => (
                       <span key={article} className="inline-flex items-center gap-1.5">
@@ -83,7 +106,7 @@ export default function TableSegment({ session }: { session: LessonSession }) {
                     {renderWords(focusIds)}
                   </section>
                   {extraIds.length > 0 && (
-                    <details key={lesson.id} data-testid="lesson-extra-words" className="p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20">
+                    <details key={lesson.id} data-testid="lesson-extra-words" className="optional-notes p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20">
                       <summary className="cursor-pointer py-1 font-mono font-semibold text-[var(--text-color)] rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--main-color)]">
                         Extra words to explore ({extraIds.length})
                       </summary>
@@ -96,6 +119,47 @@ export default function TableSegment({ session }: { session: LessonSession }) {
                     </details>
                   )}
                 </>
+              )}
+
+              {/* Dutch for German speakers: DE ↔ NL cognate & false-friend bridge */}
+              {germanBridgeEntries.length > 0 && (
+                <section
+                  data-testid="german-bridge-table"
+                  className="p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--main-color)]/30 space-y-2.5 font-mono"
+                >
+                  <div className="flex items-center gap-1.5 text-xs uppercase tracking-wider text-[var(--main-color)] font-semibold">
+                    <Languages className="w-3.5 h-3.5" /> german speaker bridge (de ↔ nl)
+                  </div>
+                  <ul className="space-y-2">
+                    {germanBridgeEntries.map((entry) => (
+                      <li
+                        key={entry.dutchId}
+                        className={`p-2.5 rounded bg-[var(--sub-alt-color)] border text-xs space-y-1 ${
+                          entry.falseFriend
+                            ? "border-dashed border-[var(--error-color)]/50"
+                            : "border-[var(--sub-color)]/20"
+                        }`}
+                      >
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <span className="font-semibold text-[var(--text-color)]">
+                            {formatGermanDutchPair(entry)}
+                          </span>
+                          <span
+                            className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-color)] border ${
+                              entry.falseFriend
+                                ? "text-[var(--error-color)] border-[var(--error-color)]/30"
+                                : "text-[var(--main-color)] border-[var(--sub-color)]/20"
+                            }`}
+                          >
+                            {entry.falseFriend && <TriangleAlert className="w-3 h-3" />}
+                            <span>{entry.falseFriend ? "false friend" : entry.correspondence}</span>
+                          </span>
+                        </div>
+                        <p className="text-[var(--sub-color)] leading-relaxed">{entry.note}</p>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
               )}
 
               {/* TM-6: sound import — the English word that already contains this sound */}

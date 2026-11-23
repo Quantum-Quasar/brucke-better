@@ -168,6 +168,7 @@ export default function PracticeSegment({ session }: { session: LessonSession })
               <ExerciseWidget
                 key={inRetryPhase ? `retry_${currentExercise.id}_${retryIndex}` : `init_${currentExercise.id}_${practiceIndex}`}
                 exercise={currentExercise}
+                lessonId={lesson.id}
                 isRetry={inRetryPhase}
                 recallFirst={currentExercise.id === recallExerciseId}
                 onSuccess={handlePracticeSuccess}

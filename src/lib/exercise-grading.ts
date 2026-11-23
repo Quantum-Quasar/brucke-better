@@ -1,3 +1,4 @@
+import { isUnspecifiedYouPrompt } from "./german-alternatives";
 import { gradeLessonAnswer } from "./lesson-grading";
 import type { EvaluationOptions } from "./letter-diff";
 import { diagnoseAttempt } from "./shift-diagnosis";
@@ -5,6 +6,13 @@ import { DIAGNOSIS_BY_LANGUAGE, GERMAN_DIAGNOSIS } from "@/data/shift-diagnosis-
 import type { ExerciseDiagnosis, ExerciseItem } from "./types";
 
 const tokensOf = (text: string) => text.toLowerCase().replace(/[.,!?;:]+/g, " ").split(/\s+/).filter(Boolean);
+
+const NON_EQUIVALENCE_TYPES = new Set<ExerciseItem["type"]>([
+  "shift_select",
+  "literal_gloss",
+  "matching_pairs",
+  "reverse_cognate",
+]);
 
 function diagnoseProduction(
   exercise: ExerciseItem,
@@ -37,7 +45,17 @@ export function gradeExerciseAttempt(
   wordBank: readonly string[] = exercise.word_bank ?? [],
 ) {
   const targets = [exercise.target_answer.trim(), ...(exercise.accepted_answers ?? [])];
-  const graded = gradeLessonAnswer(answers, targets, options, isRetry);
+  const allowGermanEquivalence = options.languageId === "de" && !NON_EQUIVALENCE_TYPES.has(exercise.type);
+  const promptContext = [exercise.prompt, exercise.idea, exercise.english_hint, exercise.reply_idea]
+    .filter(Boolean)
+    .join(" ");
+  const allowGermanRegister = allowGermanEquivalence && isUnspecifiedYouPrompt(promptContext);
+  const graded = gradeLessonAnswer(
+    answers,
+    targets,
+    { ...options, allowGermanV2: allowGermanEquivalence, allowGermanRegister },
+    isRetry,
+  );
   // Selecting a distractor is a decision, not a typed spelling slip.
   if (exercise.type === "shift_select" && !targets.includes(graded.answer)) {
     graded.result = { accuracy: "incorrect" };

@@ -2,6 +2,7 @@ import type { ExerciseItem } from "@/lib/types";
 
 export interface ExerciseWidgetProps {
   exercise: ExerciseItem;
+  lessonId?: number;
   onSuccess: () => void;
   onError: (errorType: "spelling" | "umlaut" | "capitalization") => void;
   isRetry?: boolean;

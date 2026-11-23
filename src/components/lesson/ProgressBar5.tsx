@@ -24,41 +24,61 @@ export const ProgressBar5: React.FC<ProgressBar5Props> = ({
   completedSegments,
   onSelectSegment,
 }) => {
+  const currentIdx = Math.max(0, SEGMENTS.findIndex((s) => s.id === currentSegment));
+  const progressPercent = ((currentIdx + 1) / SEGMENTS.length) * 100;
+  const hasCompletedAny = completedSegments.length > 0;
+
   return (
     <div className="w-full space-y-1.5">
-      {/* 5-segment bar */}
-      <div className="grid grid-cols-5 gap-1.5">
-        {SEGMENTS.map((seg) => {
-          const isCurrent = seg.id === currentSegment;
-          const isDone = completedSegments.includes(seg.id);
-
-          return (
-            <button
-              key={seg.id}
-              type="button"
-              disabled={!isDone}
-              onClick={() => onSelectSegment?.(seg.id)}
-              className={`h-1 rounded transition-all duration-200 ${
-                isCurrent
-                  ? "bg-[var(--main-color)]"
-                  : isDone
-                  ? "bg-[var(--main-color)]/60 hover:bg-[var(--main-color)]"
-                  : "bg-[var(--sub-color)]/20"
-              } ${!isDone ? "cursor-not-allowed" : "cursor-pointer"}`}
-              title={isDone ? `${seg.label} (completed)` : `${seg.label} (locked until reached)`}
-              aria-label={`${seg.label}${isCurrent ? ", current step" : isDone ? ", completed" : ", locked"}`}
-              aria-current={isCurrent ? "step" : undefined}
-            />
-          );
-        })}
+      {/* Continuous linear progress bar */}
+      <div
+        className="relative h-1.5 w-full overflow-hidden rounded-full bg-[var(--sub-color)]/20"
+        role="progressbar"
+        aria-valuemin={1}
+        aria-valuemax={SEGMENTS.length}
+        aria-valuenow={currentIdx + 1}
+        aria-label={`Lesson progress: step ${currentIdx + 1} of ${SEGMENTS.length}, ${SEGMENTS[currentIdx]?.label}`}
+      >
+        <div
+          className="h-full rounded-full bg-[var(--main-color)] transition-all duration-300 ease-out"
+          style={{ width: `${progressPercent}%` }}
+        />
       </div>
 
-      {/* Labels */}
-      <div className="flex items-center justify-between text-[11px] font-mono text-[var(--sub-color)]">
-        <span>Part {SEGMENTS.findIndex((s) => s.id === currentSegment) + 1} of 5</span>
-        <span className="text-[var(--main-color)] capitalize font-medium">
-          {SEGMENTS.find((s) => s.id === currentSegment)?.label}
+      {/* Labels + clickable revisit links only for already-completed steps */}
+      <div className="flex items-center justify-between gap-2 text-[11px] font-mono text-[var(--sub-color)]">
+        <span>
+          Step {currentIdx + 1} of {SEGMENTS.length}
         </span>
+        {hasCompletedAny ? (
+          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+            {SEGMENTS.map((seg) => {
+              const isCurrent = seg.id === currentSegment;
+              const isDone = completedSegments.includes(seg.id);
+              if (!isDone && !isCurrent) return null;
+              return (
+                <button
+                  key={seg.id}
+                  type="button"
+                  disabled={!isDone || isCurrent}
+                  onClick={() => onSelectSegment?.(seg.id)}
+                  className={`rounded px-1.5 py-0.5 transition ${
+                    isCurrent
+                      ? "text-[var(--main-color)] font-semibold cursor-default"
+                      : "text-[var(--sub-color)] hover:text-[var(--main-color)] underline underline-offset-2 cursor-pointer"
+                  }`}
+                  aria-current={isCurrent ? "step" : undefined}
+                >
+                  {seg.label}
+                </button>
+              );
+            })}
+          </div>
+        ) : (
+          <span className="text-[var(--main-color)] font-medium">
+            {SEGMENTS[currentIdx]?.label}
+          </span>
+        )}
       </div>
     </div>
   );

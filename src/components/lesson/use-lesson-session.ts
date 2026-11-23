@@ -4,6 +4,7 @@ import React, { useState, useRef } from "react";
 import type { ExerciseItem } from "@/lib/types";
 import type { LessonSegment } from "./ProgressBar5";
 import { useAppStore } from "@/lib/store";
+import { prefetchLesson } from "@/lib/content-client";
 import { useAppNavigation } from "@/lib/app-navigation";
 import { whisperCuesForLesson } from "@/data/posture-cues";
 import { retryVariant } from "@/lib/retry-variation";
@@ -72,7 +73,7 @@ export const useLessonSession = ({
   const detourFootnote = React.useMemo(
     () =>
       [...(lesson.hook.footnotes ?? []), ...(lesson.pattern.footnotes ?? [])].find((fn) => fn.interest) ?? null,
-    [lesson.id]
+    [lesson.hook.footnotes, lesson.pattern.footnotes]
   );
   // TM-6 (guidebook §1.4): "you already make this sound" — only the imports whose
   // grapheme actually appears in this lesson's table words, so it never lectures
@@ -82,7 +83,7 @@ export const useLessonSession = ({
     const tableWords = lesson.table_word_ids
       .map((wid) => data.words[wid.toLowerCase()]?.target_word ?? "");
     return soundImportsPresentIn(activeLanguageId, tableWords);
-  }, [currentSegment, lesson.id, lesson.table_word_ids, data.words, activeLanguageId]);
+  }, [currentSegment, lesson.table_word_ids, data.words, activeLanguageId]);
 
   const showDetour = Boolean(detourFootnote) && !detourDismissed && practiceIndex === 2 && !inRetryPhase && !twistPhase;
   // TM-6: re-whisper learning consciousness on a deterministic subset of the trail
@@ -196,6 +197,9 @@ export const useLessonSession = ({
     if (preview) return;
     if (!completedSegments.includes("practice")) return;
     completeLesson(lesson.id, { perfect: !everQueued, nextLessonId });
+    if (nextLessonId && typeof window !== "undefined") {
+      prefetchLesson(activeLanguageId, nextLessonId);
+    }
     // Finished-lesson words enter the SM-2 queue so "due today" isn't empty for new learners.
     const allWords = Array.from(new Set([...lesson.word_ids, ...(lesson.table_word_ids ?? [])]));
     const toSeed = allWords.filter((id) => id in data.words);

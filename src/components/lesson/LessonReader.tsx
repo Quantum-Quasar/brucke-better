@@ -5,6 +5,7 @@ import { ArrowLeft, ArrowRight, BookOpen, Brain } from "lucide-react";
 import { ProgressBar5 } from "./ProgressBar5";
 import { LazyLoadBoundary } from "@/components/common/LazyLoadBoundary";
 import { listeningSkipLabel } from "@/lib/listening";
+import { getLessonMetadata } from "@/lib/lesson-metadata";
 import { useLessonSession } from "./use-lesson-session";
 import type { LessonReaderProps } from "./lesson-session-types";
 import { LessonEffort } from "@/components/common/LessonEffort";
@@ -18,6 +19,7 @@ const SummarySegment = React.lazy(() => import("./segments/SummarySegment"));
 export function LessonReader(props: LessonReaderProps) {
   const session = useLessonSession(props);
   const { lesson, activeLanguageId, totalTopics, currentSegment, setCurrentSegment, completedSegments, twistPhase, listeningSkippedUntil, listeningOff, stickyAction, currentExercise, closeLesson } = session;
+  const lessonMeta = getLessonMetadata(lesson);
   return (
     <article className={`max-w-4xl mx-auto px-4 pt-8 space-y-8 ${stickyAction ? "pb-32" : "pb-8"}`}>
       {/* Top Header & Navigation — sticky so the close control never scrolls away */}
@@ -31,13 +33,13 @@ export function LessonReader(props: LessonReaderProps) {
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Trail
           </button>
           <span className="text-xs font-mono text-[var(--main-color)] font-medium px-2 py-0.5 rounded bg-[var(--main-color)]/10 border border-[var(--main-color)]/20">
-            {lesson.spineStory
+            {lesson.spineStory || lessonMeta.kind === "story"
               ? `Story ${lesson.label ?? ""} · Main Path`
-              : lesson.id <= 30
-              ? `Topic ${lesson.id} of ${totalTopics} · Core`
-              : lesson.id >= 5000
+              : lessonMeta.kind === "core"
+              ? `Topic ${lessonMeta.topicId ?? lesson.id} of ${totalTopics} · Core`
+              : lessonMeta.kind === "branch"
               ? `Branch Track · ${lesson.id}`
-              : `Topic ${Math.floor(lesson.id / 100)} · Sprig ${lesson.id % 100}`}
+              : `Topic ${lessonMeta.topicId ?? Math.floor(lesson.id / 100)} · Sprig ${lesson.id % 100}`}
           </span>
         </div>
 
@@ -51,21 +53,28 @@ export function LessonReader(props: LessonReaderProps) {
 
       {/* Lesson Title — scrolls away so mobile exercises keep vertical room */}
       <div>
-          <span className="text-xs font-mono text-[var(--main-color)] uppercase tracking-wider font-semibold">
-            Phase {lesson.phase} ·{" "}
-            {lesson.spineStory
-              ? "Reading Story"
-              : lesson.id <= 30
-              ? activeLanguageId === "de"
-                ? "Core Shift"
-                : activeLanguageId === "nl"
-                ? "Core Bridge"
-                : "Core"
-              : lesson.id >= 5000
-              ? "Support Track"
-              : "Practice Sprig"}
-          </span>
-          <h1 className="text-3xl sm:text-4xl font-bold font-sans text-[var(--text-color)] tracking-tight mt-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-mono text-[var(--main-color)] uppercase tracking-wider font-semibold">
+              Phase {lesson.phase} ·{" "}
+              {lesson.spineStory || lessonMeta.kind === "story"
+                ? "Reading Story"
+                : lessonMeta.kind === "core"
+                ? activeLanguageId === "de"
+                  ? "Core Shift"
+                  : activeLanguageId === "nl"
+                  ? "Core Bridge"
+                  : "Core"
+                : lessonMeta.kind === "branch"
+                ? "Support Track"
+                : "Practice Sprig"}
+            </span>
+            {lesson.word_ids.length === 0 && (
+              <span className="inline-block rounded border border-[var(--main-color)]/30 bg-[var(--main-color)]/10 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-[var(--main-color)]">
+                Consolidation · Fluency &amp; Recall
+              </span>
+            )}
+          </div>
+            <h1 className="text-3xl sm:text-4xl font-bold font-sans text-[var(--text-color)] tracking-tight mt-1">
             {lesson.title}
           </h1>
           <p className="text-base sm:text-lg text-[var(--sub-color)] mt-2 font-normal leading-relaxed">

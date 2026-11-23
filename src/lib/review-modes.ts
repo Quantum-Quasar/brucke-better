@@ -3,6 +3,8 @@
 
 import type { WordEntity } from "./types";
 
+type LanguageId = "de" | "fr" | "es" | "nl";
+
 /**
  * In-place Fisher-Yates array shuffle returning a new shuffled array copy.
  */
@@ -15,40 +17,66 @@ export function shuffleArray<T>(arr: T[]): T[] {
   return result;
 }
 
-
-const STRUCTURAL_FOILS: Record<string, string> = {
-  // German case/pronoun/auxiliary foils
-  den: "der",
-  dem: "den",
-  der: "den",
-  das: "die",
-  die: "das",
-  ihm: "ihn",
-  ihn: "ihm",
-  mir: "mich",
-  mich: "mir",
-  habe: "bin",
-  bin: "habe",
-  ist: "sind",
-  // French clitic/auxiliary/article foils
-  le: "lui",
-  la: "le",
-  lui: "le",
-  leur: "les",
-  au: "à la",
-  du: "de la",
-  ai: "suis",
-  suis: "ai",
-  est: "a",
-  // Spanish ser/estar & clitic foils
-  lo: "le",
-  está: "es",
-  es: "está",
-  estoy: "soy",
-  soy: "estoy",
-  he: "estoy",
-  se: "le",
+const STRUCTURAL_FOILS: Record<LanguageId, Record<string, string>> = {
+  de: {
+    den: "der",
+    dem: "den",
+    der: "den",
+    das: "die",
+    die: "das",
+    ihm: "ihn",
+    ihn: "ihm",
+    mir: "mich",
+    mich: "mir",
+    habe: "bin",
+    bin: "habe",
+    ist: "sind",
+  },
+  fr: {
+    le: "lui",
+    la: "le",
+    lui: "le",
+    leur: "les",
+    au: "à la",
+    du: "de la",
+    ai: "suis",
+    suis: "ai",
+    est: "a",
+  },
+  nl: {
+    de: "het",
+    het: "de",
+    heb: "ben",
+    ben: "heb",
+    hebben: "zijn",
+    zijn: "hebben",
+    niet: "geen",
+    geen: "niet",
+  },
+  es: {
+    lo: "le",
+    está: "es",
+    es: "está",
+    estoy: "soy",
+    soy: "estoy",
+    he: "estoy",
+    se: "le",
+  },
 };
+
+const FALLBACK_DISTRACTORS: Record<LanguageId, readonly string[]> = {
+  de: ["nicht", "heute", "immer"],
+  fr: ["pas", "très", "toujours"],
+  nl: ["niet", "vandaag", "altijd"],
+  es: ["no", "hoy", "muy"],
+};
+
+function resolveLanguageId(languageId?: string): LanguageId {
+  if (languageId === "fr" || languageId === "es" || languageId === "nl" || languageId === "de") {
+    return languageId;
+  }
+  return "de";
+}
 
 /**
  * Generate 4 multiple-choice options for a given target word, article, or sentence.
@@ -78,7 +106,6 @@ export function generateMCQOptions(
 
   const target = targetWord.target_word;
   const distractors: string[] = [];
-
 
   // 1. Same sound shift family words first (best linguistic distractors)
   if (distractors.length < count - 1) {
@@ -120,13 +147,16 @@ export function generateMCQOptions(
  */
 export function generateWordTiles(
   targetWord: WordEntity,
-  allWords?: WordEntity[]
+  allWords?: WordEntity[],
+  languageId: string = "de"
 ): {
   tiles: string[];
   targetChunks: string[];
   targetAnswer: string;
 } {
   const word = targetWord.target_word;
+  const lang = resolveLanguageId(languageId);
+  const foils = STRUCTURAL_FOILS[lang];
 
   // Sentence-level SRS cards: split into word tiles + structural grammatical foils
   if (targetWord.id.startsWith("sentence_") || word.includes(" ")) {
@@ -138,7 +168,7 @@ export function generateWordTiles(
     const distractors: string[] = [];
 
     for (const chunk of targetChunks) {
-      const foil = STRUCTURAL_FOILS[chunk.toLowerCase()];
+      const foil = foils[chunk.toLowerCase()];
       if (
         foil &&
         !targetChunks.some((c) => c.toLowerCase() === foil.toLowerCase()) &&
@@ -161,10 +191,13 @@ export function generateWordTiles(
         distractors.push(token);
       }
     }
-    const fallbackDistractors = ["nicht", "heute", "immer", "niet", "vandaag", "altijd", "pas", "très", "hoy", "muy"];
+    const fallbackDistractors = FALLBACK_DISTRACTORS[lang];
     for (const d of fallbackDistractors) {
       if (distractors.length >= 2) break;
-      if (!targetChunks.includes(d) && !distractors.includes(d)) {
+      if (
+        !targetChunks.some((c) => c.toLowerCase() === d.toLowerCase()) &&
+        !distractors.some((existing) => existing.toLowerCase() === d.toLowerCase())
+      ) {
         distractors.push(d);
       }
     }

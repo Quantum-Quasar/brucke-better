@@ -6,11 +6,27 @@ import { useClassicKeyboard } from "./use-classic-keyboard";
 import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
 import { soundEngine } from "@/lib/sound";
-import { arrangeTilesDeterministically } from "./exercise-tiles";
+import { playTargetAudio } from "@/lib/audio";
+import { recordMistake } from "@/lib/mistake-notebook";
+import { recordPracticeDay } from "@/lib/weekly-practice";
+import {
+  arrangeTilesDeterministically,
+  capitalizeAssembledTileAnswer,
+  lowercaseSentenceStarterTiles,
+} from "./exercise-tiles";
+import { DISCRIMINATION_SPRIG_IDS } from "@/lib/lesson-metadata";
 import { hashSeed, seededShuffle } from "@/lib/prng";
 import type { ExerciseDiagnosis } from "@/lib/types";
 import type { ExerciseWidgetProps } from "./exercise-widget-props";
 import type { ClassicExerciseController } from "./classic-exercise-types";
+
+export { DISCRIMINATION_SPRIG_IDS };
+
+export function isDiscriminationSprig(lessonId?: number, exerciseId?: string): boolean {
+  if (typeof lessonId === "number" && DISCRIMINATION_SPRIG_IDS.has(lessonId)) return true;
+  if (typeof exerciseId === "string" && /^l(302|402|502|602|702)_/.test(exerciseId)) return true;
+  return false;
+}
 
 /**
  * Extract the quoted target-language word from a reverse_cognate prompt
@@ -28,8 +44,10 @@ function extractPromptForeignWord(prompt: string, englishTarget: string): string
   }
   return null;
 }
+
 export const useClassicExercise = ({
   exercise,
+  lessonId,
   onSuccess,
   onError,
   isRetry = false,
@@ -49,6 +67,8 @@ export const useClassicExercise = ({
   const [failedDiagnosis, setFailedDiagnosis] = useState<ExerciseDiagnosis | undefined>(undefined);
   const [isCapsLock, setIsCapsLock] = useState(false);
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const [promptTextRevealed, setPromptTextRevealed] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
 
   // Matching pairs state
   const [selectedEnglish, setSelectedEnglish] = useState<string | null>(null);
@@ -62,11 +82,27 @@ export const useClassicExercise = ({
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
   const isReverseCognate = exercise.type === "reverse_cognate";
+  const isAudioFirstSprig =
+    activeLanguageId === "de" &&
+    exercise.type === "shift_select" &&
+    isDiscriminationSprig(lessonId, exercise.id) &&
+    Boolean(exercise.spoken?.trim()) &&
+    Date.now() >= settings.listeningSkippedUntil;
 
   const reverseCognateForeignWord = React.useMemo(() => {
     if (!isReverseCognate) return null;
     return extractPromptForeignWord(exercise.prompt, exercise.target_answer);
   }, [isReverseCognate, exercise.prompt, exercise.target_answer]);
+
+  const sprigAudioText = React.useMemo(() => {
+    if (!isAudioFirstSprig) return null;
+    return exercise.spoken?.trim() || null;
+  }, [isAudioFirstSprig, exercise.spoken]);
+
+  const replaySprigAudio = React.useCallback(() => {
+    if (!sprigAudioText) return;
+    playTargetAudio(sprigAudioText, language.ttsLocale);
+  }, [sprigAudioText, language.ttsLocale]);
 
   const displayGermanPairs = React.useMemo(() => {
     if (!exercise.matching_pairs) return [];
@@ -79,19 +115,42 @@ export const useClassicExercise = ({
   // Anti-spoiler: strip trailing punctuation and deterministically shuffle tiles so
   // clicking 1, 2, 3... in order never trivially solves the sentence or word.
   const sanitizedWordBank = React.useMemo(() => {
-    const cleaned = (exercise.word_bank || []).map((w) => w.replace(/[.,!?;:]+$/, ""));
+    const cleaned = lowercaseSentenceStarterTiles(
+      (exercise.word_bank || []).map((w) => w.replace(/[.,!?;:]+$/, "")),
+      activeLanguageId
+    );
     return arrangeTilesDeterministically(cleaned, `${exercise.id}#wb`, exercise.target_answer);
-  }, [exercise.word_bank, exercise.id, exercise.target_answer]);
+  }, [exercise.word_bank, exercise.id, exercise.target_answer, activeLanguageId]);
 
   const sanitizedTileOptions = React.useMemo(() => {
     const cleaned = (exercise.tile_options || []).map((t) => t.replace(/[.,!?;:]+$/, ""));
     return arrangeTilesDeterministically(cleaned, `${exercise.id}#tiles`, exercise.target_answer);
   }, [exercise.tile_options, exercise.id, exercise.target_answer]);
 
+  const effectiveRetryCount = isRetry ? Math.max(1, retryCount) : retryCount;
+
   const displayOptions = React.useMemo(() => {
     if (!exercise.options) return [];
-    return seededShuffle(exercise.options, hashSeed(`${exercise.id}#opts`));
-  }, [exercise.options, exercise.id]);
+    if (effectiveRetryCount === 0) {
+      return seededShuffle(exercise.options, hashSeed(`${exercise.id}#opts`));
+    }
+    const priorSeed =
+      effectiveRetryCount === 1
+        ? `${exercise.id}#opts`
+        : `${exercise.id}#opts#retry#${effectiveRetryCount - 1}`;
+    const priorOrder = seededShuffle(exercise.options, hashSeed(priorSeed));
+    const candidate = seededShuffle(
+      exercise.options,
+      hashSeed(`${exercise.id}#opts#retry#${effectiveRetryCount}`)
+    );
+    if (
+      candidate.length > 1 &&
+      candidate.every((opt, index) => opt === priorOrder[index])
+    ) {
+      return [...candidate.slice(1), candidate[0]];
+    }
+    return candidate;
+  }, [exercise.options, exercise.id, effectiveRetryCount]);
 
   const resetCurrentExercise = () => {
     reportedErrorRef.current = false;
@@ -108,6 +167,7 @@ export const useClassicExercise = ({
     setShowSuccessSheet(false);
     setFailedAttemptText("");
     setFailedDiagnosis(undefined);
+    setPromptTextRevealed(false);
 
     if (exercise.type === "derive" || exercise.type === "reverse_cognate") {
       setTimeout(() => inputRef.current?.focus({ preventScroll: true }), 50);
@@ -115,9 +175,14 @@ export const useClassicExercise = ({
   };
 
   useEffect(() => {
+    setRetryCount(0);
     resetCurrentExercise();
   }, [exercise.id]);
 
+  useEffect(() => {
+    if (!isAudioFirstSprig || !sprigAudioText) return;
+    playTargetAudio(sprigAudioText, language.ttsLocale);
+  }, [exercise.id, isAudioFirstSprig, sprigAudioText, language.ttsLocale]);
 
   const handleInputChange = (val: string) => {
     if (val.length > userInput.length) {
@@ -156,9 +221,13 @@ export const useClassicExercise = ({
   const handleVerify = () => {
     inputRef.current?.blur();
     if (exercise.type === "matching_pairs") return;
-    const readings = classicAnswerReadings(
+    const rawReadings = classicAnswerReadings(
       exercise.type, exercise.target_answer, userInput, selectedIndices, sanitizedTileOptions, sanitizedWordBank,
     );
+    const readings =
+      exercise.type === "syntax_builder"
+        ? rawReadings.map((reading) => capitalizeAssembledTileAnswer(reading, exercise.target_answer))
+        : rawReadings;
     let answerToCheck = readings[0];
     const expected = exercise.target_answer.trim();
 
@@ -184,6 +253,7 @@ export const useClassicExercise = ({
       setSheetVariant("exact");
       setVerifiedAttemptText(answerToCheck);
       setAlmostWarningNote(undefined);
+      recordPracticeDay();
       setShowSuccessSheet(true);
       return;
     }
@@ -194,6 +264,7 @@ export const useClassicExercise = ({
       setSheetVariant("almost");
       setVerifiedAttemptText(answerToCheck);
       setAlmostWarningNote(evaluation.warningNote);
+      recordPracticeDay();
       setShowSuccessSheet(true);
 
       if (graded.queueRetry) onQueueRetry?.();
@@ -204,6 +275,17 @@ export const useClassicExercise = ({
     setStatus("incorrect");
     void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
     onError(graded.errorType);
+    recordMistake({
+      languageId: activeLanguageId,
+      prompt: exercise.prompt,
+      expected: graded.target || expected,
+      attempt: answerToCheck,
+      baseErrorType: graded.errorType,
+      diagnosisTitle: graded.diagnosis?.slip,
+      diagnosisBody: graded.diagnosis?.cue,
+      note: graded.diagnosis?.cue,
+      exerciseId: exercise.id,
+    });
     onQueueRetry?.();
     setFailedAttemptText(answerToCheck);
     setFailedDiagnosis(graded.diagnosis);
@@ -219,11 +301,24 @@ export const useClassicExercise = ({
       setSheetVariant("exact");
       setVerifiedAttemptText(option);
       setAlmostWarningNote(undefined);
+      recordPracticeDay();
       setShowSuccessSheet(true);
     } else {
       setStatus("incorrect");
+      setRetryCount((count) => count + 1);
       void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
       onError("spelling");
+      recordMistake({
+        languageId: activeLanguageId,
+        prompt: exercise.prompt,
+        expected: exercise.target_answer,
+        attempt: option,
+        baseErrorType: "spelling",
+        diagnosisTitle: graded.diagnosis?.slip,
+        diagnosisBody: graded.diagnosis?.cue,
+        note: graded.diagnosis?.cue,
+        exerciseId: exercise.id,
+      });
       onQueueRetry?.();
       setFailedAttemptText(option);
       setFailedDiagnosis(graded.diagnosis);
@@ -273,6 +368,7 @@ export const useClassicExercise = ({
 
       if (exercise.matching_pairs && updated.length === exercise.matching_pairs.length) {
         setStatus("correct");
+        recordPracticeDay();
         setFeedbackNote("All pairs matched perfectly!");
         setShowSuccessSheet(true);
       }
@@ -284,6 +380,17 @@ export const useClassicExercise = ({
       if (isRetry || !reportedErrorRef.current) {
         reportedErrorRef.current = true;
         onError("spelling");
+        const expectedPair = exercise.matching_pairs?.find((item) => item.english === selectedEnglish);
+        if (expectedPair) {
+          recordMistake({
+            languageId: activeLanguageId,
+            prompt: `Match "${selectedEnglish}"`,
+            expected: expectedPair.german,
+            attempt: de,
+            baseErrorType: "spelling",
+            exerciseId: exercise.id,
+          });
+        }
         onQueueRetry?.();
       }
     }
@@ -322,6 +429,11 @@ export const useClassicExercise = ({
     language,
     isReverseCognate,
     reverseCognateForeignWord,
+    isAudioFirstSprig,
+    sprigAudioText,
+    promptTextRevealed,
+    setPromptTextRevealed,
+    replaySprigAudio,
     displayGermanPairs,
     sanitizedWordBank,
     sanitizedTileOptions,
@@ -338,4 +450,3 @@ export const useClassicExercise = ({
   useClassicKeyboard(controller, () => setSelectedEnglish(null));
   return controller;
 };
-

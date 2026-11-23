@@ -38,6 +38,7 @@ const ClassicExercise = dynamic(() => import("./ClassicExercise"), { loading: Ex
 
 const ExerciseContent: React.FC<ExerciseWidgetProps> = ({
   exercise,
+  lessonId,
   onSuccess,
   onError,
   isRetry = false,
@@ -141,6 +142,7 @@ const ExerciseContent: React.FC<ExerciseWidgetProps> = ({
   return (
     <ClassicExercise
       exercise={exercise}
+      lessonId={lessonId}
       onSuccess={onSuccess}
       onError={onError}
       isRetry={isRetry}

@@ -39,6 +39,11 @@ export interface ClassicExerciseController {
   language: LanguageDefinition;
   isReverseCognate: boolean;
   reverseCognateForeignWord: string | null;
+  isAudioFirstSprig: boolean;
+  sprigAudioText: string | null;
+  promptTextRevealed: boolean;
+  setPromptTextRevealed: Dispatch<SetStateAction<boolean>>;
+  replaySprigAudio: () => void;
   displayGermanPairs: NonNullable<ExerciseItem["matching_pairs"]>;
   sanitizedWordBank: string[];
   sanitizedTileOptions: string[];

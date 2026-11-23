@@ -58,8 +58,8 @@ export const VariantEnglishExercise: React.FC<VariantEnglishExerciseProps> = ({
   const renderings = exercise.renderings ?? [];
   const traps = exercise.traps ?? [];
   const options = React.useMemo(
-    () => shuffleDeterministic([...renderings, ...traps], exercise.id),
-    [exercise.id]
+    () => shuffleDeterministic([...(exercise.renderings ?? []), ...(exercise.traps ?? [])], exercise.id),
+    [exercise.id, exercise.renderings, exercise.traps]
   );
   const affirmation = affirmationFor(exercise.affirmation, exercise.shift_hint);
 

@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { CheckCircle2, ArrowRight, Sparkles, BookOpen, AlertCircle, Repeat, Volume2 } from "lucide-react";
+import { CheckCircle2, ArrowRight, Sparkles, BookOpen, AlertCircle, Repeat, Volume2, ChevronDown, ChevronUp } from "lucide-react";
 import type { VocabHint } from "@/lib/types";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
 import { ModalDialog } from "@/components/common/ModalDialog";
@@ -36,14 +36,25 @@ interface SuccessFeedbackSheetProps {
   affirmation?: string;
   /** TM-2 literal-gloss reveal: the word-for-word English beside its natural form. */
   literalPair?: LiteralGlossPair;
-  /**
-   * TM-6: offered only when the learner got it right. A correct answer the learner
-   * did not trust is still an uncertainty — the guidebook promises "we will revisit
-   * everything you are uncertain of", which is unkeepable if the only observable
-   * signal is failure. Never rendered in the retry queue.
-   */
   onFlagGuessed?: () => void;
   onContinue: () => void;
+}
+
+const ABBREV_END_RE = /(?:e\.g|i\.e|z\.\s*B|d\.\s*h|vs|Dr|Mr|Mrs|Ms|St|Nr|ca)\.$/i;
+
+function firstSentence(text: string): { lead: string; hasRest: boolean } {
+  const trimmed = text.trim();
+  const re = /[.!?](?=\s+\S)/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(trimmed)) !== null) {
+    const end = match.index + 1;
+    const candidate = trimmed.slice(0, end).trim();
+    if (candidate.length < 24 || ABBREV_END_RE.test(candidate)) continue;
+    if (trimmed.slice(end).trim().length > 0) {
+      return { lead: candidate, hasRest: true };
+    }
+  }
+  return { lead: trimmed, hasRest: false };
 }
 
 export const SuccessFeedbackSheet: React.FC<SuccessFeedbackSheetProps> = ({
@@ -64,17 +75,25 @@ export const SuccessFeedbackSheet: React.FC<SuccessFeedbackSheetProps> = ({
   onContinue,
 }) => {
   const continueBtnRef = React.useRef<HTMLButtonElement>(null);
+  const [showMore, setShowMore] = useState(false);
+
+  useEffect(() => {
+    setShowMore(false);
+  }, [targetAnswer, explanation, affirmation]);
   const isAlmost = variant === "almost";
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
   const spokenText = audioText ?? targetAnswer;
   const spokenLocale = audioLocale ?? language.ttsLocale;
 
+  const explanationLead = explanation ? firstSentence(explanation) : null;
+  const hasExtraDetails = Boolean(
+    (vocabHints && vocabHints.length > 0) ||
+    (explanation && (affirmation || explanationLead?.hasRest))
+  );
+
   useBackDismiss(true, onContinue);
 
-  // Listen for Enter or Space key to advance immediately. A focused control keeps
-  // its native activation: Enter on "I guessed — bring this one back sooner" must
-  // flag the guess, not be swallowed and advanced past by this window shortcut.
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.defaultPrevented || e.isComposing) return;
@@ -97,13 +116,10 @@ export const SuccessFeedbackSheet: React.FC<SuccessFeedbackSheetProps> = ({
 
   if (typeof document === "undefined") return null;
 
-  // Portal out of the lesson's transformed/scrolled ancestors: a `fixed`
-  // sheet inside them is positioned against the scroll container, not the
-  // viewport, which puts the continue button off-screen.
   return createPortal(
     <ModalDialog onClose={onContinue} initialFocusRef={continueBtnRef} aria-labelledby="success-feedback-title" className="open:flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 animate-in fade-in duration-150">
       <div
-        className={`w-full sm:max-w-md max-h-[85dvh] overflow-y-auto overscroll-contain bg-[var(--bg-color)] border-t sm:border sm:rounded-lg rounded-t-lg shadow-2xl p-6 pb-safe space-y-5 animate-in slide-in-from-bottom duration-200 font-mono ${
+        className={`w-full sm:max-w-md max-h-[85dvh] overflow-y-auto overscroll-contain bg-[var(--bg-color)] border-t sm:border sm:rounded-lg rounded-t-lg shadow-2xl p-5 pb-safe space-y-4 animate-in slide-in-from-bottom duration-200 font-mono ${
           isAlmost
             ? "border-[var(--sub-color)]/40"
             : "border-[var(--main-color)]/40"
@@ -132,21 +148,13 @@ export const SuccessFeedbackSheet: React.FC<SuccessFeedbackSheetProps> = ({
           )}
         </div>
 
-        {/* TM-3: masked repetition — a correct answer restates the process, specifically (§1.7) */}
-        {affirmation && (
-          <p className="text-xs font-mono text-[var(--main-color)] flex items-center gap-2 leading-relaxed">
-            <Repeat className="w-4 h-4 shrink-0" />
-            <span>{affirmation}</span>
-          </p>
-        )}
-
         {/* Almost Right Comparison Callout */}
         {isAlmost && userAttempt && (
-          <div className="p-3.5 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 space-y-2">
+          <div className="p-3 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 space-y-2">
             <div className="flex items-center gap-1.5 text-[var(--sub-color)] font-mono uppercase tracking-wider text-[11px]">
               <AlertCircle className="w-3.5 h-3.5" /> note difference
             </div>
-            <div className="flex items-center justify-between text-xs font-mono bg-[var(--bg-color)] p-2.5 rounded border border-[var(--sub-color)]/20">
+            <div className="flex items-center justify-between text-xs font-mono bg-[var(--bg-color)] p-2 rounded border border-[var(--sub-color)]/20">
               <div>
                 <span className="text-[var(--sub-color)] block text-[10px] uppercase">your input</span>
                 <span className="text-[var(--text-color)] line-through decoration-[var(--sub-color)]">{userAttempt}</span>
@@ -161,9 +169,9 @@ export const SuccessFeedbackSheet: React.FC<SuccessFeedbackSheetProps> = ({
           </div>
         )}
 
-        {/* TM-2: the literal rendering beside its natural form, load-bearing words highlighted */}
+        {/* Answer block */}
         {literalPair ? (
-          <div className="p-4 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-2.5">
+          <div className="p-3.5 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-2">
             <div>
               <span className="text-[11px] font-mono text-[var(--sub-color)] uppercase tracking-wider block">
                 built the {language.name.toLowerCase()} way:
@@ -188,7 +196,7 @@ export const SuccessFeedbackSheet: React.FC<SuccessFeedbackSheetProps> = ({
             </div>
           </div>
         ) : (
-          <div className="p-4 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-2.5">
+          <div className="p-3.5 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-2">
             <div className="flex items-start justify-between gap-2">
               <div>
                 <span className="text-[11px] font-mono text-[var(--sub-color)] uppercase tracking-wider block">
@@ -224,32 +232,63 @@ export const SuccessFeedbackSheet: React.FC<SuccessFeedbackSheetProps> = ({
           </div>
         )}
 
-        {/* Vocabulary Clue / Reinforcement if present */}
-        {vocabHints && vocabHints.length > 0 && (
-          <div className="p-3 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-1.5 text-xs font-mono">
-            <div className="flex items-center gap-1.5 text-[var(--sub-color)] uppercase tracking-wider text-[11px]">
-              <Sparkles className="w-3.5 h-3.5" /> vocabulary reinforcement
-            </div>
-            <div className="space-y-1 text-[var(--text-color)]">
-              {vocabHints.map((hint) => (
-                <div key={hint.word}>
-                  <strong className="text-[var(--main-color)] font-mono">{hint.word}</strong> = {hint.translation}
-                  {hint.note && <span className="text-[var(--sub-color)] ml-1">({hint.note})</span>}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Instructive Explanation */}
-        {explanation && (
+        {/* 1-line why: affirmation if present, otherwise first sentence of explanation */}
+        {affirmation ? (
+          <p className="text-xs font-mono text-[var(--main-color)] flex items-center gap-2 leading-relaxed">
+            <Repeat className="w-4 h-4 shrink-0" />
+            <span>{affirmation}</span>
+          </p>
+        ) : explanationLead ? (
           <div className="text-xs text-[var(--sub-color)] leading-relaxed bg-[var(--sub-alt-color)] p-3 rounded-lg border border-[var(--sub-color)]/20 flex items-start gap-2 font-mono">
             <BookOpen className="w-4 h-4 text-[var(--main-color)] shrink-0 mt-0.5" />
-            <div>{explanation}</div>
+            <div>{showMore ? explanation : explanationLead.lead}</div>
+          </div>
+        ) : null}
+
+        {/* Extra details behind compact "More" toggle */}
+        {hasExtraDetails && (
+          <div className="space-y-2.5">
+            <button
+              type="button"
+              onClick={() => setShowMore((prev) => !prev)}
+              aria-expanded={showMore}
+              aria-controls="success-feedback-more"
+              className="inline-flex items-center gap-1 text-[11px] font-mono text-[var(--main-color)] hover:underline cursor-pointer"
+            >
+              {showMore ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              <span>{showMore ? "Less" : "More"}</span>
+            </button>
+
+            {showMore && (
+              <div id="success-feedback-more" className="space-y-2.5">
+                {affirmation && explanation && (
+                  <div className="text-xs text-[var(--sub-color)] leading-relaxed bg-[var(--sub-alt-color)] p-3 rounded-lg border border-[var(--sub-color)]/20 flex items-start gap-2 font-mono">
+                    <BookOpen className="w-4 h-4 text-[var(--main-color)] shrink-0 mt-0.5" />
+                    <div>{explanation}</div>
+                  </div>
+                )}
+
+                {vocabHints && vocabHints.length > 0 && (
+                  <div className="p-3 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-1.5 text-xs font-mono">
+                    <div className="flex items-center gap-1.5 text-[var(--sub-color)] uppercase tracking-wider text-[11px]">
+                      <Sparkles className="w-3.5 h-3.5" /> vocabulary reinforcement
+                    </div>
+                    <div className="space-y-1 text-[var(--text-color)]">
+                      {vocabHints.map((hint) => (
+                        <div key={hint.word}>
+                          <strong className="text-[var(--main-color)] font-mono">{hint.word}</strong> = {hint.translation}
+                          {hint.note && <span className="text-[var(--sub-color)] ml-1">({hint.note})</span>}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 
-        {/* TM-6: uncertainty is observable even when the answer is right (§1.8/§1.9) */}
+        {/* TM-6: uncertainty is observable even when the answer is right */}
         {onFlagGuessed && (
           <button
             type="button"

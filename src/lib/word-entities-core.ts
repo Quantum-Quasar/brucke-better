@@ -4,7 +4,7 @@
 
 import { displayArticle } from "@/lib/gender";
 import { COMPOUND_IPA, FALSE_FRIEND_IPA } from "@/data/phonetics";
-import type { CompendiumData, WordEntity } from "@/lib/types";
+import type { CompendiumData, Gender, WordEntity } from "@/lib/types";
 import { compoundFrequencyForm, frequencyRankFor } from "@/lib/frequency";
 
 export interface WordEntityMaps {
@@ -35,12 +35,29 @@ export interface LessonEntitySource {
 
 export type WordEntityCompendium = Pick<CompendiumData, "words" | "compounds" | "falseFriends" | "frequencyRanks">;
 
+export interface ArticleContextCloze {
+  /** Sentence with the target article replaced by "___" (e.g. "___ Hund ist groß." or "Ich sehe ___ Hund."). */
+  cloze: string;
+  /** The exact lowercase article blanked from the sentence (e.g. "der", "den", "l'"). */
+  article: string;
+}
+
 const ARTICLE_OPTIONS_BY_LANG: Record<string, string[]> = {
   de: ["der", "die", "das", "den"],
   fr: ["le", "la", "l'", "les"],
   es: ["el", "la", "los", "las"],
   nl: ["de", "het"],
 };
+
+const GERMAN_NON_ADJECTIVE_WORDS = new Set([
+  "heute", "gestern", "morgen", "immer", "oft", "selten", "nie", "hier", "dort", "jetzt", "bald", "dann",
+  "nicht", "auch", "noch", "schon", "sehr", "nur", "aber", "oder", "und", "denn", "weil", "dass", "wenn",
+  "ist", "sind", "war", "waren", "hat", "haben", "kann", "können", "will", "wollen", "muss", "müssen",
+  "wird", "werden", "gibt", "geht", "kommt", "macht", "sieht", "steht", "liegt", "sitzt", "bleibt",
+  "ich", "du", "er", "sie", "es", "wir", "ihr", "man", "sich", "mich", "dich", "uns", "euch", "mir", "dir", "ihm",
+  "in", "an", "auf", "mit", "von", "zu", "für", "bei", "nach", "aus", "über", "unter", "vor", "ohne", "gegen",
+  "eine", "einen", "einem", "einer", "eines", "keine", "keinen", "meine", "deine", "seine", "ihre", "unsere", "eure",
+]);
 
 const GERMAN_IPA = { compound: COMPOUND_IPA, falseFriend: FALSE_FRIEND_IPA };
 const NO_IPA = { compound: {}, falseFriend: {} };
@@ -52,6 +69,118 @@ export const EMPTY_WORD_ENTITY_MAPS: WordEntityMaps = {
   articles: [],
   byLowerKey: {},
 };
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Builds a sentence-context cloze for an Article & Gender review card when the
+ * noun's `context_phrase` contains a matching definite article right before the
+ * noun (or separated by a single lowercase German adjective).
+ *
+ * Returns `null` when the sentence uses an indefinite/possessive determiner,
+ * a dative/contracted form outside the card's article option set, or a plural
+ * form that would contradict the noun's singular grammatical gender.
+ */
+export function buildArticleContextCloze(
+  contextPhrase: string | undefined,
+  targetWord: string,
+  gender: Gender | null | undefined,
+  languageId: string,
+): ArticleContextCloze | null {
+  const phrase = contextPhrase?.trim();
+  const noun = targetWord.trim();
+  if (!phrase || !noun || !gender) return null;
+
+  const baseArticle = displayArticle(gender, noun, languageId) ?? gender;
+  const candidates = [baseArticle];
+  // In German, masculine nouns in the accusative take "den", which is in the 4-choice article set.
+  if (languageId === "de" && gender === "der" && !candidates.includes("den")) {
+    candidates.push("den");
+  }
+
+  const escapedNoun = escapeRegExp(noun);
+  const nonElided = candidates.filter((art) => !art.endsWith("'"));
+  const hasElided = candidates.some((art) => art.endsWith("'"));
+
+  // 1. Elided French article (e.g. "L'hôtel est vieux." or "L’hôtel est vieux." -> "___ hôtel est vieux.")
+  if (hasElided) {
+    const elidedRe = new RegExp(
+      `(^|[\\s„"«(])(l['’])(${escapedNoun})(?=$|[\\s.,!?;:»"”)])`,
+      "iu",
+    );
+    const match = phrase.match(elidedRe);
+    if (match && match.index !== undefined) {
+      const prefix = match[1];
+      const start = match.index + prefix.length;
+      const end = start + match[2].length;
+      return {
+        cloze: `${phrase.slice(0, start)}___ ${phrase.slice(end)}`,
+        article: "l'",
+      };
+    }
+  }
+
+  if (nonElided.length === 0) return null;
+  const artAlt = nonElided.map(escapeRegExp).join("|");
+  const capArtAlt = nonElided
+    .flatMap((a) => [a, a.charAt(0).toUpperCase() + a.slice(1)])
+    .map(escapeRegExp)
+    .join("|");
+
+  // 2. Direct adjacency: "<article> <noun>" (e.g. "Der Fisch schwimmt...", "Ich höre den Donner.")
+  // Use case-sensitive "u" for German so lowercase adverbs/verbs (e.g. "morgen") never match capitalized nouns.
+  const directRe =
+    languageId === "de"
+      ? new RegExp(
+          `(^|[\\s„"«(])(${capArtAlt})(\\s+)(${escapedNoun})(?=$|[\\s.,!?;:»"”)])`,
+          "u",
+        )
+      : new RegExp(
+          `(^|[\\s„"«(])(${artAlt})(\\s+)(${escapedNoun})(?=$|[\\s.,!?;:»"”)])`,
+          "iu",
+        );
+  const directMatch = phrase.match(directRe);
+  if (directMatch && directMatch.index !== undefined) {
+    const prefix = directMatch[1];
+    const start = directMatch.index + prefix.length;
+    const end = start + directMatch[2].length;
+    return {
+      cloze: `${phrase.slice(0, start)}___${phrase.slice(end)}`,
+      article: directMatch[2].toLowerCase(),
+    };
+  }
+
+  // 3. German article + single lowercase adjective + noun (e.g. "Der goldene Ring ist schön.")
+  // Guard against relative pronouns after commas (", der heute ...") and non-adjective intervening words.
+  if (languageId === "de") {
+    const germanAdjRe = new RegExp(
+      `(^|[\\s„"«(])(${capArtAlt})(\\s+)([a-zäöüß][a-zäöüß-]*)(\\s+)(${escapedNoun})(?=$|[\\s.,!?;:»"”)])`,
+      "u",
+    );
+    const adjMatch = phrase.match(germanAdjRe);
+    if (adjMatch && adjMatch.index !== undefined) {
+      const prefix = adjMatch[1];
+      const start = adjMatch.index + prefix.length;
+      const beforeStart = phrase.slice(0, start).trimEnd();
+      const middleWord = adjMatch[4];
+      const looksLikeAttributiveAdj =
+        !beforeStart.endsWith(",") &&
+        !GERMAN_NON_ADJECTIVE_WORDS.has(middleWord) &&
+        /(?:e|en|er|es|em)$/.test(middleWord);
+      if (looksLikeAttributiveAdj) {
+        const end = start + adjMatch[2].length;
+        return {
+          cloze: `${phrase.slice(0, start)}___${phrase.slice(end)}`,
+          article: adjMatch[2].toLowerCase(),
+        };
+      }
+    }
+  }
+
+  return null;
+}
 
 export function buildWordEntityMaps(
   languageId: string,
@@ -81,11 +210,17 @@ export function buildWordEntityMaps(
   // Synthesize MCQ-only Article & Gender review entities for every gendered noun
   for (const word of Object.values(data.words)) {
     if (!word.gender) continue;
-    const correctArticle = displayArticle(word.gender, word.target_word, languageId) ?? word.gender;
+    const baseArticle = displayArticle(word.gender, word.target_word, languageId) ?? word.gender;
+    const contextCloze = buildArticleContextCloze(word.context_phrase, word.target_word, word.gender, languageId);
+    const correctArticle = contextCloze?.article ?? baseArticle;
     const id = `article_${word.id}`;
     const opts = articleOptions.includes(correctArticle)
       ? articleOptions
       : [correctArticle, ...articleOptions.slice(0, 3)];
+    const anchorNote =
+      contextCloze && correctArticle !== baseArticle
+        ? `Accusative form of "${baseArticle} ${word.target_word}" → "${correctArticle} ${word.target_word}". ${word.etymology_derivation}`
+        : `Gender anchor for "${word.target_word}": ${baseArticle} ${word.target_word}. ${word.etymology_derivation}`;
     const articleEntity: WordEntity = {
       id,
       target_word: correctArticle,
@@ -97,11 +232,12 @@ export function buildWordEntityMaps(
       shift_rule: `Article & Gender · ${word.target_word}`,
       context_phrase: word.context_phrase,
       context_translation: word.context_translation,
-      etymology_derivation: `Gender anchor for "${word.target_word}": ${correctArticle} ${word.target_word}. ${word.etymology_derivation}`,
+      etymology_derivation: anchorNote,
       domain: word.domain,
       supportedModes: ["mcq"],
       customMcqOptions: opts,
-      promptLabel: "article & gender mcq",
+      promptLabel: contextCloze ? "article in context" : "article & gender mcq",
+      articleCloze: contextCloze?.cloze,
       frequencyRank: null,
     };
     entities[id] = articleEntity;
@@ -196,6 +332,9 @@ export function buildWordEntityMaps(
 
   const byLowerKey: Record<string, WordEntity> = {};
   for (const word of Object.values(entities)) {
+    // Omit synthetic article_* entities from byLowerKey so looking up "den"/"der"
+    // never resolves to an arbitrary noun's article card.
+    if (word.id.startsWith("article_")) continue;
     const t = word.target_word.toLowerCase();
     if (!(t in byLowerKey)) byLowerKey[t] = word;
     const i = word.id.toLowerCase();

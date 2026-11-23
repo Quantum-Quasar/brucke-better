@@ -2,9 +2,9 @@
 
 // ponytail: focused bottom modal sheet presenting letter-by-letter diff and mechanical shift explanation
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { AlertCircle, ArrowRight, Stethoscope, Volume2 } from "lucide-react";
+import { AlertCircle, ArrowRight, ChevronDown, ChevronUp, Stethoscope, Volume2 } from "lucide-react";
 import { computeLetterDiff } from "@/lib/letter-diff";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
 import { ModalDialog } from "@/components/common/ModalDialog";
@@ -26,6 +26,24 @@ interface ErrorFeedbackSheetProps {
   onContinue: () => void;
 }
 
+const ABBREV_END_RE = /(?:e\.g|i\.e|z\.\s*B|d\.\s*h|vs|Dr|Mr|Mrs|Ms|St|Nr|ca)\.$/i;
+
+function splitFirstSentence(text: string): { lead: string; rest: string } {
+  const trimmed = text.trim();
+  const re = /[.!?](?=\s+\S)/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(trimmed)) !== null) {
+    const end = match.index + 1;
+    const candidate = trimmed.slice(0, end).trim();
+    if (candidate.length < 24 || ABBREV_END_RE.test(candidate)) continue;
+    const rest = trimmed.slice(end).trim();
+    if (rest.length > 0) {
+      return { lead: candidate, rest };
+    }
+  }
+  return { lead: trimmed, rest: "" };
+}
+
 export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
   userInput,
   expectedAnswer,
@@ -40,10 +58,21 @@ export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
 }) => {
   const diff = computeLetterDiff(userInput, expectedAnswer);
   const continueBtnRef = React.useRef<HTMLButtonElement>(null);
+  const [showMore, setShowMore] = useState(false);
+
+  useEffect(() => {
+    setShowMore(false);
+  }, [expectedAnswer, explanation, diagnosis]);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
   const spokenText = audioText ?? expectedAnswer;
   const spokenLocale = audioLocale ?? language.ttsLocale;
+
+  const explanationParts = explanation ? splitFirstSentence(explanation) : null;
+  // When diagnosis is present, tuck the full explanation behind "More"; otherwise show the first sentence and tuck any extra text.
+  const hasCollapsibleMore = Boolean(
+    explanation && (diagnosis || (explanationParts && explanationParts.rest.length > 0))
+  );
 
   useBackDismiss(true, onContinue);
 
@@ -51,7 +80,7 @@ export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.defaultPrevented || e.isComposing) return;
       if (e.key !== "Enter" && e.key !== " " && e.code !== "Space") return;
-      // a focused control keeps its native activation (continue, play-audio)
+      // a focused control keeps its native activation (continue, play-audio, more)
       const target = e.target;
       if (
         target instanceof HTMLElement &&
@@ -70,27 +99,31 @@ export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
 
   if (typeof document === "undefined") return null;
 
-  // Portal out of the lesson's transformed/scrolled ancestors so the sheet is
-  // positioned against the viewport (see SuccessFeedbackSheet).
   return createPortal(
     <ModalDialog onClose={onContinue} initialFocusRef={continueBtnRef} aria-labelledby="error-feedback-title" className="open:flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/80 animate-in fade-in duration-200">
       <div
-        className="w-full sm:max-w-md max-h-[85dvh] overflow-y-auto overscroll-contain bg-[var(--bg-color)] border-t sm:border border-[var(--error-color)]/30 sm:rounded-lg rounded-t-lg shadow-2xl p-6 pb-safe space-y-5 animate-in slide-in-from-bottom duration-200"
+        className="w-full sm:max-w-md max-h-[85dvh] overflow-y-auto overscroll-contain bg-[var(--bg-color)] border-t sm:border border-[var(--error-color)]/30 sm:rounded-lg rounded-t-lg shadow-2xl p-5 pb-safe space-y-4 animate-in slide-in-from-bottom duration-200"
       >
         {/* Header */}
-        <div className="flex items-center gap-2 text-[var(--error-color)]">
-          <AlertCircle className="w-5 h-5 shrink-0" />
-          <h4 id="error-feedback-title" className="text-sm font-bold text-[var(--text-color)] font-mono">sound shift breakdown</h4>
+        <div className="flex items-center justify-between gap-2 text-[var(--error-color)]">
+          <div className="flex items-center gap-2">
+            <AlertCircle className="w-5 h-5 shrink-0" />
+            <h4 id="error-feedback-title" className="text-sm font-bold text-[var(--text-color)] font-mono">not quite</h4>
+          </div>
+          {englishPrompt && (
+            <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 text-[var(--main-color)] font-semibold">
+              {shiftRule || "Consonant Shift"}
+            </span>
+          )}
         </div>
 
         {/* Letter Comparison */}
-        <div className="space-y-3 p-4 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20">
-          {/* User Input with character-level diff */}
+        <div className="space-y-2.5 p-3.5 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20">
           <div>
-            <span className="text-[11px] font-mono text-[var(--sub-color)] uppercase tracking-wider block mb-1">
+            <span className="text-[11px] font-mono text-[var(--sub-color)] uppercase tracking-wider block mb-0.5">
               your attempt:
             </span>
-            <div className="text-lg font-mono tracking-wide flex flex-wrap gap-0.5">
+            <div className="text-base font-mono tracking-wide flex flex-wrap gap-0.5">
               {diff.userChars.length > 0 ? (
                 diff.userChars.map((c, i) => (
                   <span
@@ -110,10 +143,9 @@ export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
             </div>
           </div>
 
-          {/* Correct Target Form */}
           <div className="pt-2 border-t border-[var(--sub-color)]/15 flex items-start justify-between gap-2">
             <div>
-              <span className="text-[11px] font-mono text-[var(--sub-color)] uppercase tracking-wider block mb-1">
+              <span className="text-[11px] font-mono text-[var(--sub-color)] uppercase tracking-wider block mb-0.5">
                 {answerLabel ?? `target ${language.name.toLowerCase()}:`}
               </span>
               <div className="text-lg font-mono font-bold text-[var(--main-color)]">
@@ -132,32 +164,44 @@ export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
               </button>
             )}
           </div>
-
-          {englishPrompt && (
-            <div className="pt-2 border-t border-[var(--sub-color)]/15 flex items-center justify-between text-xs font-mono">
-              <span className="text-[var(--sub-color)]">rule:</span>
-              <span className="text-[var(--main-color)] font-bold">{shiftRule || "Consonant Shift"}</span>
-            </div>
-          )}
         </div>
 
-        {/* TM-3: name the slip before the letter diff — feedback is teaching time */}
-        {diagnosis && (
+        {/* 1-line why: diagnosis if present, otherwise first sentence of explanation */}
+        {diagnosis ? (
           <div className="text-xs font-mono text-[var(--text-color)] leading-relaxed bg-[var(--sub-alt-color)] p-3 rounded-lg border border-[var(--main-color)]/30">
             <span className="text-[var(--main-color)] font-semibold flex items-center gap-1.5 mb-0.5 uppercase tracking-wider text-[11px]">
-              <Stethoscope className="w-3.5 h-3.5" /> what went wrong
+              <Stethoscope className="w-3.5 h-3.5" /> why
             </span>
             <em>
               {diagnosis.slip} — {diagnosis.cue}
             </em>
           </div>
-        )}
+        ) : explanationParts ? (
+          <div id="error-feedback-more" className="text-xs font-mono text-[var(--sub-color)] leading-relaxed bg-[var(--sub-alt-color)] p-3 rounded-lg border border-[var(--sub-color)]/20">
+            <span className="text-[var(--main-color)] font-semibold block mb-0.5">why:</span>
+            {showMore ? explanation : explanationParts.lead}
+          </div>
+        ) : null}
 
-        {/* Instructive Explanation */}
-        {explanation && (
-          <div className="text-xs font-mono text-[var(--sub-color)] leading-relaxed bg-[var(--sub-alt-color)] p-3 rounded-lg border border-[var(--sub-color)]/20">
-            <span className="text-[var(--main-color)] font-semibold block mb-0.5">shift note:</span>
-            {explanation}
+        {/* Expandable longer note behind "More" */}
+        {hasCollapsibleMore && (
+          <div className="space-y-2">
+            <button
+              type="button"
+              onClick={() => setShowMore((prev) => !prev)}
+              aria-expanded={showMore}
+              aria-controls="error-feedback-more"
+              className="inline-flex items-center gap-1 text-[11px] font-mono text-[var(--main-color)] hover:underline cursor-pointer"
+            >
+              {showMore ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
+              <span>{showMore ? "Less" : "More"}</span>
+            </button>
+            {showMore && diagnosis && explanation && (
+              <div id="error-feedback-more" className="text-xs font-mono text-[var(--sub-color)] leading-relaxed bg-[var(--sub-alt-color)] p-3 rounded-lg border border-[var(--sub-color)]/20">
+                <span className="text-[var(--main-color)] font-semibold block mb-0.5">shift note:</span>
+                {explanation}
+              </div>
+            )}
           </div>
         )}
 

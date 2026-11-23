@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { Check, AlertCircle, Sparkles } from "lucide-react";
+import { Check, AlertCircle, Sparkles, Volume2, Eye, EyeOff } from "lucide-react";
 import { ErrorFeedbackSheet } from "./ErrorFeedbackSheet";
 import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
 import { affirmationFor } from "@/lib/shift-diagnosis";
@@ -17,7 +17,7 @@ const SyntaxInput = dynamic(() => import("./inputs/SyntaxInput"), { loading: Exe
 
 export default function ClassicExercise(props: ExerciseWidgetProps) {
   const controller = useClassicExercise(props);
-  const { exercise, onSuccess, onFlagGuessed, isRetry, setUserInput, setSelectedIndices, status, setStatus, sheetVariant, verifiedAttemptText, almostWarningNote, feedbackNote, setFeedbackNote, showErrorSheet, setShowErrorSheet, showSuccessSheet, setShowSuccessSheet, failedAttemptText, failedDiagnosis, inputRef, settings, language, isReverseCognate, reverseCognateForeignWord, sanitizedWordBank, sanitizedTileOptions, displayOptions, handleVerify } = controller;
+  const { exercise, onSuccess, onFlagGuessed, isRetry, setUserInput, setSelectedIndices, status, setStatus, sheetVariant, verifiedAttemptText, almostWarningNote, feedbackNote, setFeedbackNote, showErrorSheet, setShowErrorSheet, showSuccessSheet, setShowSuccessSheet, failedAttemptText, failedDiagnosis, inputRef, settings, language, isReverseCognate, reverseCognateForeignWord, isAudioFirstSprig, sprigAudioText, promptTextRevealed, setPromptTextRevealed, replaySprigAudio, sanitizedWordBank, sanitizedTileOptions, displayOptions, handleVerify } = controller;
   return (
     <div className="p-6 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 space-y-5 shadow-lg font-mono">
       {/* Exercise Header */}
@@ -48,7 +48,39 @@ export default function ClassicExercise(props: ExerciseWidgetProps) {
         )}
       </div>
 
-      <p className="text-base text-[var(--text-color)] font-bold leading-snug">{exercise.prompt}</p>
+      {isAudioFirstSprig ? (
+        <div className="space-y-3 rounded-lg bg-[var(--bg-color)] border border-[var(--main-color)]/30 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <button
+              type="button"
+              onClick={replaySprigAudio}
+              disabled={!sprigAudioText}
+              className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-[var(--main-color)]/15 border border-[var(--main-color)]/40 px-3.5 py-1.5 text-xs font-mono font-bold text-[var(--main-color)] hover:bg-[var(--main-color)]/25 transition cursor-pointer disabled:opacity-40"
+              aria-label="Play target audio prompt"
+            >
+              <Volume2 className="w-4 h-4" />
+              <span>Play audio prompt</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setPromptTextRevealed((prev) => !prev)}
+              className="inline-flex min-h-10 items-center gap-1.5 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 px-3 py-1.5 text-xs font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] hover:border-[var(--main-color)]/40 transition cursor-pointer"
+            >
+              {promptTextRevealed ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+              <span>{promptTextRevealed ? "Hide prompt text" : "Show prompt text"}</span>
+            </button>
+          </div>
+          {promptTextRevealed || status === "correct" || status === "almost" ? (
+            <p className="text-base text-[var(--text-color)] font-bold leading-snug">{exercise.prompt}</p>
+          ) : (
+            <p className="text-xs text-[var(--sub-color)] leading-relaxed">
+              Audio-first discrimination drill — listen to the spoken target form first, or reveal the written prompt if needed.
+            </p>
+          )}
+        </div>
+      ) : (
+        <p className="text-base text-[var(--text-color)] font-bold leading-snug">{exercise.prompt}</p>
+      )}
 
       {/* Pre-exercise Vocabulary Hints */}
       {exercise.vocab_hints && exercise.vocab_hints.length > 0 && (

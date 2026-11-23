@@ -10,7 +10,7 @@ import { Zap, Eye, SkipForward, Check, RotateCcw } from "lucide-react";
 import { useAppStore } from "@/lib/store";
 import { soundEngine } from "@/lib/sound";
 import { getLanguageDefinition } from "@/data/languages";
-import { arrangeTilesDeterministically } from "./exercise-tiles";
+import { arrangeTilesDeterministically, lowercaseSentenceStarterTiles } from "./exercise-tiles";
 import { hasBlockingKeyboardDialog } from "@/components/common/ModalDialog";
 import type { LessonTwist } from "@/lib/types";
 
@@ -23,13 +23,18 @@ interface TwistCardProps {
 export const TwistCard: React.FC<TwistCardProps> = ({ twist, onDone }) => {
   const [userInput, setUserInput] = useState("");
   const [revealed, setRevealed] = useState(false);
+  const [showWords, setShowWords] = useState(false);
+
+  React.useEffect(() => {
+    setShowWords(false);
+  }, [twist.target_answer]);
   const inputRef = useRef<HTMLInputElement>(null);
   const settings = useAppStore((s) => s.settings);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
 
   const wordBank = React.useMemo(() => {
-    const cleaned = (twist.word_bank || []).map((w) => w.replace(/[.,!?;:]+$/, ""));
+    const cleaned = lowercaseSentenceStarterTiles((twist.word_bank || []).map((w) => w.replace(/[.,!?;:]+$/, "")));
     return arrangeTilesDeterministically(cleaned, `twist#${twist.target_answer}`, twist.target_answer);
   }, [twist.word_bank, twist.target_answer]);
 
@@ -39,10 +44,10 @@ export const TwistCard: React.FC<TwistCardProps> = ({ twist, onDone }) => {
     setTimeout(() => inputRef.current?.focus(), 0);
   };
 
-  const handleReveal = () => {
+  const handleReveal = React.useCallback(() => {
     void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
     setRevealed(true);
-  };
+  }, [settings.playSoundOnClick, settings.soundVolume]);
 
   // Enter: reveal while answering, confirm "Got it" once revealed — but only when
   // no control is focused. A focused button ("not yet — meet it again", "skip")
@@ -68,7 +73,7 @@ export const TwistCard: React.FC<TwistCardProps> = ({ twist, onDone }) => {
     };
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [revealed, onDone]);
+  }, [revealed, onDone, handleReveal]);
 
   return (
     <div className="p-6 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--main-color)]/40 space-y-5 shadow-lg font-mono animate-in fade-in duration-200">
@@ -114,7 +119,17 @@ export const TwistCard: React.FC<TwistCardProps> = ({ twist, onDone }) => {
               placeholder={`your ${language.name.toLowerCase()}...`}
               className="w-full px-4 py-3 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 text-[var(--main-color)] text-lg font-bold font-mono outline-none focus:border-[var(--main-color)] transition placeholder:text-[var(--sub-color)]/40"
             />
-            {wordBank.length > 0 && (
+            {wordBank.length > 0 && !showWords && (
+              <button
+                type="button"
+                aria-expanded={showWords}
+                onClick={() => setShowWords(true)}
+                className="text-xs font-mono text-[var(--sub-color)] hover:text-[var(--main-color)] underline underline-offset-4 transition cursor-pointer"
+              >
+                Show word bank ({wordBank.length} words)
+              </button>
+            )}
+            {wordBank.length > 0 && showWords && (
               <div className="flex flex-wrap gap-2">
                 {wordBank.map((word, i) => (
                   <button

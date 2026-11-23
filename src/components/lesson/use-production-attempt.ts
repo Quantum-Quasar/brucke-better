@@ -1,16 +1,22 @@
 "use client";
 
-// Shared state machine for production drills: typing, cue ladder的次数 and the
+// Shared state machine for production drills: typing, cue ladder and the
 // exact/almost/incorrect hand-off to the success or error sheet. Each exercise
 // keeps only its own prompt and answer-entry surface.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { arrangeTilesDeterministically } from "./exercise-tiles";
+import {
+  arrangeTilesDeterministically,
+  capitalizeAssembledTileAnswer,
+  lowercaseSentenceStarterTiles,
+} from "./exercise-tiles";
 import { gradeExerciseAttempt } from "@/lib/exercise-grading";
 import { affirmationFor } from "@/lib/shift-diagnosis";
 import { getLanguageDefinition } from "@/data/languages";
 import { useAppStore } from "@/lib/store";
 import { soundEngine } from "@/lib/sound";
+import { recordMistake } from "@/lib/mistake-notebook";
+import { recordPracticeDay } from "@/lib/weekly-practice";
 import type { ExerciseDiagnosis, ExerciseItem } from "@/lib/types";
 
 export type ProductionStatus = "idle" | "correct" | "almost" | "incorrect";
@@ -66,21 +72,26 @@ export function useProductionAttempt({
 
   const inputRef = useRef<HTMLInputElement>(null);
   const verifyingRef = useRef(false);
+  const usedTileAssemblyRef = useRef(false);
   const tolerance = useAppStore((s) => s.tolerance);
   const settings = useAppStore((s) => s.settings);
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
 
   const wordBank = useMemo(() => {
-    const cleaned = (exercise.word_bank || []).map((word) => word.replace(/[.,!?;:]+$/, ""));
+    const cleaned = lowercaseSentenceStarterTiles(
+      (exercise.word_bank || []).map((word) => word.replace(/[.,!?;:]+$/, "")),
+      activeLanguageId
+    );
     return arrangeTilesDeterministically(cleaned, `${exercise.id}#wb`, exercise.target_answer);
-  }, [exercise.word_bank, exercise.id, exercise.target_answer]);
+  }, [exercise.word_bank, exercise.id, exercise.target_answer, activeLanguageId]);
   const cues = exercise.cues ?? [];
   const target = exercise.target_answer.trim();
   const affirmation = affirmationFor(exercise.affirmation, exercise.shift_hint);
 
   const resetCurrentExercise = useCallback(() => {
     verifyingRef.current = false;
+    usedTileAssemblyRef.current = false;
     setUserInput("");
     setCuesRevealed(0);
     setStatus("idle");
@@ -104,6 +115,7 @@ export function useProductionAttempt({
 
   const insertWord = (word: string) => {
     if (status === "correct" || status === "almost") return;
+    usedTileAssemblyRef.current = true;
     void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
     setFeedbackNote(null);
     setUserInput((previous) => {
@@ -121,11 +133,15 @@ export function useProductionAttempt({
 
   const handleVerify = () => {
     if (guardDuplicateVerify && verifyingRef.current) return;
-    const answer = userInput.trim();
-    if (!answer) {
+    const rawAnswer = userInput.trim();
+    if (!rawAnswer) {
       setFeedbackNote(emptyMessage);
       return;
     }
+    const answer =
+      usedTileAssemblyRef.current || exercise.type === "syntax_builder"
+        ? capitalizeAssembledTileAnswer(rawAnswer, target)
+        : rawAnswer;
     if (guardDuplicateVerify) verifyingRef.current = true;
     inputRef.current?.blur();
 
@@ -149,6 +165,7 @@ export function useProductionAttempt({
       setSheetVariant("exact");
       setVerifiedAttemptText(answer);
       setAlmostWarningNote(undefined);
+      recordPracticeDay();
       setShowSuccessSheet(true);
       return;
     }
@@ -161,6 +178,7 @@ export function useProductionAttempt({
       setSheetVariant("almost");
       setVerifiedAttemptText(answer);
       setAlmostWarningNote(evaluation.warningNote);
+      recordPracticeDay();
       setShowSuccessSheet(true);
       if (graded.queueRetry) onQueueRetry?.();
       return;
@@ -169,6 +187,17 @@ export function useProductionAttempt({
     setStatus("incorrect");
     void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
     onError(graded.errorType);
+    recordMistake({
+      languageId: activeLanguageId,
+      prompt: exercise.prompt || exercise.idea || exercise.english_hint || "",
+      expected: graded.target || target,
+      attempt: answer,
+      baseErrorType: graded.errorType,
+      diagnosisTitle: graded.diagnosis?.slip,
+      diagnosisBody: graded.diagnosis?.cue,
+      note: graded.diagnosis?.cue,
+      exerciseId: exercise.id,
+    });
     onQueueRetry?.();
     setFailedAttemptText(answer);
     setFailedDiagnosis(graded.diagnosis);
