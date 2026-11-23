@@ -1,12 +1,21 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import { ModalDialog } from "@/components/common/ModalDialog";
 import { ArrowRight, BookOpen, Check, GitBranch, Info, Lock, Sparkles, Star, X } from "lucide-react";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
 import type { TrailNode, NodeStatus, GateView, NodeGateInfo, GateMarker } from "@/lib/trail-map";
 import { loadLesson } from "@/lib/content-client";
-import { hasPassedGateAssessment, scoreGateAnswers, selectGateQuestion, type GateQuestion } from "@/lib/gate-assessment";
+import {
+  assembleGateQuestions,
+  getMissedGateLessons,
+  hasPassedGateAssessment,
+  scoreGateAnswers,
+  type GateLessonSource,
+  type GateQuestion,
+} from "@/lib/gate-assessment";
+import { lessonHref } from "@/lib/routes";
 import { LessonEffort } from "@/components/common/LessonEffort";
 
 interface LessonNodeDrawerProps {
@@ -105,10 +114,7 @@ export const LessonNodeDrawer: React.FC<LessonNodeDrawerProps> = ({
                     <Lock className="w-3.5 h-3.5" /> beyond the {view.gate.title.replace(/^The /, "")}
                   </span>
                   <p className="text-[var(--sub-color)] leading-relaxed">
-                    <span className="text-[var(--text-color)] font-bold">
-                      {view.gate.stars} / {view.gate.requiredStars} ★
-                    </span>{" "}
-                    earned in topics {view.gate.fromTopic}–{view.gate.toTopic}. Earn the required stars, reach the gate, and pass its checkpoint to continue.
+                    Finish the main-path lessons in topics {view.gate.fromTopic}–{view.gate.toTopic} and pass the checkpoint to continue.
                   </p>
                 </>
               ) : (
@@ -168,33 +174,51 @@ interface GateDrawerProps {
   reached: boolean;
   onPass: () => void;
   onClose: () => void;
+  onOpenLesson?: (lessonId: number) => void;
 }
 
 /** Checkpoint drawer explaining why a star gate sits where it sits. */
-export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, languageId, lessons, reached, onPass, onClose }) => {
+export const GateDrawer: React.FC<GateDrawerProps> = ({
+  gate,
+  view,
+  languageId,
+  lessons,
+  reached,
+  onPass,
+  onClose,
+  onOpenLesson,
+}) => {
   useBackDismiss(true, onClose);
 
 
-  const pct = Math.min(100, Math.round((view.stars / gate.requiredStars) * 100));
+  const [lessonSources, setLessonSources] = useState<GateLessonSource[]>([]);
   const [questions, setQuestions] = useState<GateQuestion[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
   const [result, setResult] = useState<boolean[] | null>(null);
+  const [attempt, setAttempt] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const eligible = reached && view.stars >= gate.requiredStars;
+  const eligible = reached;
+
   const startAssessment = async () => {
     if (!eligible || view.passed || loading) return;
     setLoading(true);
     setError(null);
     try {
       if (!lessons.length) throw new Error("No required lessons were found for this checkpoint.");
-      const selected = await Promise.all(lessons.map(async (lesson) => {
+      const sources: GateLessonSource[] = await Promise.all(lessons.map(async (lesson) => {
         const payload = await loadLesson(languageId, lesson.id);
         if (!payload?.lesson?.exercises) throw new Error(`Could not load exercises for ${lesson.title}.`);
-        const question = selectGateQuestion(lesson.title, lesson.id, payload.lesson.exercises);
-        if (!question) throw new Error(`No supported assessment question is available for ${lesson.title}.`);
-        return question;
+        return { id: lesson.id, title: lesson.title, exercises: payload.lesson.exercises };
       }));
+      const selected = assembleGateQuestions(sources, 0);
+      if (selected.length !== sources.length) {
+        const covered = new Set(selected.map((q) => q.lessonId));
+        const missing = sources.find((s) => !covered.has(s.id));
+        throw new Error(`No supported assessment question is available for ${missing?.title ?? "this checkpoint"}.`);
+      }
+      setLessonSources(sources);
+      setAttempt(0);
       setQuestions(selected);
       setAnswers(selected.map(() => ""));
       setResult(null);
@@ -204,6 +228,23 @@ export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, languageId, 
       setLoading(false);
     }
   };
+
+  const retryAssessment = () => {
+    const nextAttempt = attempt + 1;
+    setAttempt(nextAttempt);
+    if (lessonSources.length > 0) {
+      const nextQuestions = assembleGateQuestions(lessonSources, nextAttempt);
+      if (nextQuestions.length === lessonSources.length) {
+        setQuestions(nextQuestions);
+        setAnswers(nextQuestions.map(() => ""));
+        setResult(null);
+        return;
+      }
+    }
+    setResult(null);
+    setAnswers(questions.map(() => ""));
+  };
+
   const submitAssessment = (event: React.FormEvent) => {
     event.preventDefault();
     if (!eligible || view.passed || !questions.length || answers.some((answer) => !answer.trim())) return;
@@ -211,6 +252,8 @@ export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, languageId, 
     setResult(scored);
     if (hasPassedGateAssessment(scored)) onPass();
   };
+
+  const missedLessons = result && !view.passed ? getMissedGateLessons(questions, result, 3) : [];
 
   return (
     <ModalDialog onClose={onClose} aria-label={gate.title} className="open:block z-50">
@@ -221,7 +264,7 @@ export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, languageId, 
             <div className="space-y-1 min-w-0">
               <span className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-[var(--main-color)] font-semibold">
                 <Lock className="w-3 h-3" />
-                star gate · topics {view.fromTopic}–{view.toTopic}
+                checkpoint · topics {view.fromTopic}–{view.toTopic}
               </span>
               <h2 className="text-lg font-bold text-[var(--text-color)] tracking-tight leading-snug">{gate.title}</h2>
             </div>
@@ -239,36 +282,25 @@ export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, languageId, 
 
           <div className="p-3 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 space-y-2 text-xs font-mono">
             <div className="flex items-center justify-between">
-              <span className="text-[var(--sub-color)]">stars in this stretch</span>
-              <span className={view.stars >= gate.requiredStars ? "text-[var(--main-color)] font-bold" : "text-[var(--text-color)] font-bold"}>
-                {view.stars} / {gate.requiredStars}
+              <span className="text-[var(--sub-color)]">main-path lessons</span>
+              <span className={reached ? "text-[var(--main-color)] font-bold" : "text-[var(--text-color)] font-bold"}>
+                {reached ? "complete" : "in progress"}
               </span>
             </div>
-            <div
-              role="progressbar"
-              aria-valuenow={view.stars}
-              aria-valuemin={0}
-              aria-valuemax={gate.requiredStars}
-              aria-label={`Star requirement for ${gate.title}`}
-              className="w-full h-1.5 rounded-full bg-[var(--bg-color)] overflow-hidden"
-            >
-              <div
-                className="h-full rounded-full transition-all duration-300"
-                style={{ width: `${pct}%`, background: view.stars >= gate.requiredStars ? "var(--main-color)" : "var(--sub-color)" }}
-              />
+            <div className="flex items-center justify-between">
+              <span className="text-[var(--sub-color)]">checkpoint</span>
+              <span className={view.passed ? "text-[var(--main-color)] font-bold" : "text-[var(--text-color)] font-bold"}>
+                {view.passed ? "passed" : "not passed yet"}
+              </span>
             </div>
             {view.open ? (
               <span className="flex items-center gap-1.5 text-[var(--main-color)]">
                 <Check className="w-3.5 h-3.5" /> open — the next stretch awaits
               </span>
-            ) : view.stars < gate.requiredStars ? (
-              <span className="text-[var(--sub-color)] leading-relaxed">
-                {gate.requiredStars - view.stars} more star{gate.requiredStars - view.stars === 1 ? "" : "s"} needed. Gold or purple both count.
-              </span>
             ) : !reached ? (
-              <span className="text-[var(--sub-color)]">Complete the last main-path lesson before this gate to take the checkpoint.</span>
+              <span className="text-[var(--sub-color)]">Complete the main-path lessons before this gate to unlock the checkpoint.</span>
             ) : (
-              <span className="text-[var(--sub-color)]">Star requirement met. Pass the checkpoint to open the gate.</span>
+              <span className="text-[var(--sub-color)]">Checkpoint ready. Pass it to open the next stretch (side lessons remain optional).</span>
             )}
           </div>
           {!view.passed && (
@@ -285,19 +317,48 @@ export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, languageId, 
           )}
           {questions.length > 0 && (
             <form onSubmit={submitAssessment} className="space-y-4">
-              {questions.map(({ lesson, options, prompt }, index) => (
-                <fieldset key={`${index}-${lesson}`} className="space-y-2 rounded-lg border border-[var(--sub-color)]/25 p-3">
+              {questions.map(({ lesson, lessonId, options, prompt, mode, hint, answer }, index) => (
+                <fieldset key={`${attempt}-${index}-${lessonId}`} className="space-y-2 rounded-lg border border-[var(--sub-color)]/25 p-3">
                   <legend className="px-1 text-xs text-[var(--sub-color)]">{index + 1}. {lesson}</legend>
                   <p className="whitespace-pre-line text-sm font-medium text-[var(--text-color)]">{prompt}</p>
-                  {options.map((option, optionIndex) => (
-                    <label key={optionIndex} className="flex gap-2 text-sm text-[var(--text-color)]">
-                      <input type="radio" name={`gate-question-${index}`} value={option} required disabled={result !== null}
-                        checked={answers[index] === option}
-                        onChange={() => setAnswers((old) => old.map((answer, i) => i === index ? option : answer))} />
-                      {option}
-                    </label>
-                  ))}
-                  {result && <p className="text-xs font-semibold">{result[index] ? "Correct" : "Incorrect"}</p>}
+                  {mode === "typed" ? (
+                    <div className="space-y-1.5">
+                      {hint && <p className="text-xs text-[var(--sub-color)]">{hint}</p>}
+                      <input
+                        type="text"
+                        required
+                        disabled={result !== null}
+                        value={answers[index] ?? ""}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          setAnswers((old) => old.map((current, i) => (i === index ? value : current)));
+                        }}
+                        placeholder="Type your answer..."
+                        aria-label={`Answer for ${lesson}`}
+                        className="w-full rounded-md bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/30 px-3 py-2 text-sm font-mono text-[var(--text-color)] focus:border-[var(--main-color)] focus:outline-none disabled:opacity-70"
+                      />
+                    </div>
+                  ) : (
+                    options.map((option, optionIndex) => (
+                      <label key={optionIndex} className="flex gap-2 text-sm text-[var(--text-color)]">
+                        <input
+                          type="radio"
+                          name={`gate-question-${index}`}
+                          value={option}
+                          required
+                          disabled={result !== null}
+                          checked={answers[index] === option}
+                          onChange={() => setAnswers((old) => old.map((current, i) => (i === index ? option : current)))}
+                        />
+                        {option}
+                      </label>
+                    ))
+                  )}
+                  {result && (
+                    <p className={`text-xs font-semibold ${result[index] ? "text-[var(--main-color)]" : "text-[var(--error-color)]"}`}>
+                      {result[index] ? "Correct" : `Incorrect — expected: ${answer}`}
+                    </p>
+                  )}
                 </fieldset>
               ))}
               {result ? (
@@ -306,15 +367,45 @@ export const GateDrawer: React.FC<GateDrawerProps> = ({ gate, view, languageId, 
                     {view.passed ? "Passed" : "Not passed"}: {result.filter(Boolean).length} / {result.length} correct
                     {" "}(need {Math.ceil(result.length * 0.8)}).
                   </p>
+                  {!view.passed && missedLessons.length > 0 && (
+                    <div className="p-3 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/25 space-y-2">
+                      <p className="text-xs font-mono font-semibold text-[var(--text-color)]">
+                        Review the lessons covering what you missed:
+                      </p>
+                      <div className="flex flex-col gap-1.5">
+                        {missedLessons.map((item) => (
+                          <Link
+                            key={item.lessonId}
+                            href={lessonHref(languageId, item.lessonId)}
+                            onClick={(event) => {
+                              if (onOpenLesson && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+                                event.preventDefault();
+                                onClose();
+                                onOpenLesson(item.lessonId);
+                              } else {
+                                onClose();
+                              }
+                            }}
+                            className="inline-flex items-center justify-between gap-2 px-3 py-2 rounded-md bg-[var(--bg-color)] border border-[var(--sub-color)]/20 hover:border-[var(--main-color)]/50 text-xs font-mono text-[var(--main-color)] font-semibold transition"
+                          >
+                            <span>Review {item.title} →</span>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                   {!view.passed && (
-                    <button type="button" onClick={() => { setResult(null); setAnswers(questions.map(() => "")); }}
-                      className="w-full rounded-lg bg-[var(--main-color)] px-4 py-3 text-sm font-bold text-[var(--bg-color)]">
+                    <button
+                      type="button"
+                      onClick={retryAssessment}
+                      className="w-full rounded-lg bg-[var(--main-color)] px-4 py-3 text-sm font-bold text-[var(--bg-color)] cursor-pointer"
+                    >
                       Retry checkpoint
                     </button>
                   )}
                 </div>
               ) : (
-                <button type="submit" className="w-full rounded-lg bg-[var(--main-color)] px-4 py-3 text-sm font-bold text-[var(--bg-color)]">
+                <button type="submit" className="w-full rounded-lg bg-[var(--main-color)] px-4 py-3 text-sm font-bold text-[var(--bg-color)] cursor-pointer">
                   Submit answers
                 </button>
               )}

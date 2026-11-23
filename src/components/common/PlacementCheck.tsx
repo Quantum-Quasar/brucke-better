@@ -1,12 +1,17 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useAppStore } from "@/lib/store";
 import { getPlacementQuestions, PLACEMENT_SECONDS, recommendPlacementTopic } from "@/lib/placement";
 
 export function PlacementCheck({ languageId }: { languageId: string }) {
-  const updateSetting = useAppStore((s) => s.updateSetting);
-  const questions = getPlacementQuestions(languageId);
+  const placedAtTopic = useAppStore((s) => s.placedAtTopic);
+  const setPlacedAtTopic = useAppStore((s) => s.setPlacedAtTopic);
+  const [sessionSeed, setSessionSeed] = useState(0);
+  const questions = useMemo(
+    () => getPlacementQuestions(languageId, sessionSeed),
+    [languageId, sessionSeed]
+  );
   const [results, setResults] = useState<boolean[]>([]);
   const [deadline, setDeadline] = useState<number | null>(null);
   const [remaining, setRemaining] = useState(PLACEMENT_SECONDS);
@@ -16,9 +21,17 @@ export function PlacementCheck({ languageId }: { languageId: string }) {
   const question = questions[results.length];
   const running = deadline !== null && !finished;
 
+  const startPlacement = () => {
+    setSessionSeed(Math.floor(Math.random() * 0x7fffffff) + 1);
+    setResults([]);
+    setFinished(false);
+    setRemaining(PLACEMENT_SECONDS);
+    setDeadline(Date.now() + PLACEMENT_SECONDS * 1000);
+  };
+
   const finish = (answers: boolean[]) => {
     setFinished(true);
-    updateSetting("placementTopic", recommendPlacementTopic(answers));
+    setPlacedAtTopic(Math.max(placedAtTopic, recommendPlacementTopic(answers)));
   };
 
   useEffect(() => {
@@ -28,13 +41,13 @@ export function PlacementCheck({ languageId }: { languageId: string }) {
       setRemaining(seconds);
       if (seconds === 0) {
         setFinished(true);
-        updateSetting("placementTopic", recommendPlacementTopic(results));
+        setPlacedAtTopic(Math.max(placedAtTopic, recommendPlacementTopic(results)));
       }
     };
     tick();
     const interval = window.setInterval(tick, 250);
     return () => window.clearInterval(interval);
-  }, [deadline, running, results, updateSetting]);
+  }, [deadline, running, results, placedAtTopic, setPlacedAtTopic]);
 
   useEffect(() => {
     if (finished) resultRef.current?.focus();
@@ -43,18 +56,25 @@ export function PlacementCheck({ languageId }: { languageId: string }) {
 
   if (!questions.length) return <p>Placement is not available for this language. Start with topic 1.</p>;
 
-  if (finished) return (
-    <div className="space-y-2" data-testid="placement-result">
-      <h3 ref={resultRef} tabIndex={-1} className="font-bold text-[var(--text-color)]">A starting suggestion, not a grade</h3>
-      <p>{results.length} of {questions.length} items tried · {results.filter(Boolean).length} recognized. Suggested starting topic: {recommendPlacementTopic(results)}.</p>
-      <p>Use the topic picker below to override this anytime. This short check does not complete lessons, award stars or unlock topics. Earlier lessons and checkpoints still apply.</p>
-    </div>
-  );
+  if (finished) {
+    const recommended = recommendPlacementTopic(results);
+    return (
+      <div className="space-y-2" data-testid="placement-result">
+        <h3 ref={resultRef} tabIndex={-1} className="font-bold text-[var(--text-color)]">A starting suggestion, not a grade</h3>
+        <p>{results.length} of {questions.length} items tried · {results.filter(Boolean).length} recognized. Suggested starting topic: {recommended}.</p>
+        <p>
+          {recommended > 1
+            ? `Topics 1–${recommended - 1} and their checkpoints are now unlocked so you can start right at topic ${recommended} (earlier lessons stay available to revisit anytime). Use the topic picker below to adjust this anytime.`
+            : "You’re set to start at topic 1. Use the topic picker below to override this anytime."}
+        </p>
+      </div>
+    );
+  }
 
   if (!running) return (
     <div className="space-y-2">
-      <p>Already know a little? Try 10 mixed-pattern items in up to 60 seconds. Guess, choose “not sure”, stop early or skip entirely. This only suggests a starting topic.</p>
-      <button type="button" onClick={() => setDeadline(Date.now() + PLACEMENT_SECONDS * 1000)} className="min-h-11 px-3 rounded border border-[var(--main-color)] text-[var(--main-color)] cursor-pointer">Try optional 60-second placement</button>
+      <p>Already know a little—or a lot? Try {questions.length} mixed-pattern items across early, intermediate, and advanced topics in up to {PLACEMENT_SECONDS} seconds. Guess, choose “not sure”, stop early or skip entirely.</p>
+      <button type="button" onClick={startPlacement} className="min-h-11 px-3 rounded border border-[var(--main-color)] text-[var(--main-color)] cursor-pointer">Try optional placement ({PLACEMENT_SECONDS}s)</button>
     </div>
   );
 
@@ -70,7 +90,7 @@ export function PlacementCheck({ languageId }: { languageId: string }) {
 
   return (
     <section className="space-y-3" aria-label="Optional placement" data-onboarding-local-keys>
-      <p className="flex justify-between gap-2"><span>Item {results.length + 1} / {questions.length} · {question.pattern}</span><span role="timer" aria-label="Placement time remaining">{remaining}s left</span></p>
+      <p className="flex justify-between gap-2"><span>Item {results.length + 1} / {questions.length} · {question.phase} · {question.pattern}</span><span role="timer" aria-label="Placement time remaining">{remaining}s left</span></p>
       <h3 ref={questionRef} tabIndex={-1} className="font-bold text-[var(--text-color)]">{question.prompt}</h3>
       <div className="grid gap-2">
         {question.options.map((option) => <button type="button" key={option} onClick={() => answer(option)} className="min-h-11 rounded border border-[var(--sub-color)]/30 px-3 py-2 text-left hover:border-[var(--main-color)] cursor-pointer">{option}</button>)}

@@ -3,7 +3,24 @@ import { saveState } from "./persistence";
 import { createInitialCard, gradeCard, isMastered, isReviewable, localDateKey, needsRelearn } from "../srs";
 import { failedSentenceCard, gradeSentenceCard, isSentenceProcess, sentenceCardId } from "../sentence-review";
 
-export const createReviewSlice: StoreSlice<"recordReview" | "restoreSrsCard" | "flagGuessed" | "recordSentenceFailure" | "recordSentenceReview" | "suspendCard" | "buryCard" | "unburyCard" | "beginCardRelearn" | "resumeCardAfterRelearn"> = (set, get) => ({
+export const createReviewSlice: StoreSlice<"recordReview" | "toggleStarWord" | "restoreSrsCard" | "flagGuessed" | "recordSentenceFailure" | "recordSentenceReview" | "suspendCard" | "buryCard" | "unburyCard" | "beginCardRelearn" | "resumeCardAfterRelearn"> = (set, get) => ({
+  toggleStarWord: (wordId) => {
+    const id = wordId.trim();
+    if (!id) return;
+    set((s) => {
+      const lang = s.activeLanguageId;
+      const current = s.starredWordIds[lang] ?? [];
+      const updated = current.includes(id)
+        ? current.filter((w) => w !== id)
+        : [...current, id];
+      const next = {
+        ...s,
+        starredWordIds: { ...s.starredWordIds, [lang]: updated },
+      };
+      saveState(next);
+      return next;
+    });
+  },
   suspendCard: (wordId, suspended) => {
     const id = wordId.trim();
     if (!id) return;

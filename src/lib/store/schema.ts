@@ -153,6 +153,25 @@ export function normalizeLessonStars(raw: unknown): Record<number, LessonStar> {
   return stars;
 }
 
+export function normalizeStarredWordIds(raw: unknown): Record<string, string[]> {
+  const result: Record<string, string[]> = {};
+  if (!isPlausibleStateObject(raw)) return result;
+  for (const [langId, list] of Object.entries(raw)) {
+    if (!isValidLanguageId(langId) || isDangerousKey(langId) || !Array.isArray(list)) continue;
+    const seen = new Set<string>();
+    const clean: string[] = [];
+    for (const item of list) {
+      if (typeof item !== "string") continue;
+      const id = item.trim();
+      if (!id || id.length > 200 || isDangerousKey(id) || seen.has(id)) continue;
+      seen.add(id);
+      clean.push(id);
+    }
+    if (clean.length > 0) result[langId] = clean;
+  }
+  return result;
+}
+
 export function normalizeWordMastery(raw: unknown): Record<string, MasteryState> {
   const mastery: Record<string, MasteryState> = {};
   if (!isPlausibleStateObject(raw)) return mastery;
@@ -266,8 +285,11 @@ export function normalizeSettings(raw: unknown, fallback: CustomizationSettings)
     capsLockWarning: coerceBoolean(source.capsLockWarning, fallback.capsLockWarning),
     showMasteryCounter: coerceBoolean(source.showMasteryCounter, fallback.showMasteryCounter),
     increasedContrast: coerceBoolean(source.increasedContrast, fallback.increasedContrast),
+    largerText: coerceBoolean(source.largerText, fallback.largerText),
+    reducedText: coerceBoolean(source.reducedText, fallback.reducedText),
     showPostureCues: coerceBoolean(source.showPostureCues, fallback.showPostureCues),
     posturePrimerSeen: coerceBoolean(source.posturePrimerSeen, fallback.posturePrimerSeen),
+    dutchFromGerman: coerceBoolean(source.dutchFromGerman, fallback.dutchFromGerman),
     listeningSkippedUntil: coerceCount(source.listeningSkippedUntil, fallback.listeningSkippedUntil),
   };
 }
@@ -311,6 +333,7 @@ export function normalizeLanguageSlice(raw: unknown): LanguageProgress {
     lessonProgress: normalizeLessonProgress(slice.lessonProgress),
     lessonStars: normalizeLessonStars(slice.lessonStars),
     passedGateIds: normalizeLessonIdList(slice.passedGateIds),
+    placedAtTopic: parseLessonId(slice.placedAtTopic) ?? 1,
     wordMastery: normalizeWordMastery(slice.wordMastery),
     srsCards: normalizeSrsCards(slice.srsCards),
     sentenceCards: normalizeSentenceCards(slice.sentenceCards),
@@ -344,6 +367,10 @@ export function applyImportedSlice(base: LanguageProgress | undefined, rawSlice:
   if ("lessonProgress" in rawSlice) patch.lessonProgress = normalizeLessonProgress(rawSlice.lessonProgress);
   if ("lessonStars" in rawSlice) patch.lessonStars = normalizeLessonStars(rawSlice.lessonStars);
   if ("passedGateIds" in rawSlice) patch.passedGateIds = normalizeLessonIdList(rawSlice.passedGateIds);
+  if ("placedAtTopic" in rawSlice) {
+    const topic = parseLessonId(rawSlice.placedAtTopic);
+    if (topic !== null) patch.placedAtTopic = topic;
+  }
   if ("wordMastery" in rawSlice) patch.wordMastery = normalizeWordMastery(rawSlice.wordMastery);
   if ("srsCards" in rawSlice) patch.srsCards = importSrsCards(rawSlice.srsCards, {});
   if ("sentenceCards" in rawSlice) patch.sentenceCards = normalizeSentenceCards(rawSlice.sentenceCards);
@@ -367,6 +394,7 @@ export function normalizeParsedState(parsed: Record<string, any>): Partial<AppSt
     lessonProgress: normalizeLessonProgress(parsed.lessonProgress),
     lessonStars: normalizeLessonStars(parsed.lessonStars),
     passedGateIds: normalizeLessonIdList(parsed.passedGateIds),
+    placedAtTopic: parseLessonId(parsed.placedAtTopic) ?? 1,
     wordMastery: normalizeWordMastery(parsed.wordMastery),
     srsCards: normalizeSrsCards(parsed.srsCards),
     sentenceCards: normalizeSentenceCards(parsed.sentenceCards),
@@ -378,6 +406,7 @@ export function normalizeParsedState(parsed: Record<string, any>): Partial<AppSt
   parsed.lessonProgress = topLevelProgress.lessonProgress;
   parsed.lessonStars = topLevelProgress.lessonStars;
   parsed.passedGateIds = topLevelProgress.passedGateIds;
+  parsed.placedAtTopic = topLevelProgress.placedAtTopic ?? 1;
   parsed.wordMastery = topLevelProgress.wordMastery;
   parsed.srsCards = topLevelProgress.srsCards;
   parsed.sentenceCards = topLevelProgress.sentenceCards;
@@ -423,6 +452,8 @@ export function normalizeParsedState(parsed: Record<string, any>): Partial<AppSt
   progressByLanguage[parsed.activeLanguageId] = activeSlice;
   parsed.progressByLanguage = progressByLanguage;
 
+  parsed.starredWordIds = normalizeStarredWordIds(parsed.starredWordIds);
+
   parsed.seenIntroLanguages = Array.isArray(parsed.seenIntroLanguages)
     ? Array.from(new Set(parsed.seenIntroLanguages.filter((id: unknown): id is string => isValidLanguageId(id))))
     : [];
@@ -433,6 +464,7 @@ export function normalizeParsedState(parsed: Record<string, any>): Partial<AppSt
   parsed.lessonProgress = activeSlice.lessonProgress;
   parsed.lessonStars = activeSlice.lessonStars;
   parsed.passedGateIds = activeSlice.passedGateIds;
+  parsed.placedAtTopic = activeSlice.placedAtTopic ?? 1;
   parsed.wordMastery = activeSlice.wordMastery;
   parsed.srsCards = activeSlice.srsCards;
   parsed.sentenceCards = activeSlice.sentenceCards;
@@ -485,5 +517,9 @@ function sanitizeImportedSrsCard(raw: unknown, fallbackId: string): SRSCard | nu
   if (relearnLapses !== null) card.relearnLapses = Math.floor(relearnLapses);
   if (typeof raw.relearnLessonId === "number" && Number.isInteger(raw.relearnLessonId) && raw.relearnLessonId >= 0) card.relearnLessonId = raw.relearnLessonId;
   if (typeof raw.relearnLessonCompleted === "boolean") card.relearnLessonCompleted = raw.relearnLessonCompleted;
+  const stability = clampNum(raw.stability, 0.01, 36500);
+  if (stability !== null) card.stability = stability;
+  const difficulty = clampNum(raw.difficulty, 1, 10);
+  if (difficulty !== null) card.difficulty = difficulty;
   return card;
 }

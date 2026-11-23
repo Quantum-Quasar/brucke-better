@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowLeft, ArrowRight, Volume2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Headphones, Star, Volume2 } from "lucide-react";
 import { ExampleSentence } from "@/components/common/ExampleSentence";
 import { ShiftPair } from "@/components/common/ShiftPair";
 import { computeLetterDiff } from "@/lib/letter-diff";
@@ -9,11 +9,14 @@ import { spokenWordEntity } from "@/lib/gender";
 import type { ReviewMode } from "@/lib/types";
 import type { ReviewController } from "./use-review-controller";
 import { ReviewAnswerEntry } from "./ReviewAnswerEntry";
+import { useWordDetails } from "@/lib/content-client";
 
 export function ReviewSessionCard({ controller }: { controller: ReviewController }) {
-  const { sessionRef, currentIndex, sessionCards, supportedModesForCard, effectiveReviewMode, setReviewMode, setPreferredReviewMode, goBack, canGoBack, settings, goForward, canGoForward, exitDeck, currentWord, language, wordMastery, currentCard, isRevealed, currentCloze, inputGuess, currentFeedbackNote, handleGrade, recognitionReason } = controller;
+  const { sessionRef, currentIndex, sessionCards, supportedModesForCard, effectiveReviewMode, setReviewMode, setPreferredReviewMode, goBack, canGoBack, settings, goForward, canGoForward, exitDeck, currentWord, language, wordMastery, currentCard, isRevealed, currentCloze, inputGuess, currentFeedbackNote, handleGrade, recognitionReason, isListeningDeck } = controller;
+  const wordDetails = useWordDetails(language.id, isRevealed && Boolean(currentWord && !currentWord.etymology_derivation));
   if (!currentCard || !currentWord) return null;
   const targetPronunciation = spokenWordEntity(currentWord, language.id);
+  const etymologyNote = currentWord.etymology_derivation || wordDetails[currentWord.id] || "";
   return (
         <div
           ref={sessionRef}
@@ -32,7 +35,7 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
                 <span className="text-[11px] font-mono text-[var(--sub-color)]">style:</span>
                 {supportedModesForCard.length === 1 ? (
                   <span className="text-xs font-mono text-[var(--main-color)] font-bold">
-                    {recognitionReason ? "recognition · Quick Flip" : `${supportedModesForCard[0]} only`}
+                    {isListeningDeck ? "listening · Audio First" : recognitionReason ? "recognition · Quick Flip" : `${supportedModesForCard[0]} only`}
                   </span>
                 ) : (
                   <select
@@ -71,6 +74,20 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
             </div>
 
             <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={controller.toggleStarCurrent}
+                aria-pressed={controller.isCurrentStarred}
+                className={`min-h-11 px-2.5 text-sm inline-flex items-center gap-1 rounded border transition cursor-pointer ${
+                  controller.isCurrentStarred
+                    ? "border-[var(--main-color)]/40 bg-[var(--main-color)]/15 text-[var(--main-color)]"
+                    : "border-transparent text-[var(--sub-color)] hover:text-[var(--main-color)]"
+                }`}
+                title={controller.isCurrentStarred ? "Remove from My Words" : "Star to My Words"}
+              >
+                <Star className={`w-3.5 h-3.5 ${controller.isCurrentStarred ? "fill-current" : ""}`} />
+                <span>{controller.isCurrentStarred ? "Starred" : "Star"}</span>
+              </button>
               <button type="button" onClick={controller.buryCurrent} className="min-h-11 px-3 text-sm text-[var(--sub-color)]" title="Hide through today; returns tomorrow">Bury today</button>
               <button type="button" onClick={controller.suspendCurrent} className="min-h-11 px-3 text-sm text-[var(--sub-color)]" title="Hide until you resume it in Manage cards">Suspend</button>
               <button
@@ -116,6 +133,38 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
           </div>
 
           {/* Front Prompt */}
+          {isListeningDeck && !isRevealed ? (
+            <div className="text-center space-y-4 py-4">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--main-color)]/15 text-[var(--main-color)] border border-[var(--main-color)]/30 text-xs font-mono uppercase tracking-wider">
+                <Headphones className="w-3.5 h-3.5" />
+                <span>Listening review · Audio first</span>
+              </div>
+              <p className="text-sm text-[var(--sub-color)] max-w-md mx-auto">
+                Listen to the spoken {language.name} word first, then recall its spelling and English meaning before revealing.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+                <button
+                  type="button"
+                  onClick={() => playTargetAudio(targetPronunciation, language.ttsLocale)}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-[var(--main-color)]/40 bg-[var(--bg-color)] px-5 py-2.5 text-sm font-mono font-bold text-[var(--main-color)] hover:bg-[var(--main-color)]/10 transition cursor-pointer"
+                  aria-label={`Play spoken ${language.name} audio`}
+                >
+                  <Volume2 className="h-4 w-4" />
+                  <span>Replay audio</span>
+                  {settings.showKeyTips && <span className="keycap text-[10px]">r</span>}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => controller.setIsRevealed(true)}
+                  className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[var(--main-color)] px-5 py-2.5 text-sm font-mono font-bold text-[var(--bg-color)] hover:opacity-90 transition cursor-pointer"
+                >
+                  <span>Reveal spelling &amp; meaning</span>
+                  {settings.showKeyTips && <span className="keycap text-[10px]">space</span>}
+                </button>
+              </div>
+            </div>
+          ) : (
+          <>
           <div className="text-center space-y-2 py-2">
             {recognitionReason && (
               <div className="mx-auto max-w-lg space-y-1 rounded border border-[var(--main-color)]/25 bg-[var(--main-color)]/10 p-3 text-sm">
@@ -134,7 +183,9 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
               </span>
               {currentWord.gender && language.genderSystem && (
                 <span className="text-[11px] font-mono px-2 py-0.5 rounded border border-[var(--sub-color)]/20 bg-[var(--bg-color)] text-[var(--sub-color)]">
-                  gender: [ {language.genderSystem.articles.join(" / ")} ? ]
+                  {currentWord.id.startsWith("article_") && currentWord.customMcqOptions?.length
+                    ? `article: [ ${currentWord.customMcqOptions.join(" / ")} ? ]`
+                    : `gender: [ ${language.genderSystem.articles.join(" / ")} ? ]`}
                 </span>
               )}
               {!wordMastery[currentCard.word_id] && (
@@ -143,13 +194,39 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
                 </span>
               )}
             </div>
-            <h2 lang={recognitionReason ? language.ttsLocale : undefined} className="text-3xl sm:text-4xl font-mono font-bold text-[var(--text-color)]">
+            <h2
+              lang={recognitionReason || currentWord.id.startsWith("article_") ? language.ttsLocale : undefined}
+              className={
+                !recognitionReason && currentWord.id.startsWith("article_") && currentWord.articleCloze
+                  ? "text-2xl sm:text-3xl font-mono font-bold text-[var(--text-color)] leading-snug"
+                  : "text-3xl sm:text-4xl font-mono font-bold text-[var(--text-color)]"
+              }
+            >
               {recognitionReason ? targetPronunciation : currentWord.id.startsWith("article_") ? (
-                <>
-                  <span className="sr-only">missing article </span>
-                  <span aria-hidden="true" className="inline-block w-16 border-b-2 border-current align-baseline" />{" "}
-                  {currentWord.english_cognate.slice(2)}
-                </>
+                currentWord.articleCloze ? (
+                  <>
+                    {currentWord.articleCloze.split("___").map((part, idx, arr) => (
+                      <span key={idx}>
+                        {part}
+                        {idx < arr.length - 1 && (
+                          <>
+                            <span lang="en" className="sr-only">missing article</span>
+                            <span
+                              aria-hidden="true"
+                              className="inline-block w-14 border-b-2 border-[var(--main-color)] align-baseline mx-0.5"
+                            />
+                          </>
+                        )}
+                      </span>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    <span lang="en" className="sr-only">missing article </span>
+                    <span aria-hidden="true" className="inline-block w-16 border-b-2 border-current align-baseline" />{" "}
+                    {currentWord.english_cognate.replace(/^_\s*/, "")}
+                  </>
+                )
               ) : currentWord.english_cognate}
             </h2>
             {recognitionReason ? (
@@ -162,6 +239,15 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
                 <Volume2 className="h-4 w-4" /> Listen to the {language.name} word
                 {settings.showKeyTips && <span className="keycap text-[10px]">r</span>}
               </button>
+            ) : currentWord.id.startsWith("article_") && currentWord.articleCloze ? (
+              <div className="space-y-1">
+                {currentWord.context_translation && (
+                  <p className="text-sm font-mono text-[var(--sub-color)]">&quot;{currentWord.context_translation}&quot;</p>
+                )}
+                <p className="text-xs font-mono text-[var(--sub-color)]/80">
+                  {currentWord.english_cognate.replace(/^_\s*/, "")} · {currentWord.english_meaning}
+                </p>
+              </div>
             ) : <p className="text-sm font-mono text-[var(--sub-color)]">&quot;{currentWord.english_meaning}&quot;</p>}
             {!isRevealed && currentCloze && (
               <div className="mx-auto max-w-md pt-2 text-sm font-mono text-[var(--sub-color)]">
@@ -184,6 +270,8 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
               </button>
             </div>
           ) : <ReviewAnswerEntry controller={controller} />}
+          </>
+          )}
           {/* REVEALED CARD CONTENT & SM-2 GRADING (COMMON TO ALL MODES) */}
           {isRevealed && (
             <div className="space-y-6 animate-in fade-in duration-150">
@@ -210,7 +298,7 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
                   }
                   german={
                     currentWord.id.startsWith("article_") && currentWord.english_cognate.startsWith("- ")
-                      ? currentWord.english_cognate.slice(2).trim()
+                      ? currentWord.english_cognate.replace(/^_\s*/, "").trim()
                       : currentWord.target_word
                   }
                   gender={currentWord.gender}
@@ -260,7 +348,7 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
                   </button>
                   <span className="text-sm font-mono text-[var(--sub-color)]">{currentWord.ipa}</span>
                 </div>
-                <p className="text-sm font-mono text-[var(--sub-color)] max-w-md mx-auto">{currentWord.etymology_derivation}</p>
+                <p className="text-sm font-mono text-[var(--sub-color)] max-w-md mx-auto">{etymologyNote}</p>
                 <div className="p-3 rounded bg-[var(--sub-alt-color)] font-mono max-w-md mx-auto border border-[var(--sub-color)]/15 text-left">
                   <div className="flex items-start justify-between gap-2">
                     <ExampleSentence

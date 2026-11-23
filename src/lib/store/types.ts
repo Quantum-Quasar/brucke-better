@@ -22,6 +22,8 @@ export interface LanguageProgress {
   lessonProgress: Record<number, LessonProgress>;
   lessonStars: Record<number, LessonStar>;
   passedGateIds: number[];
+  /** Starting topic unlocked by placement (1 = start from the beginning). */
+  placedAtTopic?: number;
   wordMastery: Record<string, MasteryState>;
   srsCards: Record<string, SRSCard>;
   sentenceCards: Record<string, SentenceCard>;
@@ -57,12 +59,16 @@ export interface AppState {
   progressVersions: ProgressVersions;
   /** languages whose onboarding introduction has been seen */
   seenIntroLanguages: string[];
+  /** per-language starred word IDs for the My Words deck */
+  starredWordIds: Record<string, string[]>;
   completedLessons: number[];
   currentLessonId: number;
   lessonProgress: Record<number, LessonProgress>;
   /** gold = completed; purple = flawless run (retry queue untouched, including a clean replay). Purple is never downgraded. */
   lessonStars: Record<number, LessonStar>;
   passedGateIds: number[];
+  /** Starting topic unlocked by placement for the active language (1 = beginning). */
+  placedAtTopic: number;
   wordMastery: Record<string, MasteryState>;
   srsCards: Record<string, SRSCard>;
   sentenceCards: Record<string, SentenceCard>;
@@ -119,8 +125,10 @@ export interface AppState {
   markWordMastered: (wordId: string) => void;
   completeLesson: (lessonId: number, opts?: { perfect?: boolean; nextLessonId?: number | null }) => void;
   passGate: (gateId: number) => void;
+  setPlacedAtTopic: (topic: number) => void;
   setLessonProgress: (lessonId: number, progress: LessonProgress) => void;
   recordReview: (wordId: string, grade: ReviewGrade) => void;
+  toggleStarWord: (wordId: string) => void;
   suspendCard: (wordId: string, suspended: boolean) => void;
   buryCard: (wordId: string) => void;
   unburyCard: (wordId: string) => void;

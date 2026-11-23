@@ -41,6 +41,8 @@ export type ReviewDeckType =
   | "compounds"
   | "sentences"
   | "articles"
+  | "listening"
+  | "starred"
   | "domain"
   | "everything";
 
@@ -108,6 +110,18 @@ export const DECK_CAPABILITIES: Record<ReviewDeckType, DeckCapabilitySpec> = {
     label: "article & gender drill",
     supportedModes: ["mcq"],
     defaultMode: "mcq",
+  },
+  listening: {
+    id: "listening",
+    label: "listening review",
+    supportedModes: ["flashcard"],
+    defaultMode: "flashcard",
+  },
+  starred: {
+    id: "starred",
+    label: "my words (starred)",
+    supportedModes: ALL_REVIEW_MODES,
+    defaultMode: "flashcard",
   },
   everything: {
     id: "everything",
@@ -213,4 +227,53 @@ export function rankWeakestCards(cards: Record<string, SRSCard>, limit = Infinit
 export function prepareSession<T>(cards: T[], size: SessionSize, shuffle: boolean): T[] {
   const ordered = shuffle ? shuffleArray(cards) : cards;
   return size > 0 ? ordered.slice(0, size) : ordered;
+}
+
+export interface DailyReviewBudget {
+  dailyMinutes: number;
+  dailyCap: number;
+  newCardBudget: number;
+  reviewedToday: number;
+  remainingToday: number;
+  capReached: boolean;
+}
+
+/** Daily review cap and new-card budget derived from the user's dailyMinutes goal. */
+export function dailyReviewCapForMinutes(dailyMinutes: number): { dailyCap: number; newCardBudget: number } {
+  if (dailyMinutes <= 5) return { dailyCap: 15, newCardBudget: 5 };
+  if (dailyMinutes <= 10) return { dailyCap: 30, newCardBudget: 10 };
+  if (dailyMinutes <= 15) return { dailyCap: 45, newCardBudget: 15 };
+  return { dailyCap: 60, newCardBudget: 20 };
+}
+
+export function countReviewedToday(
+  cards: Readonly<Record<string, SRSCard>>,
+  today = localDateKey(),
+): number {
+  let count = 0;
+  for (const card of Object.values(cards)) {
+    if (!card?.last_reviewed) continue;
+    const parsed = Date.parse(card.last_reviewed);
+    if (!Number.isFinite(parsed)) continue;
+    if (localDateKey(new Date(parsed)) === today) count += 1;
+  }
+  return count;
+}
+
+export function getDailyReviewBudget(
+  dailyMinutes: number,
+  cards: Readonly<Record<string, SRSCard>>,
+  today = localDateKey(),
+): DailyReviewBudget {
+  const { dailyCap, newCardBudget } = dailyReviewCapForMinutes(dailyMinutes);
+  const reviewedToday = countReviewedToday(cards, today);
+  const remainingToday = Math.max(0, dailyCap - reviewedToday);
+  return {
+    dailyMinutes,
+    dailyCap,
+    newCardBudget,
+    reviewedToday,
+    remainingToday,
+    capReached: reviewedToday >= dailyCap,
+  };
 }

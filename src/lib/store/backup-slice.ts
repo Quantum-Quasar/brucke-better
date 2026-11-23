@@ -6,7 +6,7 @@ import { isValidLanguageId } from "@/data/languages";
 import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "../storage-keys";
 import { deleteCookie } from "./persistence";
 import { emptyVersions, sliceFromMirrors } from "./progress-state";
-import { isPlausibleStateObject, isDangerousKey, normalizeSettings, normalizeThemeId, normalizeFontId, normalizeLessonIdList, parseLessonId, normalizeLessonProgress, normalizeLessonStars, normalizeWordMastery, importSrsCards, normalizeWeeklyActivity, applyImportedSlice, normalizeLanguageSlice, normalizeTolerance, oneOf, VALID_REVIEW_MODES, emptyWeek } from "./schema";
+import { isPlausibleStateObject, isDangerousKey, normalizeSettings, normalizeStarredWordIds, normalizeThemeId, normalizeFontId, normalizeLessonIdList, parseLessonId, normalizeLessonProgress, normalizeLessonStars, normalizeWordMastery, importSrsCards, normalizeWeeklyActivity, applyImportedSlice, normalizeLanguageSlice, normalizeTolerance, oneOf, VALID_REVIEW_MODES, emptyWeek } from "./schema";
 import { normalizeSentenceCards } from "./schema";
 
 /** A progress field that carries meaningful (non-dangerous-key) data but
@@ -76,9 +76,11 @@ export const createBackupSlice: StoreSlice<"resetProgress" | "importBackupState"
         lessonProgress: {},
         lessonStars: {},
         passedGateIds: [],
+        placedAtTopic: 1,
         wordMastery: {},
         srsCards: {},
         sentenceCards: {},
+        starredWordIds: {},
         weeklyActivity: emptyWeek(),
         lastActivityWeek: undefined,
         // Cross-tab hydration unions progress, so a reset must be explicit:
@@ -121,11 +123,13 @@ export const createBackupSlice: StoreSlice<"resetProgress" | "importBackupState"
       "activeLanguageId",
       "progressByLanguage",
       "seenIntroLanguages",
+      "starredWordIds",
       "completedLessons",
       "currentLessonId",
       "lessonProgress",
       "lessonStars",
       "passedGateIds",
+      "placedAtTopic",
       "wordMastery",
       "srsCards",
       "sentenceCards",
@@ -174,6 +178,7 @@ export const createBackupSlice: StoreSlice<"resetProgress" | "importBackupState"
           "lessonProgress",
           "lessonStars",
           "passedGateIds",
+          "placedAtTopic",
           "wordMastery",
           "srsCards",
           "sentenceCards",
@@ -201,6 +206,10 @@ export const createBackupSlice: StoreSlice<"resetProgress" | "importBackupState"
       }
       if (Array.isArray(payload.passedGateIds)) {
         topLevelPatch.passedGateIds = normalizeLessonIdList(payload.passedGateIds);
+      }
+      if (payload.placedAtTopic !== undefined) {
+        const topic = parseLessonId(payload.placedAtTopic);
+        if (topic !== null) topLevelPatch.placedAtTopic = topic;
       }
       if (isPlausibleStateObject(payload.wordMastery)) {
         topLevelPatch.wordMastery = normalizeWordMastery(payload.wordMastery);
@@ -260,6 +269,7 @@ export const createBackupSlice: StoreSlice<"resetProgress" | "importBackupState"
         progressByLanguage,
         progressVersions: activeSlice.progressVersions ?? emptyVersions(),
         seenIntroLanguages: nextSeenIntroLanguages,
+        starredWordIds: payload.starredWordIds !== undefined ? normalizeStarredWordIds(payload.starredWordIds) : s.starredWordIds,
         // A backup that carries progress replaces it everywhere; tell other
         // tabs so their union-merge does not resurrect the pre-import state.
         progressResetAt: carriesProgress ? Math.max(Date.now(), s.progressResetAt + 1) : s.progressResetAt,
@@ -273,6 +283,7 @@ export const createBackupSlice: StoreSlice<"resetProgress" | "importBackupState"
         lessonProgress: activeSlice.lessonProgress,
         lessonStars: activeSlice.lessonStars,
         passedGateIds: activeSlice.passedGateIds,
+        placedAtTopic: activeSlice.placedAtTopic ?? 1,
         wordMastery: activeSlice.wordMastery,
         srsCards: activeSlice.srsCards,
         sentenceCards: activeSlice.sentenceCards,

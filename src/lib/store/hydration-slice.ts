@@ -8,7 +8,7 @@ import { isValidLanguageId } from "@/data/languages";
 import { STORAGE_KEY } from "../storage-keys";
 import { preloadClickSoundOnFirstInteraction } from "../sound";
 import { emptyVersions, sliceFromMirrors, mergeLanguageSlice } from "./progress-state";
-import { isPlausibleStateObject, normalizeParsedState, normalizeSettings, normalizeThemeId, normalizeFontId, isDangerousKey, normalizeLanguageSlice, normalizeTolerance, oneOf, VALID_REVIEW_MODES } from "./schema";
+import { isPlausibleStateObject, normalizeParsedState, normalizeSettings, normalizeStarredWordIds, normalizeThemeId, normalizeFontId, isDangerousKey, normalizeLanguageSlice, normalizeTolerance, oneOf, VALID_REVIEW_MODES } from "./schema";
 
 export const createHydrationSlice: StoreSlice<"hydrateFromStorage"> = (set, get) => ({
   hydrateFromStorage: (options) => {
@@ -94,6 +94,19 @@ export const createHydrationSlice: StoreSlice<"hydrateFromStorage"> = (set, get)
           progressVersions: activeSlice.progressVersions ?? emptyVersions(),
           progressResetAt: isReset ? incomingResetAt : s.progressResetAt,
           progressResetActor: isReset ? incomingResetActor : s.progressResetActor,
+          starredWordIds: isReset
+            ? normalizeStarredWordIds(saved.starredWordIds)
+            : saved.starredWordIds
+            ? (() => {
+                const incoming = normalizeStarredWordIds(saved.starredWordIds);
+                if (isCrossTab) return incoming;
+                const merged: Record<string, string[]> = { ...s.starredWordIds };
+                for (const [langId, ids] of Object.entries(incoming)) {
+                  merged[langId] = Array.from(new Set([...(merged[langId] ?? []), ...ids]));
+                }
+                return merged;
+              })()
+            : s.starredWordIds,
           seenIntroLanguages: Array.isArray(saved.seenIntroLanguages)
             ? Array.from(
                 new Set([
@@ -107,6 +120,7 @@ export const createHydrationSlice: StoreSlice<"hydrateFromStorage"> = (set, get)
           lessonProgress: activeSlice.lessonProgress,
           lessonStars: activeSlice.lessonStars,
           passedGateIds: activeSlice.passedGateIds,
+          placedAtTopic: activeSlice.placedAtTopic ?? 1,
           wordMastery: activeSlice.wordMastery,
           srsCards: activeSlice.srsCards,
           sentenceCards: activeSlice.sentenceCards,

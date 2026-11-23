@@ -6,6 +6,7 @@
 
 import { create } from "zustand";
 import { VIEW_STORAGE_KEY } from "./storage-keys";
+import { readStorageString, writeStorageString } from "@/lib/safe-storage";
 import { LANGUAGES } from "@/data/languages";
 
 const LANGUAGE_ID_SET = new Set<string>(
@@ -197,11 +198,7 @@ function persistViewState(state: ViewStoreState) {
     const serialized = JSON.stringify(persistedSnapshot(state));
     if (serialized === lastSerialized) return;
     lastSerialized = serialized;
-    try {
-      localStorage.setItem(VIEW_STORAGE_KEY, serialized);
-    } catch {
-      // A full or blocked localStorage must never break navigation.
-    }
+    writeStorageString(VIEW_STORAGE_KEY, serialized);
   }, WRITE_DELAY_MS);
 }
 
@@ -227,11 +224,7 @@ export const useViewStore = create<ViewStoreState>((set, get) => ({
       masterByLanguage: {},
     };
     if (typeof window !== "undefined") {
-      try {
-        parsed = parseStoredView(localStorage.getItem(VIEW_STORAGE_KEY));
-      } catch {
-        // treat unreadable storage as empty
-      }
+      parsed = parseStoredView(readStorageString(VIEW_STORAGE_KEY));
     }
     lastSerialized = JSON.stringify(parsed);
     set({ ...parsed, viewHydrated: true });
@@ -335,9 +328,5 @@ export function flushViewState(): void {
   const serialized = JSON.stringify(persistedSnapshot(useViewStore.getState()));
   if (serialized === lastSerialized) return;
   lastSerialized = serialized;
-  try {
-    localStorage.setItem(VIEW_STORAGE_KEY, serialized);
-  } catch {
-    // ignore blocked/full storage
-  }
+  writeStorageString(VIEW_STORAGE_KEY, serialized);
 }

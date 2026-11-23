@@ -22,6 +22,8 @@ const DECK_IDS: ReadonlySet<string> = new Set([
   "compounds",
   "sentences",
   "articles",
+  "listening",
+  "starred",
   "domain",
   "everything",
 ]);
@@ -112,6 +114,10 @@ function parseCard(raw: unknown): SRSCard | null {
   if (typeof raw.relearnLapses === "number") card.relearnLapses = integer(raw.relearnLapses, 0, card.lapses, 0);
   if (typeof raw.relearnLessonId === "number") card.relearnLessonId = integer(raw.relearnLessonId, 0, 10000, 0);
   if (typeof raw.relearnLessonCompleted === "boolean") card.relearnLessonCompleted = raw.relearnLessonCompleted;
+  const stability = finite(raw.stability, 0.01, 36500);
+  if (stability !== null) card.stability = stability;
+  const difficulty = finite(raw.difficulty, 1, 10);
+  if (difficulty !== null) card.difficulty = difficulty;
   return card;
 }
 

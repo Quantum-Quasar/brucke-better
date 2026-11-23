@@ -1,3 +1,4 @@
+import { readStorageJson, writeStorageJson } from "@/lib/safe-storage";
 import type { AppState } from "./store/types";
 import { sliceFromMirrors } from "./store/progress-state";
 
@@ -20,6 +21,7 @@ export function createProgressBackup(state: AppState, now = new Date()) {
       [state.activeLanguageId]: sliceFromMirrors(state),
     },
     seenIntroLanguages: state.seenIntroLanguages,
+    starredWordIds: state.starredWordIds,
     settings: state.settings,
     tolerance: state.tolerance,
     ...sliceFromMirrors(state),
@@ -32,16 +34,14 @@ export function createProgressBackup(state: AppState, now = new Date()) {
 }
 
 export function readBackupReminder(): BackupReminderState {
-  try {
-    const parsed: unknown = JSON.parse(localStorage.getItem(REMINDER_KEY) || "null");
-    if (parsed && typeof parsed === "object") {
-      const value = parsed as Record<string, unknown>;
-      return {
-        downloadedAt: typeof value.downloadedAt === "number" && Number.isFinite(value.downloadedAt) && value.downloadedAt >= 0 ? value.downloadedAt : 0,
-        remindAfter: typeof value.remindAfter === "number" && Number.isFinite(value.remindAfter) && value.remindAfter >= 0 ? value.remindAfter : 0,
-      };
-    }
-  } catch { /* A blocked storage area must not block a downloadable backup. */ }
+  const parsed: unknown = readStorageJson<unknown>(REMINDER_KEY, null);
+  if (parsed && typeof parsed === "object") {
+    const value = parsed as Record<string, unknown>;
+    return {
+      downloadedAt: typeof value.downloadedAt === "number" && Number.isFinite(value.downloadedAt) && value.downloadedAt >= 0 ? value.downloadedAt : 0,
+      remindAfter: typeof value.remindAfter === "number" && Number.isFinite(value.remindAfter) && value.remindAfter >= 0 ? value.remindAfter : 0,
+    };
+  }
   return { downloadedAt: 0, remindAfter: 0 };
 }
 
@@ -55,7 +55,7 @@ export function snoozeBackupReminder(now = Date.now()) {
 }
 
 function saveReminder(value: BackupReminderState) {
-  try { localStorage.setItem(REMINDER_KEY, JSON.stringify(value)); } catch { /* The download still works without reminder persistence. */ }
+  writeStorageJson(REMINDER_KEY, value);
   window.dispatchEvent(new Event(BACKUP_STATUS_EVENT));
 }
 
@@ -66,7 +66,7 @@ export function downloadProgressBackup(state: AppState) {
   const link = document.createElement("a");
   link.href = url;
   link.download = `brucke_backup_${now.toISOString().slice(0, 10)}.json`;
-  document.body.append(link);
+  document.body.appendChild(link);
   link.click();
   link.remove();
   // A deferred revoke lets the browser finish starting the file download.

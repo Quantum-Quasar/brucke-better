@@ -7,7 +7,7 @@ import { useAppStore } from "@/lib/store";
 import { useAppNavigation } from "@/lib/app-navigation";
 import { readReviewSession } from "@/lib/review-session";
 import { getDueCards, isReviewable, needsRelearn, localDateKey, type ReviewGrade } from "@/lib/srs";
-import { DECK_CAPABILITIES, ALL_FAMILIES_ID, getAtlasFamilyWordIds, resolveCardReviewMode, filterByLearned, getRecentLessonWordIds, rankWeakestCards, sortDueCards, type LearnedFilter, type SessionSize, type ReviewDeckType } from "@/lib/review-decks";
+import { DECK_CAPABILITIES, ALL_FAMILIES_ID, getAtlasFamilyWordIds, resolveCardReviewMode, filterByLearned, getRecentLessonWordIds, rankWeakestCards, sortDueCards, getDailyReviewBudget, type DailyReviewBudget, type LearnedFilter, type SessionSize, type ReviewDeckType } from "@/lib/review-decks";
 import { generateMCQOptions, generateWordTiles } from "@/lib/review-modes";
 import { getAtlasFamilies, getAtlasFamily } from "@/lib/atlas-families";
 import { playTargetAudio } from "@/lib/audio";
@@ -28,6 +28,7 @@ type DeckType = ReviewDeckType;
 
 /** Sentinel select value meaning "every family" / "every domain". */
 const ALL_ID = ALL_FAMILIES_ID;
+const EMPTY_STARRED: string[] = [];
 
 
 export interface ReviewHubProps {
@@ -122,6 +123,7 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
   );
   const [isModeSelectorOpen, setIsModeSelectorOpen] = useState(false);
   const [rememberPreference, setRememberPreference] = useState(true);
+  const [dailyCapOverridden, setDailyCapOverridden] = useState(false);
 
   useBackDismiss(isModeSelectorOpen, () => setIsModeSelectorOpen(false));
 
@@ -136,6 +138,8 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
 
 
   const srsCards = useAppStore((s) => s.srsCards);
+  const starredWordIds = useAppStore((s) => s.starredWordIds[activeLanguageId] ?? EMPTY_STARRED);
+  const toggleStarWord = useAppStore((s) => s.toggleStarWord);
   const wordMastery = useAppStore((s) => s.wordMastery);
   const recordReview = useAppStore((s) => s.recordReview);
   const restoreSrsCard = useAppStore((s) => s.restoreSrsCard);
@@ -222,6 +226,10 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
   );
   const allWordsMap: Record<string, WordEntity> = wordEntityMaps.entities;
   const dueCards = useMemo(() => sortDueCards(getDueCards(srsCards, today), allWordsMap), [srsCards, allWordsMap, today]);
+  const dailyBudget = useMemo(
+    () => getDailyReviewBudget(settings.dailyMinutes, srsCards, today),
+    [settings.dailyMinutes, srsCards, today]
+  );
 
   const compoundCards: SRSCard[] = useMemo(() => {
     const fallback = (): SRSCard => ({
@@ -429,11 +437,20 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
     () => filterByLearned(data.wordList, "learned", wordMastery, srsCards, today).map((word) => blankCard(word.id)),
     [data.wordList, wordMastery, srsCards, blankCard, today]
   );
+  const listeningCards = useMemo(() => learnedCards, [learnedCards]);
+  const starredCards = useMemo(
+    () =>
+      starredWordIds
+        .filter((id) => Boolean(allWordsMap[id]) && isReviewable(srsCards[id], today))
+        .map((id) => blankCard(id)),
+    [starredWordIds, allWordsMap, srsCards, today, blankCard]
+  );
 
   // 1-Click direct deck start
   const startDeck = (deck: DeckType, customCards?: SRSCard[]) => {
     // After a due session every card is rescheduled; never open an empty shell.
     if (deck === "due" && dueCards.length === 0) return;
+    if (!dailyCapOverridden && !customCards && dailyBudget.capReached) return;
     setActiveDeck(deck);
     setCurrentIndex(0);
     setSessionEpoch((epoch) => epoch + 1);
@@ -448,12 +465,16 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
     setCompletedDeck(null);
     preGradeSnapshots.current = {};
 
-    const cards = orderReviewDeck(deck, {
+    const ordered = orderReviewDeck(deck, {
       dueCards, weakestCards, learnedCards, recentWordIds, scopedCompoundCards,
-      sentenceCards, articleCards, blankCard, sessionSize, shuffleSession,
+      sentenceCards, articleCards, listeningCards, starredCards, blankCard, sessionSize, shuffleSession,
       shiftIds: () => shiftWordIds(selectedShiftId), domainIds: () => domainWordIds(selectedDomainId),
       everythingIds: () => scopeIds(data.wordList.map((word) => word.id)),
     }, customCards?.map((card) => srsCards[card.word_id] ?? card));
+    const cards =
+      !dailyCapOverridden && !customCards && dailyBudget.remainingToday > 0 && ordered.length > dailyBudget.remainingToday
+        ? ordered.slice(0, dailyBudget.remainingToday)
+        : ordered;
     setSessionCards(cards);
     setSessionGrades(blankSessionGrades(cards.length));
   };
@@ -494,7 +515,8 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
     originalReadiness?.card ?? (currentCard && (srsCards[currentCard.word_id] ?? currentCard)),
     originalReadiness ? originalReadiness.mastery ?? undefined : wordMastery[currentCard?.word_id ?? ""],
   );
-  const isRecognitionFirst = recognitionReason !== null;
+  const isListeningDeck = activeDeck === "listening";
+  const isRecognitionFirst = !isListeningDeck && recognitionReason !== null;
   const supportedModesForCard: ReviewMode[] = useMemo(() => {
     if (isRecognitionFirst) return ["flashcard"];
     if (currentWord?.supportedModes && currentWord.supportedModes.length > 0) {
@@ -509,6 +531,12 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
     () => resolveCardReviewMode(currentWord, reviewMode, activeDeck, isRecognitionFirst),
     [currentWord, reviewMode, activeDeck, isRecognitionFirst]
   );
+
+  // Auto-play spoken target audio on Listening Review cards before reveal.
+  useEffect(() => {
+    if (!isListeningDeck || isRevealed || !currentWord) return;
+    playTargetAudio(spokenWordEntity(currentWord, language.id), language.ttsLocale);
+  }, [isListeningDeck, isRevealed, currentWord, currentIndex, sessionEpoch, language.id, language.ttsLocale]);
 
   // Example sentence with the answer blanked out: a context clue before reveal.
   const currentCloze = useMemo(
@@ -526,8 +554,8 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
   // Tiles for current card
   const tileData = useMemo(() => {
     if (!currentWord) return { tiles: [], targetChunks: [], targetAnswer: "" };
-    return generateWordTiles(currentWord, data.wordList);
-  }, [currentWord, data]);
+    return generateWordTiles(currentWord, data.wordList, language.id);
+  }, [currentWord, data, language.id]);
   const {
     inputGuess, setInputGuess, selectedOption, setSelectedOption, selectedTiles, setSelectedTiles,
     availableTiles, setAvailableTiles, currentAutoGrade, setCurrentAutoGrade, currentFeedbackNote,
@@ -646,7 +674,7 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
         return;
       }
 
-      if (isRecognitionFirst && (e.key === "r" || e.key === "R" || e.key === "a" || e.key === "A")) {
+      if ((isRecognitionFirst || isListeningDeck) && (e.key === "r" || e.key === "R" || e.key === "a" || e.key === "A")) {
         e.preventDefault();
         if (currentWord) playTargetAudio(spokenWordEntity(currentWord, language.id), language.ttsLocale);
         return;
@@ -798,6 +826,9 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
   const domainCount = mounted ? domainDeckSize : 0;
   const sentenceCount = mounted ? sentenceCards.length : 0;
   const articleCount = mounted ? articleCards.length : 0;
+  const listeningCount = mounted ? listeningCards.length : 0;
+  const starredCount = mounted ? starredCards.length : 0;
+  const isCurrentStarred = Boolean(currentCard && starredWordIds.includes(currentCard.word_id));
   const compoundCount = mounted ? scopedCompoundCards.length : 0;
   const teachingLessons = useMemo(() => buildTeachingLessonMap(lessons), [lessons]);
   return {
@@ -805,6 +836,13 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
     allWordsMap, wordLesson: teachingLessons,
     suspendCurrent: () => { if (currentCard) useAppStore.getState().suspendCard(currentCard.word_id, true); },
     buryCurrent: () => { if (currentCard) useAppStore.getState().buryCard(currentCard.word_id); },
+    isCurrentStarred,
+    toggleStarCurrent: () => { if (currentCard) toggleStarWord(currentCard.word_id); },
+    srsCards,
+    starredWordIds,
+    dailyBudget,
+    dailyCapOverridden,
+    overrideDailyCap: () => setDailyCapOverridden(true),
     learnedCount: mounted ? learnedCards.length : 0,
     recallSource, mounted, language, activeDeck, hasAnyCards, completedLessons, activeLanguageId, lessons, openLesson,
     masteredCount, activeCount, dueCards, hasSeenGenderIntro, reviewMode, setReviewMode, setPreferredReviewMode, setIsModeSelectorOpen,
@@ -816,7 +854,7 @@ export function useReviewController({ activeLanguageId, progressResetAt, progres
     learnedFilter, setLearnedFilter, sessionSize, setSessionSize, shuffleSession, setShuffleSession, familyNoun,
     selectedShiftId, setSelectedShiftId, allFamilyWordIds, atlasFamilies, selectedShiftFamily, shiftCount, selectedDomainId,
     setSelectedDomainId, data, domainGroups, domainCount, recentCount, compoundExamples, trapExamples, compoundCount,
-    sentenceCount, articleCount, everythingTotal, isModeSelectorOpen, modeDialogRef, selectReviewStyle, rememberPreference, setRememberPreference,
+    sentenceCount, articleCount, listeningCount, starredCount, isListeningDeck, everythingTotal, isModeSelectorOpen, modeDialogRef, selectReviewStyle, rememberPreference, setRememberPreference,
   };
 }
 
@@ -828,6 +866,13 @@ export interface ReviewController extends Pick<ReviewHubProps, "activeLanguageId
   wordLesson: Map<string, number[]>;
   suspendCurrent: () => void;
   buryCurrent: () => void;
+  isCurrentStarred: boolean;
+  toggleStarCurrent: () => void;
+  srsCards: Record<string, SRSCard>;
+  starredWordIds: string[];
+  dailyBudget: DailyReviewBudget;
+  dailyCapOverridden: boolean;
+  overrideDailyCap: () => void;
   language: LanguageDefinition;
   mounted: boolean;
   activeDeck: DeckType | null;
@@ -909,6 +954,9 @@ export interface ReviewController extends Pick<ReviewHubProps, "activeLanguageId
   compoundCount: number;
   sentenceCount: number;
   articleCount: number;
+  listeningCount: number;
+  starredCount: number;
+  isListeningDeck: boolean;
   everythingTotal: number;
   isModeSelectorOpen: boolean;
   modeDialogRef: RefObject<HTMLDialogElement | null>;

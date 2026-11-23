@@ -239,6 +239,7 @@ function writeState(state: AppState) {
     activeLanguageId: state.activeLanguageId,
     progressByLanguage,
     seenIntroLanguages: state.seenIntroLanguages,
+    starredWordIds: state.starredWordIds,
     progressResetAt: state.progressResetAt,
     progressResetActor: state.progressResetActor,
     tolerance: state.tolerance,

@@ -24,7 +24,11 @@ export const createSettingsSlice: StoreSlice<"updateSetting" | "resetSettings" |
       if (key === "capitalizationTolerance") {
         nextTolerance.capitalizationTolerance = Boolean(value);
       }
-      const next = { ...s, settings: nextSettings, tolerance: nextTolerance };
+      const nextPlacedAtTopic =
+        key === "placementTopic" && typeof value === "number" && Number.isInteger(value) && value >= 1
+          ? value
+          : s.placedAtTopic;
+      const next = { ...s, placedAtTopic: nextPlacedAtTopic, settings: nextSettings, tolerance: nextTolerance };
       saveState(next);
       return next;
     });

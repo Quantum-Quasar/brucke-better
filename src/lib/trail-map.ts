@@ -514,6 +514,7 @@ export function getTrailState(
   recommendation: {
     lessonProgress?: Record<number, LessonProgress>;
     bypasses?: Record<number, number>;
+    placedAtTopic?: number;
   } = {}
 ): TrailState {
   const completedSet = new Set(completed);
@@ -542,32 +543,58 @@ export function getTrailState(
 
   const gates = data.gates;
   const edgePairs = buildTrailEdgePairs(data);
+  const maxTopicId = Math.max(1, data.totalTopics, ...data.topics.map((topic) => topic.id));
+  const placedAtTopic = Math.min(maxTopicId, Math.max(1, Math.floor(recommendation.placedAtTopic ?? 1)));
+  const topicById = new Map(allNodes.map((n) => [n.id, n.topicId]));
+  const isPlacedPrior = (topicId: number | undefined): boolean =>
+    topicId !== undefined && topicId < placedAtTopic;
+
   const prerequisites = buildTrailPrerequisites(data);
   const prerequisiteCache = new Map<number, boolean>();
   const prerequisitesComplete = (id: number): boolean => {
     const cached = prerequisiteCache.get(id);
     if (cached !== undefined) return cached;
+    if (isPlacedPrior(topicById.get(id))) {
+      prerequisiteCache.set(id, true);
+      return true;
+    }
     const previous = prerequisites.get(id);
-    const ready = previous === null || (previous !== undefined && completedSet.has(previous) && prerequisitesComplete(previous));
+    const ready =
+      previous === null ||
+      (previous !== undefined &&
+        (completedSet.has(previous) || isPlacedPrior(topicById.get(previous))) &&
+        prerequisitesComplete(previous));
     prerequisiteCache.set(id, ready);
     return ready;
   };
 
   // Required spine completion, region stars and a checkpoint pass all matter.
-  const topicById = new Map(allNodes.map((n) => [n.id, n.topicId]));
+  // Placement past a topic unlocks earlier topics and their checkpoints so the
+  // learner can start at `placedAtTopic` immediately without hitting locked gates.
   const gateViews = new Map<number, GateView>();
   const passedGates = new Set(passedGateIds);
   gates.forEach((gate, i) => {
     const { fromTopic, toTopic } = gateRegion(gates, i);
+    const bypassedByPlacement = gate.afterTopic < placedAtTopic;
     const regionStars = Array.from(completedSet).filter((id) => {
       const t = topicById.get(id);
       return t !== undefined && t >= fromTopic && t <= toTopic;
     }).length;
-    const passed = passedGates.has(gate.id);
+    const passed = bypassedByPlacement || passedGates.has(gate.id);
     const spineComplete = data.topics
       .filter((topic) => topic.id <= gate.afterTopic)
-      .every((topic) => [topic.core, ...(topic.stories ?? [])].every((lesson) => completedSet.has(lesson.id)));
-    gateViews.set(gate.id, { open: spineComplete && regionStars >= gate.requiredStars && passed, passed, stars: regionStars, fromTopic, toTopic });
+      .every(
+        (topic) =>
+          topic.id < placedAtTopic ||
+          [topic.core, ...(topic.stories ?? [])].every((lesson) => completedSet.has(lesson.id))
+      );
+    gateViews.set(gate.id, {
+      open: bypassedByPlacement || (spineComplete && passed),
+      passed,
+      stars: regionStars,
+      fromTopic,
+      toTopic,
+    });
   });
   // the first closed gate at or before a node's topic blocks it (the spine is strict,
   // so a closed gate locks everything beyond it)
@@ -634,15 +661,20 @@ export function getTrailState(
   const bypasses = recommendation.bypasses ?? {};
   const requiredIds = requiredLessonIds(data.topics, data.branches);
   let frontier = 0;
+  if (placedAtTopic > 1) {
+    const placedCoreIndex = ordered.findIndex((lesson) => topicByLesson.get(lesson.id) === placedAtTopic);
+    if (placedCoreIndex >= 0) frontier = placedCoreIndex;
+  }
   ordered.forEach((lesson, index) => {
     if (completedSet.has(lesson.id)) frontier = Math.max(frontier, index + 1);
     else if (started[lesson.id]) frontier = Math.max(frontier, index);
   });
+  const isInPlacedPast = (lessonId: number) => isPlacedPrior(topicByLesson.get(lessonId));
   const available = ordered.filter((lesson) => view.get(lesson.id)?.status === "available");
   // Required lessons are never "missed side lessons": bypass counts (stored or new)
   // are ignored for them, so "Continue ahead" can never suppress required grammar.
   const missedIds = ordered.slice(0, frontier)
-    .filter((lesson) => !requiredIds.has(lesson.id)
+    .filter((lesson) => !isInPlacedPast(lesson.id) && !requiredIds.has(lesson.id)
       && view.get(lesson.id)?.status === "available" && (bypasses[lesson.id] ?? 0) < 3)
     .map((lesson) => lesson.id);
   const forwardId = ordered.slice(frontier)
@@ -650,10 +682,10 @@ export function getTrailState(
   // Required grammar surfaces first: the next required lesson whose region is done,
   // then missed optional lessons, then the next available lesson in trail order.
   const pendingRequired = ordered.find(
-    (lesson) => requiredIds.has(lesson.id) && view.get(lesson.id)?.status === "available"
+    (lesson) => !isInPlacedPast(lesson.id) && requiredIds.has(lesson.id) && view.get(lesson.id)?.status === "available"
   );
   const recommendedId = pendingRequired?.id ?? missedIds[0] ??
-    available.find((lesson) => (bypasses[lesson.id] ?? 0) < 3 || requiredIds.has(lesson.id))?.id ?? null;
+    available.find((lesson) => !isInPlacedPast(lesson.id) && ((bypasses[lesson.id] ?? 0) < 3 || requiredIds.has(lesson.id)))?.id ?? null;
 
   return { nodes: view, litEdges, recommendedId, forwardId, missedIds, gates: gateViews, requiredIds };
 }

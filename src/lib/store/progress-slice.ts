@@ -6,7 +6,7 @@ import { isValidLanguageId } from "@/data/languages";
 import { emptyVersions, sliceFromMirrors, getWeekString } from "./progress-state";
 import { sanitizeLessonProgressEntry } from "./schema";
 
-export const createProgressSlice: StoreSlice<"setActiveLanguage" | "markWordExplored" | "markWordEncountered" | "seedSrsCards" | "markWordsEncountered" | "markWordMastered" | "passGate" | "completeLesson" | "setLessonProgress" | "logDailyActivity"> = (set, get) => ({
+export const createProgressSlice: StoreSlice<"setActiveLanguage" | "markWordExplored" | "markWordEncountered" | "seedSrsCards" | "markWordsEncountered" | "markWordMastered" | "passGate" | "setPlacedAtTopic" | "completeLesson" | "setLessonProgress" | "logDailyActivity"> = (set, get) => ({
   setActiveLanguage: (languageId) => {
     if (!isValidLanguageId(languageId)) return;
     set((s) => {
@@ -30,6 +30,7 @@ export const createProgressSlice: StoreSlice<"setActiveLanguage" | "markWordExpl
         lessonProgress: incoming?.lessonProgress || {},
         lessonStars: incoming?.lessonStars || {},
         passedGateIds: incoming?.passedGateIds || [],
+        placedAtTopic: incoming?.placedAtTopic ?? 1,
         wordMastery: incoming?.wordMastery || {},
         srsCards: incoming?.srsCards || {},
         sentenceCards: incoming?.sentenceCards || {},
@@ -138,6 +139,21 @@ export const createProgressSlice: StoreSlice<"setActiveLanguage" | "markWordExpl
     set((s) => {
       if (s.passedGateIds.includes(gateId)) return s;
       const next = { ...s, passedGateIds: [...s.passedGateIds, gateId] };
+      saveState(next);
+      return next;
+    });
+  },
+
+  setPlacedAtTopic: (topic) => {
+    if (!Number.isFinite(topic)) return;
+    const normalized = Math.max(1, Math.floor(topic));
+    set((s) => {
+      if (s.placedAtTopic === normalized && s.settings.placementTopic === normalized) return s;
+      const next = {
+        ...s,
+        placedAtTopic: normalized,
+        settings: { ...s.settings, placementTopic: normalized },
+      };
       saveState(next);
       return next;
     });

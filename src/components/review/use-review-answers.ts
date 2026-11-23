@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
+import { expandGermanTargets, isUnspecifiedYouPrompt } from "@/lib/german-alternatives";
 import { gradeLessonAnswer } from "@/lib/lesson-grading";
 import { soundEngine } from "@/lib/sound";
 import type { ReviewGrade } from "@/lib/srs";
+import { useAppStore } from "@/lib/store";
 import type { ReviewMode, WordEntity } from "@/lib/types";
 import type { CustomizationSettings } from "@/data/settings";
 
@@ -87,6 +89,7 @@ export function useReviewAnswers({ currentWord, currentCardId, currentIndex, ses
     const { result: evalResult } = gradeLessonAnswer([assembled], [currentWord.target_word, ...(currentWord.accepted_answers ?? [])], {
       umlautTolerance: Boolean(settings.lazyMode),
       capitalizationTolerance: Boolean(settings.capitalizationTolerance),
+      allowGermanRegister: isSentenceCard && isUnspecifiedYouPrompt(currentWord.english_cognate),
     });
     const isCorrect = evalResult.accuracy === "exact" || evalResult.accuracy === "almost";
     if (isCorrect) {
@@ -107,9 +110,11 @@ export function useReviewAnswers({ currentWord, currentCardId, currentIndex, ses
       return;
     }
 
+    const isSentenceCard = currentWord.id.startsWith("sentence_") || currentWord.target_word.includes(" ");
     const evalOptions = {
       umlautTolerance: Boolean(settings.lazyMode),
       capitalizationTolerance: Boolean(settings.capitalizationTolerance),
+      allowGermanRegister: isSentenceCard && isUnspecifiedYouPrompt(currentWord.english_cognate),
     };
     const { result: evaluation } = gradeLessonAnswer([guess], [currentWord.target_word, ...(currentWord.accepted_answers ?? [])], evalOptions);
     if (evaluation.accuracy === "exact") {
@@ -132,7 +137,15 @@ export function useReviewAnswers({ currentWord, currentCardId, currentIndex, ses
   const handleTypingInputChange = (val: string) => {
     if (val.length > inputGuess.length) {
       if (settings.stopOnError === "letter" && currentWord) {
-        const targets = [currentWord.target_word, ...(currentWord.accepted_answers ?? [])];
+        const isSentenceCard = currentWord.id.startsWith("sentence_") || currentWord.target_word.includes(" ");
+        const baseTargets = [currentWord.target_word, ...(currentWord.accepted_answers ?? [])];
+        const activeLanguageId = useAppStore.getState().activeLanguageId ?? "de";
+        const targets = activeLanguageId === "de"
+          ? expandGermanTargets(baseTargets, {
+              allowV2: true,
+              allowRegister: isSentenceCard && isUnspecifiedYouPrompt(currentWord.english_cognate),
+            })
+          : baseTargets;
         const normalizePrefix = (text: string) => {
           let normalized = text.toLowerCase().replace(/\s*,\s*/g, " ").replace(/[.!?;:]+$/, "").replace(/\s+/g, " ").trimStart();
           if (settings.lazyMode) {

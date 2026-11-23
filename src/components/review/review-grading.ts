@@ -1,5 +1,6 @@
 import type { Dispatch, SetStateAction, RefObject } from "react";
 import { useAppStore } from "@/lib/store";
+import { recordPracticeDay } from "@/lib/weekly-practice";
 import { soundEngine } from "@/lib/sound";
 import type { ReviewGrade } from "@/lib/srs";
 import type { SRSCard } from "@/lib/types";
@@ -98,6 +99,7 @@ export function createReviewGrading(options: GradingOptions) {
     }
 
     recordReview(currentCard.word_id, grade);
+    recordPracticeDay();
     // Remember the version this grade produced so a later "back" only undoes the
     // card while it is still where this session left it (not clobbering a newer
     // cross-tab grade).

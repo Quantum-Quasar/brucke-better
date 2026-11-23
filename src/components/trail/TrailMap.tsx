@@ -66,7 +66,7 @@ export const TrailMap: React.FC = () => {
 
   const { state, trailData } = useCourseRecommendation(activeLanguageId);
   const prerequisites = useMemo(() => buildTrailPrerequisites(trailData), [trailData]);
-  const placementTopic = useAppStore((s) => s.settings.placementTopic);
+  const placedAtTopic = useAppStore((s) => s.placedAtTopic);
 
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const [width, setWidth] = useState(640);
@@ -190,23 +190,27 @@ export const TrailMap: React.FC = () => {
     if (!selected) return null;
     let previous = prerequisites.get(selected.id);
     while (previous !== undefined && previous !== null) {
+      const prerequisite = nodeById.get(previous);
+      if (prerequisite && prerequisite.topicId < placedAtTopic) {
+        previous = prerequisites.get(previous);
+        continue;
+      }
       if (!completedLessons.includes(previous)) {
-        const prerequisite = nodeById.get(previous);
         return prerequisite ? `Complete the required lesson “${prerequisite.title}” and all earlier main-path lessons to unlock this one.` : "Complete the earlier main-path lessons to unlock this one.";
       }
       previous = prerequisites.get(previous);
     }
-    return "Complete the earlier main-path lessons and pass any intervening star gates to unlock this one.";
-  }, [selected, nodeById, prerequisites, completedLessons]);
+    return "Complete the earlier main-path lessons and pass any intervening checkpoints to unlock this one.";
+  }, [selected, nodeById, prerequisites, completedLessons, placedAtTopic]);
 
 
 
   return (
     <div ref={wrapRef} className="relative w-full">
       <NextLessonBar />
-      {placementTopic > 1 && (
+      {placedAtTopic > 1 && (
         <p className="mb-4 rounded-lg border border-[var(--sub-color)]/25 p-3 text-xs text-[var(--sub-color)]">
-          Placement target: topic {placementTopic}. This is a recommendation, not an unlock — complete the earlier main-path lessons and checkpoints first.
+          Placed at topic {placedAtTopic}. Topics 1–{placedAtTopic - 1} and earlier checkpoints are unlocked so you can start right at topic {placedAtTopic} or revisit earlier lessons anytime.
         </p>
       )}
       {/* Map legend — the next step is the fixed resume control below */}
@@ -239,7 +243,7 @@ export const TrailMap: React.FC = () => {
           <Clock className="w-3 h-3" aria-hidden /> coming soon
         </span>
         <span className="inline-flex items-center gap-1.5">
-          <Star className="w-3 h-3" style={{ color: GOLD_STAR, fill: GOLD_STAR }} aria-hidden /> star gate
+          <Star className="w-3 h-3" style={{ color: GOLD_STAR, fill: GOLD_STAR }} aria-hidden /> checkpoint
         </span>
       </div>
 
@@ -372,21 +376,22 @@ export const TrailMap: React.FC = () => {
           );
         })}
 
-        {/* star-gate checkpoint pills on the spine */}
+        {/* checkpoint pills on the spine */}
         {layout.gates.map((gate) => {
           const gv: GateView | undefined = state.gates.get(gate.id);
           const open = gv?.open ?? false;
-          const stars = gv?.stars ?? 0;
+          const passed = gv?.passed ?? false;
           const shortName = gate.title.replace(/^The /, "");
+          const statusLabel = open ? "open" : passed ? "passed" : "checkpoint";
           return (
             <button
               key={gate.id}
               type="button"
               onClick={() => {
-                            setTrailPosition(activeLanguageId, { gateId: gate.id, nodeId: null });
+                setTrailPosition(activeLanguageId, { gateId: gate.id, nodeId: null });
               }}
-              aria-label={`${gate.title} star gate: ${stars} of ${gate.requiredStars} stars in topics ${gv?.fromTopic}–${gv?.toTopic} — ${open ? "open" : "closed"}`}
-              title={`${gate.title} — ${stars}/${gate.requiredStars}★`}
+              aria-label={`${gate.title} checkpoint for topics ${gv?.fromTopic}–${gv?.toTopic} — ${open ? "open" : passed ? "passed, finish main path" : "locked"}`}
+              title={`${gate.title} — ${statusLabel}`}
               className={`absolute z-10 flex items-center justify-center gap-1.5 rounded-full font-mono text-[10px] transition duration-200 cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--main-color)] ${
                 open
                   ? "bg-[var(--main-color)] border-2 border-[var(--main-color)] text-[var(--bg-color)] shadow-sm"
@@ -397,7 +402,7 @@ export const TrailMap: React.FC = () => {
               {open ? <Check className="w-3 h-3 shrink-0" /> : <Lock className="w-3 h-3 shrink-0" />}
               <span className="truncate max-w-[86px]">{shortName}</span>
               <span className={open ? "font-bold" : "font-bold text-[var(--text-color)]"}>
-                ★ {stars}/{gate.requiredStars}
+                {open ? "✓" : passed ? "✓" : `T${gv?.fromTopic}–${gv?.toTopic}`}
               </span>
             </button>
           );
@@ -452,6 +457,10 @@ export const TrailMap: React.FC = () => {
           })()}
           onPass={() => passGate(selectedGate.id)}
           onClose={() => setTrailPosition(activeLanguageId, { gateId: null })}
+          onOpenLesson={(lessonId) => {
+            setTrailPosition(activeLanguageId, { gateId: null });
+            openLesson(activeLanguageId, lessonId);
+          }}
         />
       )}
     </div>

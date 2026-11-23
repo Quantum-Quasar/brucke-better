@@ -10,6 +10,8 @@ interface DeckSources {
   scopedCompoundCards: SRSCard[];
   sentenceCards: SRSCard[];
   articleCards: SRSCard[];
+  listeningCards: SRSCard[];
+  starredCards: SRSCard[];
   shiftIds: () => string[];
   domainIds: () => string[];
   everythingIds: () => string[];
@@ -19,7 +21,7 @@ interface DeckSources {
 }
 /** Every vocabulary deck shares one cap; due/weakest/recent preserve priority. */
 export function orderReviewDeck(deck: ReviewDeckType, sources: DeckSources, customCards?: SRSCard[]): SRSCard[] {
-  const { dueCards, weakestCards, learnedCards, recentWordIds, scopedCompoundCards, sentenceCards, articleCards, shiftIds, domainIds, everythingIds, blankCard, sessionSize, shuffleSession } = sources;
+  const { dueCards, weakestCards, learnedCards, recentWordIds, scopedCompoundCards, sentenceCards, articleCards, listeningCards, starredCards, shiftIds, domainIds, everythingIds, blankCard, sessionSize, shuffleSession } = sources;
   const cards = customCards ?? (() => {
     switch (deck) {
       case "due": return dueCards;
@@ -30,6 +32,8 @@ export function orderReviewDeck(deck: ReviewDeckType, sources: DeckSources, cust
       case "compounds": return scopedCompoundCards;
       case "sentences": return sentenceCards;
       case "articles": return articleCards;
+      case "listening": return listeningCards;
+      case "starred": return starredCards;
       case "domain": return domainIds().map(blankCard);
       case "everything": return [...everythingIds().map(blankCard), ...scopedCompoundCards, ...sentenceCards, ...articleCards];
     }
