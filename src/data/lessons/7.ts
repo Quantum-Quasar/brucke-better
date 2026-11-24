@@ -166,7 +166,7 @@ const lesson: Lesson = {
       "id": "l7_e5",
       "type": "transcribe",
       "prompt": "You want to say:",
-      "idea": "you walk into a café at noon: you greet with good day, then say what you'll drink — cold water",
+      "idea": "walking into a café at noon: 'Good day, I drink cold water'",
       "cues": [
         "Greet first: Guten Tag — both words run D → T",
         "Who drinks? → ich trinke (drink → trink-)",

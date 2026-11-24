@@ -111,7 +111,7 @@ const lesson: Lesson = {
     {
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "say that you explain the situation to your friend",
+      "idea": "say: 'I explain the situation to my friend'",
       "cues": [
         "To him/her (preview) → Le",
         "I explain the situation → explico la situación",

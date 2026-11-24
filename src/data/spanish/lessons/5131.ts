@@ -112,7 +112,7 @@ const lesson: Lesson = {
     {
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "say that you have your ticket for the train at eight",
+      "idea": "say: 'I have my ticket for the train at eight'",
       "cues": [
         "I have my ticket → Tengo mi billete",
         "for the train → para el tren",

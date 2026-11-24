@@ -160,18 +160,19 @@ const lesson: Lesson = {
     "curiosity_teaser": "Up next ([2902] Arabic Heritage & Cultural Turns): celebrate the Arabic layer of Spanish (ojalá, azul, hasta) and table culture."
   },
   "twist": {
-    "prompt": "Assemble: 'The bill, please'",
-    "target_answer": "La cuenta por favor",
+    "prompt": "Assemble: 'In fact, I am hungry and thirsty'",
+    "target_answer": "De hecho tengo hambre y sed",
     "word_bank": [
-      "cuento",
-      "favor",
-      "gracias",
-      "por",
-      "El",
-      "cuenta",
-      "La"
+      "De",
+      "hecho",
+      "tengo",
+      "hambre",
+      "y",
+      "sed",
+      "soy",
+      "razón"
     ],
-    "explanation": "La cuenta, por favor."
+    "explanation": "De hecho ('in fact') + tengo hambre y sed ('I am hungry and thirsty', literally 'I have hunger and thirst')."
   }
 };
 

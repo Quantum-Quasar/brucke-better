@@ -101,7 +101,7 @@ const lesson: Lesson = {
     {
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "you want to enter here",
+      "idea": "'I want to enter here'",
       "cues": [
         "I want → je veux",
         "go in → enter → entrer",

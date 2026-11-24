@@ -177,7 +177,7 @@ const lesson: Lesson = {
       "id": "l18_e5",
       "type": "transcribe",
       "prompt": "Put into German:",
-      "idea": "you're telling a friend about last night's study session: you learned German yesterday",
+      "idea": "telling a friend about yesterday's study session: 'I learned German yesterday'",
       "idea_parts": [
         "who? → ich",
         "the auxiliary → habe in position 2",

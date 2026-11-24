@@ -109,7 +109,7 @@ const lesson: Lesson = {
     {
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "say that you want to invite your mother",
+      "idea": "say: 'I want to invite my mother'",
       "cues": [
         "I want to invite → Quiero invitar",
         "personal 'a' + my mother → a mi madre"

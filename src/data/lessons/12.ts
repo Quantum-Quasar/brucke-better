@@ -179,7 +179,7 @@ const lesson: Lesson = {
       "id": "l12_e5",
       "type": "transcribe",
       "prompt": "You want to say:",
-      "idea": "the question was about it — the thing, the plan, whatever it was — and your honest answer: you do not know it",
+      "idea": "the question was about the plan, and the honest answer is: 'I do not know it'",
       "cues": [
         "Know is wissen → ich weiß (the wise twin, sharp ß and all)",
         "nicht kills the verb and lands where the action dies: at the very end"

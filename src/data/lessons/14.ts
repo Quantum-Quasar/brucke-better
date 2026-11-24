@@ -174,7 +174,7 @@ const lesson: Lesson = {
       "id": "l14_e5",
       "type": "transcribe",
       "prompt": "Put into German:",
-      "idea": "you're reporting on the neighborhood's most punctual animal — you know one thing for sure: the cat is coming. Say it with that.",
+      "idea": "reporting on the neighborhood's most punctual animal: 'I know that the cat is coming'",
       "cues": [
         "Main clause first: Ich weiß — verb in position 2",
         "dass opens the basement: die Katze (the cat, feminine), and kommt waits at the very end"

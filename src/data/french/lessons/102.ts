@@ -50,7 +50,7 @@ const lesson: Lesson = {
       "id": "fr102_e2",
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "you want it, and the it is the coffee",
+      "idea": "'I want it' — and 'it' is the coffee",
       "cues": [
         "The it borrows the coffee's article: le",
         "The pronoun walks left: I it want",

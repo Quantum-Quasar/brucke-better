@@ -113,7 +113,7 @@ const lesson: Lesson = {
     {
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "say that your parents live in Madrid",
+      "idea": "say: 'My parents live in Madrid'",
       "cues": [
         "My parents → Mis padres",
         "live (3rd person plural of vivir) → viven",

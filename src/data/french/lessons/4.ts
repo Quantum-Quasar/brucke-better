@@ -67,7 +67,7 @@ const lesson: Lesson = {
       "id": "fr4_e2",
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "you don't want it — and the it is the coffee",
+      "idea": "'I don't want it' — and 'it' is the coffee",
       "cues": [
         "The it walks left as always: le before the verb",
         "The sandwich hugs the verb: ne … veux … pas",

@@ -119,7 +119,7 @@ const lesson: Lesson = {
       "id": "fr5031_e4",
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "you might possibly come, no promises (use éventuellement)",
+      "idea": "'I might possibly come', no promises (use éventuellement)",
       "cues": [
         "éventuellement = possibly, not eventually",
         "the simple future rides in one word: je viendrai — but for now: je viens éventuellement",

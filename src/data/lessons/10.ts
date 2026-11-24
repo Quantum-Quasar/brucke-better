@@ -144,7 +144,7 @@ const lesson: Lesson = {
       "id": "l10_e5",
       "type": "transcribe",
       "prompt": "How would you say:",
-      "idea": "you're at a café table, people-watching: you're drinking a coffee and looking for him",
+      "idea": "at a café table, people-watching: 'I am drinking a coffee and looking for him'",
       "cues": [
         "Coffee is masculine and acted-on: ein → einen — the Him-Case on the article",
         "The pronoun follows the same law: er → ihn (suchen needs no preposition — the 'for' is baked in)"

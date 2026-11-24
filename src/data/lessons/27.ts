@@ -135,7 +135,7 @@ const lesson: Lesson = {
       "id": "l27_e3",
       "type": "transcribe",
       "prompt": "You want to say:",
-      "idea": "you're giving directions to a friend: you walk to the house",
+      "idea": "telling a friend where I'm headed: 'I walk to the house'",
       "cues": [
         "zu + dem shrinks to zum — the contraction shows its case: Ich gehe zum Haus"
       ],

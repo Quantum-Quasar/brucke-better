@@ -153,7 +153,7 @@ const lesson: Lesson = {
       "id": "l5192_e5",
       "type": "transcribe",
       "prompt": "Say it in German:",
-      "idea": "you are getting dressed and announce what goes on top: you are wearing the hat and the cap",
+      "idea": "getting dressed and announcing what goes on top: 'I am wearing the hat and the cap'",
       "cues": [
         "der Hut becomes den Hut (masculine accusative); die Mütze stays die Mütze"
       ],

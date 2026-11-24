@@ -83,7 +83,7 @@ const lesson: Lesson = {
       "id": "fr301_e5",
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "you want to reserve a table — for tonight",
+      "idea": "calling the restaurant for tonight: 'I want to reserve a table'",
       "cues": [
         "The -ation noun: reservation",
         "Strip whole: réserver",

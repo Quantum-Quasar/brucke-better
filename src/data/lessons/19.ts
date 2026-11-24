@@ -157,7 +157,7 @@ const lesson: Lesson = {
       "id": "l19_e5",
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "you've been looking everywhere for the book — and you can finally announce: you have found the book",
+      "idea": "after looking everywhere for the book, finally announcing: 'I have found the book'",
       "idea_parts": [
         "who? → ich",
         "the auxiliary → habe",

@@ -82,7 +82,7 @@ const lesson: Lesson = {
       "id": "fr3_e4",
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "you want to celebrate — the exam results just came in",
+      "idea": "the exam results just came in: 'I want to celebrate'",
       "cues": [
         "Find the -ation noun: célébration",
         "Strip whole, add -er: célébrer",

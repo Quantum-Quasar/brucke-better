@@ -158,7 +158,7 @@ const lesson: Lesson = {
       "id": "l201_e5",
       "type": "transcribe",
       "prompt": "How would you say:",
-      "idea": "you and your friend are declaring a shared goal: you both want to learn German",
+      "idea": "declaring a shared goal with a friend: 'We want to learn German'",
       "cues": [
         "Who wants? → wir, so the modal takes -en: wir wollen",
         "What? → Deutsch",

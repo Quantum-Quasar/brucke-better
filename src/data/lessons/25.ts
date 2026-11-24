@@ -154,7 +154,7 @@ const lesson: Lesson = {
       "id": "l25_e5",
       "type": "transcribe",
       "prompt": "How would you say:",
-      "idea": "you're explaining why you stay: you live in Germany and you love it",
+      "idea": "explaining why we stay: 'We live in Germany and we love it'",
       "cues": [
         "Two quiet-family verbs: leben (live) and lieben (love) — English v between vowels became b, and wir takes -en on both"
       ],

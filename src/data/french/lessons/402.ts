@@ -61,7 +61,7 @@ const lesson: Lesson = {
       "id": "fr402_e3",
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "you don't want the complication — you came for the tradition",
+      "idea": "coming for the tradition: 'I don't want the complication'",
       "cues": [
         "Sandwich around veux",
         "la complication — consonant restart",

@@ -148,7 +148,7 @@ const lesson: Lesson = {
       "id": "l16_e5",
       "type": "transcribe",
       "prompt": "How would you say:",
-      "idea": "someone asked you to bring the thing, and you have to confess: you have forgotten it",
+      "idea": "confessing when asked for the thing: 'I have forgotten it'",
       "cues": [
         "haben opens the Perfekt bracket: ich habe",
         "Inseparable verbs never take ge-: vergessen closes the bracket, prefix welded on"

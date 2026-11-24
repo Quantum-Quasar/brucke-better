@@ -44,9 +44,9 @@ const lesson: DutchLessonSpec = {
     }
   ],
   "twist": {
-    "nl": "De stad is oud.",
-    "en": "The city is old.",
-    "explanation": "The singular sounds like 'stat', but the plural steden proves the d."
+    "nl": "De hond is goed.",
+    "en": "The dog is good.",
+    "explanation": "Both hond (honden) and goed (goede) sound like t at the end, yet keep their d from the family."
   },
   "outcome": "Apply final devoicing without corrupting the spelling of Dutch nouns.",
   "takeaway": "Dutch spelling is a record of the word's family, not a phonetic transcript."

@@ -233,7 +233,7 @@ const lesson: Lesson = {
       "id": "l15_e5",
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "you're telling your household your plan for tomorrow: you want to get up early",
+      "idea": "sharing tomorrow's plan with the household: 'I want to get up early'",
       "cues": [
         "Modal opens position 2: ich will",
         "Inside the bracket the separable verb stays whole: früh aufstehen — prefix included"

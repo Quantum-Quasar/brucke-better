@@ -112,7 +112,7 @@ const lesson: Lesson = {
     {
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "say that the hotel was very good (ongoing description) and yesterday you spoke with your friend",
+      "idea": "say: 'The hotel was very good and yesterday I spoke with my friend'",
       "cues": [
         "The hotel was very good → El hotel era muy bueno",
         "and yesterday I spoke → y ayer hablé",

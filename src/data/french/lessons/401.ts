@@ -79,7 +79,7 @@ const lesson: Lesson = {
       "id": "fr401_e3",
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "you're refusing firmly: you don't want to celebrate",
+      "idea": "refusing firmly: 'I don't want to celebrate'",
       "cues": [
         "Sandwich: ne … veux … pas",
         "célébration → célébrer (strip whole)",

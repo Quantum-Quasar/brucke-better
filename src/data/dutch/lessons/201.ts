@@ -44,9 +44,9 @@ const lesson: DutchLessonSpec = {
     }
   ],
   "twist": {
-    "nl": "De schouder is warm.",
-    "en": "The shoulder is warm.",
-    "explanation": "The same sch block now sits in a body word; the frame is unchanged."
+    "nl": "De schoen is groot.",
+    "en": "The shoe is big.",
+    "explanation": "Schoen carries the same sch block as shoe (sh → sch), paired with groot."
   },
   "exercises": [
     { "kind": "matching" },

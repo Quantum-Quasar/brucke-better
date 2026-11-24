@@ -99,11 +99,11 @@ const lesson: Lesson = {
     {
       "id": "l5142_e2",
       "type": "shift_select",
-      "prompt": "Which German month comes after August?",
+      "prompt": "Which German month is the ninth month of the year?",
       "options": ["Januar", "August", "September", "Oktober"],
       "target_answer": "September",
-      "meaning": "September = September (the month after August)",
-      "explanation": "September comes right after August in German, just as in English."
+      "meaning": "September = September (the ninth month of the year)",
+      "explanation": "September is the ninth month of the year in German, just as in English."
     },
     {
       "id": "l5142_e3",

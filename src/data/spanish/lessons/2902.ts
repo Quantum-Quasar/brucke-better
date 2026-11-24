@@ -162,19 +162,19 @@ const lesson: Lesson = {
     "curiosity_teaser": "Up next ([30] Capstone: El Puente Reading): bring all 30 topics together in a connected Madrid narrative!"
   },
   "twist": {
-    "prompt": "Assemble: 'Water with lemon, please'",
-    "target_answer": "Agua con limón por favor",
+    "prompt": "Assemble: 'I have coffee at the blue table'",
+    "target_answer": "Tengo café en la mesa azul",
     "word_bank": [
-      "con",
-      "favor",
-      "por",
-      "Agua",
-      "sin",
-      "limón",
-      "gracias",
-      "leche"
+      "Tengo",
+      "café",
+      "en",
+      "la",
+      "mesa",
+      "azul",
+      "el",
+      "limón"
     ],
-    "explanation": "Agua con limón, por favor."
+    "explanation": "Tengo café en la mesa azul — azul comes from Arabic lazaward, and la mesa is where la sobremesa happens."
   }
 };
 
