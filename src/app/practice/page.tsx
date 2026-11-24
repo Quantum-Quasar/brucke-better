@@ -68,16 +68,31 @@ export default function PracticeStudioPage() {
         aria-label="Practice Studio modes"
         className="flex flex-wrap gap-2 p-1.5 rounded-xl bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20"
       >
-        {PRACTICE_TABS.map((tab) => {
+        {PRACTICE_TABS.map((tab, index) => {
           const Icon = tab.icon;
           const active = activeTab === tab.id;
           return (
             <button
               key={tab.id}
+              id={`practice-tab-${tab.id}`}
               type="button"
               role="tab"
               aria-selected={active}
+              aria-controls="practice-tabpanel"
+              tabIndex={active ? 0 : -1}
               onClick={() => setActiveTab(tab.id)}
+              onKeyDown={(e) => {
+                if (e.key === "ArrowRight" || e.key === "ArrowLeft" || e.key === "Home" || e.key === "End") {
+                  e.preventDefault();
+                  const nextIndex =
+                    e.key === "Home" ? 0
+                    : e.key === "End" ? PRACTICE_TABS.length - 1
+                    : (index + (e.key === "ArrowRight" ? 1 : -1) + PRACTICE_TABS.length) % PRACTICE_TABS.length;
+                  const nextTab = PRACTICE_TABS[nextIndex];
+                  setActiveTab(nextTab.id);
+                  document.getElementById(`practice-tab-${nextTab.id}`)?.focus();
+                }
+              }}
               className={`flex-1 min-w-[130px] inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-xs font-mono transition cursor-pointer ${
                 active
                   ? "bg-[var(--main-color)] text-[var(--bg-color)] font-bold shadow-sm"
@@ -92,7 +107,12 @@ export default function PracticeStudioPage() {
       </div>
 
       {/* Active Tab Panel */}
-      <section className="p-5 sm:p-6 rounded-xl bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20">
+      <section
+        id="practice-tabpanel"
+        role="tabpanel"
+        aria-labelledby={`practice-tab-${activeTab}`}
+        className="p-5 sm:p-6 rounded-xl bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20"
+      >
         {activeTab === "shadowing" && <ShadowingLab />}
         {activeTab === "dialogues" && <DialoguePractice />}
         {activeTab === "weekly" && <WeeklyMixedTest />}

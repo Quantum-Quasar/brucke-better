@@ -196,6 +196,7 @@ export function ReviewAnswerEntry({ controller }: { controller: ReviewController
                     handleCheckTyping();
                   }
                 }}
+                aria-label={`Type the ${language.name} answer`}
                 placeholder={`type ${language.name.toLowerCase()} derivation...`}
                 className="w-full px-4 py-3 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 text-[var(--main-color)] text-center font-mono font-bold text-lg outline-none focus:border-[var(--main-color)] placeholder:text-[var(--sub-color)]/40 transition"
               />

@@ -261,6 +261,7 @@ export const useLessonSession = ({
       // place let a learner skip straight to summary from the table and mint a
       // purple star without answering anything.
       setCompletedSegments((prev) => prev.filter((segment) => segment !== "practice" && segment !== "summary"));
+      autoCompletedRef.current = false;
       setIsLessonFinished(false);
     }
     markSegmentDone("table", "practice");

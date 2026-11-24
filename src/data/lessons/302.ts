@@ -58,7 +58,7 @@ const lesson: Lesson = {
     "title": "The Customs Check: Swap f for p",
     "content": "Run the swap test: hoffen → hoppen? hope! helfen → help! schlafen — the schl- cluster hides 'sleep' with p → f: sleep → schlafen. Schiff → skipper's Schiff: ship (and a ship-master is still a skipper in English). Affe → ape. reif → ripe. scharf → sharp. greifen → grip. Now the impostors: Flug (fly/flight), frei (free), Fisch (fish), Feuer (fire) — no p hides inside these; their f is the ancient Germanic one English shares. Impostors are cognates too — just not students of this shift.",
     "footnotes": [],
-    "linguist_note": "The swap test has a third outcome: stumpf (stump/blunt) shows final p → pf, and treffen pairs the P→F shift with D → T (English dræpan, 'to strike' — the same root as drape). Mixed-shift words are the exception, not the rule."
+    "linguist_note": "The swap test has a third outcome: stumpf (stump/blunt) shows final p → pf, and treffen pairs the P→F shift with D → T (Old English drepan, 'to strike'). Mixed-shift words are the exception, not the rule."
   },
   "exercises": [
     {
@@ -143,12 +143,13 @@ const lesson: Lesson = {
     },
     {
       "id": "l302_e4",
-      "type": "reverse_cognate",
-      "prompt": "Swap the f back: what English verb is the twin of 'treffen' (to meet/strike)?",
-      "english_hint": "d + r + the p-word",
-      "target_answer": "drape",
-      "meaning": "to drape / strike (root of treffen)",
-      "explanation": "treffen is a double-shift word: English dræpan 'to strike' → d → t and p → ff. Modern English kept the root in drape."
+      "type": "derive",
+      "prompt": "Apply both shifts (d → t, p → ff) to build the everyday German verb for 'to meet / to strike':",
+      "english_hint": "Old English drepan → t + r + e + ff + en",
+      "target_answer": "treffen",
+      "meaning": "to meet / to strike (treffen)",
+      "shift_hint": "D → T + P → FF",
+      "explanation": "treffen pairs d → t with p → ff (from Old English drepan, 'to strike') and is the everyday German verb for 'to meet' or 'to hit a target'."
     },
     {
       "id": "l302_e5",
@@ -160,7 +161,7 @@ const lesson: Lesson = {
         "Who sleeps? → du schläfst — schlaf- + the thou-ending -st",
         "Sleep is the p-shift word: English sleep → schlafen, here in its du form"
       ],
-      "target_answer": "Ich hoffe du schläfst",
+      "target_answer": "Ich hoffe, du schläfst",
       "meaning": "I hope you sleep",
       "vocab_hints": [
         {

@@ -164,7 +164,7 @@ const lesson: Lesson = {
       "id": "l5101_e5",
       "type": "transcribe",
       "prompt": "Say in German: \"Der Mann, der Deutsch lernt, trinkt Kaffee\"",
-      "target_answer": "Der Mann der Deutsch lernt trinkt Kaffee",
+      "target_answer": "Der Mann, der Deutsch lernt, trinkt Kaffee",
       "meaning": "Der Mann, der Deutsch lernt, trinkt Kaffee",
       "vocab_hints": [
         {
@@ -191,7 +191,7 @@ const lesson: Lesson = {
         "Deutsch lernt, trinkt Kaffee (verb in position 2)"
       ],
       "cues": [
-        "Start with \"Der\" and anchor \"Mann\" in position 2.",
+        "Start with \"Der Mann, der Deutsch lernt,\" and put the main verb \"trinkt\" in position 2.",
         "Close the frame with \"Kaffee\"."
       ],
       "affirmation": "Der Mann, der Deutsch lernt, trinkt Kaffee — relative clause sends lernt to the end.",

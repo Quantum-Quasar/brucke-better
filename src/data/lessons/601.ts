@@ -181,7 +181,7 @@ const lesson: Lesson = {
         "the cake sweet (verb in position 2)"
       ],
       "cues": [
-        "Start with \"Die\" and anchor \"Zunge\" in position 2.",
+        "Start with \"Die Zunge\" in position 1 and place the verb \"findet\" in position 2.",
         "Close the frame with \"süß\"."
       ]
     }

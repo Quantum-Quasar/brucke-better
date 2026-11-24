@@ -43,7 +43,7 @@ const lesson: Lesson = {
   ],
   "hook": {
     "title": "When Two Rules Share One Word",
-    "content": "Some words could not decide which shift to attend, so they went to both. Deep carried a d AND a p: High German hardened the d to t and breathed the p into f — deep → tief. Daughter carried d and a guttural gh: d → t, gh → ch — daughter → Tochter. Drop became Tropfen, damp became Dampf, and thatch became Dach. These double-shift words look the most foreign and are actually the most rule-abiding: every letter changed according to a law you already know.",
+    "content": "Some words could not decide which shift to attend, so they went to both. Deep carried a d AND a p: High German hardened the d to t and breathed the p into f — deep → tief. Daughter carried d and a guttural gh: d → t, gh → ch — daughter → Tochter. Drop became Tropfen, thatch became Dach, and thousand became tausend. These double-shift words look the most foreign and are actually the most rule-abiding: every letter changed according to a law you already know.",
     "footnotes": [
       {
         "marker": "1",
@@ -54,9 +54,9 @@ const lesson: Lesson = {
   },
   "pattern": {
     "title": "Stack the Rules, Read the Word",
-    "content": "Read a double-shift word rule by rule. tief: t (from d) + ie (long vowel) + f (from p) = deep. Tochter: T (d) + och (gh) + ter = daughter. Tropfen: T + ropp... p → pf = drop. Dampf: D → T, p → pf = damp. Dach: th → d, t → ch = thatch (a roof's thatch and a Dach are the same word wearing two spelling systems). Tausend: th → t AND d → t — thousand. The devil is in there too: Teufel shifted its d the same way as devil's cousins.",
+    "content": "Read a double-shift word rule by rule. tief: t (from d) + ie (long vowel) + f (from p) = deep. Tochter: T (d) + och (gh) + ter = daughter. Tropfen: T + ropp... p → pf = drop. Dampf keeps its initial D and only shifts p → pf (damp → Dampf), showing that not every d-word doubled up. Dach: th → d, t → ch = thatch (a roof's thatch and a Dach are the same word wearing two spelling systems). Tausend: th → t AND d → t — thousand. The devil is in there too: Teufel shifted its d the same way as devil's cousins.",
     "footnotes": [],
-    "linguist_note": "Double shifts are your proof that the shift laws are systematic, not coincidences. Wherever two shiftable consonants co-occur, both shift — tief, Tochter, Tropfen, Dampf, Dach, tausend all obey two laws simultaneously."
+    "linguist_note": "Double shifts are your proof that the shift laws are systematic, not coincidences. Wherever two shiftable consonants co-occur, both shift — tief, Tochter, Tropfen, Dach, and tausend all obey two laws simultaneously (while Dampf kept its D and only shifted p → pf)."
   },
   "exercises": [
     {

@@ -63,8 +63,15 @@ export const WeeklyMixedTest: React.FC = () => {
 
   if (compendium.error || lessonIndex.error) {
     return (
-      <div className="p-4 rounded-xl bg-[var(--bg-color)] border border-[var(--error-color)]/40 text-xs font-mono text-[var(--error-color)]">
-        Could not load quiz vocabulary for {language.name}.
+      <div role="alert" className="p-4 rounded-xl bg-[var(--bg-color)] border border-[var(--error-color)]/40 text-xs font-mono text-[var(--error-color)] flex flex-wrap items-center justify-between gap-3">
+        <span>Could not load quiz vocabulary for {language.name}.</span>
+        <button
+          type="button"
+          onClick={() => { compendium.retry(); lessonIndex.retry(); }}
+          className="px-3 py-1.5 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold cursor-pointer hover:opacity-90 transition"
+        >
+          retry
+        </button>
       </div>
     );
   }

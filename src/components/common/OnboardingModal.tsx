@@ -123,13 +123,15 @@ export const OnboardingModal: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen, step, closeOnboarding, language.id, hasCompletedOnboarding, pathname]);
 
+  const primaryActionRef = React.useRef<HTMLButtonElement>(null);
+
   if (!isOpen) return null;
 
   const isAvailable = language.status === "available";
   const isGuide = hasCompletedOnboarding;
 
   return (
-    <ModalDialog onClose={closeOnboarding} aria-label="Brücke introduction" className="open:flex items-center justify-center p-4 bg-black/80 animate-in fade-in duration-200">
+    <ModalDialog onClose={closeOnboarding} initialFocusRef={primaryActionRef} aria-label="Brücke introduction" className="open:flex items-center justify-center p-4 bg-black/80 animate-in fade-in duration-200">
       <div
         aria-label="Brücke introduction"
         className="w-full max-w-2xl rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/30 shadow-2xl overflow-hidden flex flex-col max-h-[92dvh]"
@@ -326,7 +328,7 @@ export const OnboardingModal: React.FC = () => {
                   </div>
                   <p className="text-[var(--sub-color)] leading-relaxed">
                     {isAvailable
-                      ? `${familyCount} ${familyWord}, ${wordCount} indexed words, and an sm-2 review queue.`
+                      ? `${familyCount} ${familyWord}, ${wordCount} indexed words, and a spaced-repetition review queue.`
                       : "atlas and review unlock when the language content lands."}
                   </p>
                 </div>
@@ -395,6 +397,7 @@ export const OnboardingModal: React.FC = () => {
             )}
             {step === 0 ? (
               <button
+                ref={primaryActionRef}
                 type="button"
                 onClick={() => setStep(1)}
                 disabled={!effectiveLanguageId}

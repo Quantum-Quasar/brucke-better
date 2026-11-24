@@ -98,7 +98,7 @@ test("keyboard-only: a fresh learner finishes every Lesson 1 exercise from the h
   await expect(page.getByText("lesson complete", { exact: true })).toBeVisible();
   const finish = page.getByRole("button", { name: /mark lesson finished/i });
   if (await finish.isVisible()) await activateWithKeyboard(page, finish);
-  await expect(page.getByText("lesson mastered ✓", { exact: true })).toBeVisible();
+  await expect(page.getByText("lesson complete ✓", { exact: true })).toBeVisible();
   const progress = await readLearningProgress(page);
   expect(progress.completedLessons).toContain(1);
   expect(progress.lessonProgress[1].completedSegments).toEqual(expect.arrayContaining(["hook", "pattern", "table", "practice", "summary"]));

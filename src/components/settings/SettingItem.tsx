@@ -33,7 +33,7 @@ export const SettingItem: React.FC<SettingItemProps> = ({
         <div className="space-y-1 md:max-w-[55%]">
           <div className="flex items-center gap-2">
             <Icon className="w-4 h-4 text-[var(--main-color)] shrink-0" />
-            <h3 className="font-mono text-sm font-semibold text-[var(--text-color)] lowercase tracking-tight">
+            <h3 id={`setting-title-${id}`} className="font-mono text-sm font-semibold text-[var(--text-color)] lowercase tracking-tight">
               {title}
             </h3>
           </div>
@@ -43,7 +43,7 @@ export const SettingItem: React.FC<SettingItemProps> = ({
         </div>
 
         {/* Right column: Interactive Controls */}
-        <div className="flex items-center justify-start md:justify-end flex-wrap gap-1.5 shrink-0">
+        <div role="group" aria-labelledby={`setting-title-${id}`} className="flex items-center justify-start md:justify-end flex-wrap gap-1.5 shrink-0">
           {children}
         </div>
       </div>

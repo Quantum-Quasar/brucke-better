@@ -168,9 +168,9 @@ const lesson: Lesson = {
       "cues": [
         "Who hopes? → ich hoffe — hope is a regular verb here: hoff- + -e",
         "Who has the Lust? → du hast Lust — hast is haben's du-form (have ↔ haben: the same ancient verb)",
-        "Run it straight through: no 'that', no comma between the two clauses"
+        "Skip 'that' and put a comma between the two clauses: Ich hoffe, du hast Lust"
       ],
-      "target_answer": "Ich hoffe du hast Lust",
+      "target_answer": "Ich hoffe, du hast Lust",
       "meaning": "I hope you feel like it (have the craving)",
       "vocab_hints": [
         {
@@ -187,7 +187,7 @@ const lesson: Lesson = {
         "Ich",
         "kommst"
       ],
-      "explanation": "German lets 'I hope' run straight into 'you have the Lust' — no 'that', no comma. And hoffen is your P → F hope wearing a working ending."
+      "explanation": "German lets 'I hope' run into 'you have the Lust' without 'that', separated by a comma between the two clauses. And hoffen is your P → F hope wearing a working ending."
     }
   ],
   "summary": {

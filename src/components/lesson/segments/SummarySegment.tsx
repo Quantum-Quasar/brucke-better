@@ -125,9 +125,17 @@ export default function SummarySegment({ session }: { session: LessonSession }) 
                     ) : (
                       <>
                         {isLessonFinished ? (
-                          <span className="w-full sm:w-auto inline-flex items-center justify-center px-5 py-2 rounded-lg bg-[var(--bg-color)] border border-[var(--main-color)]/30 text-[var(--main-color)] font-bold text-xs">
-                            lesson mastered ✓
-                          </span>
+                          <div className="w-full sm:w-auto flex flex-wrap items-center justify-center gap-2">
+                            <span className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[var(--bg-color)] border border-[var(--main-color)]/30 text-[var(--main-color)] font-bold text-xs">
+                              lesson complete ✓
+                            </span>
+                            <Link
+                              href="/review"
+                              className="inline-flex items-center justify-center px-4 py-2 rounded-lg bg-[var(--bg-color)] hover:border-[var(--main-color)] border border-[var(--sub-color)]/30 text-[var(--text-color)] font-bold text-xs transition"
+                            >
+                              review these words
+                            </Link>
+                          </div>
                         ) : (
                           <button
                             type="button"

@@ -76,7 +76,7 @@ export default function CanDoChecklistPage() {
           </span>
         </div>
         <p className="text-sm text-[var(--sub-color)] leading-relaxed">
-          Real-world milestones mapped across all 30 core topics (A1.1 → A2.2). Completing each topic&apos;s core lesson automatically ticks off its descriptor.
+          Real-world milestones mapped across all 30 core topics (A1.1 → A2.2). Topics you complete on the trail are checked off below — use Review and Practice Studio to test independent recall.
         </p>
       </div>
 

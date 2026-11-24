@@ -1,7 +1,7 @@
 import type { AppState, LanguageProgress } from "./types";
 import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "../storage-keys";
 import { DEFAULT_LANGUAGE_ID, isValidLanguageId } from "@/data/languages";
-import { reportStorageWrite } from "../storage-health";
+import { reportStorageCorruption, reportStorageWrite } from "../storage-health";
 import { sliceFromMirrors, mergeLanguageSlice } from "./progress-state";
 import { isPlausibleStateObject, normalizeParsedState, normalizeLanguageSlice, isDangerousKey } from "./schema";
 import { applyTheme, applyAppearanceSettings, DEFAULT_THEME } from "../theme-runtime";
@@ -77,7 +77,11 @@ export function loadSavedState(): Partial<AppState> {
   // localStorage payload must not bury recoverable cookie data. The cookie
   // write runs in the same saveState pass as localStorage, so it is never
   // staler than the localStorage snapshot it accompanies.
-  const local = parseStoredJson(safeStorageGet(STORAGE_KEY));
+  const rawLocal = safeStorageGet(STORAGE_KEY);
+  const local = parseStoredJson(rawLocal);
+  if (rawLocal !== null && rawLocal.trim().length > 0 && local === null) {
+    reportStorageCorruption(rawLocal);
+  }
   const cookie = parseStoredJson(getCookie(STORAGE_COOKIE_KEY));
 
   let parsed: Record<string, unknown> | null = null;

@@ -118,11 +118,7 @@ export function ReviewSessionCard({ controller }: { controller: ReviewController
 
               <button
                 type="button"
-                tabIndex={-1}
                 onClick={exitDeck}
-                onKeyDown={(e) => {
-                  if (e.key === " " || e.key === "Enter") e.preventDefault();
-                }}
                 className="min-h-11 text-sm font-mono text-[var(--sub-color)] hover:text-[var(--text-color)] px-3 py-1 rounded bg-[var(--bg-color)] border border-[var(--sub-color)]/20 transition cursor-pointer flex items-center gap-1.5"
                 title="Exit Session (Esc)"
               >

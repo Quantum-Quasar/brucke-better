@@ -180,6 +180,7 @@ export default function SettingsPage() {
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
+              aria-label="Search settings"
               placeholder="type to search settings..."
               className="min-h-11 w-full pl-10 pr-4 py-2.5 rounded-lg bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 text-xs font-mono text-[var(--text-color)] placeholder:text-[var(--sub-color)]/50 focus:outline-none focus:border-[var(--main-color)] transition"
             />

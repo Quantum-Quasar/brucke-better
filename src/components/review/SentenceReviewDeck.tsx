@@ -84,6 +84,6 @@ function SentenceReplay({ card, attempt, languageId, data, onError, onHelp, onSu
   if (resource.error) return <div role="alert" className="space-y-3"><p>This lesson could not be loaded. No progress has changed.</p><button type="button" onClick={resource.retry}>retry loading</button><button type="button" className="ml-4 underline" onClick={onUnavailable}>skip without grading</button></div>;
   if (resource.loading) return <p role="status">loading sentence process…</p>;
   if (!exercise) return <div className="space-y-3"><p>This exercise is no longer available. Its saved schedule is unchanged.</p><button type="button" onClick={onUnavailable}>skip without grading</button></div>;
-  return <ExerciseWidget key={`${card.id}:${attempt}:${exercise.target_answer}`} exercise={exercise} onError={onError} onSuccess={onSuccess}
+  return <ExerciseWidget key={`${card.id}:${attempt}:${exercise.target_answer}`} exercise={exercise} recallFirst={exercise.type === "transcribe"} onError={onError} onSuccess={onSuccess}
     onQueueRetry={onHelp} onPurpleForfeit={onHelp} onFlagGuessed={onHelp} />;
 }

@@ -68,7 +68,7 @@ export function LocalDataControls() {
   return (
     <div className="space-y-3 rounded-lg border border-[var(--sub-color)]/25 bg-[var(--sub-alt-color)] p-4 text-xs font-mono text-[var(--sub-color)]">
       <h3 className="font-bold text-[var(--text-color)]">offline app & progress safety</h3>
-      <p>Install Brücke using your browser’s Install app or Add to Home Screen menu. You can also download the full {language.name} course right now so lessons, vocabulary, and the Atlas work without a connection.</p>
+      <p>Install Brücke using your browser’s Install app or Add to Home Screen menu. You can also download all {language.name} course data (lessons, vocabulary, and the Atlas) for offline use. Open any lesson once while online so its interactive interface is cached too.</p>
 
       <div className="flex flex-wrap items-center gap-2">
         <button

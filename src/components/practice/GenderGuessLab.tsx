@@ -94,7 +94,27 @@ const GermanGenderLabContent: React.FC = () => {
     setScore({ correct: 0, total: 0 });
   };
 
-  if (!item) return null;
+  if (deCompendium.error) {
+    return (
+      <div role="alert" className="p-4 rounded-xl bg-[var(--bg-color)] border border-[var(--error-color)]/40 text-xs font-mono text-[var(--error-color)] flex flex-wrap items-center justify-between gap-3">
+        <span>Could not load the German noun gender deck.</span>
+        <button
+          type="button"
+          onClick={() => deCompendium.retry()}
+          className="px-3 py-1.5 rounded bg-[var(--main-color)] text-[var(--bg-color)] font-bold cursor-pointer hover:opacity-90 transition"
+        >
+          retry
+        </button>
+      </div>
+    );
+  }
+  if (!item) {
+    return (
+      <div role="status" className="p-6 text-center text-xs font-mono text-[var(--sub-color)]">
+        loading German noun gender lab…
+      </div>
+    );
+  }
 
   const stemLength = Math.max(0, item.noun.length - item.rule.suffix.length);
   const stem = item.noun.slice(0, stemLength);
