@@ -8,44 +8,111 @@ import { hashSeed, seededShuffle } from "@/lib/prng";
 type LanguageId = "de" | "fr" | "es" | "nl";
 
 /**
- * Common non-noun sentence starters scoped by language whose capitalization
- * only marks sentence position. Lowercasing them in word banks prevents the
- * opening tile from giving itself away while leaving German nouns (e.g. Morgen,
- * Dank, Haar) and formal Ihr capitalized.
+ * Common non-noun German sentence starters whose capitalization only marks
+ * sentence position. Lowercasing them in word banks prevents the opening tile
+ * from giving itself away while leaving German nouns (e.g. Morgen, Dank, Haar)
+ * and formal Sie/Ihr capitalized.
  */
-const SENTENCE_STARTER_LOWERCASE: Record<LanguageId, ReadonlySet<string>> = {
-  de: new Set([
-    "ich", "wir", "du", "er", "es", "man",
-    "der", "die", "das", "den", "dem", "des",
-    "ein", "eine", "einen", "einem", "einer", "eines",
-    "mein", "meine", "meinen", "dein", "deine", "unser", "unsere",
-    "heute", "gestern", "jetzt", "hier", "dort", "dann", "bald", "oft", "immer", "schon", "noch",
-    "wann", "wo", "warum", "wie", "was", "wer", "welcher", "welche",
-    "ja", "nein", "bitte", "danke", "hallo", "guten", "sehr", "zu",
-    "kann", "können", "will", "wollen", "muss", "müssen", "soll", "sollen", "mag", "mögen", "möchte", "möchten",
-    "bin", "bist", "ist", "sind", "seid", "war", "waren", "habe", "hast", "hat", "haben", "habt",
-    "nicht", "kein", "keine", "keinen", "auch", "aber", "oder", "und", "denn", "weil", "wenn", "dass", "ob",
-    "auf", "in", "im", "am", "an", "mit", "für", "von", "vom", "nach", "bei", "seit", "vor", "über", "unter",
-  ]),
-  fr: new Set([
-    "je", "j'ai", "j'aime", "tu", "il", "elle", "on", "nous", "vous", "ils", "elles",
-    "le", "la", "les", "l'", "un", "une", "des", "ce", "c'est", "mon", "ma", "mes", "ton", "ta", "tes",
-    "oui", "non", "merci", "bonjour", "salut", "pourquoi", "quand", "où", "comment", "qui", "que", "qu'est-ce",
-    "aujourd'hui", "demain", "hier", "maintenant", "ici", "là", "très", "ne", "n'", "pas", "et", "ou", "mais",
-  ]),
-  es: new Set([
-    "yo", "tú", "él", "ella", "usted", "nosotros", "nosotras", "vosotros", "ellos", "ellas", "ustedes",
-    "el", "la", "los", "las", "mi", "mis", "su", "sus", "este", "esta", "esto",
-    "sí", "no", "hola", "gracias", "por", "para", "con", "sin", "hoy", "mañana", "ayer", "ahora", "aquí",
-    "qué", "quién", "dónde", "cuándo", "cómo", "cuánto", "porque", "pero", "y",
-  ]),
-  nl: new Set([
-    "ik", "jij", "je", "u", "hij", "zij", "ze", "wij", "we", "jullie",
-    "het", "de", "een", "dit", "dat", "deze", "mijn", "jouw", "zijn", "haar", "ons", "onze",
-    "ja", "nee", "hallo", "dank", "vandaag", "morgen", "gisteren", "nu", "hier", "daar",
-    "wie", "wat", "waar", "wanneer", "waarom", "hoe", "niet", "geen", "en", "of", "maar", "omdat", "als",
-  ]),
-};
+const DE_SENTENCE_STARTER_LOWERCASE: ReadonlySet<string> = new Set([
+  // Pronouns & determiners (excluding formal Sie/Ihr and nouns)
+  "ich", "wir", "du", "er", "es", "man",
+  "mich", "dich", "ihn", "uns", "euch", "mir", "dir", "ihm",
+  "der", "die", "das", "den", "dem", "des",
+  "ein", "eine", "einen", "einem", "einer", "eines",
+  "mein", "meine", "meinen", "meinem", "meiner",
+  "dein", "deine", "deinen", "deinem", "deiner",
+  "sein", "seine", "seinen", "seinem", "seiner",
+  "unser", "unsere", "unseren", "unserem", "unserer",
+  "euer", "eure", "euren", "eurem", "eurer",
+  "dies", "dieser", "diese", "dieses", "diesen", "diesem",
+  "jeder", "jede", "jedes", "jeden", "jedem",
+  "alle", "alles", "jemand", "niemand", "etwas", "nichts",
+  "nicht", "kein", "keine", "keinen", "keinem", "keiner",
+  // Adverbs & question words (keeping German noun "Morgen" capitalized)
+  "heute", "gestern", "vorgestern", "übermorgen", "jetzt", "nun", "gerade", "sofort", "gleich",
+  "hier", "dort", "draußen", "drinnen", "oben", "unten",
+  "dann", "danach", "vorher", "bald", "später", "früh", "früher",
+  "oft", "immer", "manchmal", "selten", "meistens", "nie", "niemals",
+  "schon", "noch", "wieder", "täglich", "sehr", "zu", "ganz", "ziemlich",
+  "vielleicht", "leider", "natürlich", "gerne", "gern", "auch", "nur", "so",
+  "viel", "viele", "wenig", "mehr", "gut", "schnell", "langsam",
+  "wann", "wo", "woher", "wohin", "warum", "wie", "was", "wer", "wen", "wem", "welcher", "welche", "welches",
+  // Discourse & greetings
+  "ja", "nein", "bitte", "danke", "hallo", "guten", "gute", "gutes",
+  // Contractions & prepositions
+  "zum", "zur", "ins", "ans", "am", "im", "vom", "beim",
+  "auf", "in", "an", "mit", "für", "von", "nach", "bei", "seit", "vor", "über", "unter",
+  "aus", "durch", "gegen", "ohne", "um", "zwischen", "hinter", "neben",
+  // Conjunctions
+  "aber", "oder", "und", "denn", "weil", "wenn", "dass", "ob", "obwohl",
+  "während", "bevor", "nachdem", "seitdem", "bis", "damit", "falls", "sobald", "solange",
+  "sondern", "trotzdem", "deshalb", "außerdem",
+  // Common sentence-starting verbs & auxiliaries/modals
+  "bin", "bist", "ist", "sind", "seid", "war", "warst", "wart", "waren", "wäre", "wären",
+  "habe", "hast", "hat", "haben", "habt", "hatte", "hatten", "hätte", "hätten",
+  "werde", "wirst", "wird", "werden", "würde", "würden",
+  "kann", "kannst", "können", "könnt", "könnte", "könnten",
+  "will", "willst", "wollen", "wollt",
+  "muss", "musst", "müssen", "müsst",
+  "darf", "darfst", "dürfen", "dürft",
+  "soll", "sollst", "sollen", "sollt",
+  "mag", "magst", "mögen", "mögt", "möchte", "möchtest", "möchten",
+  "gehe", "gehst", "geht", "gehen",
+  "trinke", "trinkst", "trinkt", "trinken",
+  "lese", "liest", "lesen",
+  "komme", "kommst", "kommt", "kommen",
+  "mache", "machst", "macht", "machen",
+  "nehme", "nimmst", "nimmt", "nehmen",
+  "gebe", "gibst", "gibt", "geben",
+  "sehe", "siehst", "sieht", "sehen",
+  "kaufe", "kaufst", "kauft", "kaufen",
+  "weiß", "weißt", "wissen",
+  "arbeite", "arbeitest", "arbeitet", "arbeiten",
+  "spreche", "sprichst", "spricht", "sprechen",
+  "esse", "isst", "essen",
+  "schlafe", "schläfst", "schläft", "schlafen",
+  "fahre", "fährst", "fährt", "fahren",
+  "lerne", "lernst", "lernt", "lernen",
+  "wohne", "wohnst", "wohnt", "wohnen",
+  "suche", "suchst", "sucht", "suchen",
+  "brauche", "brauchst", "braucht", "brauchen",
+  "denke", "denkst", "denkt", "denken",
+  "finde", "findest", "findet", "finden",
+  "kenne", "kennst", "kennt", "kennen",
+  "liebe", "liebst", "liebt", "lieben",
+  "helfe", "hilfst", "hilft", "helfen",
+  "spiele", "spielst", "spielt", "spielen",
+  "bleibe", "bleibst", "bleibt", "bleiben",
+  "freue", "freust", "freut", "freuen",
+  "warte", "wartest", "wartet", "warten",
+  "sage", "sagst", "sagt", "sagen",
+  "frage", "fragst", "fragt", "fragen",
+  "bringe", "bringst", "bringt", "bringen",
+]);
+
+/**
+ * Proper nouns preserved when lowercasing sentence-starting tiles in FR, ES, and NL.
+ */
+const PROPER_NOUNS: ReadonlySet<string> = new Set([
+  // Cities & places
+  "berlin", "münchen", "hamburg", "wien", "zürich", "köln", "frankfurt",
+  "paris", "lyon", "marseille", "bordeaux",
+  "madrid", "barcelona", "sevilla", "valencia",
+  "amsterdam", "rotterdam", "utrecht", "brussel", "antwerpen",
+  "london", "rom", "roma", "europa", "europe",
+  // Countries & nationalities / languages
+  "deutschland", "österreich", "schweiz", "frankreich", "france",
+  "spanien", "españa", "nederland", "belgië", "belgique",
+  "deutsch", "englisch", "english", "français", "español", "nederlands",
+  // German days & months
+  "montag", "dienstag", "mittwoch", "donnerstag", "freitag", "samstag", "sonntag",
+  "januar", "februar", "märz", "april", "mai", "juni",
+  "juli", "august", "september", "oktober", "november", "dezember",
+  // Common person names
+  "anna", "max", "paul", "marie", "jean", "pierre", "sophie", "lucas",
+  "maria", "maría", "juan", "carlos", "ana", "elena", "pablo",
+  "jan", "lisa", "emma", "tom", "peter", "hans", "klaus",
+]);
 
 function resolveLanguageId(languageId?: string): LanguageId {
   if (languageId === "fr" || languageId === "es" || languageId === "nl" || languageId === "de") {
@@ -54,14 +121,32 @@ function resolveLanguageId(languageId?: string): LanguageId {
   return "de";
 }
 
+function isAllCapsAcronym(word: string): boolean {
+  const letters = word.replace(/[^\p{L}]/gu, "");
+  return letters.length >= 2 && letters === letters.toUpperCase() && letters !== letters.toLowerCase();
+}
+
 export function lowercaseSentenceStarterTiles(items: string[], languageId: string = "de"): string[] {
-  const starters = SENTENCE_STARTER_LOWERCASE[resolveLanguageId(languageId)];
+  const lang = resolveLanguageId(languageId);
+  if (lang === "de") {
+    return items.map((item) => {
+      const lower = item.toLowerCase();
+      if (item !== lower && DE_SENTENCE_STARTER_LOWERCASE.has(lower)) {
+        return lower;
+      }
+      return item;
+    });
+  }
+
+  // For FR, ES, NL: lowercase any sentence-starting tile that isn't a proper noun,
+  // single-letter English "I", or all-caps acronym.
   return items.map((item) => {
     const lower = item.toLowerCase();
-    if (item !== lower && starters.has(lower)) {
-      return lower;
-    }
-    return item;
+    if (item === lower) return item;
+    const core = item.replace(/^[¿¡.,!?;:]+|[.,!?;:]+$/g, "");
+    if (core === "I" || isAllCapsAcronym(core)) return item;
+    if (PROPER_NOUNS.has(core.toLowerCase())) return item;
+    return lower;
   });
 }
 

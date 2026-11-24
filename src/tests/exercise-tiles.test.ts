@@ -107,4 +107,29 @@ describe("exercise tile helpers", () => {
     const nlTiles = generateWordTiles(nlCard, [], "nl");
     expect(nlTiles.tiles).toContain("het");
   });
+
+  it("lowercases expanded German contractions and sentence-starting verbs while preserving German nouns", () => {
+    expect(
+      lowercaseSentenceStarterTiles(
+        ["Zum", "Zur", "Ins", "Ans", "Am", "Im", "Vom", "Beim", "Gehe", "Trinke", "Lese", "Hätte", "Wäre", "Würde", "Könnte", "Bitte", "Danke", "Kaffee", "Buch"],
+        "de",
+      ),
+    ).toEqual([
+      "zum", "zur", "ins", "ans", "am", "im", "vom", "beim", "gehe", "trinke", "lese", "hätte", "wäre", "würde", "könnte", "bitte", "danke", "Kaffee", "Buch",
+    ]);
+  });
+
+  it("lowercases non-proper-noun sentence starters across FR, ES, and NL while preserving proper nouns and acronyms", () => {
+    expect(
+      lowercaseSentenceStarterTiles(["L'homme", "Dans", "Pour", "Paris", "Français", "EU"], "fr"),
+    ).toEqual(["l'homme", "dans", "pour", "Paris", "Français", "EU"]);
+
+    expect(
+      lowercaseSentenceStarterTiles(["Quiero", "Lo", "Tengo", "Voy", "Un", "Una", "¿Qué", "Madrid", "Español"], "es"),
+    ).toEqual(["quiero", "lo", "tengo", "voy", "un", "una", "¿qué", "Madrid", "Español"]);
+
+    expect(
+      lowercaseSentenceStarterTiles(["Werk", "Heb", "Ben", "Er", "Amsterdam", "Nederland", "Nederlands", "I", "TV"], "nl"),
+    ).toEqual(["werk", "heb", "ben", "er", "Amsterdam", "Nederland", "Nederlands", "I", "TV"]);
+  });
 });

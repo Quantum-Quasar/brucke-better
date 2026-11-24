@@ -34,9 +34,12 @@ export const TwistCard: React.FC<TwistCardProps> = ({ twist, onDone }) => {
   const language = getLanguageDefinition(activeLanguageId);
 
   const wordBank = React.useMemo(() => {
-    const cleaned = lowercaseSentenceStarterTiles((twist.word_bank || []).map((w) => w.replace(/[.,!?;:]+$/, "")));
+    const cleaned = lowercaseSentenceStarterTiles(
+      (twist.word_bank || []).map((w) => w.replace(/[.,!?;:]+$/, "")),
+      activeLanguageId,
+    );
     return arrangeTilesDeterministically(cleaned, `twist#${twist.target_answer}`, twist.target_answer);
-  }, [twist.word_bank, twist.target_answer]);
+  }, [twist.word_bank, twist.target_answer, activeLanguageId]);
 
   const insertWord = (word: string) => {
     void soundEngine.playClick(settings.playSoundOnClick, settings.soundVolume);
