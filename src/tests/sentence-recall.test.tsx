@@ -27,14 +27,19 @@ describe("Final lesson sentence recall", () => {
     expect(finalSentenceExerciseId([task("word", "syntax_builder", "lernen"), task("other", "derive", "Ich lerne")])).toBeUndefined();
   });
 
-  it.each([lessonOne, lessonTwo])("starts lesson $id with typing and accessible help, retaining authored clues", (lesson) => {
+  it.each([lessonOne, lessonTwo])("starts lesson $id with unhinted typing and on-demand clues/word bank", (lesson) => {
     const exercise = lesson.exercises.find((item) => item.id === finalSentenceExerciseId(lesson.exercises))!;
     const html = renderToStaticMarkup(<TranscribeExercise exercise={exercise} recallFirst onSuccess={() => {}} onError={() => {}} />);
     expect(html).toContain('type="text"');
     expect(html).toContain("Show words / help");
     expect(html).toContain('aria-expanded="false"');
     expect(html).toMatch(/hidden="" data-testid="sentence-word-bank"><\/div>/);
-    for (const hint of exercise.vocab_hints ?? []) expect(html).toContain(hint.translation);
+    if ((exercise.vocab_hints?.length ?? 0) > 0) {
+      expect(html).toContain("Show vocabulary clues");
+      for (const hint of exercise.vocab_hints ?? []) expect(html).not.toContain(hint.translation);
+    }
+    const retryHtml = renderToStaticMarkup(<TranscribeExercise exercise={exercise} recallFirst isRetry onSuccess={() => {}} onError={() => {}} />);
+    for (const hint of exercise.vocab_hints ?? []) expect(retryHtml).toContain(hint.translation);
   });
 
   it("keeps the word bank available on retries and on earlier scaffolded tasks", () => {

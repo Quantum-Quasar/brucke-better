@@ -38,8 +38,11 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
 }) => {
   const [showIdeaParts, setShowIdeaParts] = useState(false);
   const [showWords, setShowWords] = useState(isRetry);
+  const [showClues, setShowClues] = useState(isRetry);
   const wordBankId = useId();
+  const vocabCluesId = useId();
   const wordsVisible = !recallFirst || showWords;
+  const hasVocabHints = Boolean(exercise.vocab_hints && exercise.vocab_hints.length > 0);
   const {
     inputRef,
     settings,
@@ -78,7 +81,7 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
     onPurpleForfeit: recallFirst ? undefined : onPurpleForfeit,
     emptyMessage: "Please enter or select an answer before verifying.",
     exactMessage: "Spot On! Perfect.",
-    onReset: () => setShowIdeaParts(false),
+    onReset: () => { setShowIdeaParts(false); setShowClues(isRetry); },
     focusPreventScroll: false,
   });
 
@@ -154,17 +157,31 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
 
       {recallFirst && (
         <div className="space-y-2">
-          <button
-            type="button"
-            onClick={() => setShowWords(true)}
-            aria-expanded={wordsVisible}
-            aria-controls={wordBankId}
-            className="min-h-11 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-[var(--main-color)]/50 text-sm font-bold text-[var(--main-color)] hover:bg-[var(--main-color)]/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--main-color)] cursor-pointer"
-          >
-            <Lightbulb aria-hidden="true" className="w-4 h-4" />
-            {wordsVisible ? "Words / help shown" : "Show words / help"}
-          </button>
-          <p className="text-xs text-[var(--sub-color)]">Vocabulary clues stay available below. You can use help and still finish normally.</p>
+          <div className="flex flex-wrap items-center gap-2">
+            {hasVocabHints && (
+              <button
+                type="button"
+                onClick={() => setShowClues(true)}
+                aria-expanded={showClues || showWords || status === "wrong"}
+                aria-controls={vocabCluesId}
+                className="min-h-11 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-[var(--sub-color)]/40 text-sm font-bold text-[var(--text-color)] hover:border-[var(--main-color)]/60 hover:text-[var(--main-color)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--main-color)] cursor-pointer"
+              >
+                <Sparkles aria-hidden="true" className="w-4 h-4 text-[var(--main-color)]" />
+                {showClues || showWords || status === "wrong" ? "Vocabulary clues shown" : "Show vocabulary clues"}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={() => setShowWords(true)}
+              aria-expanded={wordsVisible}
+              aria-controls={wordBankId}
+              className="min-h-11 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-[var(--main-color)]/50 text-sm font-bold text-[var(--main-color)] hover:bg-[var(--main-color)]/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--main-color)] cursor-pointer"
+            >
+              <Lightbulb aria-hidden="true" className="w-4 h-4" />
+              {wordsVisible ? "Words / help shown" : "Show words / help"}
+            </button>
+          </div>
+          <p className="text-xs text-[var(--sub-color)]">Try from memory first — vocabulary clues and the word bank unlock whenever you ask or miss.</p>
         </div>
       )}
 
@@ -196,9 +213,9 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
         </div>
       )}
 
-      {/* Pre-exercise Vocabulary Hints */}
-      {exercise.vocab_hints && exercise.vocab_hints.length > 0 && (
-        <div className="flex flex-wrap items-center gap-2 p-3 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 text-xs">
+      {/* Pre-exercise Vocabulary Hints — hidden on first recall attempt until requested or missed */}
+      {hasVocabHints && (!recallFirst || showClues || showWords || status === "wrong") && (
+        <div id={vocabCluesId} className="flex flex-wrap items-center gap-2 p-3 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 text-xs">
           <span className="text-[var(--main-color)] font-bold uppercase tracking-wider flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5" /> clue:
           </span>
