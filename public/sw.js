@@ -20,6 +20,14 @@ const routes = new Set([
 const shellLimit = 120;
 const mediaLimit = 200;
 
+function isCanonicalLessonRoute(pathname) {
+  return /^\/trail\/(de|fr|es|nl)\/\d+\/?$/.test(pathname);
+}
+
+function isHandledRoute(pathname) {
+  return routes.has(pathname) || isCanonicalLessonRoute(pathname);
+}
+
 function isMediaAsset(url) {
   return url.origin === self.location.origin && (
     /^\/data\/(de|fr|es|nl)\/(compendium\.json|lesson-index\.json|word-details\.json|lessons\/\d+\.json)$/.test(url.pathname) ||
@@ -102,8 +110,8 @@ self.addEventListener("fetch", (event) => {
   const request = event.request;
   const url = new URL(request.url);
   if (request.method !== "GET" || url.origin !== self.location.origin) return;
-  const navigation = request.mode === "navigate" && routes.has(url.pathname);
-  const flight = request.headers.get("RSC") === "1" && routes.has(url.pathname);
+  const navigation = request.mode === "navigate" && isHandledRoute(url.pathname);
+  const flight = request.headers.get("RSC") === "1" && isHandledRoute(url.pathname);
   const asset = isAsset(url);
   if (!navigation && !flight && !asset) return;
 

@@ -110,7 +110,7 @@ export function sanitizeLessonProgressEntry(raw: unknown): LessonProgress | null
   }
   const entry: LessonProgress = {
     segment: segment as LessonSegment,
-    practiceIndex,
+    practiceIndex: Math.min(practiceIndex, 20),
     completedSegments,
   };
   if (typeof raw.everQueued === "boolean") entry.everQueued = raw.everQueued;
@@ -121,7 +121,7 @@ export function sanitizeLessonProgressEntry(raw: unknown): LessonProgress | null
   }
   if (typeof raw.inRetryPhase === "boolean") entry.inRetryPhase = raw.inRetryPhase;
   if (typeof raw.retryIndex === "number" && Number.isInteger(raw.retryIndex) && raw.retryIndex >= 0) {
-    entry.retryIndex = raw.retryIndex;
+    entry.retryIndex = Math.min(raw.retryIndex, 50);
   }
   return entry;
 }
