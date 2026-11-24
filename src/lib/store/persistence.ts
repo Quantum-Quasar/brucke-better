@@ -2,6 +2,7 @@ import type { AppState, LanguageProgress } from "./types";
 import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "../storage-keys";
 import { DEFAULT_LANGUAGE_ID, isValidLanguageId } from "@/data/languages";
 import { reportStorageCorruption, reportStorageWrite } from "../storage-health";
+import { saveIdbStateSnapshot } from "../idb-backup";
 import { sliceFromMirrors, mergeLanguageSlice } from "./progress-state";
 import { isPlausibleStateObject, normalizeParsedState, normalizeLanguageSlice, isDangerousKey } from "./schema";
 import { applyTheme, applyAppearanceSettings, DEFAULT_THEME } from "../theme-runtime";
@@ -269,7 +270,9 @@ function writeState(state: AppState) {
   // 1. Save to localStorage
   let localOk = true;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ ...toPersist, savedAt }));
+    const serialized = JSON.stringify({ ...toPersist, savedAt });
+    void saveIdbStateSnapshot(serialized);
+    localStorage.setItem(STORAGE_KEY, serialized);
     persistenceRuntime.lastSerialized = serialized;
     reportStorageWrite(true);
   } catch {
