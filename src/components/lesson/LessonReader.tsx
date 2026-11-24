@@ -21,7 +21,7 @@ export function LessonReader(props: LessonReaderProps) {
   const { lesson, activeLanguageId, totalTopics, currentSegment, setCurrentSegment, completedSegments, twistPhase, listeningSkippedUntil, listeningOff, stickyAction, currentExercise, closeLesson } = session;
   const lessonMeta = getLessonMetadata(lesson);
   return (
-    <article className={`max-w-4xl mx-auto px-4 pt-8 space-y-8 ${stickyAction ? "pb-32" : "pb-8"}`}>
+    <article lang={activeLanguageId} className={`max-w-4xl mx-auto px-4 pt-8 space-y-8 ${stickyAction ? "pb-32" : "pb-8"}`}>
       {/* Top Header & Navigation — sticky so the close control never scrolls away */}
       <div className="sticky top-0 z-20 -mx-4 -mt-8 px-4 pt-3 pb-3 bg-[var(--bg-color)]/95 backdrop-blur border-b border-[var(--sub-color)]/15">
         <div className="flex items-center justify-between">
