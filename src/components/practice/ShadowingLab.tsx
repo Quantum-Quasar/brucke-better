@@ -6,6 +6,7 @@ import { useAppStore } from "@/lib/store";
 import { useLessonIndex } from "@/lib/content-client";
 import { getLanguageDefinition } from "@/data/languages";
 import { playTargetAudio } from "@/lib/audio";
+import { recordMistake } from "@/lib/mistake-notebook";
 import {
   getRecognitionConstructor,
   startMicrophonePractice,
@@ -19,6 +20,8 @@ import {
 export const ShadowingLab: React.FC = () => {
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const completedLessons = useAppStore((s) => s.completedLessons);
+  const logDailyActivity = useAppStore((s) => s.logDailyActivity);
+  const seedSrsCards = useAppStore((s) => s.seedSrsCards);
   const lessonIndex = useLessonIndex(activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
 
@@ -90,11 +93,28 @@ export const ShadowingLab: React.FC = () => {
     setResult(null);
     setIsListening(true);
 
+    const recordShadowingOutcome = (heard: string) => {
+      const scored = scoreShadowingAttempt(heard, activePhrase.target);
+      setResult(scored);
+      logDailyActivity();
+      if (scored.score < 0.7) {
+        recordMistake({
+          languageId: activeLanguageId,
+          prompt: `Shadowing: ${activePhrase.english}`,
+          expected: activePhrase.target,
+          attempt: heard,
+          note: "Practice speaking this phrase again until word overlap is above 70%.",
+        });
+      } else if (activePhrase.lessonId) {
+        seedSrsCards([`sentence_${activePhrase.lessonId}`]);
+      }
+    };
+
     stopRef.current = startMicrophonePractice({
       locale: language.ttsLocale,
       onTranscript: (heard) => {
         setTranscript(heard);
-        setResult(scoreShadowingAttempt(heard, activePhrase.target));
+        recordShadowingOutcome(heard);
       },
       onError: (msg) => {
         setMicNote(msg);
@@ -109,8 +129,22 @@ export const ShadowingLab: React.FC = () => {
   const handleManualCheck = (event: React.FormEvent) => {
     event.preventDefault();
     if (!activePhrase || !manualInput.trim()) return;
-    setTranscript(manualInput.trim());
-    setResult(scoreShadowingAttempt(manualInput.trim(), activePhrase.target));
+    const heard = manualInput.trim();
+    setTranscript(heard);
+    const scored = scoreShadowingAttempt(heard, activePhrase.target);
+    setResult(scored);
+    logDailyActivity();
+    if (scored.score < 0.7) {
+      recordMistake({
+        languageId: activeLanguageId,
+        prompt: `Shadowing: ${activePhrase.english}`,
+        expected: activePhrase.target,
+        attempt: heard,
+        note: "Practice speaking this phrase again until word overlap is above 70%.",
+      });
+    } else if (activePhrase.lessonId) {
+      seedSrsCards([`sentence_${activePhrase.lessonId}`]);
+    }
   };
 
   return (

@@ -5,6 +5,7 @@ import { CheckCircle2, MessageSquare, RotateCcw, Send, Volume2 } from "lucide-re
 import { useAppStore } from "@/lib/store";
 import { getLanguageDefinition } from "@/data/languages";
 import { playTargetAudio } from "@/lib/audio";
+import { recordMistake } from "@/lib/mistake-notebook";
 import {
   evaluateDialogueTypedTurn,
   getShuffledDialogueOptions,
@@ -23,6 +24,7 @@ interface CompletedMessage {
 
 export const DialoguePractice: React.FC = () => {
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
+  const logDailyActivity = useAppStore((s) => s.logDailyActivity);
   const language = getLanguageDefinition(activeLanguageId);
 
   const [scenarioId, setScenarioId] = useState(SITUATIONAL_DIALOGUES[0].id);
@@ -106,11 +108,22 @@ export const DialoguePractice: React.FC = () => {
     setTurnIndex(visibleState.nextIndex + 1);
     setTypedReply("");
     setNudge(null);
+    logDailyActivity();
   };
 
   const handlePickOption = (option: DialogueOption) => {
     if (!option.isBest) {
       setNudge(option.feedback);
+      const activeTurn = visibleState.activeTurn;
+      if (activeTurn) {
+        recordMistake({
+          languageId: activeLanguageId,
+          prompt: `Dialogue (${scenario.title}): ${activeTurn.english}`,
+          expected: activeTurn.text,
+          attempt: option.text,
+          note: option.feedback,
+        });
+      }
       return;
     }
     commitLearnerTurn(option.text, option.english, option.feedback);
@@ -123,6 +136,13 @@ export const DialoguePractice: React.FC = () => {
     const check = evaluateDialogueTypedTurn(typedReply.trim(), activeTurn);
     if (!check.accepted) {
       setNudge(check.feedback);
+      recordMistake({
+        languageId: activeLanguageId,
+        prompt: `Dialogue (${scenario.title}): ${activeTurn.english}`,
+        expected: activeTurn.text,
+        attempt: typedReply.trim(),
+        note: check.feedback,
+      });
       return;
     }
     commitLearnerTurn(typedReply.trim(), activeTurn.english, check.feedback);
