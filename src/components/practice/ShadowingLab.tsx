@@ -97,16 +97,17 @@ export const ShadowingLab: React.FC = () => {
       const scored = scoreShadowingAttempt(heard, activePhrase.target);
       setResult(scored);
       logDailyActivity();
-      if (scored.score < 0.7) {
+      const lessonMatch = activePhrase.id.match(/lesson[-_]?(\d+)/i);
+      if (scored.overlapPercent < 70) {
         recordMistake({
           languageId: activeLanguageId,
           prompt: `Shadowing: ${activePhrase.english}`,
           expected: activePhrase.target,
           attempt: heard,
-          note: "Practice speaking this phrase again until word overlap is above 70%.",
+          note: "Practice speaking this phrase again until word overlap is at least 70%.",
         });
-      } else if (activePhrase.lessonId) {
-        seedSrsCards([`sentence_${activePhrase.lessonId}`]);
+      } else if (lessonMatch) {
+        seedSrsCards([`sentence_${lessonMatch[1]}`]);
       }
     };
 
@@ -134,16 +135,17 @@ export const ShadowingLab: React.FC = () => {
     const scored = scoreShadowingAttempt(heard, activePhrase.target);
     setResult(scored);
     logDailyActivity();
-    if (scored.score < 0.7) {
+    const lessonMatch = activePhrase.id.match(/lesson[-_]?(\d+)/i);
+    if (scored.overlapPercent < 70) {
       recordMistake({
         languageId: activeLanguageId,
         prompt: `Shadowing: ${activePhrase.english}`,
         expected: activePhrase.target,
         attempt: heard,
-        note: "Practice speaking this phrase again until word overlap is above 70%.",
+        note: "Practice speaking this phrase again until word overlap is at least 70%.",
       });
-    } else if (activePhrase.lessonId) {
-      seedSrsCards([`sentence_${activePhrase.lessonId}`]);
+    } else if (lessonMatch) {
+      seedSrsCards([`sentence_${lessonMatch[1]}`]);
     }
   };
 
