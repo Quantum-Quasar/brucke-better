@@ -105,13 +105,20 @@ describe("production exercise grading", () => {
     expect(gradeExerciseAttempt(item, ["Water"], { ...options, languageId: "en" }).result.accuracy).toBe("exact");
   });
 
-  it("keeps authored re-learning diagnosis and diagnoses word-order mistakes", () => {
-    const diagnosis = { slip: "the verb is missing", cue: "Put habe after ich." };
-    const authored = gradeExerciseAttempt({ ...exercise, diagnosis }, ["Ich keine Zeit"], options);
-    expect(authored.diagnosis).toEqual(diagnosis);
+  it("keeps authored re-learning diagnosis and diagnoses missing-word and word-order mistakes", () => {
+    const diagnosis = { slip: "wrong clause shape", cue: "Put habe after ich." };
+    const missing = gradeExerciseAttempt({ ...exercise, diagnosis }, ["Ich keine Zeit"], options);
+    expect(missing.diagnosis?.category).toBe("Missing Word");
+    expect(missing.diagnosis?.slip).toContain("habe");
+
+    const authored = gradeExerciseAttempt({ ...exercise, diagnosis }, ["Heute regnet es sehr"], options);
+    expect(authored.diagnosis).toMatchObject(diagnosis);
+    expect(authored.diagnosis?.category).toBeTruthy();
+
     const reordered = gradeExerciseAttempt(exercise, ["Ich keine habe Zeit"], options);
     expect(reordered.result.accuracy).toBe("incorrect");
     expect(reordered.diagnosis?.slip).toBeTruthy();
+    expect(reordered.diagnosis?.category).toBe("Word Order");
     expect(reordered.queueRetry).toBe(true);
   });
 });
