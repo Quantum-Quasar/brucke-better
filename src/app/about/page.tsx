@@ -75,7 +75,7 @@ export default function AboutPage() {
           </ul>
           <p>
             <strong>Brücke</strong> (German for &ldquo;bridge&rdquo;) reverses this historical divergence. By training your pattern
-            recognition instead of raw rote memorization, you bridge thousands of cognates in days rather than months.
+            recognition instead of raw rote memorization, you learn to spot familiar roots and sound patterns across hundreds of everyday German words.
           </p>
           <p>
             The same engine now drives a <strong>French course</strong>: the Norman conquest of 1066 flooded English with

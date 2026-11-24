@@ -6,9 +6,9 @@ import { THEME_VARS_CACHE_KEY } from "@/lib/theme-runtime";
 import { STORAGE_KEY, STORAGE_COOKIE_KEY } from "@/lib/storage-keys";
 import { getSiteUrl } from "@/lib/site-url";
 
-const SITE_TITLE = "Brücke — Learn through the words you already know";
+const SITE_TITLE = "Brücke — Learn German through the words you already know";
 const SITE_DESCRIPTION =
-  "Learn German, Dutch, French and Spanish by decoding the words you already know — 30 topics, sound-law lessons and spaced review.";
+  "Learn German by decoding the English words you already know — 30 topics, sound-law lessons, and spaced review. Also includes Dutch, French, and Spanish.";
 
 export const metadata: Metadata = {
   metadataBase: getSiteUrl(),

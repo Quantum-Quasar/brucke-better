@@ -167,55 +167,81 @@ export const OnboardingModal: React.FC = () => {
                   welcome to brücke
                 </span>
                 <h2 className="text-2xl font-bold font-mono text-[var(--text-color)] tracking-tight">
-                  which language do you want to learn?
+                  learn german through the words you already know
                 </h2>
                 <p className="text-sm font-mono text-[var(--sub-color)] leading-relaxed">
-                  every language gets its own trail, its own cognate engine, and its own introduction.
-                  you can switch anytime — each language keeps its own progress.
+                  german is brücke&apos;s flagship course (30 topics, dialogues, gender lab, and spaced review).
+                  you can also switch to another language anytime — each keeps its own progress.
                 </p>
               </div>
 
-              <div
-                className={`grid grid-cols-1 gap-3 ${
-                  availableLanguages.length >= 4
-                    ? "sm:grid-cols-2 lg:grid-cols-4"
-                    : "sm:grid-cols-3"
-                }`}
-              >
-                {availableLanguages.map((lang) => (
+              {availableLanguages
+                .filter((lang) => lang.id === "de")
+                .map((lang) => (
                   <button
                     key={lang.id}
                     type="button"
                     onClick={() => selectLanguage(lang.id)}
                     aria-pressed={effectiveLanguageId === lang.id}
-                    className={`p-3 sm:p-4 rounded-lg border text-left space-y-2 transition cursor-pointer group ${
+                    className={`w-full p-4 rounded-lg border text-left space-y-2 transition cursor-pointer group ${
                       effectiveLanguageId === lang.id
                         ? "bg-[var(--main-color)]/10 border-[var(--main-color)]/60"
                         : "bg-[var(--sub-alt-color)] border-[var(--sub-color)]/20 hover:border-[var(--main-color)]/40"
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <span className="text-2xl" aria-hidden>{lang.flag}</span>
-                      <span className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded bg-[var(--main-color)]/15 text-[var(--main-color)] font-bold uppercase tracking-wider">
-                        <Check className="w-3 h-3" /> available
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2.5">
+                        <span className="text-2xl" aria-hidden>{lang.flag}</span>
+                        <div>
+                          <div className="text-base font-bold font-mono text-[var(--text-color)] group-hover:text-[var(--main-color)] transition">
+                            {lang.name} <span className="text-xs font-normal text-[var(--sub-color)]">({lang.nativeName})</span>
+                          </div>
+                          <div className="text-[10px] font-mono text-[var(--main-color)] uppercase tracking-wider font-semibold">
+                            flagship course · {lang.courseTier}
+                          </div>
+                        </div>
+                      </div>
+                      <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded bg-[var(--main-color)]/15 text-[var(--main-color)] font-bold uppercase tracking-wider">
+                        <Check className="w-3 h-3" /> recommended
                       </span>
                     </div>
-                    <div className="space-y-0.5">
-                      <div className="text-sm font-bold font-mono text-[var(--text-color)] group-hover:text-[var(--main-color)] transition">
-                        {lang.name}
-                      </div>
-                      <div className="text-[10px] font-mono text-[var(--sub-color)] uppercase tracking-wider">
-                        {lang.nativeName}
-                      </div>
-                      <div className="text-[10px] font-mono text-[var(--main-color)] uppercase tracking-wider font-semibold">
-                        {lang.courseTier}
-                      </div>
-                    </div>
-                    <p className="hidden sm:block text-[11px] font-mono text-[var(--sub-color)] leading-relaxed">
+                    <p className="text-xs font-mono text-[var(--sub-color)] leading-relaxed">
                       {lang.blurb}
                     </p>
                   </button>
                 ))}
+
+              <div className="space-y-2">
+                <p className="text-[11px] font-mono uppercase tracking-wider text-[var(--sub-color)]">
+                  or switch to another language
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  {availableLanguages
+                    .filter((lang) => lang.id !== "de")
+                    .map((lang) => (
+                      <button
+                        key={lang.id}
+                        type="button"
+                        onClick={() => selectLanguage(lang.id)}
+                        aria-pressed={effectiveLanguageId === lang.id}
+                        className={`p-3 rounded-lg border text-left space-y-1 transition cursor-pointer group ${
+                          effectiveLanguageId === lang.id
+                            ? "bg-[var(--main-color)]/10 border-[var(--main-color)]/60"
+                            : "bg-[var(--sub-alt-color)] border-[var(--sub-color)]/20 hover:border-[var(--main-color)]/40"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-lg" aria-hidden>{lang.flag}</span>
+                          <span className="text-xs font-bold font-mono text-[var(--text-color)] group-hover:text-[var(--main-color)] transition">
+                            {lang.name}
+                          </span>
+                        </div>
+                        <div className="text-[10px] font-mono text-[var(--sub-color)]">
+                          {lang.nativeName} · {lang.courseTier}
+                        </div>
+                      </button>
+                    ))}
+                </div>
               </div>
 
             </div>
