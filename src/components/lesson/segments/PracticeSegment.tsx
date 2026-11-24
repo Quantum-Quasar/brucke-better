@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import ExerciseWidget from "../ExerciseWidgetContent";
 import { Sparkles, HeartHandshake, Zap, Compass as CompassIcon } from "lucide-react";
 import { TwistCard } from "../TwistCard";
@@ -14,6 +15,24 @@ import type { LessonSession } from "../lesson-session-types";
 export default function PracticeSegment({ session }: { session: LessonSession }) {
   const { lesson, isReading, setCurrentSegment, practiceIndex, setPracticeIndex, retryQueue, retryIndex, inRetryPhase, setEverQueued, twistPhase, twistCompleted, failCounts, mercyRevealFor, setMercyRevealFor, showPostureCues, flagGuessed, detourFootnote, setDetourDismissed, showDetour, consciousnessLine, whisperCues, handleExerciseError, queueExerciseRetry, handleRetryError, handleTwistDone, drainCurrentRetry, handlePracticeSuccess, currentExercise } = session;
   const recallExerciseId = finalSentenceExerciseId(lesson.exercises);
+  const exerciseRegionRef = useRef<HTMLDivElement>(null);
+  const prevExerciseKeyRef = useRef<string | null>(null);
+  const activeExerciseKey = currentExercise
+    ? inRetryPhase
+      ? `retry_${currentExercise.id}_${retryIndex}`
+      : `init_${currentExercise.id}_${practiceIndex}`
+    : null;
+
+  useEffect(() => {
+    if (!activeExerciseKey) return;
+    if (prevExerciseKeyRef.current !== null && prevExerciseKeyRef.current !== activeExerciseKey) {
+      const container = exerciseRegionRef.current;
+      if (container && !container.contains(document.activeElement)) {
+        container.focus({ preventScroll: true });
+      }
+    }
+    prevExerciseKeyRef.current = activeExerciseKey;
+  }, [activeExerciseKey]);
   return (
             <LazyLoadBoundary label="this exercise">
             <div className="space-y-4 animate-in fade-in duration-200">
@@ -156,6 +175,21 @@ export default function PracticeSegment({ session }: { session: LessonSession })
               )}
 
               {/* The Single Bite-Sized Exercise */}
+              <div
+                ref={exerciseRegionRef}
+                tabIndex={-1}
+                className="outline-none"
+                aria-label={
+                  inRetryPhase
+                    ? `Reinforcement exercise ${retryIndex + 1} of ${retryQueue.length}`
+                    : `Exercise ${practiceIndex + 1} of ${lesson.exercises.length}`
+                }
+              >
+                <span className="sr-only" aria-live="polite">
+                  {inRetryPhase
+                    ? `Reinforcement exercise ${retryIndex + 1} of ${retryQueue.length}`
+                    : `Exercise ${practiceIndex + 1} of ${lesson.exercises.length}`}
+                </span>
               <ExerciseWidget
                 key={inRetryPhase ? `retry_${currentExercise.id}_${retryIndex}` : `init_${currentExercise.id}_${practiceIndex}`}
                 exercise={currentExercise}
@@ -172,6 +206,7 @@ export default function PracticeSegment({ session }: { session: LessonSession })
                   flagGuessed(exerciseWordIds(currentExercise, [...lesson.word_ids, ...(lesson.table_word_ids ?? [])]))
                 }
               />
+              </div>
 
               {/* TM-4c queue mercy: after a second miss on the same item, offer a guided re-learn */}
               {inRetryPhase && !mercyRevealFor && (failCounts[currentExercise.id] ?? 0) >= 2 && (

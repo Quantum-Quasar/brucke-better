@@ -64,12 +64,30 @@ export const MistakeNotebook: React.FC<MistakeNotebookProps> = ({ compact = fals
 
   const totalCount = activeGroups.reduce((sum, group) => sum + group.items.length, 0);
 
+  const [undoSnapshot, setUndoSnapshot] = useState<{ label: string; previous: MistakeEntry[] } | null>(null);
+
   const handleResolve = (id: string) => {
+    const prev = entries;
     setEntries(resolveMistake(id));
+    setUndoSnapshot({ label: "Marked mistake resolved.", previous: prev });
   };
 
   const handleClearGroup = (type: MistakeErrorType) => {
+    const prev = entries;
     setEntries(clearMistakesByType(type, activeLanguageId));
+    setUndoSnapshot({ label: `Cleared ${MISTAKE_ERROR_META[type].label.toLowerCase()} mistakes.`, previous: prev });
+  };
+
+  const handleUndo = () => {
+    if (!undoSnapshot) return;
+    try {
+      window.localStorage.setItem(MISTAKE_NOTEBOOK_STORAGE_KEY, JSON.stringify(undoSnapshot.previous));
+      window.dispatchEvent(new Event(MISTAKE_NOTEBOOK_EVENT));
+    } catch {
+      // Ignore storage errors
+    }
+    setEntries(undoSnapshot.previous);
+    setUndoSnapshot(null);
   };
 
   const handleClearAll = () => {
@@ -136,6 +154,32 @@ export const MistakeNotebook: React.FC<MistakeNotebookProps> = ({ compact = fals
           </div>
         )}
       </div>
+
+      {undoSnapshot && (
+        <div
+          role="status"
+          aria-live="polite"
+          className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-[var(--main-color)]/35 bg-[var(--sub-alt-color)] px-4 py-2.5 text-xs font-mono text-[var(--text-color)]"
+        >
+          <span>{undoSnapshot.label}</span>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={handleUndo}
+              className="font-bold text-[var(--main-color)] underline underline-offset-2 hover:opacity-80 cursor-pointer"
+            >
+              undo
+            </button>
+            <button
+              type="button"
+              onClick={() => setUndoSnapshot(null)}
+              className="text-[var(--sub-color)] hover:text-[var(--text-color)] cursor-pointer"
+            >
+              dismiss
+            </button>
+          </div>
+        </div>
+      )}
 
       {totalCount === 0 ? (
         <div className="p-6 rounded-xl bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 text-center space-y-2">
