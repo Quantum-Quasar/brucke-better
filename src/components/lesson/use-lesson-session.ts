@@ -51,6 +51,8 @@ export const useLessonSession = ({
   );
   const [completedSegments, setCompletedSegments] = useState<LessonSegment[]>(savedProgress?.completedSegments || []);
   const [isLessonFinished, setIsLessonFinished] = useState(false);
+  const [exploredExtras, setExploredExtras] = useState(false);
+  const markExtrasExplored = () => setExploredExtras(true);
   // purple star ledger: stays false only when the retry queue was never touched all lesson
   const [everQueued, setEverQueued] = useState(savedProgress?.everQueued ?? false);
   // TM-5a: the twist card runs after the last exercise, before the reinforcement queue
@@ -200,8 +202,10 @@ export const useLessonSession = ({
     if (nextLessonId && typeof window !== "undefined") {
       prefetchLesson(activeLanguageId, nextLessonId);
     }
-    // Finished-lesson words enter the SM-2 queue so "due today" isn't empty for new learners.
-    const allWords = Array.from(new Set([...lesson.word_ids, ...(lesson.table_word_ids ?? [])]));
+    // Core focus words always enter tomorrow's review queue; optional extra table words
+    // only enter tomorrow's queue if the learner actually expanded the extras table (or it's a story).
+    const extraWords = exploredExtras || isReading ? (lesson.table_word_ids ?? []) : [];
+    const allWords = Array.from(new Set([...lesson.word_ids, ...extraWords]));
     const toSeed = allWords.filter((id) => id in data.words);
     if (lesson.summary?.use_example?.german) toSeed.push(`sentence_${lesson.id}`);
     seedSrsCards(toSeed);
@@ -360,6 +364,7 @@ export const useLessonSession = ({
     handleCompleteAll,
     nextLesson,
     markSegmentDone,
+    markExtrasExplored,
     startPractice,
     resumingPractice,
     stickyAction,

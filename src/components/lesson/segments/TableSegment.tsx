@@ -14,7 +14,7 @@ import { pluralForWord } from "@/data/noun-plurals";
 import type { LessonSession } from "../lesson-session-types";
 
 export default function TableSegment({ session }: { session: LessonSession }) {
-  const { lesson, data, genderSystem, isReading, setCurrentSegment, soundImports, primaryShift, startPractice, resumingPractice, openAtlasFamily } = session;
+  const { lesson, data, genderSystem, isReading, setCurrentSegment, soundImports, primaryShift, markExtrasExplored, startPractice, resumingPractice, openAtlasFamily } = session;
   const dutchFromGerman = useAppStore((s) => s.settings.dutchFromGerman);
   const germanBridge = useGermanBridge(session.activeLanguageId === "nl" && dutchFromGerman);
   const focusIds = [...new Set(lesson.word_ids.map((id) => id.toLowerCase()))];
@@ -106,7 +106,7 @@ export default function TableSegment({ session }: { session: LessonSession }) {
                     {renderWords(focusIds)}
                   </section>
                   {extraIds.length > 0 && (
-                    <details key={lesson.id} data-testid="lesson-extra-words" className="optional-notes p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20">
+                    <details key={lesson.id} data-testid="lesson-extra-words" onToggle={(e) => { if (e.currentTarget.open) markExtrasExplored(); }} className="optional-notes p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20">
                       <summary className="cursor-pointer py-1 font-mono font-semibold text-[var(--text-color)] rounded focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--main-color)]">
                         Extra words to explore ({extraIds.length})
                       </summary>

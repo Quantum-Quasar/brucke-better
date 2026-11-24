@@ -65,6 +65,7 @@ export interface LessonSession {
   handleCompleteAll: () => void;
   nextLesson: LessonReaderProps["nextLesson"];
   markSegmentDone: (segment: LessonSegment, next: LessonSegment) => void;
+  markExtrasExplored: () => void;
   startPractice: () => void;
   /** true when practice is mid-lesson and re-entering it resumes (not restarts) */
   resumingPractice: boolean;
