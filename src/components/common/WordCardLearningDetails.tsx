@@ -3,10 +3,7 @@ import { ExampleSentence } from "@/components/common/ExampleSentence";
 import { playTargetAudio } from "@/lib/audio";
 import type { CompendiumData, WordEntity } from "@/lib/types";
 import type { LanguageDefinition } from "@/data/languages";
-import {
-  formatGermanDutchPair,
-  lookupGermanBridge,
-} from "@/data/dutch/german-bridge";
+import { useGermanBridge } from "@/lib/use-german-bridge";
 import { useWordDetails } from "@/lib/content-client";
 import { useAppStore } from "@/lib/store";
 
@@ -15,10 +12,10 @@ export function WordCardShiftDetails({ word }: { word: WordEntity }) {
   const dutchFromGerman = useAppStore((s) => s.settings.dutchFromGerman);
   const details = useWordDetails(languageId, !word.etymology_derivation);
   const etymologyText = word.etymology_derivation || details[word.id] || "";
-  const germanBridge =
-    languageId === "nl" && dutchFromGerman
-      ? lookupGermanBridge(word.id) ?? lookupGermanBridge(word.target_word)
-      : null;
+  const bridgeMod = useGermanBridge(languageId === "nl" && dutchFromGerman);
+  const germanBridge = bridgeMod
+    ? bridgeMod.lookupGermanBridge(word.id) ?? bridgeMod.lookupGermanBridge(word.target_word)
+    : null;
 
   return (
     <div className="space-y-3">
@@ -37,7 +34,7 @@ export function WordCardShiftDetails({ word }: { word: WordEntity }) {
         <p className="text-sm font-mono text-[var(--sub-color)] leading-relaxed pt-1">{etymologyText}</p>
       </div>
 
-      {germanBridge && (
+      {bridgeMod && germanBridge && (
         <div
           data-testid="german-bridge-callout"
           className={`p-4 rounded-lg bg-[var(--sub-alt-color)] space-y-2 font-mono ${
@@ -71,7 +68,7 @@ export function WordCardShiftDetails({ word }: { word: WordEntity }) {
           </div>
 
           <div className="text-sm text-[var(--text-color)] font-semibold">
-            {formatGermanDutchPair(germanBridge)}
+            {bridgeMod.formatGermanDutchPair(germanBridge)}
             {germanBridge.falseFriend && germanBridge.germanLookalike && (
               <span className="ml-2 text-xs font-normal text-[var(--error-color)]">
                 (not &quot;{germanBridge.germanLookalike}&quot;)

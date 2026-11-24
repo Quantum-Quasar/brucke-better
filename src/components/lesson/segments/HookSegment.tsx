@@ -2,11 +2,8 @@
 
 import { ArrowRight, Languages, Sparkles, TriangleAlert } from "lucide-react";
 import { useAppStore } from "@/lib/store";
-import {
-  formatGermanDutchPair,
-  lookupGermanBridge,
-  type GermanBridgeEntry,
-} from "@/data/dutch/german-bridge";
+import type { GermanBridgeEntry } from "@/data/dutch/german-bridge";
+import { useGermanBridge } from "@/lib/use-german-bridge";
 
 import type { LessonSession } from "../lesson-session-types";
 
@@ -14,14 +11,17 @@ import type { LessonSession } from "../lesson-session-types";
 export default function HookSegment({ session }: { session: LessonSession }) {
   const { lesson, data, activeLanguageId, isReading, markSegmentDone } = session;
   const dutchFromGerman = useAppStore((s) => s.settings.dutchFromGerman);
+  const germanBridge = useGermanBridge(activeLanguageId === "nl" && dutchFromGerman);
 
   const bridgeEntries: GermanBridgeEntry[] = [];
-  if (activeLanguageId === "nl" && dutchFromGerman) {
+  if (germanBridge) {
     const seen = new Set<string>();
     for (const rawId of [...lesson.word_ids, ...lesson.table_word_ids]) {
       const id = rawId.toLowerCase();
       const word = data.words[id];
-      const entry = lookupGermanBridge(id) ?? (word ? lookupGermanBridge(word.target_word) : null);
+      const entry =
+        germanBridge.lookupGermanBridge(id) ??
+        (word ? germanBridge.lookupGermanBridge(word.target_word) : null);
       if (entry && !seen.has(entry.dutchId)) {
         seen.add(entry.dutchId);
         bridgeEntries.push(entry);
@@ -42,7 +42,7 @@ export default function HookSegment({ session }: { session: LessonSession }) {
               <p className="text-[var(--sub-color)] text-base leading-relaxed whitespace-pre-line">{lesson.hook.content}</p>
 
               {/* Dutch for German speakers: compact lesson banner */}
-              {bridgeEntries.length > 0 && (
+              {germanBridge && bridgeEntries.length > 0 && (
                 <div
                   data-testid="german-bridge-banner"
                   className="p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--main-color)]/30 space-y-1.5 font-mono"
@@ -53,8 +53,8 @@ export default function HookSegment({ session }: { session: LessonSession }) {
                   <p className="text-xs text-[var(--sub-color)] leading-relaxed">
                     This lesson has {bridgeEntries.length} DE↔NL {bridgeEntries.length === 1 ? "twin" : "twins"}
                     {bridgeFalseFriends.length > 0
-                      ? ` (including ${bridgeFalseFriends.length} false ${bridgeFalseFriends.length === 1 ? "friend" : "friends"}: ${bridgeFalseFriends.map((f) => formatGermanDutchPair(f)).join(", ")})`
-                      : ` — e.g. ${formatGermanDutchPair(bridgeEntries[0])}`}
+                      ? ` (including ${bridgeFalseFriends.length} false ${bridgeFalseFriends.length === 1 ? "friend" : "friends"}: ${bridgeFalseFriends.map((f) => germanBridge.formatGermanDutchPair(f)).join(", ")})`
+                      : ` — e.g. ${germanBridge.formatGermanDutchPair(bridgeEntries[0])}`}
                     . Inspect any word or check the transformation table for full notes.
                   </p>
                 </div>

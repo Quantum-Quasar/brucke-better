@@ -54,8 +54,8 @@ export default function ReadingLensPage() {
 
   const analysis = useMemo(() => {
     if (!compendium.data) return null;
-    return analyzeReadingText(text, compendium.data, wordMastery);
-  }, [text, compendium.data, wordMastery]);
+    return analyzeReadingText(text, compendium.data, wordMastery, activeLanguageId);
+  }, [text, compendium.data, wordMastery, activeLanguageId]);
 
   const handleTokenClick = (token: ReadingToken) => {
     if (token.falseFriend) {

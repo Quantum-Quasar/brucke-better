@@ -1,8 +1,12 @@
 import { describe, expect, it } from "vitest";
 import { compendium } from "@/data/compendium";
+import { frenchCompendium } from "@/data/french/compendium-fr";
+import { spanishCompendium } from "@/data/spanish/compendium-es";
+import { dutchCompendium } from "@/data/dutch/compendium-nl";
 import {
   analyzeReadingText,
   FRENCH_ELISION_RE,
+  getFunctionWordSet,
   getReadingSamples,
   normalizeReadingToken,
 } from "@/lib/reading-lens";
@@ -136,5 +140,50 @@ describe("reading-lens", () => {
     expect(empty.totalWords).toBe(0);
     expect(empty.coveragePercent).toBe(0);
     expect(empty.tokens).toHaveLength(0);
+  });
+
+  it("excludes unknown French, Spanish, and Dutch function words from the coverage denominator", () => {
+    // French
+    const frCafe = frenchCompendium.wordList.find((w) => w.id === "café");
+    expect(frCafe).toBeDefined();
+    const frResult = analyzeReadingText(
+      "Je suis dans le café avec un ami",
+      { ...frenchCompendium, wordList: [frCafe!], falseFriends: [] },
+      { [frCafe!.id]: "mastered" },
+      "fr"
+    );
+    expect(getFunctionWordSet("fr").has("dans")).toBe(true);
+    expect(getFunctionWordSet("fr").has("avec")).toBe(true);
+    expect(frResult.masteredCount).toBe(1);
+    // "suis" and "ami" are not in the minimal wordList or FR function words; "je", "dans", "le", "avec", "un" are excluded
+    expect(frResult.unknownCount).toBe(2);
+
+    // Spanish
+    const esCasa = spanishCompendium.wordList.find((w) => w.id === "casa");
+    expect(esCasa).toBeDefined();
+    const esResult = analyzeReadingText(
+      "En la casa con mi y pero los",
+      { ...spanishCompendium, wordList: [esCasa!], falseFriends: [] },
+      { [esCasa!.id]: "mastered" },
+      "es"
+    );
+    expect(getFunctionWordSet("es").has("pero")).toBe(true);
+    expect(getFunctionWordSet("es").has("nosotros")).toBe(true);
+    expect(esResult.unknownCount).toBe(0);
+    expect(esResult.coveragePercent).toBe(100);
+
+    // Dutch
+    const nlHuis = dutchCompendium.wordList.find((w) => w.id === "huis");
+    expect(nlHuis).toBeDefined();
+    const nlResult = analyzeReadingText(
+      "Ik en wij in het huis zonder maar niet",
+      { ...dutchCompendium, wordList: [nlHuis!], falseFriends: [] },
+      { [nlHuis!.id]: "mastered" },
+      "nl"
+    );
+    expect(getFunctionWordSet("nl").has("zonder")).toBe(true);
+    expect(getFunctionWordSet("nl").has("heeft")).toBe(true);
+    expect(nlResult.unknownCount).toBe(0);
+    expect(nlResult.coveragePercent).toBe(100);
   });
 });

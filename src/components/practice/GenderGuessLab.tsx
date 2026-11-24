@@ -38,19 +38,6 @@ export const GenderGuessLab: React.FC = () => {
   const activeLanguageId = useAppStore((s) => s.activeLanguageId);
   const language = getLanguageDefinition(activeLanguageId);
 
-  // Load German compendium for German noun suffix heuristics
-  const deCompendium = useCompendium("de");
-  const deck = useMemo(
-    () => buildGenderLabDeck(deCompendium.data),
-    [deCompendium.data]
-  );
-
-  const [index, setIndex] = useState(0);
-  const [guess, setGuess] = useState<GermanArticle | null>(null);
-  const [streak, setStreak] = useState(0);
-  const [score, setScore] = useState({ correct: 0, total: 0 });
-  const [showCheatSheet, setShowCheatSheet] = useState(false);
-
   if (activeLanguageId !== "de") {
     return (
       <div className="p-6 rounded-xl bg-[var(--bg-color)] border border-[var(--sub-color)]/25 space-y-2">
@@ -63,6 +50,23 @@ export const GenderGuessLab: React.FC = () => {
       </div>
     );
   }
+
+  return <GermanGenderLabContent />;
+};
+
+const GermanGenderLabContent: React.FC = () => {
+  // Load German compendium only when the active language is German
+  const deCompendium = useCompendium("de");
+  const deck = useMemo(
+    () => buildGenderLabDeck(deCompendium.data),
+    [deCompendium.data]
+  );
+
+  const [index, setIndex] = useState(0);
+  const [guess, setGuess] = useState<GermanArticle | null>(null);
+  const [streak, setStreak] = useState(0);
+  const [score, setScore] = useState({ correct: 0, total: 0 });
+  const [showCheatSheet, setShowCheatSheet] = useState(false);
 
   const safeIndex = deck.length > 0 ? index % deck.length : 0;
   const item = deck[safeIndex];

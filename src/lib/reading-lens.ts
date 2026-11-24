@@ -118,7 +118,50 @@ export function getReadingSamples(languageId: string): ReadingSample[] {
 const LEADING_ARTICLE_RE = /^(?:der|die|das|den|dem|des|ein|eine|le|la|les|un|une|el|los|las|de|het|een)\s+/i;
 export const FRENCH_ELISION_RE = /^(?:l|d|j|m|t|s|n|c|qu|jusqu|lorsqu|puisqu|quelqu)['’](.+)$/i;
 const TOKEN_SPLIT_RE = /([\p{L}]+(?:['’-][\p{L}]+)*)/gu;
-const FUNCTION_WORD_SET = new Set(GERMAN_FUNCTION_WORDS);
+export const FRENCH_FUNCTION_WORDS = [
+  "le", "la", "les", "un", "une", "des", "de", "du", "à", "au", "aux",
+  "et", "ou", "mais", "dans", "sur", "pour", "avec", "sans", "par", "en",
+  "je", "tu", "il", "elle", "on", "nous", "vous", "ils", "elles",
+  "ne", "pas", "que", "qui", "ce", "cette", "ces", "mon", "ma", "mes",
+  "est", "sont", "a", "ont",
+] as const;
+
+export const SPANISH_FUNCTION_WORDS = [
+  "el", "la", "los", "las", "un", "una", "unos", "unas",
+  "de", "del", "a", "al", "y", "o", "pero", "en", "con", "sin", "por", "para", "sobre",
+  "yo", "tú", "él", "ella", "nosotros", "ellos",
+  "no", "que", "quien", "este", "esta", "estos", "estas", "mi", "mis",
+  "es", "son", "está", "están",
+] as const;
+
+export const DUTCH_FUNCTION_WORDS = [
+  "de", "het", "een", "van", "in", "op", "met", "zonder", "voor", "door", "aan", "bij", "naar", "uit",
+  "en", "of", "maar", "want",
+  "ik", "jij", "je", "hij", "zij", "ze", "wij", "we", "jullie", "u",
+  "niet", "geen", "dat", "die", "dit", "deze", "mijn",
+  "is", "zijn", "heb", "heeft",
+] as const;
+
+export const FUNCTION_WORDS_BY_LANGUAGE: Record<string, ReadonlySet<string>> = {
+  de: new Set(GERMAN_FUNCTION_WORDS),
+  fr: new Set(FRENCH_FUNCTION_WORDS),
+  es: new Set(SPANISH_FUNCTION_WORDS),
+  nl: new Set(DUTCH_FUNCTION_WORDS),
+};
+
+const ALL_FUNCTION_WORDS: ReadonlySet<string> = new Set([
+  ...GERMAN_FUNCTION_WORDS,
+  ...FRENCH_FUNCTION_WORDS,
+  ...SPANISH_FUNCTION_WORDS,
+  ...DUTCH_FUNCTION_WORDS,
+]);
+
+export function getFunctionWordSet(languageId?: string): ReadonlySet<string> {
+  if (languageId && FUNCTION_WORDS_BY_LANGUAGE[languageId]) {
+    return FUNCTION_WORDS_BY_LANGUAGE[languageId];
+  }
+  return ALL_FUNCTION_WORDS;
+}
 
 /** Normalize a surface word for case-insensitive matching. */
 export function normalizeReadingToken(raw: string): string {
@@ -303,7 +346,8 @@ function lookupFalseFriend(maps: LookupMaps, raw: string, normalized: string): F
 export function analyzeReadingText(
   text: string,
   compendium: CompendiumData,
-  wordMastery: Record<string, MasteryState>
+  wordMastery: Record<string, MasteryState>,
+  languageId?: string
 ): ReadingAnalysis {
   if (!text) {
     return {
@@ -321,6 +365,7 @@ export function analyzeReadingText(
   }
 
   const maps = buildLookupMaps(compendium);
+  const functionWords = getFunctionWordSet(languageId);
   const normalizedText = text.normalize("NFC");
   const parts = normalizedText.split(TOKEN_SPLIT_RE);
   const tokens: ReadingToken[] = [];
@@ -373,7 +418,7 @@ export function analyzeReadingText(
         status = "in-course";
         inCourseCount += 1;
       }
-    } else if (!FUNCTION_WORD_SET.has(normalized)) {
+    } else if (!functionWords.has(normalized) && !functionWords.has(stripElision(normalized))) {
       unknownCount += 1;
     }
 

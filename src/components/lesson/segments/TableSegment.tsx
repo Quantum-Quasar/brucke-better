@@ -6,11 +6,8 @@ import { ShiftPair } from "@/components/common/ShiftPair";
 import { GenderBadge } from "@/components/common/GenderBadge";
 import { isModifiedClick } from "@/lib/app-navigation";
 import { useAppStore } from "@/lib/store";
-import {
-  formatGermanDutchPair,
-  lookupGermanBridge,
-  type GermanBridgeEntry,
-} from "@/data/dutch/german-bridge";
+import type { GermanBridgeEntry } from "@/data/dutch/german-bridge";
+import { useGermanBridge } from "@/lib/use-german-bridge";
 
 import { importLineFor } from "@/data/sound-imports";
 import { pluralForWord } from "@/data/noun-plurals";
@@ -19,17 +16,20 @@ import type { LessonSession } from "../lesson-session-types";
 export default function TableSegment({ session }: { session: LessonSession }) {
   const { lesson, data, genderSystem, isReading, setCurrentSegment, soundImports, primaryShift, startPractice, resumingPractice, openAtlasFamily } = session;
   const dutchFromGerman = useAppStore((s) => s.settings.dutchFromGerman);
+  const germanBridge = useGermanBridge(session.activeLanguageId === "nl" && dutchFromGerman);
   const focusIds = [...new Set(lesson.word_ids.map((id) => id.toLowerCase()))];
   const focusIdSet = new Set(focusIds);
   const tableIds = [...new Set(lesson.table_word_ids.map((id) => id.toLowerCase()))];
   const extraIds = tableIds.filter((id) => !focusIdSet.has(id));
 
   const germanBridgeEntries: GermanBridgeEntry[] = [];
-  if (session.activeLanguageId === "nl" && dutchFromGerman) {
+  if (germanBridge) {
     const seen = new Set<string>();
     for (const id of [...focusIds, ...extraIds]) {
       const word = data.words[id];
-      const entry = lookupGermanBridge(id) ?? (word ? lookupGermanBridge(word.target_word) : null);
+      const entry =
+        germanBridge.lookupGermanBridge(id) ??
+        (word ? germanBridge.lookupGermanBridge(word.target_word) : null);
       if (entry && !seen.has(entry.dutchId)) {
         seen.add(entry.dutchId);
         germanBridgeEntries.push(entry);
@@ -122,7 +122,7 @@ export default function TableSegment({ session }: { session: LessonSession }) {
               )}
 
               {/* Dutch for German speakers: DE ↔ NL cognate & false-friend bridge */}
-              {germanBridgeEntries.length > 0 && (
+              {germanBridge && germanBridgeEntries.length > 0 && (
                 <section
                   data-testid="german-bridge-table"
                   className="p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--main-color)]/30 space-y-2.5 font-mono"
@@ -142,7 +142,7 @@ export default function TableSegment({ session }: { session: LessonSession }) {
                       >
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <span className="font-semibold text-[var(--text-color)]">
-                            {formatGermanDutchPair(entry)}
+                            {germanBridge.formatGermanDutchPair(entry)}
                           </span>
                           <span
                             className={`inline-flex items-center gap-1 text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-color)] border ${
