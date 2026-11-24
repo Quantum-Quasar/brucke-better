@@ -140,6 +140,7 @@ export default function HomePage() {
               <div className="flex flex-wrap items-center gap-2.5">
                 <Link
                   href={lessonHref(activeLanguageId, firstLessonId)}
+                  data-next-lesson-start
                   onPointerEnter={() => prefetchLesson(activeLanguageId, firstLessonId)}
                   onFocus={() => prefetchLesson(activeLanguageId, firstLessonId)}
                   onClick={(event) => {

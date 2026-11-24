@@ -92,8 +92,47 @@ export const TrailMap: React.FC = () => {
     return () => observer.disconnect();
   }, [width]);
 
+  const [showAllTopics, setShowAllTopics] = useState(false);
+  const frontierTopic = useMemo(() => {
+    let highest = Math.max(1, placedAtTopic);
+    for (const topic of trailData.topics) {
+      if (
+        completedLessons.includes(topic.core.id) ||
+        lessonProgress[topic.core.id] !== undefined
+      ) {
+        highest = Math.max(highest, topic.id);
+      }
+    }
+    return highest;
+  }, [placedAtTopic, trailData.topics, completedLessons, lessonProgress]);
+
+  const maxVisibleTopic = showAllTopics
+    ? trailData.totalTopics
+    : Math.min(trailData.totalTopics, Math.max(4, frontierTopic + 2));
+  const hasHiddenUpperTopics = maxVisibleTopic < trailData.totalTopics;
+
+  const visibleTrailData = useMemo(() => {
+    if (!hasHiddenUpperTopics) return trailData;
+    const topics = trailData.topics.filter((t) => t.id <= maxVisibleTopic);
+    const visibleLessonIds = new Set<number>();
+    for (const t of topics) {
+      visibleLessonIds.add(t.core.id);
+      for (const s of t.sprigs) visibleLessonIds.add(s.id);
+      for (const st of t.stories ?? []) visibleLessonIds.add(st.id);
+    }
+    const branches = trailData.branches.filter((b) => visibleLessonIds.has(b.attach));
+    const gates = trailData.gates.filter((g) => g.afterTopic < maxVisibleTopic);
+    return {
+      ...trailData,
+      topics,
+      branches,
+      gates,
+      totalTopics: topics.length,
+    };
+  }, [hasHiddenUpperTopics, maxVisibleTopic, trailData]);
+
   const decoChars = getLanguageDefinition(activeLanguageId).decoChars;
-  const layout = useMemo(() => buildTrailLayout(width, trailData, decoChars), [width, trailData, decoChars]);
+  const layout = useMemo(() => buildTrailLayout(width, visibleTrailData, decoChars), [width, visibleTrailData, decoChars]);
   const nodeById = useMemo(() => new Map(layout.nodes.map((n) => [n.id, n])), [layout]);
   const groups = useMemo(() => groupNodesByTopic(layout.nodes, layout.topicAnchors), [layout]);
   const [detailedTopics, setDetailedTopics] = useState<ReadonlySet<number>>(() => new Set<number>());
@@ -247,6 +286,17 @@ export const TrailMap: React.FC = () => {
         </span>
       </div>
 
+      {hasHiddenUpperTopics && (
+        <div className="mb-3 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setShowAllTopics(true)}
+            className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-[var(--sub-color)]/30 bg-[var(--sub-alt-color)] px-4 py-2 text-xs font-mono text-[var(--sub-color)] hover:border-[var(--main-color)]/60 hover:text-[var(--text-color)] transition cursor-pointer"
+          >
+            <span>↑ Show full climbing trail (topics {maxVisibleTopic + 1}–{trailData.totalTopics})</span>
+          </button>
+        </div>
+      )}
       <div className="overflow-x-auto">
       <div className="relative mx-auto overflow-hidden" style={{ width: layout.width, height: layout.height }}>
         {/* faint germanic watermark decorations */}

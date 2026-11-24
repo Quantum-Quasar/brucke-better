@@ -86,7 +86,8 @@ export function NextLessonBar() {
     ]
   );
 
-  if (!ready || !recommendation) return null;
+  const isFirstVisit = completed.length === 0 && Object.keys(progress).length === 0;
+  if (!ready || !recommendation || isFirstVisit) return null;
 
   const exerciseCount =
     recommendation.lessonId !== undefined
