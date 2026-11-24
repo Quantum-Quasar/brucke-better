@@ -10,6 +10,29 @@ import { preloadClickSoundOnFirstInteraction } from "../sound";
 import { emptyVersions, sliceFromMirrors, mergeLanguageSlice } from "./progress-state";
 import { isPlausibleStateObject, normalizeParsedState, normalizeSettings, normalizeStarredWordIds, normalizeThemeId, normalizeFontId, isDangerousKey, normalizeLanguageSlice, normalizeTolerance, oneOf, VALID_REVIEW_MODES } from "./schema";
 
+/**
+ * Returns true when a first-time visitor (no persisted progress) is on a coarse-pointer
+ * touch device, where umlaut/diacritic tolerance (`lazyMode`) should default to enabled.
+ */
+export function shouldDefaultTouchUmlautTolerance(
+  hasSavedProgress: boolean,
+  matchMediaFn?: ((query: string) => { matches: boolean }) | null
+): boolean {
+  if (hasSavedProgress) return false;
+  const matcher =
+    matchMediaFn !== undefined
+      ? matchMediaFn
+      : typeof window !== "undefined" && typeof window.matchMedia === "function"
+      ? window.matchMedia.bind(window)
+      : null;
+  if (typeof matcher !== "function") return false;
+  try {
+    return Boolean(matcher("(pointer: coarse)").matches);
+  } catch {
+    return false;
+  }
+}
+
 export const createHydrationSlice: StoreSlice<"hydrateFromStorage"> = (set, get) => ({
   hydrateFromStorage: (options) => {
     if (typeof window === "undefined") return;
@@ -160,7 +183,17 @@ export const createHydrationSlice: StoreSlice<"hydrateFromStorage"> = (set, get)
       applyTheme(DEFAULT_THEME);
       applyFont(DEFAULT_FONT);
       applyAppearanceSettings(DEFAULT_SETTINGS);
-      set((s) => ({ ...s, isOnboardingOpen: false }));
+      const enableTouchUmlautTolerance = shouldDefaultTouchUmlautTolerance(false);
+      set((s) => ({
+        ...s,
+        isOnboardingOpen: false,
+        ...(enableTouchUmlautTolerance
+          ? {
+              settings: { ...s.settings, lazyMode: true },
+              tolerance: { ...s.tolerance, umlautTolerance: true },
+            }
+          : {}),
+      }));
     }
     persistenceRuntime.hasAutoOpenedOnboarding = true;
     persistenceRuntime.hasHydratedFromStorage = true;

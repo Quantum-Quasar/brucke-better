@@ -14,6 +14,7 @@ import { useAppStore } from "@/lib/store";
 import { STORAGE_COOKIE_KEY, STORAGE_KEY } from "@/lib/storage-keys";
 import { readStorageString } from "@/lib/safe-storage";
 import { flushSave } from "@/lib/store/persistence";
+import { shouldDefaultTouchUmlautTolerance } from "@/lib/store/hydration-slice";
 import { useViewStore, flushViewState } from "@/lib/view-store";
 import { useScrollMemory } from "@/lib/scroll-memory";
 import { syncThemeColor } from "@/lib/theme-runtime";
@@ -120,9 +121,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       (typeof document !== "undefined" && document.cookie.includes(STORAGE_COOKIE_KEY));
     useAppStore.getState().hydrateFromStorage();
     if (
-      !hadSavedProgress &&
-      typeof window.matchMedia === "function" &&
-      window.matchMedia("(pointer: coarse)").matches &&
+      shouldDefaultTouchUmlautTolerance(hadSavedProgress) &&
       !useAppStore.getState().settings.lazyMode
     ) {
       useAppStore.getState().updateSetting("lazyMode", true);
