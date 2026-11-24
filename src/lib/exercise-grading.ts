@@ -1,11 +1,8 @@
 import { isUnspecifiedYouPrompt } from "./german-alternatives";
 import { gradeLessonAnswer } from "./lesson-grading";
 import type { EvaluationOptions } from "./letter-diff";
-import { diagnoseAttempt } from "./shift-diagnosis";
-import { DIAGNOSIS_BY_LANGUAGE, GERMAN_DIAGNOSIS } from "@/data/shift-diagnosis-table";
-import type { ExerciseDiagnosis, ExerciseItem } from "./types";
-
-const tokensOf = (text: string) => text.toLowerCase().replace(/[.,!?;:]+/g, " ").split(/\s+/).filter(Boolean);
+import { diagnoseExerciseAttempt } from "./error-diagnosis";
+import type { ExerciseItem } from "./types";
 
 const NON_EQUIVALENCE_TYPES = new Set<ExerciseItem["type"]>([
   "shift_select",
@@ -13,28 +10,6 @@ const NON_EQUIVALENCE_TYPES = new Set<ExerciseItem["type"]>([
   "matching_pairs",
   "reverse_cognate",
 ]);
-
-function diagnoseProduction(
-  exercise: ExerciseItem,
-  answer: string,
-  target: string,
-  languageId: string,
-  wordBank: readonly string[],
-): ExerciseDiagnosis | undefined {
-  if (exercise.diagnosis) return exercise.diagnosis;
-  const table = DIAGNOSIS_BY_LANGUAGE[languageId] ?? GERMAN_DIAGNOSIS;
-  const attemptTokens = tokensOf(answer);
-  const targetTokens = tokensOf(target);
-  if (attemptTokens.length === targetTokens.length &&
-      [...attemptTokens].sort().join(" ") === [...targetTokens].sort().join(" ")) {
-    return table.word_order;
-  }
-  if (exercise.type === "dictation") return undefined;
-  const targetSet = new Set(targetTokens);
-  const bankSet = new Set(wordBank.map((word) => word.toLowerCase()));
-  if (attemptTokens.some((token) => bankSet.has(token) && !targetSet.has(token))) return table.wrong_word;
-  return diagnoseAttempt(target, answer, exercise.shift_hint, table, languageId) ?? undefined;
-}
 
 /** Resolve equivalent answers, correction requirements, and feedback from one grading policy. */
 export function gradeExerciseAttempt(
@@ -68,13 +43,21 @@ export function gradeExerciseAttempt(
   ));
   const errorType = result.reason === "umlaut" ? "umlaut" as const
     : result.reason === "case" ? "capitalization" as const : "spelling" as const;
-  const production = exercise.type === "transcribe" || exercise.type === "dictation" ||
-    exercise.type === "spoken_turn_reply" || exercise.type === "pronoun_compression";
-  const diagnosis = !incorrect ? undefined : exercise.diagnosis ?? (
-    production ? diagnoseProduction(exercise, graded.answer, graded.target, options.languageId, wordBank)
-      : exercise.type === "derive" ? diagnoseAttempt(graded.target, graded.answer, exercise.shift_hint, undefined, options.languageId) ?? undefined
-        : undefined
-  );
+  const diagnosis = !incorrect
+    ? undefined
+    : diagnoseExerciseAttempt({
+        attempt: graded.answer,
+        expected: graded.target || exercise.target_answer.trim(),
+        acceptedAnswers: exercise.accepted_answers,
+        exerciseType: exercise.type,
+        languageId: options.languageId,
+        shiftHint: exercise.shift_hint,
+        authoredDiagnosis: exercise.diagnosis,
+        explanation: exercise.explanation,
+        prompt: exercise.prompt,
+        englishPrompt: exercise.idea || exercise.english_hint || exercise.meaning,
+        wordBank,
+      });
   return { ...graded, queueRetry, errorType, diagnosis };
 }
 

@@ -12,10 +12,11 @@ import { SuccessFeedbackSheet } from "./SuccessFeedbackSheet";
 import { arrangeTilesDeterministically } from "./exercise-tiles";
 import { evaluateAnswerAccuracy } from "@/lib/letter-diff";
 import { affirmationFor } from "@/lib/shift-diagnosis";
+import { diagnoseExerciseAttempt } from "@/lib/error-diagnosis";
 import { useAppStore } from "@/lib/store";
 import { soundEngine } from "@/lib/sound";
 import { hasBlockingKeyboardDialog } from "@/components/common/ModalDialog";
-import type { ExerciseItem } from "@/lib/types";
+import type { ExerciseDiagnosis, ExerciseItem } from "@/lib/types";
 
 interface LiteralGlossProps {
   exercise: ExerciseItem;
@@ -44,9 +45,11 @@ export const LiteralGloss: React.FC<LiteralGlossProps> = ({
   const [showErrorSheet, setShowErrorSheet] = useState(false);
   const [showSuccessSheet, setShowSuccessSheet] = useState(false);
   const [failedAttemptText, setFailedAttemptText] = useState("");
+  const [failedDiagnosis, setFailedDiagnosis] = useState<ExerciseDiagnosis | undefined>(undefined);
 
   const settings = useAppStore((s) => s.settings);
   const tolerance = useAppStore((s) => s.tolerance);
+  const activeLanguageId = useAppStore((s) => s.activeLanguageId);
 
   const options = React.useMemo(() => arrangeTilesDeterministically(exercise.options ?? [], `${exercise.id}#lg`, exercise.target_answer), [exercise.options, exercise.id, exercise.target_answer]);
   const german = exercise.german ?? "";
@@ -83,6 +86,7 @@ export const LiteralGloss: React.FC<LiteralGlossProps> = ({
     setShowErrorSheet(false);
     setShowSuccessSheet(false);
     setFailedAttemptText("");
+    setFailedDiagnosis(undefined);
   };
 
   useEffect(() => {
@@ -117,6 +121,20 @@ export const LiteralGloss: React.FC<LiteralGlossProps> = ({
       onError("spelling");
       onQueueRetry?.();
       setFailedAttemptText(option);
+      setFailedDiagnosis(
+        diagnoseExerciseAttempt({
+          attempt: option,
+          expected: exercise.target_answer,
+          acceptedAnswers: exercise.accepted_answers,
+          exerciseType: exercise.type,
+          languageId: activeLanguageId,
+          shiftHint: exercise.shift_hint,
+          authoredDiagnosis: exercise.diagnosis,
+          explanation: exercise.explanation,
+          prompt: exercise.prompt,
+          englishPrompt: exercise.natural,
+        })
+      );
       setShowErrorSheet(true);
     }
   };
@@ -214,6 +232,7 @@ export const LiteralGloss: React.FC<LiteralGlossProps> = ({
           englishPrompt={exercise.prompt}
           shiftRule={exercise.shift_hint}
           explanation={exercise.explanation}
+          diagnosis={failedDiagnosis}
           onContinue={() => {
             setShowErrorSheet(false);
             setStatus("idle");

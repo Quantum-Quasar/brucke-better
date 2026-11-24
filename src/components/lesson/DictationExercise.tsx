@@ -307,6 +307,7 @@ export const DictationExercise: React.FC<DictationExerciseProps> = ({
         <ErrorFeedbackSheet
           userInput={failedAttemptText}
           expectedAnswer={target}
+          shiftRule={exercise.shift_hint}
           explanation={exercise.explanation}
           diagnosis={failedDiagnosis}
           onContinue={handleErrorContinue}

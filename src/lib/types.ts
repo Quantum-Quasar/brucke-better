@@ -159,6 +159,7 @@ export interface VocabHint {
 export interface ExerciseDiagnosis {
   slip: string;
   cue: string;
+  category?: string;
 }
 
 export interface CompressedNounPart {

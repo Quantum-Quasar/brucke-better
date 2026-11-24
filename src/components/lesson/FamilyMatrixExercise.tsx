@@ -16,6 +16,7 @@ import { getLanguageDefinition } from "@/data/languages";
 import { useAppStore } from "@/lib/store";
 import { soundEngine } from "@/lib/sound";
 import { affirmationFor } from "@/lib/shift-diagnosis";
+import { diagnoseExerciseAttempt } from "@/lib/error-diagnosis";
 import type { ExerciseDiagnosis, ExerciseItem } from "@/lib/types";
 
 interface FamilyMatrixExerciseProps {
@@ -97,7 +98,20 @@ export const FamilyMatrixExercise: React.FC<FamilyMatrixExerciseProps> = ({
     }
 
     setFailedAttemptText(answer);
-    setFailedDiagnosis(exercise.diagnosis);
+    setFailedDiagnosis(
+      diagnoseExerciseAttempt({
+        attempt: answer,
+        expected: target,
+        acceptedAnswers: exercise.accepted_answers,
+        exerciseType: exercise.type,
+        languageId: activeLanguageId,
+        shiftHint: exercise.shift_hint,
+        authoredDiagnosis: exercise.diagnosis,
+        explanation: exercise.explanation,
+        prompt: exercise.prompt,
+        englishPrompt: exercise.meaning,
+      })
+    );
     void soundEngine.playError(settings.playSoundOnError, settings.soundVolume);
     onError(evaluation.reason === "umlaut" ? "umlaut" : "spelling");
     onQueueRetry?.();
@@ -271,6 +285,7 @@ export const FamilyMatrixExercise: React.FC<FamilyMatrixExerciseProps> = ({
         <ErrorFeedbackSheet
           userInput={failedAttemptText}
           expectedAnswer={target}
+          shiftRule={exercise.shift_hint}
           explanation={exercise.explanation}
           diagnosis={failedDiagnosis}
           onContinue={() => {

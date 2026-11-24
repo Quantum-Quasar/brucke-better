@@ -1,6 +1,6 @@
 "use client";
 
-// ponytail: focused bottom modal sheet presenting letter-by-letter diff and mechanical shift explanation
+// ponytail: focused bottom modal sheet presenting letter-by-letter diff and truthful error diagnosis
 
 import React, { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
@@ -47,7 +47,6 @@ function splitFirstSentence(text: string): { lead: string; rest: string } {
 export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
   userInput,
   expectedAnswer,
-  englishPrompt,
   shiftRule,
   explanation,
   diagnosis,
@@ -68,6 +67,7 @@ export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
   const spokenText = audioText ?? expectedAnswer;
   const spokenLocale = audioLocale ?? language.ttsLocale;
 
+  const badgeLabel = shiftRule || diagnosis?.category;
   const explanationParts = explanation ? splitFirstSentence(explanation) : null;
   // When diagnosis is present, tuck the full explanation behind "More"; otherwise show the first sentence and tuck any extra text.
   const hasCollapsibleMore = Boolean(
@@ -110,9 +110,9 @@ export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
             <AlertCircle className="w-5 h-5 shrink-0" />
             <h4 id="error-feedback-title" className="text-sm font-bold text-[var(--text-color)] font-mono">not quite</h4>
           </div>
-          {englishPrompt && (
+          {badgeLabel && (
             <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 text-[var(--main-color)] font-semibold">
-              {shiftRule || "Consonant Shift"}
+              {badgeLabel}
             </span>
           )}
         </div>
@@ -198,7 +198,9 @@ export const ErrorFeedbackSheet: React.FC<ErrorFeedbackSheetProps> = ({
             </button>
             {showMore && diagnosis && explanation && (
               <div id="error-feedback-more" className="text-xs font-mono text-[var(--sub-color)] leading-relaxed bg-[var(--sub-alt-color)] p-3 rounded-lg border border-[var(--sub-color)]/20">
-                <span className="text-[var(--main-color)] font-semibold block mb-0.5">shift note:</span>
+                <span className="text-[var(--main-color)] font-semibold block mb-0.5">
+                  {shiftRule ? "shift note:" : "note:"}
+                </span>
                 {explanation}
               </div>
             )}
