@@ -242,23 +242,23 @@ export const ES_TOPICS: TopicCluster[] = [
   },
   {
     id: 22,
-    title: "Double Object Pronouns",
-    blurb: "me lo da, te lo digo — pronouns stacking before the verb, and le lo becoming se lo.",
-    core: authoredCore(22, "Double Object Pronouns"),
+    title: "Direct vs Indirect Objects: lo/la vs le",
+    blurb: "lo/la (accusative) vs le/les (dative) — clarifying target and recipient.",
+    core: authoredCore(22, "Direct vs Indirect Objects: lo/la vs le"),
     sprigs: [
-      shell(esSprigId(22, 1), "The Pronoun Highway Order", "People before things: Indirect object (me, te, nos) precedes direct object (lo, la): me lo da, te lo digo."),
-      shell(esSprigId(22, 2), "The se lo Softening Rule", "Why *le lo sounds like a tongue-twister and becomes se lo (Se lo doy 'I give it to him/her')."),
+      shell(esSprigId(22, 1), "The Personal 'a'", "Placing 'a' before specific human direct objects: veo a María, conozco a tu hermano, invito a mi amigo."),
+      shell(esSprigId(22, 2), "Dative Pronoun Redundancy", "Why Spanish loves saying 'to whom' twice: Le doy el libro a María, A mí me gusta."),
+      shell(esSprigId(22, 3), "Saber vs Conocer", "Knowing facts and skills (sé nadar, sé dónde está) vs knowing people and places (conozco Madrid, conozco a María)."),
     ],
   },
   {
     id: 23,
-    title: "Direct vs Indirect Objects: lo/la vs le",
-    blurb: "lo/la (accusative) vs le/les (dative) — clarifying target and recipient.",
-    core: authoredCore(23, "Direct vs Indirect Objects: lo/la vs le"),
+    title: "Double Object Pronouns",
+    blurb: "me lo da, te lo digo — pronouns stacking before the verb, and le lo becoming se lo.",
+    core: authoredCore(23, "Double Object Pronouns"),
     sprigs: [
-      shell(esSprigId(23, 1), "The Personal 'a'", "Placing 'a' before specific human direct objects: veo a María, conozco a tu hermano, invito a mi amigo."),
-      shell(esSprigId(23, 2), "Dative Pronoun Redundancy", "Why Spanish loves saying 'to whom' twice: Le doy el libro a María, A mí me gusta."),
-      shell(esSprigId(23, 3), "Saber vs Conocer", "Knowing facts and skills (sé nadar, sé dónde está) vs knowing people and places (conozco Madrid, conozco a María)."),
+      shell(esSprigId(23, 1), "The Pronoun Highway Order", "People before things: Indirect object (me, te, nos) precedes direct object (lo, la): me lo da, te lo digo."),
+      shell(esSprigId(23, 2), "The se lo Softening Rule", "Why *le lo sounds like a tongue-twister and becomes se lo (Se lo doy 'I give it to him/her')."),
     ],
   },
   {
@@ -522,7 +522,7 @@ export const ES_TRAIL_GATES: TrailGate[] = [
     afterTopic: 26,
     requiredStars: 7,
     title: "The Deep Engine Gate",
-    why: "Topics 22–26 install double object pronouns, se lo, personal 'a', saber vs conocer, reflexives, gustar, the conditional, and the subjunctive. The synthesis stretch is pure reading and recall — carry 7 stars with you.",
+    why: "Topics 22–26 install direct vs indirect objects, personal 'a', saber vs conocer, double object pronouns, se lo, reflexives, gustar, the conditional, and the subjunctive. The synthesis stretch is pure reading and recall — carry 7 stars with you.",
   },
 ];
 

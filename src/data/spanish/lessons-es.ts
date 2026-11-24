@@ -75,10 +75,10 @@ import lesson2102 from "./lessons/2102";
 import lesson22 from "./lessons/22";
 import lesson2201 from "./lessons/2201";
 import lesson2202 from "./lessons/2202";
+import lesson2203 from "./lessons/2203";
 import lesson23 from "./lessons/23";
 import lesson2301 from "./lessons/2301";
 import lesson2302 from "./lessons/2302";
-import lesson2303 from "./lessons/2303";
 import lesson24 from "./lessons/24";
 import lesson2401 from "./lessons/2401";
 import lesson2402 from "./lessons/2402";
@@ -211,10 +211,10 @@ export const ES_LESSONS: Lesson[] = [
   lesson22,
   lesson2201,
   lesson2202,
+  lesson2203,
   lesson23,
   lesson2301,
   lesson2302,
-  lesson2303,
   lesson24,
   lesson2401,
   lesson2402,

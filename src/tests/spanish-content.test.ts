@@ -176,4 +176,14 @@ describe("spanish course content", () => {
     const duplicated = [...seen.entries()].filter(([, n]) => n > 1);
     expect(duplicated.map(([t]) => t.slice(0, 80))).toEqual([]);
   });
+
+  it("teaches Direct vs Indirect Objects before Double Object Pronouns", () => {
+    const directIdx = ES_TOPICS.findIndex((t) => t.title === "Direct vs Indirect Objects: lo/la vs le");
+    const doubleIdx = ES_TOPICS.findIndex((t) => t.title === "Double Object Pronouns");
+    expect(directIdx).toBeGreaterThanOrEqual(0);
+    expect(doubleIdx).toBeGreaterThanOrEqual(0);
+    expect(directIdx).toBeLessThan(doubleIdx);
+    expect(ES_TOPICS[directIdx].id).toBe(22);
+    expect(ES_TOPICS[doubleIdx].id).toBe(23);
+  });
 });

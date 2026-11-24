@@ -1,7 +1,7 @@
 import type { Lesson } from "@/lib/types";
 
 const lesson: Lesson = {
-  "id": 2303,
+  "id": 2203,
   "slug": "saber-vs-conocer",
   "title": "Saber vs Conocer",
   "subtitle": "Knowing facts and skills (sé nadar, sé dónde está) vs knowing people and places (conozco Madrid, conozco a María)",
@@ -85,7 +85,7 @@ const lesson: Lesson = {
       "target_answer": "saber, sé, conocer, conozco, sé dónde está, conozco Madrid",
       "meaning": "to know (facts, information, how to do something), I know (fact / skill: 1st sg. of saber), to know / be familiar with (people, places), I know / am acquainted with (1st sg. of conocer), I know where it is (fact/clause), I know Madrid (place)",
       "explanation": "saber (sé) = facts, clauses, and skills (+ infinitive); conocer (conozco) = people (with 'a') and places.",
-      "id": "es2303_e1"
+      "id": "es2203_e1"
     },
     {
       "type": "reverse_cognate",
@@ -93,7 +93,7 @@ const lesson: Lesson = {
       "target_answer": "cognizant",
       "meaning": "cognizant and recognize come from the exact same Latin root as conocer!",
       "explanation": "Latin cognōscere gave Spanish conocer and English cognizant, recognize, reconnaissance.",
-      "id": "es2303_e2"
+      "id": "es2203_e2"
     },
     {
       "type": "shift_select",
@@ -106,7 +106,7 @@ const lesson: Lesson = {
       "target_answer": "Sé hablar español",
       "meaning": "I know how to speak Spanish",
       "explanation": "saber + bare infinitive already means 'to know how to [verb]' — never add *cómo!",
-      "id": "es2303_e3"
+      "id": "es2203_e3"
     },
     {
       "type": "syntax_builder",
@@ -126,7 +126,7 @@ const lesson: Lesson = {
         "Sé"
       ],
       "explanation": "Conozco Madrid (city = no 'a') y conozco a tu hermano (person = personal 'a'!).",
-      "id": "es2303_e4"
+      "id": "es2203_e4"
     },
     {
       "type": "transcribe",
@@ -159,7 +159,7 @@ const lesson: Lesson = {
         "slip": "used conozco before dónde",
         "cue": "Before a question word or clause (qué, dónde, por qué, que...), always use saber (No sé dónde está)."
       },
-      "id": "es2303_e5"
+      "id": "es2203_e5"
     }
   ],
   "summary": {
@@ -169,7 +169,7 @@ const lesson: Lesson = {
       "english": "I know Madrid, I know your friend, and I know where the restaurant is."
     },
     "takeaway": "Facts, clauses, and infinitives take saber (sé); people and places take conocer (conozco).",
-    "curiosity_teaser": "Up next ([24] Reflexives & Daily Life): see how me, te, se, nos turn actions back on the speaker in daily life."
+    "curiosity_teaser": "Up next ([23] Double Object Pronouns): stack indirect + direct pronouns before the verb (me lo, te lo, se lo)!"
   },
   "twist": {
     "prompt": "Assemble: 'Do you know where it is?'",

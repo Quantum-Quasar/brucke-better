@@ -2,44 +2,44 @@ import type { Lesson } from "@/lib/types";
 
 const lesson: Lesson = {
   "id": 22,
-  "slug": "double-object-pronouns",
-  "title": "Double Object Pronouns",
-  "subtitle": "me lo da, te lo digo — pronouns stacking before the verb, and le lo becoming se lo",
+  "slug": "direct-vs-indirect-lo-la-vs-le",
+  "title": "Direct vs Indirect Objects: lo/la vs le",
+  "subtitle": "lo/la (accusative) vs le/les (dative) — clarifying target and recipient",
   "phase": 4,
   "shift_categories": [],
   "word_ids": [
-    "me",
-    "te",
-    "nos",
-    "le",
-    "se",
     "lo",
     "la",
+    "le",
     "dar",
     "decir",
-    "explicar"
+    "ver",
+    "invitar",
+    "conocer",
+    "a",
+    "amigo"
   ],
   "table_word_ids": [
-    "me",
-    "te",
-    "nos",
-    "le",
-    "se",
     "lo",
     "la",
+    "le",
     "dar",
     "decir",
-    "explicar"
+    "ver",
+    "invitar",
+    "conocer",
+    "a",
+    "amigo"
   ],
   "hook": {
-    "title": "People Before Things: The Pronoun Highway",
-    "content": "In Topic 1 you learned that 'it' (lo / la) walks in front of the verb: Lo quiero ('I want it'). What happens when you have BOTH a person ('to me / to you / to us': me, te, nos) AND a thing ('it': lo, la) — like 'He gives it to me' or 'I tell it to you'? Both pronouns walk in front of the verb, and the rule is universal: **People come BEFORE Things**! Me lo da ('To-me it he-gives'), Te lo digo ('To-you it I-say'), Nos lo explica ('To-us it he-explains')!"
+    "title": "Direct Target (lo / la) vs Recipient Person (le / les)",
+    "content": "When a verb acts directly on an object ('I see it, I buy it, I invite her'), that direct target is lo (masculine) or la (feminine): Lo veo, La invito. When a verb sends or communicates something TO a person ('I speak to him/her, I give [something] to him/her, I tell [something] to him/her'), that recipient takes the gender-neutral indirect pronoun **le** (plural **les**): Le hablo ('I speak to him/her'), Le doy el libro ('I give the book to him/her')!"
   },
   "pattern": {
-    "title": "The Famous 'Se Lo' Rule: Why *Le Lo Becomes 'Se Lo'!",
-    "content": "What if you want to say 'I give it to him / to her / to usted'? The indirect pronoun for 'to him / to her / to usted' is le, and 'it' is lo. Try saying *le lo out loud — two L-syllables in a row feel like a tongue-twister! In Old Spanish, *le lo evolved into ge lo and then softened into **se lo**: Se lo doy ('To-him/her/usted it I-give'), Se lo digo ('I tell it to him/her/usted')!",
-    "linguist_note": "Latin illī illum evolved in Old Castilian to gelo (/ʒelo/), which later merged phonetically with reflexive se into modern se lo.",
-    "trap_note": "Never write *le lo, *le la, *les lo, or *les la! The moment le or les stands before lo/la/los/las, it puts on the disguise 'se'!"
+    "title": "Spanish's Famous 'Personal a' Before Human Direct Objects!",
+    "content": "Here is a signature Spanish feature that neither French nor English has: whenever the direct object of your verb is a SPECIFIC PERSON (or beloved pet!), Spanish places the preposition **a** right before them — called the **Personal 'a'**: Veo el hotel ('I see the hotel' — thing, no a) vs **Veo a María** ('I see María' — person, takes a!), **Conozco a tu hermano** ('I know your brother'), **Quiero invitar a mi amigo**!",
+    "linguist_note": "Differential Object Marking (the 'personal a', from Latin ad) prevents ambiguity between subject and human object when Spanish word order varies.",
+    "trap_note": "One notable exception: tener ('to have') normally does NOT use the personal 'a' when stating family members you have: Tengo dos hermanos ('I have two brothers')."
   },
   "exercises": [
     {
@@ -48,120 +48,152 @@ const lesson: Lesson = {
       "matching_pairs": [
         {
           "id": "p1",
-          "english": "to me + it (masculine)",
-          "german": "me lo"
+          "english": "it / him (direct object, m.)",
+          "german": "lo"
         },
         {
           "id": "p2",
-          "english": "to you + it (masculine)",
-          "german": "te lo"
+          "english": "it / her (direct object, f.)",
+          "german": "la"
         },
         {
           "id": "p3",
-          "english": "to us + it (masculine)",
-          "german": "nos lo"
+          "english": "to him / to her / to usted (indirect recipient)",
+          "german": "le"
         },
         {
           "id": "p4",
-          "english": "to him/her/usted/them + it (never *le lo!)",
-          "german": "se lo"
+          "english": "I see the hotel (thing: no 'a')",
+          "german": "veo el hotel"
         },
         {
           "id": "p5",
-          "english": "I give (1st sg. of dar)",
-          "german": "doy"
+          "english": "I see María (person: personal 'a'!)",
+          "german": "veo a María"
         },
         {
           "id": "p6",
-          "english": "I say / I tell (1st sg. of decir)",
-          "german": "digo"
+          "english": "I know your brother (person: personal 'a'!)",
+          "german": "conozco a tu hermano"
         }
       ],
-      "target_answer": "me lo, te lo, nos lo, se lo, doy, digo",
-      "meaning": "to me + it (masculine), to you + it (masculine), to us + it (masculine), to him/her/usted/them + it (never *le lo!), I give (1st sg. of dar), I say / I tell (1st sg. of decir)",
-      "explanation": "Indirect person (me, te, nos, se) always precedes direct object (lo, la, los, las).",
+      "target_answer": "lo, la, le, veo el hotel, veo a María, conozco a tu hermano",
+      "meaning": "it / him (direct object, m.), it / her (direct object, f.), to him / to her / to usted (indirect recipient), I see the hotel (thing: no 'a'), I see María (person: personal 'a'!), I know your brother (person: personal 'a'!)",
+      "explanation": "lo/la = direct target; le/les = 'to him/her/them'; specific human direct objects take the personal 'a'.",
       "id": "es22_e1"
     },
     {
-      "type": "reverse_cognate",
-      "prompt": "Spanish decir ('to say / tell', yo digo 'I say') comes from Latin dīcere. Which English word for 'speaking aloud so someone can write it down' comes from the exact same root?",
-      "target_answer": "dictate",
-      "meaning": "to dictate (or diction / predict) is literally the Latin root of decir ('to say')!",
-      "explanation": "Latin dīcere / dictāre gave Spanish decir (digo) and English dictate, diction, dictionary, predict.",
+      "type": "shift_select",
+      "prompt": "Compare 'I visit Madrid' and 'I visit my mother'. Why does only the second one require 'a'?",
+      "options": [
+        "Because madre is feminine",
+        "Visito Madrid (place = no 'a') vs Visito a mi madre (specific person = requires the personal 'a'!)",
+        "Because Madrid starts with M"
+      ],
+      "target_answer": "Visito Madrid (place = no 'a') vs Visito a mi madre (specific person = requires the personal 'a'!)",
+      "meaning": "I visit Madrid vs I visit my mother",
+      "explanation": "Specific human direct objects receive the personal 'a' in Spanish to mark them as sentient people rather than inanimate objects!",
       "id": "es22_e2"
     },
     {
-      "type": "shift_select",
-      "prompt": "How do you say 'I give it to him/her' in Spanish?",
-      "options": ["Le lo doy", "Se lo doy", "Lo le doy"],
-      "target_answer": "Se lo doy",
-      "meaning": "I give it to him / her / usted",
-      "explanation": "Two L-pronouns in a row (*le lo, *les la) are forbidden in Spanish — the first one always transforms into se!",
+      "type": "syntax_builder",
+      "prompt": "Assemble: 'I want to invite my friend (male)'",
+      "target_answer": "Quiero invitar a mi amigo",
+      "meaning": "I want to invite my friend",
+      "word_bank": [
+        "invitar",
+        "a",
+        "el",
+        "por",
+        "Quiero",
+        "para",
+        "mi",
+        "amigo"
+      ],
+      "explanation": "Quiero invitar + a (personal 'a'!) + mi amigo.",
       "id": "es22_e3"
     },
     {
-      "type": "syntax_builder",
-      "prompt": "Assemble: 'I tell it to you'",
-      "target_answer": "Te lo digo",
-      "meaning": "I tell it to you",
-      "word_bank": [
-        "Lo",
-        "le",
-        "lo",
-        "digo",
-        "Te",
-        "te"
+      "type": "transcribe",
+      "prompt": "Tell me:",
+      "idea": "say that you give the book to María using redundant 'le' ('Le doy el libro a María')",
+      "cues": [
+        "To her (indirect pronoun before verb) → Le",
+        "I give the book → doy el libro",
+        "to María → a María"
       ],
-      "explanation": "Te ('to you', person first) + lo ('it', thing second) + digo ('I tell').",
+      "idea_parts": [
+        "To her I give → Le doy",
+        "the book → el libro",
+        "to María → a María"
+      ],
+      "target_answer": "Le doy el libro a María",
+      "meaning": "I give the book to María",
+      "word_bank": [
+        "Le",
+        "para",
+        "La",
+        "doy",
+        "libro",
+        "Lo",
+        "a",
+        "el",
+        "María"
+      ],
+      "explanation": "Le doy el libro a María — Spanish loves announcing the recipient twice: with le before the verb AND a María after it!",
+      "diagnosis": {
+        "slip": "omitted Le before doy",
+        "cue": "In natural Spanish, even when 'a María' is stated, you still include Le before the verb: Le doy el libro a María."
+      },
       "id": "es22_e4"
     },
     {
       "type": "literal_gloss",
-      "prompt": "Which English word-for-word blueprint mirrors Spanish 'Se lo doy hoy'?",
-      "german": "Se lo doy hoy",
-      "natural": "I give it to him/her today",
+      "prompt": "Which English word-for-word blueprint mirrors Spanish 'Le doy el libro a María'?",
+      "german": "Le doy el libro a María",
+      "natural": "I give the book to María",
       "options": [
-        "It to-him I give today",
-        "I give it to him/her today",
-        "To-him/her it I-give today",
-        "Himself it gives today"
+        "It I give the book María",
+        "I give the book to María",
+        "To-her I-give the book to María",
+        "She gives the book to María"
       ],
-      "target_answer": "To-him/her it I-give today",
-      "meaning": "I give it to him/her today (literal Spanish blueprint: To-him/her it I-give today)",
-      "explanation": "Se ('To-him/her/usted') + lo ('it') + doy ('I-give') + hoy ('today').",
+      "target_answer": "To-her I-give the book to María",
+      "meaning": "I give the book to María (literal Spanish blueprint: To-her I-give the book to María)",
+      "explanation": "Spanish doubles the dative recipient: Le ('To-her') before the verb and a María ('to María') after.",
       "id": "es22_e5"
     }
   ],
   "summary": {
-    "outcome": "Stack indirect + direct object pronouns (me lo, te lo, nos lo) and apply the se lo rule.",
+    "outcome": "Distinguish direct lo/la from indirect le/les, use the personal 'a' before human direct objects, and double le with a + person.",
     "use_example": {
-      "german": "Te lo digo hoy y se lo doy mañana.",
-      "english": "I tell it to you today and I give it to him/her tomorrow."
+      "german": "Veo a María y le doy el libro.",
+      "english": "I see María and I give her the book."
     },
-    "takeaway": "People before things (me lo, te lo, nos lo) — and whenever le/les meets lo/la, it becomes se lo / se la!",
-    "curiosity_teaser": "Up next ([2201] The Pronoun Highway Order): drill me lo, te la, and nos lo across dar, decir, and explicar."
+    "takeaway": "Specific people as direct objects wear the personal 'a' (Veo a mi amigo) — and indirect recipients take le/les.",
+    "curiosity_teaser": "Up next ([2201] The Personal 'a'): master when to include and when to omit the personal 'a'."
   },
   "twist": {
-    "prompt": "Assemble: 'I give it to him today'",
-    "target_answer": "Se lo doy hoy",
+    "prompt": "Assemble: 'I know your father'",
+    "target_answer": "Conozco a tu padre",
     "word_bank": [
-      "lo",
-      "digo",
-      "Se",
-      "Le",
-      "me",
-      "doy",
-      "hoy"
+      "padre",
+      "tu",
+      "el",
+      "a",
+      "Conozco",
+      "tú",
+      "por"
     ],
-    "explanation": "Se lo doy hoy (never *Le lo doy!)."
+    "explanation": "Conozco + a (personal 'a') + tu padre."
   },
   "foreshadow": {
-    "line": "Next in Topic 23: how to choose between lo/la and le when only ONE object pronoun is on stage — plus Spanish's famous 'personal a'!",
+    "line": "Next in Topic 23: stack BOTH an indirect and direct object pronoun before the verb (me lo da, te lo digo) and see why *le lo softens into se lo!",
     "resolvedIn": 23
   },
   "payoff": {
     "ofLesson": 21,
-    "text": "Having mastered single pronouns in Phase 1 and comparisons in Phase 3, you now control two-pronoun clusters in Phase 4."
+    "text": "Having mastered single pronouns in Phase 1 and comparisons in Phase 3, you now separate target (lo/la) from recipient (le/les) before stacking them!"
   }
 };
 

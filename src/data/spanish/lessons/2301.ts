@@ -2,42 +2,42 @@ import type { Lesson } from "@/lib/types";
 
 const lesson: Lesson = {
   "id": 2301,
-  "slug": "the-personal-a",
-  "title": "The Personal 'a'",
-  "subtitle": "Placing 'a' before specific human direct objects: veo a María, conozco a tu hermano, invito a mi amigo",
+  "slug": "pronoun-highway-order",
+  "title": "The Pronoun Highway Order",
+  "subtitle": "People before things: Indirect object (me, te, nos) precedes direct object (lo, la): me lo da, te lo digo",
   "phase": 4,
   "shift_categories": [],
   "word_ids": [
-    "a",
-    "ver",
-    "conocer",
-    "invitar",
-    "visitar",
-    "hermano",
-    "amigo",
-    "padre",
-    "madre",
-    "hotel"
+    "me",
+    "te",
+    "nos",
+    "lo",
+    "la",
+    "dar",
+    "decir",
+    "comprar",
+    "explicar",
+    "verdad"
   ],
   "table_word_ids": [
-    "a",
-    "ver",
-    "conocer",
-    "invitar",
-    "visitar",
-    "hermano",
-    "amigo",
-    "padre",
-    "madre",
-    "hotel"
+    "me",
+    "te",
+    "nos",
+    "lo",
+    "la",
+    "dar",
+    "decir",
+    "comprar",
+    "explicar",
+    "verdad"
   ],
   "hook": {
-    "title": "Respecting People in Grammar",
-    "content": "Think of the personal 'a' as a grammatical bow of respect Whenever a verb's direct action lands on a specific human being (ver 'to see', conocer 'to know', invitar 'to invite', visitar 'to visit', ayudar 'to help'), place **a** before the person! And remember: if the person is masculine singular with el (el profesor, el señor), **a + el** still contracts to **al**: Veo al señor ('I see the gentleman')!"
+    "title": "Person First, Thing Second, Verb Third",
+    "content": "Whether the thing is masculine (lo — e.g., el libro, el café) or feminine (la — e.g., la verdad, la llave, la confirmación), the recipient person (me, te, nos) always takes the front seat: ¿Me lo das? ('Will you give it to me?'), Te la digo ('I tell it [the truth] to you')."
   },
   "pattern": {
-    "title": "Thing vs Person Side by Side",
-    "content": "• Thing/Place: Veo la casa, Visito Madrid, Conozco el hotel (zero 'a').\n• Person: Veo a mi madre, Visito a mis padres, Conozco al profesor (personal 'a')!"
+    "title": "Where Does 'No' Go? Still at the Very Front!",
+    "content": "When negating a double-pronoun sentence, no still stands at the very front of the train: No te lo digo ('I don't tell it to you')!"
   },
   "exercises": [
     {
@@ -46,131 +46,130 @@ const lesson: Lesson = {
       "matching_pairs": [
         {
           "id": "p1",
-          "english": "I see the house (thing)",
-          "german": "veo la casa"
+          "english": "he gives it to me",
+          "german": "me lo da"
         },
         {
           "id": "p2",
-          "english": "I see my mother (person)",
-          "german": "veo a mi madre"
+          "english": "I tell it to you",
+          "german": "te lo digo"
         },
         {
           "id": "p3",
-          "english": "I visit Madrid (city)",
-          "german": "visito Madrid"
+          "english": "I give it (feminine, e.g. la llave) to you",
+          "german": "te la doy"
         },
         {
           "id": "p4",
-          "english": "I visit my parents (people)",
-          "german": "visito a mis padres"
+          "english": "he explains it to us",
+          "german": "nos lo explica"
         },
         {
           "id": "p5",
-          "english": "I know the gentleman (a + el)",
-          "german": "conozco al señor"
+          "english": "I don't tell it to you",
+          "german": "no te lo digo"
         }
       ],
-      "target_answer": "veo la casa, veo a mi madre, visito Madrid, visito a mis padres, conozco al señor",
-      "meaning": "I see the house (thing), I see my mother (person), I visit Madrid (city), I visit my parents (people), I know the gentleman (a + el)",
-      "explanation": "Things and cities take zero 'a'; specific people take the personal 'a' (or al = a + el).",
+      "target_answer": "me lo da, te lo digo, te la doy, nos lo explica, no te lo digo",
+      "meaning": "he gives it to me, I tell it to you, I give it (feminine, e.g. la llave) to you, he explains it to us, I don't tell it to you",
+      "explanation": "Order: [no] + [person: me/te/nos/se] + [thing: lo/la] + [verb].",
       "id": "es2301_e1"
     },
     {
       "type": "shift_select",
-      "prompt": "How do you say 'I am going to visit my brother'?",
+      "prompt": "Referring to 'la llave' (feminine), how do you say 'I give it to you'?",
       "options": [
-        "Voy a visitar a mi hermano",
-        "*Voy a visitar mi hermano",
-        "*Voy visitar a mi hermano"
+        "*La te doy",
+        "Te lo doy",
+        "Te la doy"
       ],
-      "target_answer": "Voy a visitar a mi hermano",
-      "meaning": "I am going to visit my brother",
-      "explanation": "The first 'a' belongs to voy a + infinitive; the second 'a' is the personal 'a' before mi hermano!",
+      "target_answer": "Te la doy",
+      "meaning": "I give it (the key) to you",
+      "explanation": "te ('to you') comes first, and la ('it', feminine for la llave) comes second: Te la doy.",
       "id": "es2301_e2"
     },
     {
       "type": "syntax_builder",
-      "prompt": "Assemble: 'I see my friends here'",
-      "target_answer": "Veo a mis amigos aquí",
-      "meaning": "I see my friends here",
+      "prompt": "Assemble: 'He explains it to us'",
+      "target_answer": "Nos lo explica",
+      "meaning": "He explains it to us",
       "word_bank": [
-        "mis",
-        "los",
-        "aquí",
-        "amigos",
-        "el",
-        "Veo",
-        "a",
-        "por"
+        "explica",
+        "lo",
+        "me",
+        "Nos",
+        "nos",
+        "Lo"
       ],
-      "explanation": "Veo + a (personal 'a') + mis amigos + aquí.",
+      "explanation": "Nos ('to us') + lo ('it') + explica ('he/she explains').",
       "id": "es2301_e3"
     },
     {
       "type": "transcribe",
       "prompt": "Tell me:",
-      "idea": "say that you want to invite your mother",
+      "idea": "say: 'He gives it (masculine) to me'",
       "cues": [
-        "I want to invite → Quiero invitar",
-        "personal 'a' + my mother → a mi madre"
+        "To me (person first) → Me",
+        "it (masculine thing second) → lo",
+        "he gives (3rd sg. of dar) → da"
       ],
       "idea_parts": [
-        "I want to invite → Quiero invitar",
-        "my mother (with personal 'a') → a mi madre"
+        "To me → Me",
+        "it → lo",
+        "he gives → da"
       ],
-      "target_answer": "Quiero invitar a mi madre",
-      "meaning": "I want to invite my mother",
+      "target_answer": "Me lo da",
+      "meaning": "He gives it to me",
       "word_bank": [
-        "mi",
-        "para",
-        "padre",
-        "Quiero",
-        "invitar",
-        "a",
-        "la",
-        "madre"
+        "te",
+        "Lo",
+        "doy",
+        "da",
+        "Me",
+        "lo"
       ],
-      "explanation": "Quiero invitar a mi madre.",
+      "explanation": "Me lo da — person before thing before verb.",
       "id": "es2301_e4"
     },
     {
       "type": "dictation",
       "prompt": "Listen and write the whole sentence.",
-      "spoken": "Conozco a tu hermano",
+      "spoken": "Te digo la verdad",
       "replays": 2,
-      "target_answer": "Conozco a tu hermano",
-      "meaning": "I know your brother",
+      "target_answer": "Te digo la verdad",
+      "meaning": "I tell you the truth",
       "cues": [
-        "I know (conocer): Conozco",
-        "personal 'a': a",
-        "your brother: tu hermano"
+        "To you: Te",
+        "I tell: digo",
+        "the truth: la verdad"
       ],
-      "explanation": "Conozco a tu hermano.",
-      "affirmation": "Personal 'a' with conocer locked in!",
+      "explanation": "Te digo la verdad — and if you replace la verdad with 'it', it becomes Te la digo!",
+      "affirmation": "Double pronoun order locked in!",
       "id": "es2301_e5"
     }
   ],
   "summary": {
-    "outcome": "Place the personal 'a' (and contraction al) before specific human direct objects.",
+    "outcome": "Order indirect (me, te, nos) before direct (lo, la) pronouns ahead of conjugated verbs.",
     "use_example": {
-      "german": "Visito Madrid y voy a visitar a mis padres.",
-      "english": "I visit Madrid and I am going to visit my parents."
+      "german": "Te digo la verdad — sí, te la digo ahora.",
+      "english": "I tell you the truth — yes, I tell it to you now."
     },
-    "takeaway": "If the direct object is a specific person, put 'a' in front of them.",
-    "curiosity_teaser": "Up next ([2302] Dative Pronoun Redundancy): see why Spanish loves doubling le/les with 'a + person'."
+    "takeaway": "Always keep the sequence: [no] + [indirect person] + [direct thing] + [verb].",
+    "curiosity_teaser": "Up next ([2302] The se lo Softening Rule): master se lo and se la with both conjugated verbs and infinitives."
   },
   "twist": {
-    "prompt": "Assemble: 'I see the gentleman (al señor)'",
-    "target_answer": "Veo al señor",
+    "prompt": "Assemble: 'I do not tell it to you'",
+    "target_answer": "No te lo digo",
     "word_bank": [
-      "por",
-      "Veo",
-      "al",
-      "el",
-      "la",
-      "señor"
+      "lo",
+      "No",
+      "te",
+      "no",
+      "Te",
+      "digo",
+      "la"
     ],
-    "explanation": "a + el señor contracts to al señor: Veo al señor."
+    "explanation": "No te lo digo."
   }
 };
 

@@ -163,7 +163,7 @@ const lesson: Lesson = {
       "english": "He is my best friend and this is the best restaurant in the city."
     },
     "takeaway": "After a superlative ('the best restaurant IN the city'), Spanish always uses de ('of the city').",
-    "curiosity_teaser": "Up next ([22] Double Object Pronouns): enter Phase 4 and stack indirect + direct pronouns (me lo, te lo, se lo)!"
+    "curiosity_teaser": "Up next ([22] Direct vs Indirect Objects: lo/la vs le): enter Phase 4 and master lo/la vs le/les, the Personal 'a', and saber vs conocer!"
   },
   "twist": {
     "prompt": "Assemble: 'He is my best friend'",

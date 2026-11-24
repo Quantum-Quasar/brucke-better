@@ -179,7 +179,7 @@ const lesson: Lesson = {
     "explanation": "Hoy es peor."
   },
   "foreshadow": {
-    "line": "Welcome to Phase 4 (The Deep Engine)! In Topic 22, we stack two object pronouns before the verb (me lo da, te lo digo) and discover why *le lo turns into se lo.",
+    "line": "Welcome to Phase 4 (The Deep Engine)! In Topic 22, we separate direct objects (lo/la) from indirect recipients (le/les) and unlock Spanish's famous 'personal a'.",
     "resolvedIn": 22
   },
   "payoff": {

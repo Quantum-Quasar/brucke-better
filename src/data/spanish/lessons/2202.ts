@@ -2,42 +2,42 @@ import type { Lesson } from "@/lib/types";
 
 const lesson: Lesson = {
   "id": 2202,
-  "slug": "se-lo-softening-rule",
-  "title": "The se lo Softening Rule",
-  "subtitle": "Why *le lo sounds like a tongue-twister and becomes se lo (Se lo doy 'I give it to him/her')",
+  "slug": "dative-pronoun-redundancy",
+  "title": "Dative Pronoun Redundancy",
+  "subtitle": "Why Spanish loves saying 'to whom' twice: Le doy el libro a María, A mí me gusta",
   "phase": 4,
   "shift_categories": [],
   "word_ids": [
-    "se",
     "le",
-    "lo",
-    "la",
+    "me",
+    "te",
+    "nos",
     "dar",
     "decir",
     "explicar",
-    "confirmar",
-    "voy",
-    "querer"
+    "hablar",
+    "a",
+    "amigo"
   ],
   "table_word_ids": [
-    "se",
     "le",
-    "lo",
-    "la",
+    "me",
+    "te",
+    "nos",
     "dar",
     "decir",
     "explicar",
-    "confirmar",
-    "voy",
-    "querer"
+    "hablar",
+    "a",
+    "amigo"
   ],
   "hook": {
-    "title": "Se Lo Works for Him, Her, Usted, AND Them!",
-    "content": "Because both singular le ('to him / to her / to usted') and plural les ('to them / to you all') turn into se before lo/la/los/las, Se lo doy can mean 'I give it to him', 'I give it to her', 'I give it to usted', or 'I give it to them'!"
+    "title": "Why Spanish Announces the Recipient Twice",
+    "content": "In English, you say 'I give the book to Carlos' (mentioning Carlos once). In Spanish, speakers almost ALWAYS include the indirect object pronoun le (or plural les) before the verb EVEN WHEN 'a Carlos' is right there in the sentence: **Le** doy el libro **a Carlos**, **Le** digo la verdad **a mi madre**, **Le** hablo **a mi amigo**! Think of le as the verb's built-in radar locking onto the recipient before the name arrives!"
   },
   "pattern": {
-    "title": "Hooking Double Pronouns onto an Infinitive: Voy a Dárselo",
-    "content": "Remember from Sprig 1203 that pronouns can either walk before the first verb OR hook onto the tail of the infinitive? That works with se lo too: Se lo voy a decir OR Voy a decírselo ('I am going to tell it to him/her')!"
+    "title": "Clarifying 'Le' with 'a él / a ella / a usted'",
+    "content": "Because le can mean 'to him', 'to her', or 'to usted', adding a él, a ella, or a usted makes it 100% clear who receives the action."
   },
   "exercises": [
     {
@@ -46,118 +46,138 @@ const lesson: Lesson = {
       "matching_pairs": [
         {
           "id": "p1",
-          "english": "I give it (m.) to him / her / usted / them",
-          "german": "se lo doy"
+          "english": "I give the book to María",
+          "german": "le doy el libro a María"
         },
         {
           "id": "p2",
-          "english": "I give it (f., e.g. la llave) to him / her",
-          "german": "se la doy"
+          "english": "I tell the truth to my friend",
+          "german": "le digo la verdad a mi amigo"
         },
         {
           "id": "p3",
-          "english": "I tell it to him / her / usted",
-          "german": "se lo digo"
+          "english": "he explains the problem to us",
+          "german": "nos explica el problema"
         },
         {
           "id": "p4",
-          "english": "he explains it to them",
-          "german": "se lo explica"
+          "english": "I speak to usted",
+          "german": "le hablo a usted"
         },
         {
           "id": "p5",
-          "english": "I am going to tell it to him/her (left-walk)",
-          "german": "se lo voy a decir"
+          "english": "to them / to you all (plural dative)",
+          "german": "les"
         }
       ],
-      "target_answer": "se lo doy, se la doy, se lo digo, se lo explica, se lo voy a decir",
-      "meaning": "I give it (m.) to him / her / usted / them, I give it (f., e.g. la llave) to him / her, I tell it to him / her / usted, he explains it to them, I am going to tell it to him/her (left-walk)",
-      "explanation": "le/les + lo/la → se lo / se la.",
+      "target_answer": "le doy el libro a María, le digo la verdad a mi amigo, nos explica el problema, le hablo a usted, les",
+      "meaning": "I give the book to María, I tell the truth to my friend, he explains the problem to us, I speak to usted, to them / to you all (plural dative)",
+      "explanation": "le (singular) and les (plural) preview the recipient before the verb.",
       "id": "es2202_e1"
     },
     {
-      "type": "morpheme_tiles",
-      "prompt": "Transform 'le + lo + digo' into real Spanish by applying the 'se lo' softening rule:",
-      "tile_options": [
-        "Se",
-        "digo",
-        "lo",
-        "Le"
+      "type": "shift_select",
+      "prompt": "How does a native speaker say 'I tell the truth to my father'?",
+      "options": [
+        "Lo digo la verdad a mi padre",
+        "Le digo la verdad a mi padre",
+        "Digo la verdad para mi padre"
       ],
-      "target_answer": "Selodigo",
-      "meaning": "Se lo digo (I tell it to him/her)",
-      "explanation": "le changes to se before lo: Se lo digo.",
+      "target_answer": "Le digo la verdad a mi padre",
+      "meaning": "I tell the truth to my father",
+      "explanation": "Le previews 'a mi padre' before the verb digo.",
       "id": "es2202_e2"
     },
     {
-      "type": "shift_select",
-      "prompt": "You have 'la confirmación' (feminine) and want to say 'I am going to give it to him'. Which is correct?",
-      "options": [
-        "Se la voy a dar",
-        "*Le la voy a dar",
-        "Se lo voy a dar"
+      "type": "syntax_builder",
+      "prompt": "Assemble: 'I give the key to my mother'",
+      "target_answer": "Le doy la llave a mi madre",
+      "meaning": "I give the key to my mother",
+      "word_bank": [
+        "madre",
+        "llave",
+        "para",
+        "doy",
+        "Lo",
+        "mi",
+        "la",
+        "Le",
+        "La",
+        "a"
       ],
-      "target_answer": "Se la voy a dar",
-      "meaning": "I am going to give it (the confirmation) to him",
-      "explanation": "le becomes se, and la confirmación becomes feminine la: Se la voy a dar.",
+      "explanation": "Le (previewing the recipient) + doy + la llave + a mi madre.",
       "id": "es2202_e3"
     },
     {
-      "type": "syntax_builder",
-      "prompt": "Assemble: 'I explain it to him'",
-      "target_answer": "Se lo explico",
-      "meaning": "I explain it to him / her",
-      "word_bank": [
-        "Se",
-        "explico",
-        "me",
-        "Le",
-        "lo",
-        "la"
+      "type": "transcribe",
+      "prompt": "Tell me:",
+      "idea": "say that you explain the situation to your friend",
+      "cues": [
+        "To him/her (preview) → Le",
+        "I explain the situation → explico la situación",
+        "to my friend → a mi amigo"
       ],
-      "explanation": "Se + lo + explico.",
+      "idea_parts": [
+        "I explain to him → Le explico",
+        "the situation → la situación",
+        "to my friend → a mi amigo"
+      ],
+      "target_answer": "Le explico la situación a mi amigo",
+      "meaning": "I explain the situation to my friend",
+      "word_bank": [
+        "Lo",
+        "por",
+        "explico",
+        "situación",
+        "a",
+        "para",
+        "mi",
+        "la",
+        "Le",
+        "amigo"
+      ],
+      "explanation": "Le explico la situación a mi amigo.",
       "id": "es2202_e4"
     },
     {
       "type": "dictation",
       "prompt": "Listen and write the whole sentence.",
-      "spoken": "Se lo voy a decir hoy",
+      "spoken": "Le digo la verdad a mi amigo",
       "replays": 2,
-      "target_answer": "Se lo voy a decir hoy",
-      "meaning": "I am going to tell it to him/her today",
+      "target_answer": "Le digo la verdad a mi amigo",
+      "meaning": "I tell the truth to my friend",
       "cues": [
-        "To him/her + it: Se lo",
-        "I am going to tell: voy a decir",
-        "today: hoy"
+        "To him + I tell: Le digo",
+        "the truth: la verdad",
+        "to my friend: a mi amigo"
       ],
-      "explanation": "Se lo voy a decir hoy.",
-      "affirmation": "Se lo in the near future mastered!",
+      "explanation": "Le digo la verdad a mi amigo.",
+      "affirmation": "Redundant dative le mastered!",
       "id": "es2202_e5"
     }
   ],
   "summary": {
-    "outcome": "Transform le/les into se before lo/la/los/las in present and near-future sentences.",
+    "outcome": "Use redundant le/les before the verb whenever a dative recipient ('a + person') is present.",
     "use_example": {
-      "german": "Tengo la confirmación y se la voy a dar hoy.",
-      "english": "I have the confirmation and I am going to give it to him/her today."
+      "german": "Le doy la llave a mi madre y le explico la situación a mi amigo.",
+      "english": "I give the key to my mother and I explain the situation to my friend."
     },
-    "takeaway": "Whenever le or les meets lo, la, los, or las, it transforms into se.",
-    "curiosity_teaser": "Up next ([23] Direct vs Indirect Objects: lo/la vs le): master the Personal 'a', redundant le, and saber vs conocer!"
+    "takeaway": "In Spanish, 'a [person]' (recipient) and pre-verbal le/les work as a team rather than an either/or choice.",
+    "curiosity_teaser": "Up next ([2203] Saber vs Conocer): master Spanish's two verbs for 'to know' — facts/skills (sé) vs people/places (conozco)!"
   },
   "twist": {
-    "prompt": "Assemble: 'I am going to explain it to her'",
-    "target_answer": "Se lo voy a explicar",
+    "prompt": "Assemble: 'He gives me the book'",
+    "target_answer": "Me da el libro",
     "word_bank": [
-      "de",
-      "explicar",
-      "voy",
-      "Se",
-      "a",
+      "doy",
+      "libro",
+      "Me",
+      "da",
       "Le",
-      "lo",
-      "me"
+      "el",
+      "la"
     ],
-    "explanation": "Se lo voy a explicar."
+    "explanation": "Me da el libro ('He gives me the book')."
   }
 };
 

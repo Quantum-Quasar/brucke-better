@@ -244,13 +244,13 @@ export const PANORAMA_LINK_SPECS: Record<PanoramaLanguageId, PanoramaLinkSpec[]>
     },
     {
       kind: "lesson",
-      lessonTitle: "Double Object Pronouns",
-      desc: "pronouns stacking before the verb, and le lo becoming se lo.",
+      lessonTitle: "Direct vs Indirect Objects: lo/la vs le",
+      desc: "which slot takes lo/la and which takes le/les.",
     },
     {
       kind: "lesson",
-      lessonTitle: "Direct vs Indirect Objects: lo/la vs le",
-      desc: "which slot takes lo/la and which takes le/les.",
+      lessonTitle: "Double Object Pronouns",
+      desc: "pronouns stacking before the verb, and le lo becoming se lo.",
     },
     {
       kind: "page",

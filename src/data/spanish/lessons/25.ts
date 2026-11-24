@@ -157,7 +157,7 @@ const lesson: Lesson = {
   },
   "payoff": {
     "ofLesson": 23,
-    "text": "Remember Dative Pronoun Redundancy from Sprig 2302? That's why Spanish says 'A María le gusta el café' ('To María to-her pleases the coffee')!"
+    "text": "Remember Dative Pronoun Redundancy from Sprig 2202? That's why Spanish says 'A María le gusta el café' ('To María to-her pleases the coffee')!"
   }
 };
 
