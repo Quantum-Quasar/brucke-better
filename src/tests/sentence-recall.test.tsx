@@ -36,10 +36,14 @@ describe("Final lesson sentence recall", () => {
     expect(html).toMatch(/hidden="" data-testid="sentence-word-bank"><\/div>/);
     if ((exercise.vocab_hints?.length ?? 0) > 0) {
       expect(html).toContain("Show vocabulary clues");
-      for (const hint of exercise.vocab_hints ?? []) expect(html).not.toContain(hint.translation);
+      expect(html).not.toContain("clue:");
+      for (const hint of exercise.vocab_hints ?? []) expect(html).not.toContain(`>${hint.word}<`);
     }
     const retryHtml = renderToStaticMarkup(<TranscribeExercise exercise={exercise} recallFirst isRetry onSuccess={() => {}} onError={() => {}} />);
-    for (const hint of exercise.vocab_hints ?? []) expect(retryHtml).toContain(hint.translation);
+    if ((exercise.vocab_hints?.length ?? 0) > 0) {
+      expect(retryHtml).toContain("clue:");
+      for (const hint of exercise.vocab_hints ?? []) expect(retryHtml).toContain(hint.translation);
+    }
   });
 
   it("keeps the word bank available on retries and on earlier scaffolded tasks", () => {

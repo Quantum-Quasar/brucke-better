@@ -162,12 +162,12 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
               <button
                 type="button"
                 onClick={() => setShowClues(true)}
-                aria-expanded={showClues || showWords || status === "wrong"}
+                aria-expanded={showClues || showWords || status === "incorrect" || Boolean(failedAttemptText)}
                 aria-controls={vocabCluesId}
                 className="min-h-11 w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg border border-[var(--sub-color)]/40 text-sm font-bold text-[var(--text-color)] hover:border-[var(--main-color)]/60 hover:text-[var(--main-color)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--main-color)] cursor-pointer"
               >
                 <Sparkles aria-hidden="true" className="w-4 h-4 text-[var(--main-color)]" />
-                {showClues || showWords || status === "wrong" ? "Vocabulary clues shown" : "Show vocabulary clues"}
+                {showClues || showWords || status === "incorrect" || Boolean(failedAttemptText) ? "Vocabulary clues shown" : "Show vocabulary clues"}
               </button>
             )}
             <button
@@ -214,12 +214,12 @@ export const TranscribeExercise: React.FC<TranscribeExerciseProps> = ({
       )}
 
       {/* Pre-exercise Vocabulary Hints — hidden on first recall attempt until requested or missed */}
-      {hasVocabHints && (!recallFirst || showClues || showWords || status === "wrong") && (
+      {hasVocabHints && (!recallFirst || showClues || showWords || status === "incorrect" || Boolean(failedAttemptText)) && (
         <div id={vocabCluesId} className="flex flex-wrap items-center gap-2 p-3 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 text-xs">
           <span className="text-[var(--main-color)] font-bold uppercase tracking-wider flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5" /> clue:
           </span>
-          {exercise.vocab_hints.map((hint) => (
+          {(exercise.vocab_hints ?? []).map((hint) => (
             <span
               key={hint.word}
               className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--sub-alt-color)] border border-[var(--sub-color)]/20 text-[var(--text-color)]"
