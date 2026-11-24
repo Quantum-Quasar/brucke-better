@@ -121,6 +121,18 @@ const lesson: Lesson = {
       ],
       "target_answer": "ich kann, ich muss, ich will, haben, Wir müssen warnen, Wir können hungern",
       "meaning": "I can; I must; I want; to have; We must warn; We can go hungry",
+      "vocab_hints": [
+        {
+          "word": "warnen",
+          "translation": "to warn",
+          "note": "warn + -en (introduced in optional sprig 103)"
+        },
+        {
+          "word": "hungern",
+          "translation": "to go hungry / starve",
+          "note": "hunger + -n (introduced in optional sprig 103)"
+        }
+      ],
       "explanation": "Modal auxiliaries anchor German sentence frames and simplify communication."
     },
     {
