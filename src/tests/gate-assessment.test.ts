@@ -145,4 +145,30 @@ describe("gate assessment", () => {
     )!;
     expect(scoreGateAnswers([sharpS], ["gross"])).toEqual([true]);
   });
+
+  it("passes active languageId and enables German V2/register/contractions only for German", () => {
+    const deQuestion = selectGateQuestion(
+      "Word Order",
+      10,
+      [exercise({ id: "g_de", type: "derive", prompt: "German for 'I drink coffee':", target_answer: "Ich trinke Kaffee" })],
+      { preferProduction: true },
+    )!;
+    expect(scoreGateAnswers([deQuestion], ["Kaffee trinke ich"], "de")).toEqual([true]);
+
+    const deRegQuestion = selectGateQuestion(
+      "Register",
+      11,
+      [exercise({ id: "g_reg", type: "derive", prompt: "German for 'Are you ready?':", target_answer: "Bist du bereit" })],
+      { preferProduction: true },
+    )!;
+    expect(scoreGateAnswers([deRegQuestion], ["Sind Sie bereit"], "de")).toEqual([true]);
+
+    const frQuestion = selectGateQuestion(
+      "French Cognates",
+      1,
+      [exercise({ id: "g_fr", type: "derive", prompt: "French for 'house':", target_answer: "maison" })],
+      { preferProduction: true },
+    )!;
+    expect(scoreGateAnswers([frQuestion], ["maison"], "fr")).toEqual([true]);
+  });
 });

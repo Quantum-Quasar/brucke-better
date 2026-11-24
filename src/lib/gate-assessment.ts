@@ -176,21 +176,26 @@ function rotate(options: string[], seed: number): string[] {
   return [...options.slice(offset), ...options.slice(0, offset)];
 }
 
-export function scoreGateAnswers(questions: GateQuestion[], answers: string[]): boolean[] {
+export function scoreGateAnswers(
+  questions: GateQuestion[],
+  answers: string[],
+  languageId: string = "de",
+): boolean[] {
   return questions.map((question, index) => {
     const given = (answers[index] ?? "").trim();
     if (question.mode === "typed") {
       if (!given) return false;
       const targets = [question.answer, ...(question.acceptedAnswers ?? [])];
+      const activeLang = question.sourceType === "reverse_cognate" ? "en" : languageId;
       const graded = gradeLessonAnswer(
         [given],
         targets,
         {
           umlautTolerance: true,
           capitalizationTolerance: true,
-          languageId: question.sourceType === "reverse_cognate" ? "en" : "de",
-          allowGermanV2: false,
-          allowGermanRegister: false,
+          languageId: activeLang,
+          allowGermanV2: activeLang === "de",
+          allowGermanRegister: activeLang === "de",
         },
         false,
       );

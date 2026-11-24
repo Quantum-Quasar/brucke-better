@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   expandGermanTargets,
+  generateGermanContractionAlternatives,
   generateGermanRegisterAlternatives,
   generateGermanV2Alternatives,
   isUnspecifiedYouPrompt,
@@ -344,5 +345,87 @@ describe("German alternatives safety & negative cases", () => {
     const caseOnGenerated = gradeExerciseAttempt(item, ["sie reisen morgen nach wien"], deOptions);
     expect(caseOnGenerated.result.accuracy).toBe("almost");
     expect(caseOnGenerated.result.warningNote ?? "").not.toContain("Sie reisen morgen nach Wien");
+  });
+});
+
+describe("German V2 object fronting equivalence", () => {
+  it.each([
+    ["Ich lese das Buch", "Das Buch lese ich"],
+    ["Das Buch lese ich", "Ich lese das Buch"],
+    ["Ich trinke Kaffee", "Kaffee trinke ich"],
+    ["Kaffee trinke ich", "Ich trinke Kaffee"],
+    ["Ich suche ihn", "Ihn suche ich"],
+    ["Ihn suche ich", "Ich suche ihn"],
+    ["Ich kaufe das neue Buch", "Das neue Buch kaufe ich"],
+    ["Das neue Buch kaufe ich", "Ich kaufe das neue Buch"],
+    ["Ich habe einen Hund", "Einen Hund habe ich"],
+    ["Einen Hund habe ich", "Ich habe einen Hund"],
+    ["Er sieht mich", "Mich sieht er"],
+    ["Mich sieht er", "Er sieht mich"],
+    ["Ich kaufe Brot und Käse", "Brot und Käse kaufe ich"],
+    ["Brot und Käse kaufe ich", "Ich kaufe Brot und Käse"],
+  ])("accepts valid V2 object fronting: %s <-> %s", (target, alternate) => {
+    expect(generateGermanV2Alternatives(target)).toContain(alternate);
+    const graded = gradeLessonAnswer([alternate], [target], deOptions);
+    expect(graded.result.accuracy).toBe("exact");
+  });
+
+  it.each([
+    ["Ich lese das Buch", "Das Buch ich lese"],
+    ["Ich trinke Kaffee", "Kaffee ich trinke"],
+    ["Ich suche ihn", "Ihn ich suche"],
+    ["Ich freue mich", "Mich freue ich"],
+    ["Ich bin Lehrer", "Lehrer bin ich"],
+  ])("rejects invalid V3 or reflexive/copula fronting: %s ≠ %s", (target, invalid) => {
+    expect(generateGermanV2Alternatives(target)).not.toContain(invalid);
+    const graded = gradeLessonAnswer([invalid], [target], deOptions);
+    expect(graded.result.accuracy).toBe("incorrect");
+  });
+});
+
+describe("German contraction equivalence", () => {
+  it.each([
+    ["Ich bin im Haus", "Ich bin in dem Haus"],
+    ["Ich bin in dem Haus", "Ich bin im Haus"],
+    ["Ich trinke Kaffee am Morgen", "Ich trinke Kaffee an dem Morgen"],
+    ["Ich trinke Kaffee an dem Morgen", "Ich trinke Kaffee am Morgen"],
+    ["Ich gehe zum Bahnhof", "Ich gehe zu dem Bahnhof"],
+    ["Ich gehe zu dem Bahnhof", "Ich gehe zum Bahnhof"],
+    ["Sie fährt zur Arbeit", "Sie fährt zu der Arbeit"],
+    ["Sie fährt zu der Arbeit", "Sie fährt zur Arbeit"],
+    ["Wir gehen ins Kino", "Wir gehen in das Kino"],
+    ["Wir gehen in das Kino", "Wir gehen ins Kino"],
+    ["Ich fahre ans Meer", "Ich fahre an das Meer"],
+    ["Ich fahre an das Meer", "Ich fahre ans Meer"],
+    ["Er kommt vom Arzt", "Er kommt von dem Arzt"],
+    ["Er kommt von dem Arzt", "Er kommt vom Arzt"],
+    ["Ich bin beim Bäcker", "Ich bin bei dem Bäcker"],
+    ["Ich bin bei dem Bäcker", "Ich bin beim Bäcker"],
+    ["Geht's dir gut?", "Geht es dir gut?"],
+    ["Geht es dir gut?", "Geht's dir gut?"],
+    ["Wie geht's?", "Wie geht es?"],
+    ["Wie geht es?", "Wie geht's?"],
+  ])("accepts contraction equivalence: %s <-> %s", (target, alternate) => {
+    expect(generateGermanContractionAlternatives(target)).toContain(alternate);
+    const graded = gradeLessonAnswer([alternate], [target], deOptions);
+    expect(graded.result.accuracy).toBe("exact");
+  });
+
+  it("handles multiple contractions in the same sentence and sentence-initial capitalization", () => {
+    const alts = generateGermanContractionAlternatives("Am Morgen gehe ich ins Kino");
+    expect(alts).toContain("An dem Morgen gehe ich ins Kino");
+    expect(alts).toContain("Am Morgen gehe ich in das Kino");
+    expect(alts).toContain("An dem Morgen gehe ich in das Kino");
+    expect(gradeLessonAnswer(["An dem Morgen gehe ich in das Kino"], ["Am Morgen gehe ich ins Kino"], deOptions).result.accuracy).toBe("exact");
+  });
+
+  it("does not match partial words or contract relative pronouns", () => {
+    expect(generateGermanContractionAlternatives("Ich bin immer da")).toEqual([]);
+    expect(generateGermanContractionAlternatives("Das Haus, in dem ich wohne")).toEqual([]);
+  });
+
+  it("composes contractions with register equivalence", () => {
+    const l2902 = lesson2902.exercises.find((e) => e.id === "l2902_e5")!;
+    expect(gradeExerciseAttempt(l2902, ["Wie geht es Danke gut und Ihnen"], deOptions).result.accuracy).toBe("exact");
   });
 });

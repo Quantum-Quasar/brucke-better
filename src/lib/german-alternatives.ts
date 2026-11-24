@@ -121,6 +121,82 @@ const NOMINATIVE_DETERMINERS = new Set([
   "keine",
 ]);
 
+const OBJECT_DETERMINERS = new Set([
+  ...NOMINATIVE_DETERMINERS,
+  "den",
+  "einen",
+  "meinen",
+  "deinen",
+  "seinen",
+  "ihren",
+  "unseren",
+  "euren",
+  "diesen",
+  "jeden",
+  "keinen",
+  "dem",
+  "einem",
+  "meinem",
+  "deinem",
+  "seinem",
+  "ihrem",
+  "unserem",
+  "eurem",
+  "diesem",
+  "jedem",
+  "keinem",
+  "einer",
+  "meiner",
+  "deiner",
+  "seiner",
+  "ihrer",
+  "unserer",
+  "eurer",
+  "keiner",
+]);
+
+const OBJECT_PRONOUNS = new Set([
+  "mich",
+  "dich",
+  "ihn",
+  "es",
+  "uns",
+  "euch",
+  "mir",
+  "dir",
+  "ihm",
+  "ihnen",
+  "das",
+]);
+
+const COPULA_VERBS = new Set([
+  "bin",
+  "bist",
+  "ist",
+  "sind",
+  "seid",
+  "war",
+  "warst",
+  "wart",
+  "waren",
+  "wäre",
+  "wärst",
+  "wärt",
+  "wären",
+  "werde",
+  "wirst",
+  "wird",
+  "werden",
+  "werdet",
+  "bleibe",
+  "bleibst",
+  "bleibt",
+  "bleiben",
+  "heiße",
+  "heißt",
+  "heißen",
+]);
+
 const MIDDLE_SKIPPABLE_BEFORE_ADVERB = new Set([
   "mich",
   "dich",
@@ -243,7 +319,13 @@ function looksLikePluralVerb(verbLower: string): boolean {
 function looksLikeFiniteVerb(word: string): boolean {
   if (!isLowercaseWord(word)) return false;
   const lower = word.toLowerCase();
-  if (NON_VERB_WORDS.has(lower) || MOVABLE_ADVERBS.has(lower) || NOMINATIVE_DETERMINERS.has(lower)) {
+  if (
+    NON_VERB_WORDS.has(lower) ||
+    MOVABLE_ADVERBS.has(lower) ||
+    NOMINATIVE_DETERMINERS.has(lower) ||
+    SUBJECT_PRONOUNS.has(lower) ||
+    OBJECT_PRONOUNS.has(lower)
+  ) {
     return false;
   }
   return true;
@@ -354,6 +436,91 @@ function capitalizeAdverbTokens(advTokens: string[]): string[] {
   return [capitalize(advTokens[0]), ...advTokens.slice(1)];
 }
 
+function isCoreferentReflexive(subjTokens: string[], objTokens: string[]): boolean {
+  if (subjTokens.length !== 1 || objTokens.length !== 1) return false;
+  const subj = subjTokens[0].toLowerCase();
+  const obj = objTokens[0].toLowerCase();
+  return (
+    (subj === "ich" && (obj === "mich" || obj === "mir")) ||
+    (subj === "du" && (obj === "dich" || obj === "dir")) ||
+    (subj === "wir" && obj === "uns") ||
+    (subj === "ihr" && obj === "euch") ||
+    obj === "sich"
+  );
+}
+
+/**
+ * Match a direct object NP or object pronoun starting at `start` in `tokens`.
+ * Returns the exclusive end index, or -1 if no direct object starts at `start`.
+ */
+function matchObjectEnd(tokens: string[], start: number, atSentenceStart: boolean): number {
+  const matchSingleObj = (idx: number, isStart: boolean): number => {
+    const first = tokens[idx];
+    if (!first) return -1;
+    const firstLower = first.toLowerCase();
+
+    // 1. Determiner + [optional lowercase adjective] + capitalized noun
+    if (OBJECT_DETERMINERS.has(firstLower)) {
+      const next = tokens[idx + 1];
+      if (next && isCapitalized(next)) return idx + 2;
+      const third = tokens[idx + 2];
+      if (next && isLowercaseWord(next) && third && isCapitalized(third)) return idx + 3;
+    }
+
+    // 2. Object pronoun (e.g., "ihn", "mich", "das")
+    if (OBJECT_PRONOUNS.has(firstLower)) {
+      return idx + 1;
+    }
+
+    // 3. Bare capitalized noun (mass/plural noun, e.g., "Kaffee", "Wasser", "Deutsch")
+    if (
+      isCapitalized(first) &&
+      !SUBJECT_PRONOUNS.has(firstLower) &&
+      !MOVABLE_ADVERBS.has(firstLower) &&
+      !NON_VERB_WORDS.has(firstLower) &&
+      !SUBORDINATORS.has(firstLower) &&
+      !DISCOURSE_OPENERS.has(firstLower) &&
+      !OBJECT_DETERMINERS.has(firstLower) &&
+      !MODAL_OR_AUX_QUESTION_VERBS.has(firstLower)
+    ) {
+      if (!isStart || (tokens[idx + 1] && (looksLikeFiniteVerb(tokens[idx + 1]) || tokens[idx + 1].toLowerCase() === "und"))) {
+        return idx + 1;
+      }
+    }
+
+    return -1;
+  };
+
+  let end = matchSingleObj(start, atSentenceStart);
+  if (end === -1) return -1;
+
+  // Coordinated object NP: e.g. "Brot und Käse", "eine Hose und eine Jacke"
+  if (tokens[end]?.toLowerCase() === "und") {
+    const secondEnd = matchSingleObj(end + 1, false);
+    if (secondEnd !== -1) {
+      end = secondEnd;
+    }
+  }
+  return end;
+}
+
+function lowerObjectTokens(objTokens: string[]): string[] {
+  if (!objTokens.length) return objTokens;
+  const first = objTokens[0];
+  if (first === "Ihnen" || first === "Sie") return objTokens;
+  const firstLower = first.toLowerCase();
+  if (OBJECT_DETERMINERS.has(firstLower) || OBJECT_PRONOUNS.has(firstLower)) {
+    return [decapitalize(first), ...objTokens.slice(1)];
+  }
+  // Bare German noun stays capitalized mid-sentence (e.g. "Kaffee")
+  return objTokens;
+}
+
+function capitalizeObjectTokens(objTokens: string[]): string[] {
+  if (!objTokens.length) return objTokens;
+  return [capitalize(objTokens[0]), ...objTokens.slice(1)];
+}
+
 /**
  * Generate valid German V2 word-order equivalents for a declarative main clause
  * containing a movable time/frequency/place adverb.
@@ -454,6 +621,41 @@ export function generateGermanV2Alternatives(sentence: string): string[] {
           const tail = tokens.slice(advEnd);
           for (const loweredSubj of lowerSubjectTokens(subjTokens, verb.toLowerCase())) {
             emit([...advTokens, verb, ...loweredSubj, ...middleBefore, ...tail]);
+          }
+        }
+
+        // Direction C: Canonical S - V - Obj - ... -> Obj - V - S - ...
+        if (!COPULA_VERBS.has(verb.toLowerCase())) {
+          const objEnd = matchObjectEnd(tokens, afterVerbStart, false);
+          if (objEnd !== -1) {
+            const rawObjTokens = tokens.slice(afterVerbStart, objEnd);
+            if (!isCoreferentReflexive(subjTokens, rawObjTokens)) {
+              const objTokens = prefix ? lowerObjectTokens(rawObjTokens) : capitalizeObjectTokens(rawObjTokens);
+              const tail = tokens.slice(objEnd);
+              for (const loweredSubj of lowerSubjectTokens(subjTokens, verb.toLowerCase())) {
+                emit([...objTokens, verb, ...loweredSubj, ...tail]);
+              }
+            }
+          }
+        }
+      }
+    }
+
+    // Direction D: Fronted Obj - V - S - ... -> S - V - Obj - ...
+    const frontedObjEnd = matchObjectEnd(tokens, 0, true);
+    if (frontedObjEnd !== -1 && frontedObjEnd < tokens.length - 1) {
+      const verb = tokens[frontedObjEnd];
+      if (looksLikeFiniteVerb(verb) && !COPULA_VERBS.has(verb.toLowerCase())) {
+        const subjStart = frontedObjEnd + 1;
+        const subjEnd = matchSubjectEnd(tokens, subjStart);
+        if (subjEnd !== -1) {
+          const rawObjTokens = tokens.slice(0, frontedObjEnd);
+          const rawSubjTokens = tokens.slice(subjStart, subjEnd);
+          if (!isCoreferentReflexive(rawSubjTokens, rawObjTokens)) {
+            const objTokens = lowerObjectTokens(rawObjTokens);
+            const subjTokens = prefix ? rawSubjTokens : capitalizeSubjectTokens(rawSubjTokens);
+            const tail = tokens.slice(subjEnd);
+            emit([...subjTokens, verb, ...objTokens, ...tail]);
           }
         }
       }
@@ -1062,13 +1264,115 @@ export function generateGermanRegisterAlternatives(sentence: string): string[] {
   return results;
 }
 
+// ---------------------------------------------------------------------------
+// Preposition + article & colloquial contraction equivalences
+// ---------------------------------------------------------------------------
+
+const GERMAN_CONTRACTION_PAIRS: ReadonlyArray<readonly [contracted: string, expanded: string]> = [
+  ["im", "in dem"],
+  ["am", "an dem"],
+  ["zum", "zu dem"],
+  ["zur", "zu der"],
+  ["ins", "in das"],
+  ["ans", "an das"],
+  ["vom", "von dem"],
+  ["beim", "bei dem"],
+  ["geht's", "geht es"],
+];
+
+const RELATIVE_PRONOUN_FOLLOWERS = new Set([
+  "ich",
+  "du",
+  "er",
+  "sie",
+  "es",
+  "wir",
+  "ihr",
+  "man",
+]);
+
+function applyReplacementCase(matched: string, replacement: string): string {
+  return isCapitalized(matched) ? capitalize(replacement) : replacement;
+}
+
+function buildBoundaryRegex(phrase: string): RegExp {
+  const escaped = phrase
+    .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+    .replace(/'/g, "['’]")
+    .replace(/\s+/g, "\\s+");
+  return new RegExp(`(?<![\\p{L}\\p{N}_])${escaped}(?![\\p{L}\\p{N}_])`, "gui");
+}
+
+const CONTRACTION_RULES: Array<{
+  regex: RegExp;
+  replacement: string;
+  isContractionDirection: boolean;
+}> = [];
+for (const [contracted, expanded] of GERMAN_CONTRACTION_PAIRS) {
+  CONTRACTION_RULES.push({
+    regex: buildBoundaryRegex(contracted),
+    replacement: expanded,
+    isContractionDirection: false,
+  });
+  CONTRACTION_RULES.push({
+    regex: buildBoundaryRegex(expanded),
+    replacement: contracted,
+    isContractionDirection: true,
+  });
+}
+
 /**
- * Expand a list of German target answers with automatic V2 time-adverb equivalents
- * and (when enabled for unspecified-"you" prompts) `du`/`ihr`/`Sie` equivalents.
+ * Generate valid German contraction / uncontracted equivalents
+ * (e.g., `im` <-> `in dem`, `am` <-> `an dem`, `zum` <-> `zu dem`, `zur` <-> `zu der`,
+ * `ins` <-> `in das`, `ans` <-> `an das`, `vom` <-> `von dem`, `beim` <-> `bei dem`,
+ * `geht's` <-> `geht es`).
+ */
+export function generateGermanContractionAlternatives(sentence: string): string[] {
+  const trimmed = sentence.trim();
+  if (!trimmed) return [];
+
+  const MAX_VARIANTS = 16;
+  const seen = new Set<string>([trimmed]);
+  const queue: string[] = [trimmed];
+  const results: string[] = [];
+
+  while (queue.length > 0 && results.length < MAX_VARIANTS) {
+    const current = queue.shift()!;
+    for (const rule of CONTRACTION_RULES) {
+      rule.regex.lastIndex = 0;
+      let match: RegExpExecArray | null;
+      while ((match = rule.regex.exec(current)) !== null) {
+        const start = match.index;
+        const end = start + match[0].length;
+        if (rule.isContractionDirection && rule.replacement !== "geht's") {
+          // Guard against contracting relative pronouns like "das Haus, in dem ich wohne"
+          const after = current.slice(end).trimStart();
+          const nextWord = after.match(/^[\p{L}]+/u)?.[0]?.toLowerCase();
+          if (nextWord && RELATIVE_PRONOUN_FOLLOWERS.has(nextWord)) continue;
+        }
+        const rep = applyReplacementCase(match[0], rule.replacement);
+        const candidate = `${current.slice(0, start)}${rep}${current.slice(end)}`;
+        if (!seen.has(candidate)) {
+          seen.add(candidate);
+          results.push(candidate);
+          queue.push(candidate);
+          if (results.length >= MAX_VARIANTS) break;
+        }
+      }
+      if (results.length >= MAX_VARIANTS) break;
+    }
+  }
+
+  return results;
+}
+
+/**
+ * Expand a list of German target answers with automatic V2 (adverb & object fronting) equivalents,
+ * contraction equivalents, and (when enabled for unspecified-"you" prompts) `du`/`ihr`/`Sie` equivalents.
  */
 export function expandGermanTargets(
   targets: readonly string[],
-  options: { allowV2?: boolean; allowRegister?: boolean } = {},
+  options: { allowV2?: boolean; allowRegister?: boolean; allowContractions?: boolean } = {},
 ): string[] {
   const seen = new Set<string>();
   const out: string[] = [];
@@ -1092,6 +1396,14 @@ export function expandGermanTargets(
   if (options.allowV2) {
     for (const target of [...out]) {
       for (const alt of generateGermanV2Alternatives(target)) {
+        add(alt);
+      }
+    }
+  }
+
+  if (options.allowContractions ?? true) {
+    for (const target of [...out]) {
+      for (const alt of generateGermanContractionAlternatives(target)) {
         add(alt);
       }
     }

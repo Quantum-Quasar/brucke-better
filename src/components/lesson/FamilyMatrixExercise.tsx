@@ -80,6 +80,8 @@ export const FamilyMatrixExercise: React.FC<FamilyMatrixExerciseProps> = ({
     const evalOptions = {
       umlautTolerance: Boolean(settings.lazyMode ?? tolerance.umlautTolerance),
       capitalizationTolerance: Boolean(settings.capitalizationTolerance ?? tolerance.capitalizationTolerance),
+      languageId: activeLanguageId,
+      allowGermanRegister: activeLanguageId === "de",
     };
     const { result: evaluation } = gradeLessonAnswer([answer], [target], evalOptions, isRetry);
 

@@ -248,7 +248,7 @@ export const GateDrawer: React.FC<GateDrawerProps> = ({
   const submitAssessment = (event: React.FormEvent) => {
     event.preventDefault();
     if (!eligible || view.passed || !questions.length || answers.some((answer) => !answer.trim())) return;
-    const scored = scoreGateAnswers(questions, answers);
+    const scored = scoreGateAnswers(questions, answers, languageId);
     setResult(scored);
     if (hasPassedGateAssessment(scored)) onPass();
   };
