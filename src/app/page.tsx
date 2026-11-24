@@ -3,7 +3,13 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, PlayCircle, Clock } from "lucide-react";
-import { DailyInsightCard } from "@/components/common/DailyInsightCard";
+import dynamic from "next/dynamic";
+import { HomeSkeleton } from "@/components/common/HomeSkeleton";
+
+const DailyInsightCard = dynamic(
+  () => import("@/components/common/DailyInsightCard").then((m) => m.DailyInsightCard),
+  { ssr: false }
+);
 import { WeeklyPracticeBadge } from "@/components/common/WeeklyPracticeBadge";
 import { TrailMap } from "@/components/trail/TrailMap";
 import { useAppStore } from "@/lib/store";
@@ -103,12 +109,7 @@ export default function HomePage() {
               </button>
             </div>
           ) : (
-            <div
-              role="status"
-              className="mt-6 p-8 text-center font-mono text-xs text-[var(--sub-color)]"
-            >
-              loading course…
-            </div>
+            <HomeSkeleton />
           )
         ) : (
         <>
