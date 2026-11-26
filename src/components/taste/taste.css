@@ -1,0 +1,312 @@
+/* ============================================================================
+   Brücke — Taste UI Design System (Taste Skill v2.5.1)
+   Scoped strictly under .taste-ui so it never leaks into default or /design.
+   Overrides Brücke's native CSS tokens (--bg-color, --main-color, etc.) so
+   reused interactive engines inherit the Taste palette & typography seamlessly.
+   ============================================================================ */
+
+.taste-ui {
+  /* Light mode: Warm Paper (90-95% neutral + single terracotta-amber accent) */
+  --taste-bg: #f8f7f4;
+  --taste-surface: #ffffff;
+  --taste-surface-2: #f1efea;
+  --taste-ink: #141416;
+  --taste-muted: #595961;
+  --taste-accent: #c2571a;
+  --taste-accent-hover: #a94a14;
+  --taste-accent-ink: #ffffff;
+  --taste-accent-soft: rgba(194, 87, 26, 0.1);
+  --taste-border: rgba(20, 20, 22, 0.11);
+  --taste-border-strong: rgba(20, 20, 22, 0.22);
+  --taste-ok: #15803d;
+  --taste-ok-soft: rgba(21, 128, 61, 0.1);
+  --taste-warn: #b45309;
+  --taste-warn-soft: rgba(180, 83, 9, 0.12);
+  --taste-error: #b91c1c;
+
+  /* Bridge Brücke's engine variables to Taste tokens */
+  --bg-color: var(--taste-bg);
+  --sub-alt-color: var(--taste-surface);
+  --text-color: var(--taste-ink);
+  --sub-color: var(--taste-muted);
+  --main-color: var(--taste-accent);
+  --caret-color: var(--taste-accent);
+  --error-color: var(--taste-error);
+
+  /* Layout & rhythm */
+  --taste-nav-h: 60px;
+  --taste-mobile-bar-h: 64px;
+  --taste-max-w: 1120px;
+  --taste-r-sm: 6px;
+  --taste-r-md: 10px;
+  --taste-r-lg: 14px;
+
+  background-color: var(--taste-bg);
+  color: var(--taste-ink);
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: clip;
+  font-family: var(--font-sans);
+  color-scheme: light;
+}
+
+.taste-ui[data-taste-scheme="dark"] {
+  /* Dark mode: Refined Obsidian (never #000, never violet) */
+  --taste-bg: #0c0c0e;
+  --taste-surface: #141417;
+  --taste-surface-2: #1c1c21;
+  --taste-ink: #f2f1ec;
+  --taste-muted: #9b9aa3;
+  --taste-accent: #e87a3e;
+  --taste-accent-hover: #f28c54;
+  --taste-accent-ink: #0c0c0e;
+  --taste-accent-soft: rgba(232, 122, 62, 0.14);
+  --taste-border: rgba(242, 241, 236, 0.11);
+  --taste-border-strong: rgba(242, 241, 236, 0.22);
+  --taste-ok: #34d399;
+  --taste-ok-soft: rgba(52, 211, 153, 0.12);
+  --taste-warn: #fbbf24;
+  --taste-warn-soft: rgba(251, 191, 36, 0.14);
+  --taste-error: #f87171;
+
+  --bg-color: var(--taste-bg);
+  --sub-alt-color: var(--taste-surface);
+  --text-color: var(--taste-ink);
+  --sub-color: var(--taste-muted);
+  --main-color: var(--taste-accent);
+  --caret-color: var(--taste-accent);
+  --error-color: var(--taste-error);
+
+  color-scheme: dark;
+}
+
+/* Numeric & formula discipline */
+.taste-ui .taste-num {
+  font-variant-numeric: tabular-nums;
+}
+
+.taste-ui .taste-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Equal-edge container */
+.taste-ui .taste-wrap {
+  width: 100%;
+  max-width: var(--taste-max-w);
+  margin-inline: auto;
+  padding-inline: max(16px, env(safe-area-inset-left));
+}
+
+@media (min-width: 640px) {
+  .taste-ui .taste-wrap {
+    padding-inline: 24px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .taste-ui .taste-wrap {
+    padding-inline: 32px;
+  }
+}
+
+/* Skip link: first Tab stop */
+.taste-ui .taste-skip-link {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 100;
+  padding: 10px 16px;
+  border-radius: var(--taste-r-sm);
+  background: var(--taste-accent);
+  color: var(--taste-accent-ink);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(-160%);
+  transition: transform 120ms ease;
+}
+
+.taste-ui .taste-skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--taste-ink);
+  outline-offset: 2px;
+}
+
+/* Instant 2px focus ring across all interactive elements */
+.taste-ui :is(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--taste-accent);
+  outline-offset: 2px;
+}
+
+/* Hairline surface & quiet card primitives (zero card-inside-card clutter) */
+.taste-ui .taste-surface {
+  background-color: var(--taste-surface);
+  border: 1px solid var(--taste-border);
+  border-radius: var(--taste-r-md);
+}
+
+.taste-ui .taste-card-link {
+  background-color: var(--taste-surface);
+  border: 1px solid var(--taste-border);
+  border-radius: var(--taste-r-md);
+  transition:
+    transform 150ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    border-color 120ms ease,
+    background-color 120ms ease;
+}
+
+.taste-ui .taste-card-link:hover {
+  transform: translateY(-2px);
+  border-color: var(--taste-border-strong);
+}
+
+.taste-ui .taste-card-link:active {
+  transform: scale(0.985);
+  transition-duration: 90ms;
+}
+
+/* Disciplined button pair: primary solid + secondary hairline */
+.taste-ui .taste-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: var(--taste-r-sm);
+  background-color: var(--taste-accent);
+  color: var(--taste-accent-ink);
+  border: 1px solid transparent;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    background-color 120ms ease,
+    transform 90ms ease;
+}
+
+.taste-ui .taste-btn-primary:hover {
+  background-color: var(--taste-accent-hover);
+}
+
+.taste-ui .taste-btn-primary:active {
+  transform: scale(0.985);
+}
+
+.taste-ui .taste-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: var(--taste-r-sm);
+  background-color: var(--taste-surface);
+  color: var(--taste-ink);
+  border: 1px solid var(--taste-border-strong);
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    border-color 120ms ease,
+    background-color 120ms ease,
+    transform 90ms ease;
+}
+
+.taste-ui .taste-btn-secondary:hover {
+  border-color: var(--taste-accent);
+  background-color: var(--taste-surface-2);
+}
+
+.taste-ui .taste-btn-secondary:active {
+  transform: scale(0.985);
+}
+
+.taste-ui .taste-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 10px;
+  border-radius: var(--taste-r-sm);
+  background: transparent;
+  color: var(--taste-muted);
+  border: 1px solid transparent;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition:
+    color 120ms ease,
+    background-color 120ms ease,
+    transform 90ms ease;
+}
+
+.taste-ui .taste-btn-ghost:hover {
+  color: var(--taste-ink);
+  background-color: var(--taste-surface-2);
+}
+
+.taste-ui .taste-btn-ghost:active {
+  transform: scale(0.985);
+}
+
+/* One-shot hero entrance animation */
+@keyframes taste-enter-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.taste-ui .taste-enter {
+  animation: taste-enter-up 340ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.taste-ui .taste-enter-delay-1 {
+  animation: taste-enter-up 380ms cubic-bezier(0.2, 0.8, 0.2, 1) 70ms both;
+}
+
+.taste-ui .taste-enter-delay-2 {
+  animation: taste-enter-up 420ms cubic-bezier(0.2, 0.8, 0.2, 1) 130ms both;
+}
+
+/* Mobile ergonomics: 16px inputs, >= 44px controls, zero sideways overflow */
+@media (max-width: 767px) {
+  .taste-ui input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  .taste-ui select,
+  .taste-ui textarea {
+    font-size: 16px;
+  }
+}
+
+/* Reduced motion: everything rests immediately */
+@media (prefers-reduced-motion: reduce) {
+  .taste-ui .taste-enter,
+  .taste-ui .taste-enter-delay-1,
+  .taste-ui .taste-enter-delay-2 {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .taste-ui .taste-card-link:hover,
+  .taste-ui .taste-card-link:active,
+  .taste-ui .taste-btn-primary:active,
+  .taste-ui .taste-btn-secondary:active,
+  .taste-ui .taste-btn-ghost:active {
+    transform: none !important;
+  }
+}
