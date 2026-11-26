@@ -6,6 +6,7 @@ import { useAppStore } from "@/lib/store";
 import { useViewStore } from "@/lib/view-store";
 import { getFamilyOwnerLanguageIds } from "@/lib/atlas-families";
 import { isValidLanguageId } from "@/data/languages";
+import { stripUiVariantPrefix } from "@/lib/routes";
 
 export function DeepLinkRestorer() {
   const storeHydrated = useAppStore((s) => s.storeHydrated);
@@ -16,10 +17,11 @@ export function DeepLinkRestorer() {
 
     const syncUrl = () => {
       const url = new URL(window.location.href);
-      if (url.pathname !== "/" && url.pathname !== "/atlas") return;
+      const base = stripUiVariantPrefix(url.pathname);
+      if (base !== "/" && base !== "/atlas") return;
       const view = useViewStore.getState().subView;
       // A cross-tab open waits for the router to reach its destination.
-      if (view && (view.kind === "lesson" ? url.pathname !== "/" : url.pathname !== "/atlas")) return;
+      if (view && (view.kind === "lesson" ? base !== "/" : base !== "/atlas")) return;
       for (const key of ["lesson", "family", "master", "lang"]) url.searchParams.delete(key);
       if (view?.kind === "lesson") {
         url.searchParams.set("lesson", String(view.lessonId));
@@ -40,11 +42,12 @@ export function DeepLinkRestorer() {
 
     const restoreUrl = () => {
       const url = new URL(window.location.href);
+      const base = stripUiVariantPrefix(url.pathname);
       const app = useAppStore.getState();
       const view = useViewStore.getState();
-      const rawLesson = url.pathname === "/" ? url.searchParams.get("lesson") : null;
-      const rawFamily = url.pathname === "/atlas" ? url.searchParams.get("family") : null;
-      const isMaster = url.pathname === "/atlas" && url.searchParams.get("master") === "1";
+      const rawLesson = base === "/" ? url.searchParams.get("lesson") : null;
+      const rawFamily = base === "/atlas" ? url.searchParams.get("family") : null;
+      const isMaster = base === "/atlas" && url.searchParams.get("master") === "1";
       if (rawLesson === null && rawFamily === null && !isMaster) {
         view.closeSubview();
         return;

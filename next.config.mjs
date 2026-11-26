@@ -56,6 +56,14 @@ const nextConfig = {
         destination: "/atlas?family=:family",
         permanent: false,
       },
+      { source: "/taste/trail/:id", destination: "/taste/?lesson=:id", permanent: false },
+      { source: "/taste/trail", destination: "/taste", permanent: false },
+      { source: "/taste/atlas/master", destination: "/taste/atlas?master=1", permanent: false },
+      { source: "/taste/atlas/:family", destination: "/taste/atlas?family=:family", permanent: false },
+      { source: "/design/trail/:id", destination: "/design/?lesson=:id", permanent: false },
+      { source: "/design/trail", destination: "/design", permanent: false },
+      { source: "/design/atlas/master", destination: "/design/atlas?master=1", permanent: false },
+      { source: "/design/atlas/:family", destination: "/design/atlas?family=:family", permanent: false },
     ];
   },
   async headers() {

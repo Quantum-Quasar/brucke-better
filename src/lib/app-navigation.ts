@@ -10,6 +10,7 @@ import { useViewStore } from "@/lib/view-store";
 import { getFamilyOwnerLanguageIds } from "@/lib/atlas-families";
 import { prefetchLesson } from "@/lib/content-client";
 import { captureScroll } from "@/lib/scroll-memory";
+import { stripUiVariantPrefix, withUiVariantPrefix } from "@/lib/routes";
 
 /** Modifier-clicks must keep native new-tab/window behavior. */
 export function isModifiedClick(event: {
@@ -33,6 +34,7 @@ export interface AppNavigation {
 export function useAppNavigation(): AppNavigation {
   const router = useRouter();
   const pathname = usePathname();
+  const basePath = stripUiVariantPrefix(pathname);
 
   const openLesson = useCallback(
     (languageId: string, lessonId: number) => {
@@ -44,44 +46,53 @@ export function useAppNavigation(): AppNavigation {
         app.completeOnboarding();
       }
       prefetchLesson(languageId, lessonId);
-      if (pathname === "/") {
+      if (basePath === "/") {
         useViewStore.getState().openLesson(languageId, lessonId);
       } else {
         captureScroll(pathname);
-        router.push(`/?lesson=${lessonId}&lang=${encodeURIComponent(languageId)}`);
+        router.push(
+          withUiVariantPrefix(`/?lesson=${lessonId}&lang=${encodeURIComponent(languageId)}`, pathname)
+        );
       }
     },
-    [pathname, router]
+    [basePath, pathname, router]
   );
 
   const openAtlasFamily = useCallback(
     (familyId: string) => {
-      if (pathname === "/atlas") {
+      if (basePath === "/atlas") {
         useViewStore.getState().openAtlasFamily(familyId, getFamilyOwnerLanguageIds(familyId));
       } else {
         captureScroll(pathname);
-        router.push(`/atlas?family=${encodeURIComponent(familyId)}&lang=${useAppStore.getState().activeLanguageId}`);
+        router.push(
+          withUiVariantPrefix(
+            `/atlas?family=${encodeURIComponent(familyId)}&lang=${useAppStore.getState().activeLanguageId}`,
+            pathname
+          )
+        );
       }
     },
-    [pathname, router]
+    [basePath, pathname, router]
   );
 
   const openAtlasMaster = useCallback(() => {
-    if (pathname === "/atlas") {
+    if (basePath === "/atlas") {
       useViewStore.getState().openAtlasMaster();
     } else {
       captureScroll(pathname);
-      router.push(`/atlas?master=1&lang=${useAppStore.getState().activeLanguageId}`);
+      router.push(
+        withUiVariantPrefix(`/atlas?master=1&lang=${useAppStore.getState().activeLanguageId}`, pathname)
+      );
     }
-  }, [pathname, router]);
+  }, [basePath, pathname, router]);
 
   const openAtlasIndex = useCallback(() => {
     useViewStore.getState().closeSubview();
-    if (pathname !== "/atlas") {
+    if (basePath !== "/atlas") {
       captureScroll(pathname);
-      router.push("/atlas");
+      router.push(withUiVariantPrefix("/atlas", pathname));
     }
-  }, [pathname, router]);
+  }, [basePath, pathname, router]);
 
   const closeSubview = useCallback(() => {
     useViewStore.getState().closeSubview();
