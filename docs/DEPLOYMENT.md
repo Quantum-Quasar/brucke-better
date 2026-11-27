@@ -1,7 +1,7 @@
 # Deployment
 
 Brücke pre-renders its Next.js routes during `bun run build`. Public metadata,
-canonical links, sitemap and robots all use `NEXT_PUBLIC_SITE_URL` at build time.
+canonical links, sitemap and robots all use the same validated origin at build time.
 
 ## Vercel
 
@@ -9,10 +9,12 @@ canonical links, sitemap and robots all use `NEXT_PUBLIC_SITE_URL` at build time
 2. Framework preset: **Next.js**.
 3. Install command: `bun install --frozen-lockfile`.
 4. Build command: `bun run build`.
-5. Set `NEXT_PUBLIC_SITE_URL` to the public HTTPS origin, for example
-   `https://brucke.example.com`. Production builds reject missing/invalid values,
-   credentials, paths, query strings, fragments, HTTP and localhost origins.
-   Set this explicitly for each deployment environment; never publish the local
+5. Keep **Enable access to System Environment Variables** on. Brücke uses Vercel's
+   `VERCEL_PROJECT_PRODUCTION_URL` as its HTTPS origin, including on preview builds.
+   Set `NEXT_PUBLIC_SITE_URL` only to override that domain, or when deploying without
+   Vercel's system variables. Use the full public HTTPS origin, for example
+   `https://brucke.example.com`. Production builds reject credentials, paths, query
+   strings, fragments, HTTP and localhost origins. Never publish the local
    verification override described below.
 6. Deploy, then optionally run the existing browser suite against the deployed URL:
 
@@ -88,7 +90,7 @@ Before invoking Vitest directly, run `bun run export-data`; builds and developme
 also generate these ignored outputs. No network fetch is needed for generation.
 
 The app has no accounts, server database, or cloud TTS. Progress is local to the
-browser; deployment is hosting plus the required production public URL.
+browser; outside Vercel, set `NEXT_PUBLIC_SITE_URL` explicitly for production.
 
 ## Installation, offline cache and backups
 

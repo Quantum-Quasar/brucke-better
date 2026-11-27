@@ -1,5 +1,5 @@
-import { describe, expect, it } from "vitest";
-import { resolveSiteUrl } from "../lib/site-url";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { getSiteUrl, resolveSiteUrl } from "../lib/site-url";
 import { resolveDeploymentUrl } from "../../scripts/resolve-deployment-url";
 
 const production = (siteUrl?: string, allowLocalSiteUrl?: string) =>
@@ -34,6 +34,27 @@ describe("site metadata origin", () => {
     expect(() => production("http://localhost:3111", "true")).toThrow();
     expect(() => production("http://brucke.example.com", "1")).toThrow();
     expect(() => production("http://0.0.0.0:3111", "1")).toThrow();
+  });
+});
+
+describe("Vercel site metadata origin", () => {
+  afterEach(() => vi.unstubAllEnvs());
+
+  it("uses the production domain even when building a preview deployment", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", undefined);
+    vi.stubEnv("VERCEL_PROJECT_PRODUCTION_URL", "brucke.example.com");
+    vi.stubEnv("VERCEL_URL", "brucke-preview.vercel.app");
+    expect(getSiteUrl().origin).toBe("https://brucke.example.com");
+  });
+
+  it("gives the explicit origin precedence and does not hide an invalid override", () => {
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("VERCEL_PROJECT_PRODUCTION_URL", "brucke.vercel.app");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "https://brucke.example.com");
+    expect(getSiteUrl().origin).toBe("https://brucke.example.com");
+    vi.stubEnv("NEXT_PUBLIC_SITE_URL", "http://brucke.example.com");
+    expect(() => getSiteUrl()).toThrow("public HTTPS origin");
   });
 });
 

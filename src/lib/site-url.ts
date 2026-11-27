@@ -14,7 +14,7 @@ function isLoopback(hostname: string): boolean {
 export function resolveSiteUrl({ siteUrl, nodeEnv, allowLocalSiteUrl }: SiteUrlOptions): URL {
   const production = nodeEnv === "production";
   if (!siteUrl && production) {
-    throw new Error("NEXT_PUBLIC_SITE_URL is required for production builds. Set the public HTTPS origin, or explicitly set a loopback URL with ALLOW_LOCAL_SITE_URL=1 for local verification.");
+    throw new Error("NEXT_PUBLIC_SITE_URL is required for production builds without VERCEL_PROJECT_PRODUCTION_URL. Set the public HTTPS origin, enable Vercel system environment variables, or explicitly set a loopback URL with ALLOW_LOCAL_SITE_URL=1 for local verification.");
   }
 
   let url: URL;
@@ -39,9 +39,13 @@ export function resolveSiteUrl({ siteUrl, nodeEnv, allowLocalSiteUrl }: SiteUrlO
 }
 
 export function getSiteUrl(): URL {
+  const nodeEnv = process.env.NODE_ENV;
+  const vercelProductionDomain = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ||
+    (nodeEnv === "production" && vercelProductionDomain ? `https://${vercelProductionDomain}` : undefined);
   return resolveSiteUrl({
-    siteUrl: process.env.NEXT_PUBLIC_SITE_URL,
-    nodeEnv: process.env.NODE_ENV,
+    siteUrl,
+    nodeEnv,
     allowLocalSiteUrl: process.env.ALLOW_LOCAL_SITE_URL,
   });
 }
