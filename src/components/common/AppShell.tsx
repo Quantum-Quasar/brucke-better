@@ -20,6 +20,7 @@ import { useScrollMemory } from "@/lib/scroll-memory";
 import { syncThemeColor } from "@/lib/theme-runtime";
 import { BackupReminder } from "@/components/common/BackupReminder";
 import { OfflineSupport } from "@/components/common/OfflineSupport";
+import { isExperimentalPath } from "@/lib/exp-routes";
 
 // ponytail: code-split idle modals, drawer and in-page views so root chunk doesn't bundle content readers
 const WordCardDrawer = dynamic(
@@ -155,7 +156,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     const view = useViewStore.getState();
     if (!view.subView) return;
     if (view.subView.kind === "lesson") {
-      if (pathname !== "/") view.closeSubview();
+      if (pathname !== "/" && !isExperimentalPath(pathname)) view.closeSubview();
     } else if (pathname !== "/atlas") {
       view.closeSubview();
     }
@@ -180,6 +181,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       document.removeEventListener("visibilitychange", onVisibility);
     };
   }, []);
+
+  // The experimental UI (/exp-ui) renders its own chrome, overlays and
+  // deep-link handling; only the hydration/persistence effects above are shared.
+  if (isExperimentalPath(pathname)) {
+    return <>{children}</>;
+  }
 
   return (
     <>

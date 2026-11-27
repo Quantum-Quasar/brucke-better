@@ -10,6 +10,7 @@ import { useViewStore } from "@/lib/view-store";
 import { getFamilyOwnerLanguageIds } from "@/lib/atlas-families";
 import { prefetchLesson } from "@/lib/content-client";
 import { captureScroll } from "@/lib/scroll-memory";
+import { EXP_ROOT, isExperimentalPath } from "@/lib/exp-routes";
 
 /** Modifier-clicks must keep native new-tab/window behavior. */
 export function isModifiedClick(event: {
@@ -44,8 +45,10 @@ export function useAppNavigation(): AppNavigation {
         app.completeOnboarding();
       }
       prefetchLesson(languageId, lessonId);
-      if (pathname === "/") {
+      if (pathname === "/" || pathname === EXP_ROOT) {
         useViewStore.getState().openLesson(languageId, lessonId);
+      } else if (isExperimentalPath(pathname)) {
+        router.push(`${EXP_ROOT}?lesson=${lessonId}&lang=${encodeURIComponent(languageId)}`);
       } else {
         captureScroll(pathname);
         router.push(`/?lesson=${lessonId}&lang=${encodeURIComponent(languageId)}`);
