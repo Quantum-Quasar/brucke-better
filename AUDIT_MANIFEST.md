@@ -119,7 +119,7 @@ A short map of where things live; list the directories yourself for the full tre
 ├── scripts/                   # Build + audit tooling — see scripts/README.md
 ├── public/data/<lang>/        # Generated per-language payloads (bun run export-data)
 ├── src/
-│   ├── app/                   # 46 static routes: /, /atlas, /panorama, /review, /read, /practice, /cando, /mistakes, /settings, /about, plus /exp-ui, /exp-ui2, /exp-ui3 and /exp-ui4 (+ /review, /words, /settings each) and the /taste and /design variants
+│   ├── app/                   # 50 static routes: /, /atlas, /panorama, /review, /read, /practice, /cando, /mistakes, /settings, /about, plus /exp-ui, /exp-ui2, /exp-ui3, /exp-ui4 and /exp-ui5 (+ /review, /words, /settings each) and the /taste and /design variants
 │   ├── components/            # common/ (AppShell, ShiftPair, WordCardDrawer…), lesson/ (LessonView,
 │   │                          #   LessonReader, one widget per exercise type), atlas/, trail/, navigation/
 │   ├── lib/                   # types.ts, store.ts, srs.ts, letter-diff.ts, shift-annotator.ts,
@@ -150,7 +150,7 @@ In-page views: lessons and atlas details are rendered by `AppShell.tsx` (`Lesson
 ## 7. Performance & Resource Optimization Highlights
 
 1. **100% Pre-rendered Static Site Generation (SSG)**:
-   - The app ships 46 static routes (the ten classic routes `/`, `/atlas`, `/panorama`, `/review`, `/read`, `/practice`, `/cando`, `/mistakes`, `/settings`, `/about`, plus the experimental interfaces `/exp-ui`, `/exp-ui2`, `/exp-ui3` and `/exp-ui4` (each with `/review`, `/words`, `/settings`), and the `/taste` and `/design` variants of the classic routes), plus canonical `/trail/<lang>/<id>` lesson reference pages with introductions, patterns, vocabulary and outcomes. Lessons (194 unique lessons across 530 per-lesson payloads) and atlas families (37 atlas families across four atlases) retain instant practice/reference overlays.
+   - The app ships 50 static routes (the ten classic routes `/`, `/atlas`, `/panorama`, `/review`, `/read`, `/practice`, `/cando`, `/mistakes`, `/settings`, `/about`, plus the experimental interfaces `/exp-ui`, `/exp-ui2`, `/exp-ui3`, `/exp-ui4` and `/exp-ui5` (each with `/review`, `/words`, `/settings`), and the `/taste` and `/design` variants of the classic routes), plus canonical `/trail/<lang>/<id>` lesson reference pages with introductions, patterns, vocabulary and outcomes. Lessons (194 unique lessons across 530 per-lesson payloads) and atlas families (37 atlas families across four atlases) retain instant practice/reference overlays.
    - Overlays replace the current history entry with language-explicit query URLs; copied links and reloads restore them. Canonical lesson pages carry `LearningResource` data and appear in the sitemap; robots points to it. Builds regenerate ignored `public/data/` distribution files from committed content, rather than storing those copies in git.
 2. **Shift Alignment Memoization**:
    - `alignShiftPair` aligns whole spellings before highlighting known correspondences, handles double shifts and uses a bounded 500-entry cache. Twenty golden alignments pin the actual highlighted spans, including V/F→B and Y/GH→G/CH.
@@ -213,4 +213,4 @@ When auditing the codebase, verify:
   - Cookie backup stays within safe browser limits (lean payload ≤ 2048 URL-encoded bytes).
 - [ ] **Build & Tests**:
   - `bun run test` (Vitest) passes with 0 failures; use its report for current test and file totals.
-  - `bun run build` generates all static pages (46 static routes + 530 lesson payloads) without TypeScript or Turbopack errors.
+  - `bun run build` generates all static pages (50 static routes + 530 lesson payloads) without TypeScript or Turbopack errors.
