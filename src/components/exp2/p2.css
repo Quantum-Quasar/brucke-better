@@ -2647,8 +2647,10 @@ a.p-stop-link:hover .p-node {
 .p-seg {
   padding-top: 24px;
 }
-.p-seg-main {
-  grid-column: 1 / span 7;
+@media (min-width: 901px) {
+  .p-seg-main {
+    grid-column: 1 / span 7;
+  }
 }
 .p-lesson-body {
   padding-bottom: 160px;

@@ -1,7 +1,8 @@
 /** Roots of the experimental UIs. Everything under one renders that design. */
 export const EXP_ROOT = "/exp-ui";
 export const EXP2_ROOT = "/exp-ui2";
-const EXP_ROOTS = [EXP_ROOT, EXP2_ROOT] as const;
+export const EXP3_ROOT = "/exp-ui3";
+const EXP_ROOTS = [EXP_ROOT, EXP2_ROOT, EXP3_ROOT] as const;
 
 /** The experimental root a pathname belongs to, or null for every other route. */
 export function expRootOf(pathname: string | null | undefined): string | null {
