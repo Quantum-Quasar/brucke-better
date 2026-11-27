@@ -21,6 +21,7 @@ import { syncThemeColor } from "@/lib/theme-runtime";
 import { BackupReminder } from "@/components/common/BackupReminder";
 import { OfflineSupport } from "@/components/common/OfflineSupport";
 import { isExperimentalPath } from "@/lib/exp-routes";
+import { getUiVariantPrefix, stripUiVariantPrefix } from "@/lib/routes";
 
 // ponytail: code-split idle modals, drawer and in-page views so root chunk doesn't bundle content readers
 const WordCardDrawer = dynamic(
@@ -98,11 +99,13 @@ const MasterView = dynamic(
 /**
  * Client half of the root layout: hydrates persisted progress, keeps other tabs
  * in sync, and renders the navigation chrome plus the lazy global overlays.
- * The Server Component layout owns <html>/<body>, metadata and the pre-paint
- * boot script; this shell is the part that needs browser state.
+ * Experimental `/taste` and `/design` routes opt out of the default chrome and
+ * render their own full shells while still sharing storage hydration and deep links.
  */
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const variant = getUiVariantPrefix(pathname);
+  const basePath = stripUiVariantPrefix(pathname);
   const subView = useViewStore((s) => s.subView);
   const closeSubview = useViewStore((s) => s.closeSubview);
   useScrollMemory(pathname);
@@ -156,11 +159,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     const view = useViewStore.getState();
     if (!view.subView) return;
     if (view.subView.kind === "lesson") {
-      if (pathname !== "/" && !isExperimentalPath(pathname)) view.closeSubview();
-    } else if (pathname !== "/atlas") {
+      if (basePath !== "/" && !isExperimentalPath(basePath)) view.closeSubview();
+    } else if (basePath !== "/atlas") {
       view.closeSubview();
     }
-  }, [pathname]);
+  }, [basePath]);
 
   // Deferred writes are flushed on route changes so a navigation can never
   // outrun the snapshot it was triggered by.
@@ -186,6 +189,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   // deep-link handling; only the hydration/persistence effects above are shared.
   if (isExperimentalPath(pathname)) {
     return <>{children}</>;
+  }
+  // Experimental UIs (`/taste` and `/design`) own their entire layout,
+  // navigation, and subview chrome while keeping shared hydration & deep links.
+  if (variant !== "") {
+    return (
+      <>
+        <OfflineSupport />
+        {children}
+        <DeepLinkRestorer />
+      </>
+    );
   }
 
   return (

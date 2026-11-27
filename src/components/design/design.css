@@ -1,0 +1,261 @@
+/* ============================================================================
+ * Brücke — Expressive Language Atelier (/design)
+ * Scoped strictly under .design-ui so the original (/) and /taste UIs remain
+ * completely untouched. Overrides Brücke's CSS variables inside .design-ui so
+ * every reused exercise, review deck, atlas, practice studio, reader, and
+ * settings control seamlessly adopts the Atelier Daylight/Twilight palette.
+ * ============================================================================ */
+
+.design-ui {
+  /* Typography */
+  --design-serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+  --design-sans: var(--font-sans, "Lexend Deca", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif);
+  --design-mono: var(--font-mono, "Roboto Mono", ui-monospace, SFMono-Regular, Menlo, monospace);
+
+  /* Warm Editorial Atelier — Daylight Parchment (default) */
+  --bg-color: #F4F1EA;
+  --main-color: #1E56A0;
+  --caret-color: #1E56A0;
+  --sub-color: #525A68;
+  --sub-alt-color: #ECE7DC;
+  --text-color: #1A1D24;
+  --error-color: #B83B3B;
+
+  /* Extended Atelier Surface & Accent Tokens */
+  --design-canvas: #F4F1EA;
+  --design-surface: #FFFDF9;
+  --design-surface-hover: #FFFFFF;
+  --design-well: #ECE7DC;
+  --design-well-deep: #E2DBD0;
+  --design-ink: #1A1D24;
+  --design-ink-muted: #525A68;
+  --design-sapphire: #1E56A0;
+  --design-sapphire-soft: rgba(30, 86, 160, 0.11);
+  --design-sapphire-border: rgba(30, 86, 160, 0.28);
+  --design-emerald: #1E7A56;
+  --design-emerald-soft: rgba(30, 122, 86, 0.12);
+  --design-emerald-border: rgba(30, 122, 86, 0.28);
+  --design-amber: #A16207;
+  --design-amber-soft: rgba(161, 98, 7, 0.12);
+  --design-border: rgba(26, 29, 36, 0.11);
+  --design-border-strong: rgba(26, 29, 36, 0.2);
+  --design-shadow-sm: 0 1px 2px rgba(26, 29, 36, 0.05), 0 4px 12px rgba(26, 29, 36, 0.04);
+  --design-shadow-md: 0 4px 14px rgba(26, 29, 36, 0.07), 0 12px 28px rgba(26, 29, 36, 0.06);
+  --design-shadow-dock: 0 10px 30px rgba(26, 29, 36, 0.16), 0 2px 6px rgba(26, 29, 36, 0.08);
+  --design-rail-bg: #F8F5EE;
+  --design-glass: rgba(255, 253, 249, 0.88);
+  --design-on-accent: #FFFFFF;
+
+  background-color: var(--design-canvas);
+  color: var(--design-ink);
+  font-family: var(--design-sans);
+  min-height: 100dvh;
+  width: 100%;
+  overflow-x: clip;
+  color-scheme: light;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.design-ui[data-design-mode="dark"] {
+  /* Warm Editorial Atelier — Twilight Slate */
+  --bg-color: #11151C;
+  --main-color: #60A5FA;
+  --caret-color: #60A5FA;
+  --sub-color: #9AA6BA;
+  --sub-alt-color: #202836;
+  --text-color: #F2F4F8;
+  --error-color: #F87171;
+
+  --design-canvas: #11151C;
+  --design-surface: #181E28;
+  --design-surface-hover: #1E2634;
+  --design-well: #202836;
+  --design-well-deep: #283244;
+  --design-ink: #F2F4F8;
+  --design-ink-muted: #9AA6BA;
+  --design-sapphire: #60A5FA;
+  --design-sapphire-soft: rgba(96, 165, 250, 0.14);
+  --design-sapphire-border: rgba(96, 165, 250, 0.34);
+  --design-emerald: #34D399;
+  --design-emerald-soft: rgba(52, 211, 153, 0.14);
+  --design-emerald-border: rgba(52, 211, 153, 0.34);
+  --design-amber: #FBBF24;
+  --design-amber-soft: rgba(251, 191, 36, 0.14);
+  --design-border: rgba(242, 244, 248, 0.11);
+  --design-border-strong: rgba(242, 244, 248, 0.2);
+  --design-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.28), 0 6px 16px rgba(0, 0, 0, 0.22);
+  --design-shadow-md: 0 8px 24px rgba(0, 0, 0, 0.34), 0 2px 8px rgba(0, 0, 0, 0.22);
+  --design-shadow-dock: 0 12px 34px rgba(0, 0, 0, 0.5), 0 2px 8px rgba(0, 0, 0, 0.3);
+  --design-rail-bg: #141922;
+  --design-glass: rgba(24, 30, 40, 0.88);
+  --design-on-accent: #0B1220;
+
+  color-scheme: dark;
+}
+
+/* Skip link for keyboard accessibility */
+.design-ui .skip-link {
+  position: fixed;
+  top: -100px;
+  left: 1rem;
+  z-index: 120;
+  padding: 0.65rem 1.1rem;
+  border-radius: 9999px;
+  background-color: var(--design-sapphire);
+  color: var(--design-on-accent);
+  font-family: var(--design-sans);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+  box-shadow: var(--design-shadow-md);
+  transition: top 0.15s ease;
+}
+
+.design-ui .skip-link:focus {
+  top: 1rem;
+  outline: 2px solid var(--design-ink);
+  outline-offset: 2px;
+}
+
+/* Editorial Display Typography */
+.design-serif {
+  font-family: var(--design-serif);
+  letter-spacing: -0.02em;
+}
+
+.design-mono {
+  font-family: var(--design-mono);
+}
+
+/* Atelier Cards & Tonal Wells */
+.design-card {
+  background-color: var(--design-surface);
+  border: 1px solid var(--design-border);
+  border-radius: 20px;
+  box-shadow: var(--design-shadow-sm);
+  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.18s ease,
+    border-color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.design-card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--design-shadow-md);
+  border-color: var(--design-sapphire-border);
+  background-color: var(--design-surface-hover);
+}
+
+.design-well {
+  background-color: var(--design-well);
+  border: 1px solid var(--design-border);
+  border-radius: 16px;
+}
+
+.design-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 9999px;
+  padding: 0.25rem 0.7rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+/* Shell Layout: Persistent Left Studio Rail on Desktop */
+.design-shell-grid {
+  display: flex;
+  min-height: 100dvh;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.design-rail {
+  width: 248px;
+  flex-shrink: 0;
+  background-color: var(--design-rail-bg);
+  border-right: 1px solid var(--design-border);
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.design-main-column {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 100%;
+}
+
+/* Mobile Floating Pill Dock */
+.design-mobile-dock {
+  background-color: var(--design-glass);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid var(--design-border-strong);
+  box-shadow: var(--design-shadow-dock);
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+}
+
+.design-mobile-topbar {
+  background-color: var(--design-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--design-border);
+}
+
+/* Subview Sheet */
+.design-subview-sheet {
+  background-color: var(--design-canvas);
+  color: var(--design-ink);
+}
+
+.design-subview-header {
+  background-color: var(--design-glass);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--design-border);
+}
+
+/* Subtle paper grain accent on hero banner (CSS radial only, zero images) */
+.design-hero-surface {
+  background:
+    radial-gradient(circle at 92% 14%, var(--design-sapphire-soft), transparent 46%),
+    radial-gradient(circle at 8% 88%, var(--design-emerald-soft), transparent 44%),
+    var(--design-surface);
+  border: 1px solid var(--design-border);
+  border-radius: 24px;
+  box-shadow: var(--design-shadow-sm);
+}
+
+/* Mobile input 16px floor to prevent iOS Safari zoom */
+@media (max-width: 1023px) {
+  .design-ui input,
+  .design-ui select,
+  .design-ui textarea {
+    font-size: 16px;
+  }
+}
+
+/* Reduced motion compliance */
+@media (prefers-reduced-motion: reduce) {
+  .design-ui,
+  .design-ui *,
+  .design-ui *::before,
+  .design-ui *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .design-card-interactive:hover {
+    transform: none;
+  }
+}
