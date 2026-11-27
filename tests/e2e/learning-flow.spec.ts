@@ -1,5 +1,7 @@
 import { expect, test, type Page } from "@playwright/test";
 import type { LessonPayload } from "../../src/lib/types";
+import { GERMAN_ROUTE_A } from "../../src/tests/fixtures/german-trail-routes";
+import { tabTo } from "./product-quality-helpers";
 
 const STORAGE_KEY = "brucke_app_state_v1";
 
@@ -27,13 +29,13 @@ function practice(lessonId: number, exerciseId?: string) {
 
 test.use({ viewport: { width: 390, height: 844 } });
 
-test("Tab focuses the next-lesson bar and Enter opens the lesson without trapping subsequent Tab presses", async ({ page }) => {
+test("the home start link opens a lesson with the keyboard and does not trap Tab", async ({ page }) => {
   await seed(page);
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-app-ready", "true");
   const start = page.locator("[data-next-lesson-start]");
   await expect(start).toBeVisible();
-  await page.keyboard.press("Tab");
+  await tabTo(page, start);
   await expect(start).toBeFocused();
   await page.keyboard.press("Tab");
   await expect(start).not.toBeFocused();
@@ -49,21 +51,67 @@ test("Tab focuses the next-lesson bar and Enter opens the lesson without trappin
   await expect(page.getByRole("button", { name: "Pattern", exact: true })).toHaveCount(0);
 });
 
-test("three explicit continue-ahead choices stop resurfacing older gaps without marking them complete", async ({ page }) => {
-  await seed(page, { completedLessons: [1, 2, 3] });
+test("German lesson 4 opens both connected branches on mobile, but not lesson 7", async ({ page }, testInfo) => {
+  await seed(page, {
+    completedLessons: [1, 2],
+    placedAtTopic: 28,
+    lessonProgress: { 4: { segment: "summary", practiceIndex: 4, completedSegments: ["hook", "pattern", "table", "practice"] } },
+  });
   await page.goto("/");
-  const bar = page.getByRole("region", { name: "Next recommended lesson" });
-  for (let attempt = 0; attempt < 3; attempt++) {
-    await expect(bar).toContainText("Hidden Twins: Body & World");
-    await bar.getByRole("button", { name: "Continue ahead", exact: true }).click();
-    await expect(page.getByRole("dialog", { name: "Lesson 301", exact: true })).toBeVisible();
-    await page.getByRole("button", { name: "Back to Trail", exact: true }).click();
+  await page.getByRole("button", { name: "First words, Playable", exact: true }).click();
+  const map = page.getByRole("region", { name: "First words lesson map" });
+  const node = (id: number) => map.getByRole("button", { name: new RegExp(`^Lesson ${id}:`) });
+  await expect(node(6)).toHaveAccessibleName(/Locked$/);
+  await expect(node(8)).toHaveAccessibleName(/Locked$/);
+  await node(4).click();
+  await page.getByRole("link", { name: "Start lesson", exact: true }).click();
+  await expect(page.getByRole("dialog", { name: "Lesson 4", exact: true }).getByText("lesson complete ✓", { exact: true })).toBeVisible();
+  await page.getByRole("link", { name: "choose a path", exact: true }).click();
+  await expect(page.getByText("3 / 7 to clear", { exact: true })).toBeVisible();
+  for (const id of [3, 5, 6, 8]) await expect(node(id)).toHaveAccessibleName(/Playable$/);
+  await expect(node(7)).toHaveAccessibleName(/Locked$/);
+  await expect(map.locator('[data-path-from="@fork"][data-path-to="6"]')).toHaveAttribute("data-lit", "true");
+  await expect(map.locator('[data-path-from="@fork"][data-path-to="8"]')).toHaveAttribute("data-lit", "true");
+  await expect(map.locator('[data-path-from="6"][data-path-to="7"]')).toHaveAttribute("data-lit", "false");
+  await node(6).scrollIntoViewIfNeeded();
+  await map.screenshot({ path: testInfo.outputPath("mobile-lesson-map.png") });
+  for (const id of [6, 8]) {
+    await node(id).click();
+    await page.getByRole("link", { name: "Start lesson", exact: true }).click();
+    const lesson = page.getByRole("dialog", { name: `Lesson ${id}`, exact: true });
+    await expect(lesson.getByRole("button", { name: /^next: pattern$/i }).last()).toBeVisible();
+    await expect(lesson.getByText(/Preview only/)).toHaveCount(0);
+    await lesson.getByRole("button", { name: "Back to Trail", exact: true }).click();
   }
-  await expect(bar).toContainText("PF- Openers");
-  expect((await progress(page)).completedLessons).not.toContain(101);
-  await page.reload();
-  await expect(bar).toContainText("PF- Openers");
-  await expect(bar.getByRole("button", { name: "Continue ahead", exact: true })).toBeHidden();
+  expect((await progress(page)).completedLessons).toEqual([1, 2, 4]);
+  await node(7).click();
+  const locked = page.getByRole("dialog");
+  await expect(locked.getByText(/complete any one connected lesson: The Velar Shift/)).toBeVisible();
+  await expect(locked.getByRole("link", { name: "Start lesson", exact: true })).toHaveCount(0);
+});
+
+test("German world map shows a real fork and rejoin on desktop", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await seed(page, { completedLessons: GERMAN_ROUTE_A.slice(0, 2).flat() });
+  await page.goto("/");
+  const world = page.getByRole("region", { name: "German world map" });
+  const sounds = world.getByRole("button", { name: "Sound workshop, Cleared" });
+  const words = world.getByRole("button", { name: "Word builders, Playable" });
+  const plans = world.getByRole("button", { name: "Make plans, Playable" });
+  await expect(sounds).toBeVisible();
+  await expect(words).toBeVisible();
+  await expect(plans).toBeVisible();
+  await expect(world.locator('[data-path-from="sounds"][data-path-to="@words-join"]')).toHaveAttribute("data-lit", "true");
+  await expect(world.locator('[data-path-from="words"][data-path-to="@words-join"]')).toHaveAttribute("data-lit", "false");
+  await expect(world.locator('[data-path-from="@words-join"][data-path-to="plans"]')).toHaveAttribute("data-lit", "true");
+  await sounds.scrollIntoViewIfNeeded();
+  await world.screenshot({ path: testInfo.outputPath("desktop-world-map.png") });
+  await words.click();
+  const lessons = page.getByRole("region", { name: "Word builders lesson map" });
+  await expect(lessons.getByRole("button", { name: /^Lesson 21:.*, Playable$/ })).toBeVisible();
+  await lessons.screenshot({ path: testInfo.outputPath("desktop-lesson-map.png") });
+  await page.getByRole("button", { name: "World map", exact: true }).click();
+  await expect(plans).toBeVisible();
 });
 
 test("reinforcement keeps a repeated typo pending across reload and completes only after correction", async ({ page }) => {
@@ -103,8 +151,7 @@ test("repeated matching mistakes offer guided completion instead of trapping the
 
 test("free production accepts an authored valid German order and shows the matched answer", async ({ page }) => {
   await seed(page, {
-    completedLessons: [...Array.from({ length: 12 }, (_, index) => index + 1), 101, 102, 103, 201, 202, 301, 302, 801, 802, 9001],
-    passedGateIds: [1, 2], lessonProgress: practice(1201),
+    completedLessons: [...GERMAN_ROUTE_A.slice(0, 4).flat(), 1001, 1003], lessonProgress: practice(1201),
   });
   await page.goto("/?lang=de&lesson=1201");
   await page.getByRole("textbox").fill("Zeit habe ich keine");

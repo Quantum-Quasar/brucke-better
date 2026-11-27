@@ -12,6 +12,7 @@ import {
 import { useAppStore } from "@/lib/store";
 import { useAppNavigation } from "@/lib/app-navigation";
 import { LANGUAGES, getLanguageDefinition, isValidLanguageId } from "@/data/languages";
+import { GERMAN_CHAPTERS } from "@/data/german-trail";
 import { getCourseCounts } from "@/data/word-counts";
 import { ShiftPair } from "@/components/common/ShiftPair";
 import { useBackDismiss } from "@/lib/use-back-dismiss";
@@ -92,7 +93,7 @@ export const OnboardingModal: React.FC = () => {
     // Starting the course is only the right move when the visitor is already
     // on the homepage. A shared /trail/5 link keeps them on the shared lesson.
     if (wasFirstRun && pathname === "/" && language.status === "available") {
-      openLesson(effectiveLanguageId, placedAtTopic > 1 ? placedAtTopic : 1);
+      openLesson(effectiveLanguageId, effectiveLanguageId === "de" ? 1 : Math.max(1, placedAtTopic));
     }
   };
 
@@ -170,7 +171,7 @@ export const OnboardingModal: React.FC = () => {
                   learn german through the words you already know
                 </h2>
                 <p className="text-sm font-mono text-[var(--sub-color)] leading-relaxed">
-                  german is brücke&apos;s flagship course (30 topics, dialogues, gender lab, and spaced review).
+                  german is brücke&apos;s flagship course, with branching chapters, dialogues, and spaced review.
                   you can also switch to another language anytime — each keeps its own progress.
                 </p>
               </div>
@@ -301,7 +302,7 @@ export const OnboardingModal: React.FC = () => {
               </div>
 
               <p className="text-xs font-mono text-[var(--sub-color)] leading-relaxed">
-                That&apos;s the whole premise. The trail turns this into {topicCount} topics of
+                The trail turns this into {effectiveLanguageId === "de" ? `${Object.keys(GERMAN_CHAPTERS).length} chapters` : `${topicCount} topics`} of
                 pattern practice, each with short exercises and a review queue.
               </p>
             </div>
@@ -453,7 +454,7 @@ export const OnboardingModal: React.FC = () => {
                     : pathname !== "/"
                     ? "keep exploring this page"
                     : isAvailable
-                    ? placedAtTopic > 1
+                    ? effectiveLanguageId !== "de" && placedAtTopic > 1
                       ? `start topic ${placedAtTopic}`
                       : "start lesson 1"
                     : "explore the app"}

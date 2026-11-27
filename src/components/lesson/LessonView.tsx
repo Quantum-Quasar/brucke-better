@@ -106,8 +106,8 @@ interface LessonContentProps {
 function LessonContent({ languageId, lessonId, entries, curriculum }: LessonContentProps) {
   const payload = useLesson(languageId, lessonId);
   const entry = payload.data?.lesson ?? null;
-  const { nextLesson: recommended } = useCourseRecommendation(languageId, entry?.id);
-  const nextLessonId = recommended?.id ?? null;
+  const { nextLesson: recommended } = useCourseRecommendation(languageId, languageId === "de" ? undefined : entry?.id);
+  const nextLessonId = languageId === "de" ? null : recommended?.id ?? null;
 
 
   const lessonTitle = payload.data?.lesson.title;

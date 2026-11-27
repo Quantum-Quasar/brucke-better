@@ -459,7 +459,7 @@ export function P2Summary({ session }: { session: LessonSession }) {
             <p className="p-small p-strong">Keep in mind</p>
             <p className="p-body">{lesson.summary.takeaway}</p>
           </div>
-          {lesson.summary.curiosity_teaser && (
+          {activeLanguageId !== "de" && lesson.summary.curiosity_teaser && (
             <div className="p-reveal" style={{ ["--i" as string]: 5 }}>
               <p className="p-small p-strong">Coming up</p>
               <p className="p-body">{lesson.summary.curiosity_teaser}</p>

@@ -459,7 +459,7 @@ export function ExpSummary({ session }: { session: LessonSession }) {
             <p className="x-small x-strong">Keep in mind</p>
             <p className="x-body">{lesson.summary.takeaway}</p>
           </div>
-          {lesson.summary.curiosity_teaser && (
+          {activeLanguageId !== "de" && lesson.summary.curiosity_teaser && (
             <div className="x-reveal" style={{ ["--i" as string]: 5 }}>
               <p className="x-small x-strong">Coming up</p>
               <p className="x-body">{lesson.summary.curiosity_teaser}</p>

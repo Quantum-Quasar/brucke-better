@@ -1,5 +1,6 @@
 "use client";
 
+import { GermanTrailMap } from "@/components/trail/GermanTrailMap";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -119,6 +120,10 @@ export function P2Home() {
       </>
     );
   }
+  if (activeLanguageId === "de") {
+    return <><P2Bar /><div className="mx-auto max-w-5xl px-4"><GermanTrailMap /></div></>;
+  }
+
 
   const authoredTotal = curriculum.lessonCount;
   const done = completedLessons.length;

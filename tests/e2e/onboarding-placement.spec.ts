@@ -20,7 +20,7 @@ async function openIntroduction(page: Page) {
   return dialog;
 }
 
-async function openPreferences(page: Page, languageName = "German") {
+async function openPreferences(page: Page, languageName = "Spanish") {
   const dialog = await openIntroduction(page);
   await dialog.getByRole("button").filter({ hasText: languageName }).first().click();
   await dialog.getByRole("button", { name: /continue with/i }).click();
@@ -38,7 +38,7 @@ test("the optional flow never prevents immediate skip", async ({ page }) => {
   await expect(dialog).toBeHidden();
 });
 
-for (const [languageId, name] of [["de", "German"], ["nl", "Dutch"], ["es", "Spanish"], ["fr", "French"]]) {
+for (const [languageId, name] of [["nl", "Dutch"], ["es", "Spanish"], ["fr", "French"]]) {
   test(`${name} placement is optional, language-specific and unlocks up to the placed topic`, async ({ page }) => {
     const dialog = await openPreferences(page, name);
     await dialog.getByRole("button", { name: "travel", exact: true }).click();
@@ -69,7 +69,7 @@ test("placement stops when time expires without pretending unanswered items were
   await page.clock.install();
   await dialog.getByRole("button", { name: `Try optional placement (${PLACEMENT_SECONDS}s)` }).click();
   await page.keyboard.press("ArrowRight");
-  await expect(dialog.getByRole("heading", { name: getPlacementQuestions("de")[0].prompt })).toBeVisible();
+  await expect(dialog.getByRole("heading", { name: getPlacementQuestions("es")[0].prompt })).toBeVisible();
   await page.clock.fastForward((PLACEMENT_SECONDS + 1) * 1000);
   await expect(dialog.getByTestId("placement-result")).toContainText(`0 of ${PLACEMENT_ITEM_COUNT} items tried`);
   expect((await state(page)).settings.placementTopic).toBe(1);

@@ -1,3 +1,4 @@
+import { GERMAN_ROUTE_A } from "../../src/tests/fixtures/german-trail-routes";
 import { expect, test, type Page } from "@playwright/test";
 import { seedReturningLearner, STORAGE_KEY } from "./product-quality-helpers";
 
@@ -76,8 +77,7 @@ test("missing voice guidance is keyboard accessible and only shown once per lang
 test("microphone gesture gives optional transcript feedback without submitting the written reply", async ({ page }) => {
   await installSpeechFixture(page, ["de-DE"]);
   await seedReturningLearner(page, {
-    completedLessons: [...Array.from({ length: 13 }, (_, index) => index + 1), 101, 102, 103, 201, 202, 301, 302, 801, 802, 9001, 1201],
-    passedGateIds: [1, 2],
+    completedLessons: [...GERMAN_ROUTE_A.slice(0, 3).flat(), 9, 902, 13],
     lessonProgress: { 1301: { segment: "practice", practiceIndex: 3, completedSegments: ["hook", "pattern", "table"], everQueued: false, retryExerciseIds: [], inRetryPhase: false, retryIndex: 0 } },
     settings: { showKeyTips: false, posturePrimerSeen: true, microphonePractice: true, voiceGuidanceDismissed: ["de"] },
   });

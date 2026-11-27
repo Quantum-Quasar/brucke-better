@@ -8,7 +8,7 @@
 
 Four surfaces, one learning engine:
 
-- **The Trail** — 30 topic clusters and 179 lessons, including extra practice and reading stories. Lessons introduce a useful pattern, show examples, then let you practise. Star quotas and checkpoint tests gate later stretches; missed answers return for correction or guided re-learning.
+- **The Trail** — 179 lessons across 13 branching German chapters. Complete lessons to open connected paths, and clear chapters by meeting a local lesson count and covering its skills. Other routes stay available, and missed answers return for correction or guided re-learning.
 - **The Sound Shift Atlas** — an optional visual reference for word families and sound correspondences, with highlighted letters and short practice drills. You do not need to study historical linguistics to take a lesson.
 - **The Grammar Panorama** — an optional reference map of German structure, including articles, the verb bracket, adjective endings and tense patterns. No levels or gating.
 - **The Review Hub** — FSRS-4.5 spaced repetition (21-day mastery) with **12 review deck types** for vocabulary and example sentences: due, weakest words, learned, starred (My words), listening review, shift family, domain, recent lessons, compounds & traps, sentence patterns, article & gender, and everything. A separate failed-sentence-process queue replays the exercise that went wrong, up to 15 per session, without changing stars or word mastery. Four word-review styles are available overall; Article & Gender uses multiple choice only.
@@ -32,8 +32,8 @@ not a guaranteed number of repetitions needed to learn it. Exact-form subtitle
 frequency ranks help prioritize tied word reviews, with corpus limits shown in the drawer.
 Appearance starts with 12 themes and six fonts; the full collections remain available.
 Optional onboarding goals and daily minutes suggest a review session size.
-A short placement check recommends a topic without awarding progress; lesson
-previews estimate time and show exercise counts plus possible retries.
+French, Spanish and Dutch offer a short topic placement check. German chapter progress
+comes from completed lessons; lesson previews do not award progress.
 
 ## Links, storage and privacy
 

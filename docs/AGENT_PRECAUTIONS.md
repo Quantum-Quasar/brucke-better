@@ -108,28 +108,16 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 
 ## 3. Structure (trail map) — applies when you add shells or change order
 
-### 3.1 Never renumber or insert topics
-- **Applies when:** a proposal says "insert topic 10.5", "move the umlaut clinic earlier", or anything that reorders the spine.
-- **Action:** topic ids are welded into lesson ids, spine edges, gate `afterTopic` positions, store progress, and layout tests. Implement inserts as **sprigs on adjacent topics** or **branches** instead. Appending new topics **after 30** is safe (gates are unaffected); inserting before 30 is not.
-
-### 3.2 Cluster budget: max 8 lessons per topic
-- **Applies when:** adding sprigs to a topic.
-- **Action:** core + up to 7 sprigs. Check the topic's current count before adding. Sprig ids are `topicId * 100 + nextIndex`; branch ids are `5000 + n*10` with lessons `+1, +2`.
-
-### 3.3 Gate math
-- **Applies when:** adding any lesson.
-- **Action:** more side lessons only ever make gates easier — never weaken a gate threshold, never touch `TRAIL_GATES` fields. More authored content before a gate is always safe.
-
-### 3.4 Branch lessons are side material
-- **Applies when:** authoring branch lessons or their teasers.
-- **Action:** branch teasers chain within their own branch (lesson i → lesson i+1); the last one may point back toward the spine. Spine teasers must never point into a branch. The teaser auditor walks the spine **and the required grammar branch chains** (5060/5080/5100/5110) — the last lesson of a chain may point back or close the branch, so it is only checked for existence.
-
-### 3.5 Required grammar stays required — never "fix" it back to optional
-- **Applies when:** touching `src/data/curriculum.ts` shells, `trail-map.ts` state/layout, or any proposal that says "this sprig/branch is optional, why is it required?".
-- **Action:** seven core-grammar containers are **required** and must stay that way — the id list is asserted verbatim in `src/tests/required-grammar.test.ts` (`TrailState.requiredIds`):
-  - sprigs **1603, 1604** (reflexives, topic 16), **1904, 1905** (Präteritum of sein/haben/modals, topic 19), **2403, 2404** (adjective declension, topic 24) — `required: true` on the sprig shells;
-  - branches **5060** (imperative, topic 9), **5080** (Konjunktiv II), **5100** (relative clauses), **5110** (als/wenn/ob) — `required: true` on the branch spec; the three topic-30 branches render as the required **"Part 2: Complex sentences"** region below topic 30 and unlock only after the pre-capstone spine (through story 9005) completes.
-  - Required lessons cannot be bypassed (stored bypass counts are ignored, never incremented), and 100% completion is impossible without them. Demoting one is a curriculum decision that must come from the human, not a cleanup.
+- The German runtime graph lives in `src/data/german-trail.ts`. Add each published lesson
+  to exactly one chapter and connect it by a forward path. Placement in the graph can
+  change; numeric IDs and slugs cannot, because saved progress and links use them.
+- Skill requirements belong to chapter clear rules; list alternative lessons only when
+  they teach the same skill. Do not replace a threshold with a fixed list of lessons.
+  Re-run `src/tests/german-trail.test.ts` after editing paths, skills or clear counts.
+- Keep the core/sprig/branch authoring inventory consistent in `src/data/curriculum.ts`;
+  its stable ordering supports content audits and reference pages. The generated Trail
+  outline and teaser audit use that inventory. German navigation does not display the
+  old linear teasers or use the old chapter gates.
 
 ---
 

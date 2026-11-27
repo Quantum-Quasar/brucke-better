@@ -459,7 +459,7 @@ export function P3Summary({ session }: { session: LessonSession }) {
             <p className="q-small q-strong">Keep in mind</p>
             <p className="q-body">{lesson.summary.takeaway}</p>
           </div>
-          {lesson.summary.curiosity_teaser && (
+          {activeLanguageId !== "de" && lesson.summary.curiosity_teaser && (
             <div className="q-reveal" style={{ ["--i" as string]: 5 }}>
               <p className="q-small q-strong">Coming up</p>
               <p className="q-body">{lesson.summary.curiosity_teaser}</p>

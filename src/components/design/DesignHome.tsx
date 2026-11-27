@@ -1,5 +1,6 @@
 "use client";
 
+import { GermanTrailMap } from "@/components/trail/GermanTrailMap";
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -486,6 +487,8 @@ export function DesignHome() {
         ) : (
           <HomeSkeleton />
         )
+      ) : activeLanguageId === "de" ? (
+        <GermanTrailMap />
       ) : (
         <section aria-labelledby="curriculum-heading" className="space-y-5">
           {/* Curriculum Header + Controls */}

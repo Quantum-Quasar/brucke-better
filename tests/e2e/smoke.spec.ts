@@ -446,7 +446,7 @@ test("ctrl-click keeps native new-tab behavior instead of opening in-page", asyn
   context,
 }) => {
   await page.goto("/");
-  const start = page.getByRole("link", { name: /start topic 1/i }).first();
+  const start = page.getByRole("link", { name: /start lesson 1/i }).first();
   await expect(start).toBeVisible();
 
   const [popup] = await Promise.all([

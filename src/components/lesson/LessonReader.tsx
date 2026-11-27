@@ -6,6 +6,7 @@ import { ProgressBar5 } from "./ProgressBar5";
 import { LazyLoadBoundary } from "@/components/common/LazyLoadBoundary";
 import { listeningSkipLabel } from "@/lib/listening";
 import { getLessonMetadata } from "@/lib/lesson-metadata";
+import { GERMAN_CHAPTERS, GERMAN_LESSON_CHAPTER } from "@/data/german-trail";
 import { useLessonSession } from "./use-lesson-session";
 import type { LessonReaderProps } from "./lesson-session-types";
 import { LessonEffort } from "@/components/common/LessonEffort";
@@ -20,6 +21,7 @@ export function LessonReader(props: LessonReaderProps) {
   const session = useLessonSession(props);
   const { lesson, activeLanguageId, totalTopics, currentSegment, setCurrentSegment, completedSegments, twistPhase, listeningSkippedUntil, listeningOff, stickyAction, currentExercise, closeLesson } = session;
   const lessonMeta = getLessonMetadata(lesson);
+  const germanChapter = activeLanguageId === "de" ? GERMAN_LESSON_CHAPTER.get(lesson.id) : undefined;
   return (
     <article lang={activeLanguageId} className={`max-w-4xl mx-auto px-4 pt-8 space-y-8 ${stickyAction ? "pb-32" : "pb-8"}`}>
       {/* Top Header & Navigation — sticky so the close control never scrolls away */}
@@ -33,7 +35,8 @@ export function LessonReader(props: LessonReaderProps) {
             <ArrowLeft className="w-3.5 h-3.5" /> Back to Trail
           </button>
           <span className="text-xs font-mono text-[var(--main-color)] font-medium px-2 py-0.5 rounded bg-[var(--main-color)]/10 border border-[var(--main-color)]/20">
-            {lesson.spineStory || lessonMeta.kind === "story"
+            {germanChapter ? GERMAN_CHAPTERS[germanChapter].title
+              : lesson.spineStory || lessonMeta.kind === "story"
               ? `Story ${lesson.label ?? ""} · Main Path`
               : lessonMeta.kind === "core"
               ? `Topic ${lessonMeta.topicId ?? lesson.id} of ${totalTopics} · Core`
@@ -55,7 +58,7 @@ export function LessonReader(props: LessonReaderProps) {
       <div>
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-mono text-[var(--main-color)] uppercase tracking-wider font-semibold">
-              Phase {lesson.phase} ·{" "}
+              {germanChapter ? (lessonMeta.kind === "story" ? "Reading story" : `Lesson ${lesson.id}`) : <>Phase {lesson.phase} ·{" "}
               {lesson.spineStory || lessonMeta.kind === "story"
                 ? "Reading Story"
                 : lessonMeta.kind === "core"
@@ -66,7 +69,7 @@ export function LessonReader(props: LessonReaderProps) {
                   : "Core"
                 : lessonMeta.kind === "branch"
                 ? "Support Track"
-                : "Practice Sprig"}
+                : "Practice Sprig"}</>}
             </span>
             {lesson.word_ids.length === 0 && (
               <span className="inline-block rounded border border-[var(--main-color)]/30 bg-[var(--main-color)]/10 px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider text-[var(--main-color)]">

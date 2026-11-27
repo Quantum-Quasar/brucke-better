@@ -1,5 +1,6 @@
 "use client";
 
+import { GermanTrailMap } from "@/components/trail/GermanTrailMap";
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -128,6 +129,10 @@ export function ExpHome() {
       </>
     );
   }
+  if (activeLanguageId === "de") {
+    return <><ExpBar /><div className="mx-auto max-w-5xl px-4"><GermanTrailMap /></div></>;
+  }
+
 
   const inReview = Object.keys(srsCards).filter((id) => !id.startsWith("sentence_")).length;
   const gatesAfter = new Map<number, TrailGate>();

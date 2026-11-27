@@ -1,5 +1,6 @@
 "use client";
 
+import { GermanTrailMap } from "@/components/trail/GermanTrailMap";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -250,6 +251,10 @@ export function P3Home() {
       </>
     );
   }
+  if (activeLanguageId === "de") {
+    return <><P3Bar /><div className="mx-auto max-w-5xl px-4"><GermanTrailMap /></div></>;
+  }
+
 
   const authored = curriculum.lessonCount;
   const done = completedLessons.length;

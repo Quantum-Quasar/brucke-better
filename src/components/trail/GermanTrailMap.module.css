@@ -1,0 +1,169 @@
+.trail {
+  --trail-canvas: var(--bg-color, #1c1c1c);
+  --trail-surface: var(--sub-alt-color, #262626);
+  --trail-ink: var(--text-color, #eee);
+  --trail-muted: var(--sub-color, #a0a0a0);
+  --trail-accent: var(--main-color, #e2b714);
+  --trail-line: color-mix(in srgb, var(--trail-muted) 28%, var(--trail-canvas));
+  background: var(--trail-canvas);
+  color: var(--trail-ink);
+  font-family: var(--font-sans, system-ui), sans-serif;
+  border: 1px solid var(--trail-line);
+  border-radius: 1.1rem;
+  overflow: clip;
+  margin-block: 0.75rem 1.25rem;
+}
+
+.header {
+  background: var(--trail-surface);
+  display: flex;
+  gap: 0.75rem 2rem;
+  justify-content: space-between;
+  align-items: end;
+  flex-wrap: wrap;
+  padding: clamp(1rem, 3vw, 1.75rem);
+  border-bottom: 1px solid var(--trail-line);
+}
+
+.kicker, .breadcrumb, .mapCaption, .markerCode, .markerCount, .dialogTop {
+  font-family: var(--font-mono, monospace), monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.025em;
+}
+
+.kicker, .breadcrumb { color: var(--trail-accent); font-weight: 700; }
+.kicker { text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.25rem; }
+.breadcrumb { display: inline-flex; gap: 0.4rem; align-items: center; min-height: 44px; cursor: pointer; margin-top: -0.55rem; }
+.breadcrumb:hover { text-decoration: underline; }
+.heading { font-weight: 750; font-size: clamp(1.45rem, 4vw, 2.3rem); letter-spacing: -0.035em; line-height: 1.1; }
+.heading:focus { outline: none; }
+.intro { margin-top: 0.5rem; color: var(--trail-muted); max-width: 57ch; font-size: 0.87rem; line-height: 1.45; }
+.progress { display: grid; gap: 0.15rem; font-size: 0.78rem; color: var(--trail-muted); }
+.progress strong { color: var(--trail-ink); font-size: 1.05rem; font-variant-numeric: tabular-nums; }
+.progress[data-status="completed"] strong { color: var(--trail-accent); }
+
+.body { display: grid; }
+.mapCaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.6rem 0.85rem;
+  color: var(--trail-muted);
+  border-bottom: 1px solid var(--trail-line);
+}
+.mapCaption span + span { display: inline-flex; gap: 0.3rem; align-items: center; }
+.map {
+  height: clamp(21rem, 56svh, 36rem);
+  overflow-y: auto;
+  overscroll-behavior-x: none;
+  scrollbar-color: var(--trail-line) var(--trail-canvas);
+  scrollbar-width: thin;
+  background-image: radial-gradient(var(--trail-line) 0.8px, transparent 0.9px);
+  background-size: 16px 16px;
+}
+.map:focus-visible { outline: 2px solid var(--trail-accent); outline-offset: -2px; }
+.field { position: relative; overflow: hidden; }
+.tracks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.tracks path { fill: none; stroke: color-mix(in srgb, var(--trail-muted) 52%, var(--trail-canvas)); stroke-width: 2; stroke-linejoin: round; stroke-dasharray: 3 5; }
+.tracks path[data-lit="true"] { stroke: var(--trail-accent); stroke-width: 2.5; stroke-dasharray: none; }
+.position { position: absolute; }
+.landmark, .junction, .marker { transform: translate(-50%, -50%); position: absolute; left: 0; top: 0; }
+.junction { width: 13px; height: 13px; border: 2px solid var(--trail-line); border-radius: 3px; background: var(--trail-canvas); }
+.junction[data-lit="true"] { border-color: var(--trail-accent); background: var(--trail-canvas); }
+.landmark {
+  white-space: nowrap; display: flex; gap: 0.45rem; align-items: center;
+  padding: 0.32rem 0.65rem; border-radius: 999px; border: 1px solid var(--trail-line);
+  color: var(--trail-muted); background: var(--trail-canvas); font-size: 0.75rem; font-weight: 650;
+}
+.landmark[data-lit="true"] { color: var(--trail-accent); border-color: var(--trail-accent); }
+
+.marker {
+  --marker-line: var(--trail-line);
+  display: grid;
+  gap: 0.25rem;
+  align-items: center;
+  width: min(26cqw, 10rem);
+  min-height: 61px;
+  padding: 0.38rem 0.48rem;
+  border: 1px solid var(--marker-line);
+  border-radius: 0.6rem;
+  background-color: var(--trail-surface);
+  color: var(--trail-ink);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 140ms ease, box-shadow 140ms ease, translate 140ms ease;
+}
+.trail { container-type: inline-size; }
+.field[data-view="world"] .marker { width: min(36cqw, 14rem); min-height: 70px; grid-template-columns: auto 1fr; column-gap: 0.45rem; padding-inline: 0.55rem; }
+.field[data-view="world"] .markerTitle { font-size: clamp(0.72rem, 1.2vw, 0.93rem); }
+.field[data-view="world"] .markerCount { grid-column: 2; }
+.marker[data-status="available"] { --marker-line: var(--trail-accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--trail-accent) 20%, transparent); }
+.marker[data-status="completed"] { --marker-line: color-mix(in srgb, var(--trail-accent) 65%, var(--trail-line)); background: color-mix(in srgb, var(--trail-accent) 10%, var(--trail-surface)); }
+.marker[data-status="locked"] { border-style: dashed; color: var(--trail-muted); }
+.marker[data-status="available"] svg, .marker[data-status="completed"] svg { color: var(--trail-accent); }
+.marker:is(:hover, :focus-visible) { --marker-line: var(--trail-accent); translate: 0 -2px; }
+.marker:focus-visible { outline: 2px solid var(--trail-accent); outline-offset: 3px; }
+.marker:active { translate: 0 1px; }
+.markerCode { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-variant-numeric: tabular-nums; }
+.markerTitle { font-size: 0.75rem; font-weight: 650; line-height: 1.15; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.markerCount { color: var(--trail-muted); font-size: 0.66rem; }
+
+.guide {
+  display: grid;
+  align-content: start;
+  gap: 0.85rem;
+  padding: 1rem;
+  border-top: 1px solid var(--trail-line);
+  color: var(--trail-muted);
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+.guide h3 { font-weight: 700; color: var(--trail-ink); margin-bottom: 0.15rem; font-size: 0.92rem; }
+.legend { display: flex; flex-wrap: wrap; gap: 0.55rem 0.8rem; padding-bottom: 0.7rem; border-bottom: 1px solid var(--trail-line); font-size: 0.75rem; }
+.legend span { display: flex; align-items: center; gap: 0.3rem; }
+.legend span:not(:last-child) svg { color: var(--trail-accent); }
+.skills { list-style: none; padding: 0; margin-top: 0.6rem; display: grid; gap: 0.55rem; }
+.skills li { display: grid; grid-template-columns: 1.15rem 1fr; gap: 0.45rem; align-items: start; }
+.skills li svg { margin-top: 0.17rem; }
+.skills li[data-covered="true"] svg { color: var(--trail-accent); }
+.skills strong { display: block; color: var(--trail-ink); font-weight: 650; }
+.skills small { font-size: 0.75rem; }
+.links { display: grid; }
+.links button { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; min-height: 44px; border-bottom: 1px solid var(--trail-line); color: var(--trail-ink); font-weight: 650; cursor: pointer; text-align: left; }
+.links button:hover { color: var(--trail-accent); }
+.action {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.55rem;
+  min-height: 44px; padding: 0.35rem 0.8rem; border-radius: 0.5rem;
+  background: var(--trail-accent); color: var(--trail-canvas); font-size: 0.82rem;
+  font-weight: 750; cursor: pointer; text-decoration: none;
+}
+.action:hover { filter: brightness(1.1); }
+.action:active { scale: 0.99; }
+
+.lessonDialog {
+  color: var(--text-color, #eee); background: var(--sub-alt-color, #262626);
+  border: 1px solid var(--sub-color, #a0a0a0); border-radius: 0.95rem;
+  width: min(29rem, calc(100% - 2rem)); padding: 1.2rem; margin: auto;
+  height: auto; max-height: calc(100dvh - 2rem); overflow: auto;
+  --trail-accent: var(--main-color, #e2b714);
+  --trail-canvas: var(--bg-color, #1c1c1c);
+}
+.lessonDialog[open] { display: block; }
+.lessonDialog::backdrop { background: rgb(0 0 0 / 58%); }
+.dialogTop { display: flex; align-items: center; justify-content: space-between; gap: 0.45rem; color: var(--main-color); }
+.dialogTop span { display: flex; align-items: center; gap: 0.45rem; }
+.dialogTop button { min-width: 44px; min-height: 44px; display: grid; place-items: center; cursor: pointer; }
+.lessonDialog h3 { font-size: 1.28rem; font-weight: 750; line-height: 1.2; overflow-wrap: anywhere; }
+.lessonDialog p { margin-top: 0.65rem; font-size: 0.88rem; line-height: 1.5; overflow-wrap: anywhere; }
+.lessonDialog .action { margin-top: 0.9rem; }
+
+@container (min-width: 650px) {
+  .body { grid-template-columns: minmax(0, 2fr) minmax(15rem, 1fr); }
+  .guide { border-top: 0; border-left: 1px solid var(--trail-line); padding: 1.1rem 1.25rem; }
+  .marker { width: min(15cqw, 10rem); }
+  .field[data-view="world"] .marker { width: min(26cqw, 14rem); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .marker { transition: none; }
+  .marker:is(:hover, :focus-visible, :active) { translate: none; }
+}

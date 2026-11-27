@@ -292,7 +292,7 @@ export const useLessonSession = ({
     }
     if (currentSegment === "summary") {
       return {
-        label: nextLesson ? `next: ${nextLesson.title}` : "back to the trail",
+        label: nextLesson ? `next: ${nextLesson.title}` : activeLanguageId === "de" ? "choose a path" : "back to the trail",
         run: () => {
           handleCompleteAll();
           goToNextLesson();

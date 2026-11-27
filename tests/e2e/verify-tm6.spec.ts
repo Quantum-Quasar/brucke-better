@@ -1,3 +1,4 @@
+import { GERMAN_ROUTE_A } from "../../src/tests/fixtures/german-trail-routes";
 import { test, expect, type Page } from "@playwright/test";
 import { LESSONS } from "../../src/data/lessons";
 import type { ExerciseItem, Lesson } from "../../src/lib/types";
@@ -226,7 +227,7 @@ test("dictation requests speech and a 15-minute mute survives reload and expires
       performance.mark("dictation-speak", { detail: utterance.text });
     };
   });
-  await seed(page, { placedAtTopic: 11 });
+  await seed(page, { completedLessons: [...GERMAN_ROUTE_A.slice(0, 4).flat(), 1001] });
   await page.goto("/trail/1003");
   await startDrill(page, 1003);
 

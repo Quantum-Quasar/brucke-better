@@ -56,8 +56,11 @@ test.describe("mobile shell", () => {
   test("returning to the trail restores the saved scroll position", async ({ page }) => {
     await page.goto("/");
     await waitForApp(page);
-    await page.evaluate(() => window.scrollTo(0, 2600));
-    await page.waitForTimeout(400);
+    const saved = await page.evaluate(() => {
+      window.scrollTo(0, document.documentElement.scrollHeight);
+      return window.scrollY;
+    });
+    expect(saved).toBeGreaterThan(0);
     await page.evaluate(() =>
       document
         .querySelector<HTMLElement>('nav[aria-label="Main navigation"] a[href="/review"]')
@@ -71,8 +74,7 @@ test.describe("mobile shell", () => {
         ?.click()
     );
     await page.waitForURL((url) => url.pathname === "/");
-    await page.waitForTimeout(1400);
-    expect(await page.evaluate(() => Math.round(window.scrollY))).toBeGreaterThan(2500);
+    await expect.poll(() => page.evaluate((y) => Math.abs(window.scrollY - y), saved)).toBeLessThan(8);
   });
 
   test("the lesson action bar clears the reading content", async ({ page }) => {

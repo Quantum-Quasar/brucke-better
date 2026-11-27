@@ -23,7 +23,7 @@ test("loads only the opened lesson and resumes visited practice after an offline
   expect(lessons).toEqual([]);
   await page.evaluate(async () => { await navigator.serviceWorker.ready; });
   await page.waitForFunction(() => Boolean(navigator.serviceWorker.controller));
-  await page.getByRole("link", { name: "Start topic 1", exact: true }).click();
+  await page.getByRole("link", { name: "Start lesson 1", exact: true }).click();
   await page.getByRole("button", { name: /^next: pattern/i }).click();
   await page.getByRole("button", { name: /^next: transformation table/i }).click();
   await page.getByRole("button", { name: /^start exercises/i }).click();

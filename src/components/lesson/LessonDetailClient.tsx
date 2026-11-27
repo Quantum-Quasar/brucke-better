@@ -87,8 +87,9 @@ export function LessonDetailClient({
                   ahead of your trail
                 </div>
                 <p className="text-sm text-[var(--text-color)] leading-relaxed">
-                  Preview only: finishing it here won’t mark it complete or unlock later topics.
-                  Learning builds on the topics before it.
+                  {languageId === "de"
+                    ? "Preview only: this practice won’t count until a connected path opens the lesson."
+                    : "Preview only: finishing it here won’t mark it complete or unlock later topics. Learning builds on the topics before it."}
                 </p>
               </div>
             </div>

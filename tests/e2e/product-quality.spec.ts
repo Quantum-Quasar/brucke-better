@@ -33,7 +33,9 @@ test("keyboard-only: a fresh learner finishes every Lesson 1 exercise from the h
   await seedReturningLearner(page);
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-app-ready", "true");
-  await activateWithKeyboard(page, page.getByRole("button", { name: `Start next recommended lesson: ${lessonOne.title}`, exact: true }));
+  await activateWithKeyboard(page, page.getByRole("button", { name: "First words, Playable", exact: true }));
+  await activateWithKeyboard(page, page.getByRole("button", { name: /^Lesson 1:.*, Playable$/ }));
+  await activateWithKeyboard(page, page.getByRole("link", { name: "Start lesson", exact: true }));
   await expect(page.getByRole("dialog", { name: "Lesson 1", exact: true })).toBeVisible();
   await activateWithKeyboard(page, page.getByRole("button", { name: /^next: pattern/i }));
   await activateWithKeyboard(page, page.getByRole("button", { name: /^next: transformation table/i }));
@@ -126,6 +128,7 @@ test.describe("screen-reader exercise controls and feedback", () => {
     const { lesson, index, exercise } = fixtureFor(type);
     test(`${type}: authored ${exercise.id} exposes its task, controls and actionable error feedback`, async ({ page }) => {
       await seedReturningLearner(page, {
+        completedLessons: LESSONS.filter(({ id }) => id !== lesson.id).map(({ id }) => id),
         lessonProgress: { [lesson.id]: { segment: "practice", practiceIndex: index, completedSegments: ["hook", "pattern", "table"] } },
       });
       await page.goto(`/?lang=de&lesson=${lesson.id}`);
@@ -219,8 +222,8 @@ test("@performance production homepage and Lesson 1 stay usable on throttled 4G"
 
   await page.goto("/", { waitUntil: "domcontentloaded" });
   await page.waitForFunction(() => document.documentElement.dataset.appReady === "true" &&
-    Boolean(document.querySelector<HTMLButtonElement>("[data-next-lesson-start]")?.disabled === false));
-  await page.keyboard.press("Tab");
+    Boolean(document.querySelector("[data-next-lesson-start]")));
+  await tabTo(page, page.locator("[data-next-lesson-start]"));
   await page.waitForFunction(() => performance.getEntriesByName("homepage-keyboard-ready").length > 0);
   const homepageReadyMs = await page.evaluate(() => performance.getEntriesByName("homepage-keyboard-ready")[0].startTime);
   await page.waitForLoadState("networkidle");

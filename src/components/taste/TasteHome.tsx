@@ -1,5 +1,6 @@
 "use client";
 
+import { GermanTrailMap } from "@/components/trail/GermanTrailMap";
 import React, { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -286,7 +287,7 @@ export function TasteHome() {
                   onClick={(event) => handleOpenLesson(event, firstLessonId)}
                   className="taste-btn-primary"
                 >
-                  <span>Start Topic 1</span>
+                  <span>{activeLanguageId === "de" ? "Start Lesson 1" : "Start Topic 1"}</span>
                   <ArrowRight className="w-4 h-4" aria-hidden="true" />
                 </Link>
                 <button
@@ -451,6 +452,8 @@ export function TasteHome() {
         ) : (
           <HomeSkeleton />
         )
+      ) : activeLanguageId === "de" ? (
+        <GermanTrailMap />
       ) : (
         <>
           {/* Next-Up Action Card */}

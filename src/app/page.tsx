@@ -12,6 +12,8 @@ const DailyInsightCard = dynamic(
 );
 import { WeeklyPracticeBadge } from "@/components/common/WeeklyPracticeBadge";
 import { TrailMap } from "@/components/trail/TrailMap";
+import { GermanTrailMap } from "@/components/trail/GermanTrailMap";
+import { GERMAN_CHAPTERS } from "@/data/german-trail";
 import { useAppStore } from "@/lib/store";
 import { isModifiedClick, useAppNavigation } from "@/lib/app-navigation";
 import { getLanguageDefinition } from "@/data/languages";
@@ -135,7 +137,7 @@ export default function HomePage() {
                   you can decode instead of a list you memorize.
                 </p>
                 <p className="text-xs font-mono text-[var(--sub-color)]">
-                  {topicCount} topics · {lessonCount} lessons · {language.flag} {language.name}
+                  {activeLanguageId === "de" ? `${Object.keys(GERMAN_CHAPTERS).length} chapters` : `${topicCount} topics`} · {lessonCount} lessons · {language.flag} {language.name}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2.5">
@@ -151,7 +153,7 @@ export default function HomePage() {
                   }}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] font-bold text-sm font-mono transition"
                 >
-                  Start topic 1 <ArrowRight className="w-4 h-4" />
+                  {activeLanguageId === "de" ? "Start lesson 1" : "Start topic 1"} <ArrowRight className="w-4 h-4" />
                 </Link>
                 <button
                   type="button"
@@ -168,7 +170,7 @@ export default function HomePage() {
             </section>
           )}
 
-          <TrailMap />
+          {activeLanguageId === "de" ? <GermanTrailMap /> : <TrailMap />}
           {todayInsight ? (
             <DailyInsightCard insight={todayInsight} languageName={language.name} />
           ) : insightsError ? (

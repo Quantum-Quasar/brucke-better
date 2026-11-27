@@ -35,14 +35,18 @@ export function LearningPreferences({ languageId, topicCount }: { languageId: st
           </div>
           <p>Suggests {suggestedReviewLimit(settings.dailyMinutes)} review items per session. Your review session picker can override this later; minutes are a budget, not a promise of completion.</p>
         </fieldset>
-        <PlacementCheck key={languageId} languageId={languageId} />
-        <div className="space-y-2">
-          <label htmlFor="placement-topic" className="block font-bold text-[var(--text-color)]">Preferred starting topic (override the suggestion)</label>
-          <select id="placement-topic" value={Math.min(placedAtTopic, topicCount)} onChange={(event) => setPlacedAtTopic(Number(event.target.value))} className="min-h-11 rounded border border-[var(--sub-color)]/30 bg-[var(--bg-color)] px-3 text-[var(--text-color)]">
-            {Array.from({ length: topicCount }, (_, index) => index + 1).map((topic) => <option key={topic} value={topic}>Topic {topic}</option>)}
-          </select>
-          <p>Choosing a topic unlocks earlier topics and checkpoints up to that point so you can start there immediately. Earlier lessons stay available to revisit anytime.</p>
-        </div>
+        {languageId !== "de" && (
+          <>
+            <PlacementCheck key={languageId} languageId={languageId} />
+            <div className="space-y-2">
+              <label htmlFor="placement-topic" className="block font-bold text-[var(--text-color)]">Preferred starting topic (override the suggestion)</label>
+              <select id="placement-topic" value={Math.min(placedAtTopic, topicCount)} onChange={(event) => setPlacedAtTopic(Number(event.target.value))} className="min-h-11 rounded border border-[var(--sub-color)]/30 bg-[var(--bg-color)] px-3 text-[var(--text-color)]">
+                {Array.from({ length: topicCount }, (_, index) => index + 1).map((topic) => <option key={topic} value={topic}>Topic {topic}</option>)}
+              </select>
+              <p>Choosing a topic unlocks earlier topics and checkpoints up to that point so you can start there immediately. Earlier lessons stay available to revisit anytime.</p>
+            </div>
+          </>
+        )}
       </div>
     </details>
   );

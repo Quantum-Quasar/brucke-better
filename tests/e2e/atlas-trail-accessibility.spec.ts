@@ -84,43 +84,30 @@ for (const [language, languageName, familyId] of [
   });
 }
 
-test("trail nodes and gates remain keyboard operable, and optional completions cannot bypass topic 4", async ({ page }) => {
-  await seed(page, "de", { completedLessons: [1, 2, 3, 501] });
+test("German map nodes are keyboard operable and a locked path is preview only", async ({ page }) => {
+  await seed(page, "de", { completedLessons: [1, 2, 4] });
   await page.goto("/");
-  const nodes = page.locator("button[data-trail-node-id]");
-  await expect(nodes.first()).toBeAttached();
-  const semantics = await nodes.evaluateAll((elements) => elements.every((element) =>
-    element instanceof HTMLButtonElement && !element.disabled && element.tabIndex === 0 && Boolean(element.getAttribute("aria-label"))));
-  expect(semantics).toBe(true);
-  await expect(page.locator('[data-trail-node-id="5"]')).toHaveAttribute("aria-label", /locked/);
-  await expect(page.locator('[data-trail-node-id="4"]')).toHaveAttribute("aria-label", /available to play/);
-  for (const id of [1, 101, 5071, 9001, 9005]) {
-    const node = page.locator(`[data-trail-node-id="${id}"]`);
+  await keyboardActivate(page, page.getByRole("button", { name: "First words, Playable", exact: true }));
+  const map = page.getByRole("region", { name: "First words lesson map" });
+  for (const [id, status] of [[1, "Completed"], [6, "Playable"], [7, "Locked"]]) {
+    const node = map.getByRole("button", { name: new RegExp(`^Lesson ${id}:.*, ${status}$`) });
     await keyboardActivate(page, node);
     const drawer = page.getByRole("dialog");
     await expect(drawer).toBeVisible();
     await closeDialog(page, drawer, node);
   }
-  const gate = page.getByRole("button", { name: /The Shift Gate checkpoint.*locked/ });
-  await keyboardActivate(page, gate);
-  const gateDrawer = page.getByRole("dialog");
-  await expect(gateDrawer).toBeVisible();
-  await closeDialog(page, gateDrawer, gate);
-  await page.goto("/?lesson=5&lang=de");
-  await expect(page.getByText(/Preview only: finishing it here won’t mark it complete/)).toBeVisible();
+  await page.goto("/?lesson=7&lang=de");
+  await expect(page.getByText(/Preview only: this practice won’t count/)).toBeVisible();
 });
 
 test("reduced motion stops trail and badge animation without hiding layout, and atlas nodes show keyboard focus", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await seed(page);
   await page.goto("/");
-  const node = page.locator('[data-trail-node-id="1"]');
-  await expect(node).toBeAttached();
-  expect(await node.evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
-  const selector = page.locator(".trail-selector");
-  await expect(selector).toHaveCount(1);
-  expect(await selector.evaluate((element) => getComputedStyle(element).animationName)).toBe("none");
-  expect(await node.boundingBox()).not.toBeNull();
+  await page.getByRole("button", { name: "First words, Playable", exact: true }).click();
+  const node = page.getByRole("button", { name: /^Lesson 1:.*, Playable$/ });
+  await expect(node).toBeVisible();
+  expect(await node.evaluate((element) => getComputedStyle(element).transitionProperty)).toBe("none");
 
   await page.goto("/atlas?family=th_to_d&lang=de");
   const family = page.getByRole("dialog", { name: "Atlas family", exact: true });

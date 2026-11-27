@@ -93,48 +93,26 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
 
 ## 4. The trail (homepage)
 
-- A Baba-Is-You-style node graph built by `src/lib/trail-map.ts` and drawn by
-  `src/components/trail/TrailMap.tsx` (custom DOM + SVG, no game library).
-- **Nodes:** 30 spine cores (ids 1–30, strictly ordered), **sprigs** (`topicId*100+n`,
-  extra practice — skippable unless marked `required`), support **branches**
-  (`5000+n*10+lesson`, never reconnect to the spine — skippable unless the branch is
-  marked `required`) and five required reading stories (9001–9005) on the spine.
-- **Required grammar:** seven containers are required (German only): sprigs 1603/1604,
-  1904/1905, 2403/2404 and branches 5060, 5080, 5100, 5110. They cannot be bypassed or
-  excluded from completion; the three topic-30 branches render as the required
-  **"Part 2: Complex sentences"** region below topic 30 (its own layout group) and unlock
-  only after the pre-capstone spine — a required branch's first lesson chains from the
-  attach topic's last spine node. The id list is pinned by `src/tests/required-grammar.test.ts`.
-- **Unlock rule:** required spine cores and stories require all preceding spine nodes;
-  node 1 starts unlocked. Optional sprigs/branches remain skippable and cannot substitute
-  for a missing core; applicable gates must also pass. Completing an already-reachable
-  side lesson does not unlock the next topic around its core.
-- **Six checkpoint gates** (`TRAIL_GATES` in `src/data/curriculum.ts`) sit at family boundaries (opened by spine completion plus passing the checkpoint, without star quotas)
-  and count stars earned only inside their stretch, plus a passed checkpoint test:
-  Shift (after topic 7, 14★), Grammar (10, 6★), Verb-Complex (16, 11★), Past (20, 9★),
-  Atlas (26, 11★), Capstone (29, 9★). A closed gate hard-locks the spine edge but leaves
-  already-reachable nodes playable; extra side lessons only ever make a gate easier.
-  (French/Spanish/Dutch define their own gates in `curriculum-<lang>.ts`.)
-- **Stars:** gold for completing a lesson; **purple** for a flawless first-try run
+- German uses a chapter campaign defined in `src/data/german-trail.ts` and rendered by
+  `src/components/trail/GermanTrailMap.tsx`. Both levels use the same directed graph shape:
+  lesson completions and chapter clears activate outgoing paths; junctions relay any
+  incoming active path without counting as a completion.
+- A chapter clears at a local count of distinct lessons plus one completion from each
+  listed skill group. At the word-building and location forks, either chapter can open the
+  next common chapter. The main finish is clearing **Read the bridge**. The world path
+  threshold lower bound and two legal 85-lesson sequences are tested in
+  `src/tests/german-trail.test.ts`.
+- Saved lesson IDs, stars and partial attempts are unchanged. Saved completions count
+  toward their new chapter and can be replayed. Old topic placement, bypass and
+  checkpoint flags do not open German paths. A locked deep link is a non-counting preview.
+- German lesson summaries return to that lesson’s chapter to let the learner pick a
+  path. Review continuation and map focus use `use-course-recommendation.ts`.
+- French, Spanish and Dutch retain the original topic/sprig map (`src/lib/trail-map.ts`
+  and `src/components/trail/TrailMap.tsx`), course-specific checkpoints, and language-scoped
+  placement and recommendation preferences. The German topic ordering remains authoring
+  metadata for existing content audits and lesson references, not an unlock policy.
+- **Stars:** gold for completing a lesson; purple for a flawless first-try run
   (retry queue never touched) — never downgraded on replay.
-- **Layout:** topic 1 at the bottom, the learner climbs upward; a serpentine spine,
-  responsive width via `ResizeObserver` (no CSS scaling), `content-visibility` windowing
-  per cluster, deterministic decorative glyphs. `use-course-recommendation.ts` drives the
-  selector, next-lesson bar, Review continuation and lesson-summary continuation from one policy.
-- **Recommendation order:** each topic's core, sprigs, attached support branches and stories;
-  every authored lesson participates. Required grammar surfaces first (the next incomplete
-  required lesson whose region is done); earlier incomplete optional lessons are recommended
-  before the frontier. Continue ahead increments language-scoped view preferences for those
-  optional gaps; after three explicit bypasses they stop resurfacing but remain incomplete and
-  manually playable. Required lessons are bypass-immune — stored counts are ignored and never
-  incremented — so the bar can always pull the learner back to outstanding required grammar.
-  A progress-reset epoch invalidates those preferences. The bar also opens reached checkpoints.
-  Tab from the unfocused trail targets Start; Enter launches it; ordinary focus navigation remains intact.
-- **Topic ids are welded** into lesson ids, spine edges, gate positions, store progress
-  and tests — never renumber or insert before 30 (see `AGENT_PRECAUTIONS.md` §3.1).
-- Off-screen topic graphics, badges and watermark details mount as the viewport approaches;
-  lesson buttons remain mounted and usable. Node styling does not animate layout properties
-  during responsive sizing. Optional daily-insight data loads separately from the primary action.
 - German cores 5–30 include mixed-pattern recognition. `curriculum-recurrence.ts`
   counts distinct assessed German surfaces by lesson/exercise type, excluding declarations,
   banks, hints and duplicate surfaces. Every taught word meets a two-distinct-lesson floor;
@@ -144,7 +122,7 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
 
 - **Five segments:** Hook → Pattern → Transformation table (+ Atlas bridge card) →
   Practice (exactly 5 graded exercises, one at a time) → Summary (outcome, example,
-  takeaway, `curiosity_teaser`). Every lesson also ends with an ungraded, skippable
+  takeaway, `curiosity_teaser` on sequential courses). Every lesson also ends with an ungraded, skippable
   **Twist** card outside the 5-exercise contract.
 - Ordinary vocabulary tables keep deduplicated `word_ids` in a visible focus group and
   table-only words in a closed optional disclosure. Reading-story banks remain visible;

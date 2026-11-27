@@ -131,22 +131,19 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
 ## Core Features
 
 1. **The Trail Map (`/` — the homepage)**:
-   - Baba Is You-style node map: 30 topic clusters on one linear spine, with extra-practice nodes ("sprigs") and support-material branches hanging off each cluster.
-   - Required spine cores and reading stories unlock sequentially; sprigs/branches cannot bypass a missing core. Each checkpoint gate opens once its stretch's main-path lessons are complete and its checkpoint test is passed (side lessons remain optional).
-   - **Required grammar:** seven core-grammar containers are required and cannot be bypassed or left out of completion — the imperative branch (5060, topic 9), the reflexives (1603/1604), Präteritum (1904/1905) and adjective-declension (2403/2404) sprigs, and the three post-capstone branches (5080 Konjunktiv II, 5100 relative clauses, 5110 als/wenn/ob), which render as the required **"Part 2: Complex sentences"** region below topic 30 and unlock only after the pre-capstone spine completes. The id list is pinned by `src/tests/required-grammar.test.ts`.
-   - Topic 1 starts at the bottom; the learner climbs upward. The pulsing selector and minimalist next-lesson bar share the same recommendation.
-   - The entire curriculum is authored — 30 cores + 79 sprigs + 65 branch lessons + 5 required reading stories = 179 lessons, each with a title, plan and full `Lesson` object (`src/data/curriculum.ts`, `src/data/lessons.ts`).
-   - Recommendations visit every authored lesson: core, sprigs, attached support branches, then story. Required grammar surfaces first; earlier missed lessons come next; **Continue ahead** bypasses those optional gaps without marking completion. Three explicit bypasses stop automatic reminders for those gaps; the lessons remain available on the map. Preferences are language-scoped and reset with progress.
-   - From the unfocused trail, **Tab** focuses the next-lesson bar and **Enter** starts it. Further Tab presses work normally; existing gates remain in force.
+   - **German:** a bottom-to-top world map of 13 chapters, each with its own branching lesson map. Completing a stop opens its connected next stops; at a merge, either incoming route is sufficient.
+   - Clear a chapter by reaching its distinct-lesson target and completing one lesson for each listed skill. Cleared chapters open connected chapters; unchosen routes stay playable. The shortest finish is 85 lessons, with alternatives both within chapters and at the word-building and location forks.
+   - All 179 lessons are preserved, including extra practice and stories. The campaign in `src/data/german-trail.ts` groups the unchanged lesson IDs; `src/data/curriculum.ts` retains the authoring inventory.
+   - French, Spanish and Dutch retain the sequential topic map, recommendations, and course-specific checkpoints.
    - The first lesson leads with usable German. Historical notes, margin notes and linguistic background are collapsed optional disclosures.
-   - Custom DOM+SVG renderer (no game libraries) with `content-visibility` windowing per topic cluster.
+   - Both maps use DOM buttons and SVG paths. For German, the same directed graph draws the paths and computes unlocks.
    - Every German core from Topic 5 includes mixed-pattern recognition using previously taught words, without naming the answer's pattern in the prompt.
    - Taught German vocabulary has assessed retrieval in at least two distinct trail lessons. Declarations, hints, banks and duplicate surfaces do not count; `bun scripts/audit-recurrence.ts --strict` reports the encounter map by lesson and exercise type. This is a minimum practice floor, not a promise of retention.
    - 5-part card-by-card lesson wizard (Hook, Pattern, Transformation Table, Bite-Sized Practice, Summary & Retries) in the in-page lesson reader.
    - Vocabulary tables separate **Focus words for this lesson** from collapsed **Extra words to explore**. Reading-story word banks stay fully visible as reading support; extra words are not a memorisation requirement.
    - Scaffolded exercises across 13 types (`ExerciseType` in `src/lib/types.ts`): morpheme tiles, matching pairs, shift select, syntax builder, derivation typing, reverse-cognate typing, **transcribe** production drills (thought + lexicon + cue ladder), **literal gloss** direct translations, **dictation** listening drills (played audio, capped replays, a per-item text fallback and a 15-minute listening skip), **family grid** prefix × base matrices, **variant English** "every honest rendering" drills, **pronoun compression**, and **spoken turn reply**.
    - A lesson's final eligible sentence-building task starts with typed recall before showing its word bank. **Show words / help** is always available without a new star penalty; retries start with support visible. Earlier scaffolds, vocabulary hints and the optional Twist remain unchanged.
-   - Every authored lesson ends with an ungraded, skippable **Twist** card and may whisper up to two **posture cues**. Onboarding offers optional goals, daily minutes and a ten-question placement recommendation; placement never invents completion or opens a locked core. Lesson previews show approximate time, exercise count and the possibility of retries.
+   - Every authored lesson ends with an ungraded, skippable **Twist** card and may whisper up to two **posture cues**. Onboarding offers optional goals and daily minutes. The topic-based placement check is available in French, Spanish and Dutch; German chapter progress comes from completed lessons.
    - Pre-exercise vocabulary hints (`vocab_hints`) for auxiliary words (e.g., `mit`).
    - End-of-lesson Retry Queue: grammatical omissions do not pass, and spelling mistakes must be corrected during reinforcement or resolved through guided re-learning. A flawless first-try run earns a **purple star** (gold otherwise).
 
@@ -177,11 +174,7 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
    - `das` (Neuter): Emerald Green
    - Educational onboarding & dismissible gender guide banners.
 
-6. **Six Star Gates on the spine** (`TRAIL_GATES` in `src/data/curriculum.ts`):
-   - Gates sit at the natural family boundaries of the curriculum and close the stretch of topics the next stretch is built on, so the spine cannot be rushed past weak ground.
-   - *The Shift Gate* (after topic 7, 14★), *The Grammar Gate* (after 10, 6★), *The Verb-Complex Gate* (after 16, 11★), *The Past Gate* (after 20, 9★), *The Atlas Gate* (after 26, 11★), and *The Capstone Gate* (after 29, 9★).
-   - Each gate is drawn on the map as a checkpoint pill reading `★ earned/required`; clicking it opens a panel explaining what the stretch covers and why the next one depends on it.
-   - A closed gate hard-locks the spine edge but leaves every already-reachable node playable. Earn the required stars and reach the checkpoint to take its test; a failed test can be retried.
+6. **Checkpoint tests**: French, Spanish and Dutch retain their existing checkpoint definitions. German uses chapter targets and skill coverage instead; saved lesson stars still record completion and first-try performance.
 
 7. **Multi-Language**: switch the learning language from Settings or onboarding. Each language keeps its own progress slice, SRS queue, and onboarding intro (`src/data/language-content.ts`).
 

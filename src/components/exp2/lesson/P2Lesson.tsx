@@ -9,6 +9,7 @@ import { useAppNavigation } from "@/lib/app-navigation";
 import { useLessonSession } from "@/components/lesson/use-lesson-session";
 import type { LessonReaderProps } from "@/components/lesson/lesson-session-types";
 import { getLessonMetadata } from "@/lib/lesson-metadata";
+import { GERMAN_CHAPTERS, GERMAN_LESSON_CHAPTER } from "@/data/german-trail";
 import { listeningSkipLabel } from "@/lib/listening";
 import type { CompendiumData, LessonSegment } from "@/lib/types";
 import { ArrowRightIcon, chapterStyle, minutesLabel } from "../p2-kit";
@@ -106,7 +107,7 @@ export function P2Lesson({ languageId, lessonId }: { languageId: string; lessonI
     );
   }
 
-  const nextId = recommended?.id ?? null;
+  const nextId = languageId === "de" ? null : recommended?.id ?? null;
   const nextEntry = nextId ? lessonIndex.data.find((item) => item.id === nextId) : undefined;
   const preview = state.nodes.get(lessonId)?.status === "locked";
   const recommendedId = state.recommendedId;
@@ -141,8 +142,9 @@ function P2LessonReader(props: LessonReaderProps & { onJumpToTrail?: () => void 
   const topicId = meta.topicId ?? (lesson.id >= 5000 ? null : lesson.id);
   const currentIndex = STEPS.findIndex((step) => step.id === currentSegment);
   const minutes = minutesLabel(lesson.exercises.length);
+  const germanChapter = activeLanguageId === "de" ? GERMAN_LESSON_CHAPTER.get(lesson.id) : undefined;
 
-  const kind =
+  const kind = germanChapter ? GERMAN_CHAPTERS[germanChapter].title :
     lesson.spineStory || meta.kind === "story"
       ? "Reading story"
       : meta.kind === "core"

@@ -41,10 +41,12 @@ export default function SummarySegment({ session }: { session: LessonSession }) 
                   <h3 className="text-xl font-bold text-[var(--text-color)]">key takeaway</h3>
                   <p className="text-[var(--sub-color)] text-xs leading-relaxed">{lesson.summary.takeaway}</p>
 
-                  <div className="p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 space-y-1">
-                    <div className="text-xs uppercase tracking-wider text-[var(--main-color)]">curiosity teaser</div>
-                    <p className="text-xs text-[var(--sub-color)] italic">{lesson.summary.curiosity_teaser}</p>
-                  </div>
+                  {activeLanguageId !== "de" && (
+                    <div className="p-4 rounded-lg bg-[var(--bg-color)] border border-[var(--sub-color)]/20 space-y-1">
+                      <div className="text-xs uppercase tracking-wider text-[var(--main-color)]">curiosity teaser</div>
+                      <p className="text-xs text-[var(--sub-color)] italic">{lesson.summary.curiosity_teaser}</p>
+                    </div>
+                  )}
 
                   {/* TM-5a: "not yet" promises the twist returns at the end of the session */}
                   {twistMeetAgain && lesson.twist && !twistResurfaced && (
@@ -118,8 +120,9 @@ export default function SummarySegment({ session }: { session: LessonSession }) 
                           preview mode
                         </div>
                         <p className="text-sm text-[var(--sub-color)] font-sans leading-relaxed">
-                          This lesson is ahead of your trail, so finishing it here will not mark it
-                          complete or unlock later topics. Return to the earlier topics to count it.
+                          {activeLanguageId === "de"
+                            ? "This lesson’s path is still locked. Preview practice doesn’t count toward chapter progress."
+                            : "This lesson is ahead of your trail, so finishing it here will not mark it complete or unlock later topics. Return to the earlier topics to count it."}
                         </p>
                       </div>
                     ) : (
@@ -148,7 +151,7 @@ export default function SummarySegment({ session }: { session: LessonSession }) 
                         )}
 
                         <Link
-                          href={nextLessonId ? `/trail/${activeLanguageId}/${nextLessonId}` : "/trail"}
+                          href={nextLessonId ? `/trail/${activeLanguageId}/${nextLessonId}` : activeLanguageId === "de" ? "/" : "/trail"}
                           onClick={(event) => {
                             if (isModifiedClick(event)) return;
                             event.preventDefault();
@@ -162,7 +165,7 @@ export default function SummarySegment({ session }: { session: LessonSession }) 
                               ? `next: ${nextLesson.title}`
                               : nextLessonId
                               ? `next lesson (${nextLessonId})`
-                              : "back to the trail"}
+                              : activeLanguageId === "de" ? "choose a path" : "back to the trail"}
                           </span>
                           <span className="keycap text-[10px]">enter</span>
                         </Link>
