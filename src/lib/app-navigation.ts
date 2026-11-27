@@ -10,7 +10,7 @@ import { useViewStore } from "@/lib/view-store";
 import { getFamilyOwnerLanguageIds } from "@/lib/atlas-families";
 import { prefetchLesson } from "@/lib/content-client";
 import { captureScroll } from "@/lib/scroll-memory";
-import { EXP_ROOT, isExperimentalPath } from "@/lib/exp-routes";
+import { expLessonHref, expRootOf } from "@/lib/exp-routes";
 import { stripUiVariantPrefix, withUiVariantPrefix } from "@/lib/routes";
 
 /** Modifier-clicks must keep native new-tab/window behavior. */
@@ -47,10 +47,11 @@ export function useAppNavigation(): AppNavigation {
         app.completeOnboarding();
       }
       prefetchLesson(languageId, lessonId);
-      if (basePath === "/" || pathname === EXP_ROOT) {
+      const expRoot = expRootOf(pathname);
+      if (basePath === "/" || (expRoot !== null && pathname === expRoot)) {
         useViewStore.getState().openLesson(languageId, lessonId);
-      } else if (isExperimentalPath(pathname)) {
-        router.push(`${EXP_ROOT}?lesson=${lessonId}&lang=${encodeURIComponent(languageId)}`);
+      } else if (expRoot !== null) {
+        router.push(expLessonHref(languageId, lessonId, expRoot));
       } else {
         captureScroll(pathname);
         router.push(

@@ -20,6 +20,10 @@ const routes = new Set([
   "/exp-ui/review",
   "/exp-ui/words",
   "/exp-ui/settings",
+  "/exp-ui2",
+  "/exp-ui2/review",
+  "/exp-ui2/words",
+  "/exp-ui2/settings",
 ]);
 const shellLimit = 120;
 const mediaLimit = 200;
@@ -36,7 +40,7 @@ function isMediaAsset(url) {
   return url.origin === self.location.origin && (
     /^\/data\/(de|fr|es|nl)\/(compendium\.json|lesson-index\.json|word-details\.json|lessons\/\d+\.json)$/.test(url.pathname) ||
     url.pathname.startsWith("/webfonts/") ||
-    url.pathname.startsWith("/exp-ui/") && url.pathname.endsWith(".woff2") ||
+    (url.pathname.startsWith("/exp-ui/") || url.pathname.startsWith("/exp-ui2/")) && url.pathname.endsWith(".woff2") ||
     url.pathname.startsWith("/sounds/")
   );
 }

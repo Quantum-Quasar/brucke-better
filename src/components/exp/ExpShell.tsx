@@ -16,7 +16,7 @@ const ExpWordSheet = dynamic(() => import("./ExpWordSheet").then((m) => m.ExpWor
  * address bar in step with the open lesson (replaceState, no history spam) —
  * the same contract the classic UI keeps for `/?lesson=N&lang=xx`.
  */
-function ExpUrlSync() {
+export function ExpUrlSync({ root = EXP_ROOT }: { root?: string }) {
   const storeHydrated = useAppStore((s) => s.storeHydrated);
   const pathname = usePathname();
 
@@ -25,7 +25,7 @@ function ExpUrlSync() {
 
     const sync = () => {
       const url = new URL(window.location.href);
-      if (url.pathname.replace(/\/$/, "") !== EXP_ROOT) return;
+      if (url.pathname.replace(/\/$/, "") !== root) return;
       const view = useViewStore.getState().subView;
       url.searchParams.delete("lesson");
       url.searchParams.delete("lang");
@@ -44,7 +44,7 @@ function ExpUrlSync() {
     const restore = () => {
       const url = new URL(window.location.href);
       const view = useViewStore.getState();
-      if (url.pathname.replace(/\/$/, "") !== EXP_ROOT) {
+      if (url.pathname.replace(/\/$/, "") !== root) {
         if (view.subView) view.closeSubview();
         return;
       }
@@ -76,7 +76,7 @@ function ExpUrlSync() {
       unsubscribe();
       window.removeEventListener("popstate", restore);
     };
-  }, [storeHydrated, pathname]);
+  }, [storeHydrated, pathname, root]);
 
   return null;
 }
@@ -96,7 +96,7 @@ export function ExpShell({ children }: { children: React.ReactNode }) {
       {children}
       {!inLesson && <ExpDock />}
       {wordId && <ExpWordSheet wordId={wordId} />}
-      <ExpUrlSync />
+      <ExpUrlSync root={EXP_ROOT} />
     </div>
   );
 }
