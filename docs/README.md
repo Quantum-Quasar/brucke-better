@@ -126,6 +126,16 @@ bun run dev
 
 Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./DEPLOYMENT.md).
 
+### Developer lesson access
+
+In a local development build, run this in the browser console:
+
+```js
+await unlockAllLessons()
+```
+
+It marks every authored lesson in the active course complete and replayable, and passes its checkpoints. Progress is saved locally, so use a test browser profile or reset progress afterward. The command is excluded from production builds.
+
 ---
 
 ## Core Features
