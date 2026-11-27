@@ -2557,12 +2557,12 @@ a.p-stop-link:hover .p-node {
   gap: 12px;
   align-items: center;
 }
-.p-seg {
+.p-segbtns {
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
 }
-.p-seg button {
+.p-segbtns button {
   min-height: 44px;
   padding: 2px 16px 0;
   border: 0;
@@ -2571,7 +2571,7 @@ a.p-stop-link:hover .p-node {
   font-weight: 600;
   cursor: pointer;
 }
-.p-seg button[aria-checked="true"] {
+.p-segbtns button[aria-checked="true"] {
   background: var(--p-accent);
   color: var(--p-accent-ink);
 }
@@ -2787,4 +2787,115 @@ a.p-stop-link:hover .p-node {
   .p-sticky-action .p-btn.p-btn--wide {
     width: 100%;
   }
+}
+
+/* ============================================ house palette: "Brücke" */
+/*
+ * The yellow town sign you pass on arriving somewhere in Germany becomes the
+ * arch, the main action and the highlighter under every changed letter:
+ * signal yellow and near-black on a cool stone ground. It is the default;
+ * <html data-p2-palette="app"> hands every colour back to the app theme.
+ */
+
+html:not([data-p2-palette="app"]) body:has(.pth) {
+  /* the classic components embedded here (rare exercise types) follow it too */
+  --bg-color: #e9ebe5;
+  --main-color: #141613;
+  --caret-color: #141613;
+  --sub-color: #575c55;
+  --sub-alt-color: #dcdfd7;
+  --text-color: #141613;
+  --error-color: #c8341f;
+  background: #e9ebe5;
+  color: #141613;
+}
+
+html:not([data-p2-palette="app"]) .pth {
+  --p-ink: #141613;
+  --p-paper: #e9ebe5;
+  --p-soft: #dcdfd7;
+  --p-soft-2: #c4c8bf;
+  --p-muted: #575c55;
+  --p-accent: #ffc400;
+  --p-accent-ink: #141613;
+  --p-error: #c8341f;
+  --p-yellow: #fbe7a1;
+  --p-pink: #f4cfc6;
+  --p-cyan: #fbe7a1;
+  --p-good: #ffd84d;
+  --p-bad: #f2b9ad;
+  --p-line: #c4c8bf;
+  --p-scrim: #141613;
+  /* focus and the active ring need ink, not yellow, on a light ground */
+  --p-mark: #141613;
+}
+
+html:not([data-p2-palette="app"]) .pth :focus-visible {
+  outline-color: #141613;
+}
+/* changed letters: a highlighter stroke, like the sign's own yellow */
+html:not([data-p2-palette="app"]) .pth .p-shifted {
+  text-decoration: none;
+  background: none;
+  box-shadow: inset 0 -0.38em 0 #ffc400;
+  padding: 0 0.02em;
+}
+html:not([data-p2-palette="app"]) .pth .p-hero-arch .p-shifted {
+  box-shadow: inset 0 -0.16em 0 #141613;
+}
+html:not([data-p2-palette="app"]) .pth .p-node[data-status="available"],
+html:not([data-p2-palette="app"]) .pth .p-stop--side .p-node[data-status="available"] {
+  box-shadow: inset 0 0 0 5px #141613;
+}
+html:not([data-p2-palette="app"]) .pth .p-nav a::after,
+html:not([data-p2-palette="app"]) .pth .p-btn--ghost {
+  text-decoration-color: #141613;
+}
+html:not([data-p2-palette="app"]) .pth .p-nav a::after {
+  background: #ffc400;
+  height: 6px;
+}
+html:not([data-p2-palette="app"]) .pth .p-wordmark svg,
+html:not([data-p2-palette="app"]) .pth .p-footer-mark svg {
+  color: #141613;
+}
+html:not([data-p2-palette="app"]) .pth .p-stretch[data-state="now"] .p-stretch-num {
+  color: #141613;
+}
+html:not([data-p2-palette="app"]) .pth .p-deck-count {
+  color: #141613;
+}
+html:not([data-p2-palette="app"]) .pth .p-gate[data-open] .p-gate-arch {
+  color: #141613;
+}
+html:not([data-p2-palette="app"]) .pth .p-step::before {
+  background: #575c55;
+}
+html:not([data-p2-palette="app"]) .pth .p-theme[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 3px #141613;
+}
+
+/* the house option in the picker */
+.p-house {
+  width: 100%;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 12px 18px 12px 12px;
+  border: 0;
+  border-radius: var(--p-arch-sm);
+  background: var(--p-soft);
+  text-align: left;
+  cursor: pointer;
+}
+.p-house[aria-pressed="true"] {
+  box-shadow: inset 0 0 0 3px var(--p-ink);
+}
+.p-house .p-swatch {
+  width: 64px;
+  height: 58px;
+}
+.p-house-state {
+  font-weight: 700;
 }

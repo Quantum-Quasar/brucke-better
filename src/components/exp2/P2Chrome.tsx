@@ -12,6 +12,7 @@ import { EXP2_ROOT } from "@/lib/exp-routes";
 import { POPULAR_THEMES_META, type ThemeMeta } from "@/data/popular-themes";
 import { themeDisplayName } from "@/lib/theme-runtime";
 import { P2Sheet } from "./P2WordSheet";
+import { P2_HOUSE_THEME, setP2Palette, useP2Palette } from "./p2-palette";
 
 /** The motif: an arch — a bridge from a word you know to its twin. */
 export function ArchMark() {
@@ -55,6 +56,7 @@ function Swatch({ theme }: { theme: Pick<ThemeMeta, "bg" | "main" | "text" | "su
 export function ThemePicker({ compact = false }: { compact?: boolean }) {
   const current = useAppStore((s) => s.theme);
   const setTheme = useAppStore((s) => s.setTheme);
+  const palette = useP2Palette();
   const [all, setAll] = useState<ThemeMeta[] | null>(null);
   const [query, setQuery] = useState("");
   const [tab, setTab] = useState<"popular" | "dark" | "light" | "all">("popular");
@@ -81,8 +83,21 @@ export function ThemePicker({ compact = false }: { compact?: boolean }) {
 
   return (
     <div className="p-themes">
+      <button type="button" className="p-house" aria-pressed={palette === "brucke"} onClick={() => setP2Palette("brucke")}>
+        <Swatch theme={P2_HOUSE_THEME} />
+        <span>
+          <span className="p-lead-strong" style={{ display: "block" }}>
+            Brücke
+          </span>
+          <span className="p-small">Made for this design: town-sign yellow on stone.</span>
+        </span>
+        <span className="p-house-state p-small">{palette === "brucke" ? "In use" : "Use"}</span>
+      </button>
+      <p className="p-body p-strong" style={{ marginTop: 8 }}>
+        Or use one of your app themes
+      </p>
       <div className="p-themes-controls">
-        <div role="radiogroup" aria-label="Which themes" className="p-seg">
+        <div role="radiogroup" aria-label="Which themes" className="p-segbtns">
           {(["popular", "dark", "light", "all"] as const).map((t) => (
             <button key={t} type="button" role="radio" aria-checked={tab === t} onClick={() => setTab(t)}>
               {t === "popular" ? "Popular" : t === "dark" ? "Dark" : t === "light" ? "Light" : "All 187"}
@@ -99,12 +114,20 @@ export function ThemePicker({ compact = false }: { compact?: boolean }) {
         />
       </div>
       <p className="p-small p-strong" aria-live="polite">
-        Now: {themeDisplayName(current)}
+        Now: {palette === "brucke" ? "Brücke (this design’s own palette)" : themeDisplayName(current)}
       </p>
       <ul className={`p-theme-grid ${compact ? "p-theme-grid--compact" : ""}`}>
         {list.map((theme) => (
           <li key={theme.id}>
-            <button type="button" className="p-theme" aria-pressed={theme.id === current} onClick={() => setTheme(theme.id)}>
+            <button
+              type="button"
+              className="p-theme"
+              aria-pressed={palette === "app" && theme.id === current}
+              onClick={() => {
+                setTheme(theme.id);
+                setP2Palette("app");
+              }}
+            >
               <Swatch theme={theme} />
               <span>{theme.name}</span>
             </button>
@@ -125,7 +148,7 @@ function ThemeButton() {
       </button>
       {open && (
         <P2Sheet label="Themes" onClose={() => setOpen(false)} head={<h2 className="p-head p-sheet-title">Themes</h2>}>
-          <p className="p-body">The same themes as the rest of Brücke. The whole interface follows the one you pick.</p>
+          <p className="p-body">This design has its own palette. You can switch to any theme from the rest of the app at any time.</p>
           <ThemePicker compact />
         </P2Sheet>
       )}

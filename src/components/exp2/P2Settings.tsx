@@ -108,7 +108,7 @@ export function P2Settings() {
           <div>
             <h2 className="p-lead-strong">Theme</h2>
             <p className="p-body" style={{ marginTop: 6 }}>
-              The same themes as the rest of Brücke. Pick one and every screen follows it.
+              Brücke’s own palette by default, or any theme from the rest of the app.
             </p>
           </div>
           <ThemePicker />

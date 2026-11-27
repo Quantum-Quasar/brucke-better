@@ -294,7 +294,7 @@ export function P2Table({ session }: { session: LessonSession }) {
           <p className="p-body p-reveal" style={{ ["--i" as string]: 1, marginTop: 16 }}>
             {isReading
               ? "Keep these handy while you read. Tap one for its details."
-              : "These are the words this lesson practises. The underlined letters are the ones that changed from English. Tap a word for its details."}
+              : "These are the words this lesson practises. The marked letters are the ones that changed from English. Tap a word for its details."}
           </p>
         </div>
         {genderSystem && (
