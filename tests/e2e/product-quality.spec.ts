@@ -33,7 +33,6 @@ test("keyboard-only: a fresh learner finishes every Lesson 1 exercise from the h
   await seedReturningLearner(page);
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-app-ready", "true");
-  await activateWithKeyboard(page, page.getByRole("button", { name: "First words, Playable", exact: true }));
   await activateWithKeyboard(page, page.getByRole("button", { name: /^Lesson 1:.*, Playable$/ }));
   await activateWithKeyboard(page, page.getByRole("link", { name: "Start lesson", exact: true }));
   await expect(page.getByRole("dialog", { name: "Lesson 1", exact: true })).toBeVisible();

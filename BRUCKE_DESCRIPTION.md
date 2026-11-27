@@ -8,7 +8,7 @@
 
 Four surfaces, one learning engine:
 
-- **The Trail** — 179 lessons across 13 branching German chapters. Complete lessons to open connected paths, and clear chapters by meeting a local lesson count and covering its skills. Other routes stay available, and missed answers return for correction or guided re-learning.
+- **The Trail** — one bottom-up map of 179 lessons for German. Finish lessons to open connected paths, and meet local lesson and skill targets to pass checkpoints without leaving the map. Other routes stay available.
 - **The Sound Shift Atlas** — an optional visual reference for word families and sound correspondences, with highlighted letters and short practice drills. You do not need to study historical linguistics to take a lesson.
 - **The Grammar Panorama** — an optional reference map of German structure, including articles, the verb bracket, adjective endings and tense patterns. No levels or gating.
 - **The Review Hub** — FSRS-4.5 spaced repetition (21-day mastery) with **12 review deck types** for vocabulary and example sentences: due, weakest words, learned, starred (My words), listening review, shift family, domain, recent lessons, compounds & traps, sentence patterns, article & gender, and everything. A separate failed-sentence-process queue replays the exercise that went wrong, up to 15 per session, without changing stars or word mastery. Four word-review styles are available overall; Article & Gender uses multiple choice only.

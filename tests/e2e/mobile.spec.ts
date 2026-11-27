@@ -39,18 +39,17 @@ test.describe("mobile shell", () => {
     expect(info.themeColor?.toLowerCase()).toBe("#1c1c1c");
   });
 
-  test("a first visit keeps the welcome hero in view", async ({ page }) => {
+  test("a first German visit opens at the bottom with lesson 1 in view", async ({ page }) => {
     await page.goto("/");
     await waitForApp(page);
-    await page.waitForTimeout(1800);
-    const state = await page.evaluate(() => {
-      const rect = document.querySelector(".first-visit-hero")?.getBoundingClientRect();
-      return { scrollY: window.scrollY, top: rect?.top ?? null, bottom: rect?.bottom ?? null };
-    });
-    expect(state.scrollY).toBeLessThan(50);
-    expect(state.top).not.toBeNull();
-    expect(state.top!).toBeGreaterThanOrEqual(0);
-    expect(state.bottom!).toBeLessThanOrEqual(740);
+    const start = page.getByRole("link", { name: "Start lesson 1", exact: true });
+    const first = page.getByRole("button", { name: /^Lesson 1:/ });
+    await expect(start).toBeInViewport();
+    await expect(first).toBeInViewport();
+    const y = await page.evaluate(() => window.scrollY);
+    expect(y).toBeGreaterThan(4000);
+    await page.mouse.wheel(0, -450);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(y);
   });
 
   test("returning to the trail restores the saved scroll position", async ({ page }) => {

@@ -93,20 +93,20 @@ automatically; only opening a lesson or showing pointer/keyboard intent fetches 
 
 ## 4. The trail (homepage)
 
-- German uses a chapter campaign defined in `src/data/german-trail.ts` and rendered by
-  `src/components/trail/GermanTrailMap.tsx`. Both levels use the same directed graph shape:
-  lesson completions and chapter clears activate outgoing paths; junctions relay any
-  incoming active path without counting as a completion.
+- German uses one bottom-up document-scrolling Trail in `GermanTrailMap.tsx`.
+  The authored lesson and checkpoint graphs in `src/data/german-trail.ts` supply
+  its paths and unlock rules. Clearing either side of a checkpoint fork rejoins the
+  route ahead; each stretch and its lessons stay on the same page.
 - A chapter clears at a local count of distinct lessons plus one completion from each
   listed skill group. At the word-building and location forks, either chapter can open the
-  next common chapter. The main finish is clearing **Read the bridge**. The world path
+  next stretch. The finish is clearing **Read the bridge**. The checkpoint-path
   threshold lower bound and two legal 85-lesson sequences are tested in
   `src/tests/german-trail.test.ts`.
 - Saved lesson IDs, stars and partial attempts are unchanged. Saved completions count
   toward their new chapter and can be replayed. Old topic placement, bypass and
   checkpoint flags do not open German paths. A locked deep link is a non-counting preview.
-- German lesson summaries return to that lesson’s chapter to let the learner pick a
-  path. Review continuation and map focus use `use-course-recommendation.ts`.
+- German lesson summaries close back to the same spot on the Trail. A first visit
+  starts at the bottom; returning learners land on a saved position or the next lesson.
 - French, Spanish and Dutch retain the original topic/sprig map (`src/lib/trail-map.ts`
   and `src/components/trail/TrailMap.tsx`), course-specific checkpoints, and language-scoped
   placement and recommendation preferences. The German topic ordering remains authoring

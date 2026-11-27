@@ -1,169 +1,216 @@
 .trail {
-  --trail-canvas: var(--bg-color, #1c1c1c);
-  --trail-surface: var(--sub-alt-color, #262626);
-  --trail-ink: var(--text-color, #eee);
-  --trail-muted: var(--sub-color, #a0a0a0);
-  --trail-accent: var(--main-color, #e2b714);
-  --trail-line: color-mix(in srgb, var(--trail-muted) 28%, var(--trail-canvas));
-  background: var(--trail-canvas);
+  --trail-canvas: var(--bg-color);
+  --trail-surface: var(--sub-alt-color);
+  --trail-ink: var(--text-color);
+  --trail-muted: var(--sub-color);
+  --trail-accent: var(--main-color);
+  --trail-line: color-mix(in srgb, var(--trail-muted) 40%, var(--trail-canvas));
+  --trail-field: color-mix(in srgb, var(--trail-surface) 54%, var(--trail-canvas));
   color: var(--trail-ink);
+  display: flex;
+  flex-direction: column-reverse;
+  container-type: inline-size;
+  width: min(100%, 78rem);
+  margin-inline: auto;
   font-family: var(--font-sans, system-ui), sans-serif;
-  border: 1px solid var(--trail-line);
-  border-radius: 1.1rem;
-  overflow: clip;
-  margin-block: 0.75rem 1.25rem;
 }
 
-.header {
-  background: var(--trail-surface);
-  display: flex;
-  gap: 0.75rem 2rem;
-  justify-content: space-between;
-  align-items: end;
-  flex-wrap: wrap;
-  padding: clamp(1rem, 3vw, 1.75rem);
-  border-bottom: 1px solid var(--trail-line);
+.stage {
+  position: relative;
+  content-visibility: auto;
+  background: linear-gradient(90deg, transparent, var(--trail-field) 14% 86%, transparent);
 }
-
-.kicker, .breadcrumb, .mapCaption, .markerCode, .markerCount, .dialogTop {
-  font-family: var(--font-mono, monospace), monospace;
-  font-size: 0.7rem;
-  letter-spacing: 0.025em;
+.stage:nth-of-type(even) {
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--trail-accent) 4%, var(--trail-field)) 14% 86%, transparent);
 }
-
-.kicker, .breadcrumb { color: var(--trail-accent); font-weight: 700; }
-.kicker { text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 0.25rem; }
-.breadcrumb { display: inline-flex; gap: 0.4rem; align-items: center; min-height: 44px; cursor: pointer; margin-top: -0.55rem; }
-.breadcrumb:hover { text-decoration: underline; }
-.heading { font-weight: 750; font-size: clamp(1.45rem, 4vw, 2.3rem); letter-spacing: -0.035em; line-height: 1.1; }
-.heading:focus { outline: none; }
-.intro { margin-top: 0.5rem; color: var(--trail-muted); max-width: 57ch; font-size: 0.87rem; line-height: 1.45; }
-.progress { display: grid; gap: 0.15rem; font-size: 0.78rem; color: var(--trail-muted); }
-.progress strong { color: var(--trail-ink); font-size: 1.05rem; font-variant-numeric: tabular-nums; }
-.progress[data-status="completed"] strong { color: var(--trail-accent); }
-
-.body { display: grid; }
-.mapCaption {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.6rem 0.85rem;
+.tracks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+.tracks path { fill: none; stroke: var(--trail-line); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 3 6; }
+.tracks path[data-lit="true"] { stroke: var(--trail-accent); stroke-width: 3; stroke-dasharray: none; }
+.tracks path.bracket { stroke-width: 1.5; stroke-dasharray: 2 4; }
+.switches circle { fill: var(--trail-canvas); stroke: var(--trail-line); stroke-width: 2; vector-effect: non-scaling-stroke; }
+.switches circle[data-lit="true"] { stroke: var(--trail-accent); }
+.position { position: absolute; transform: translate(-50%, -50%); }
+.junction {
+  display: block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--trail-line);
+  border-radius: 50%;
+  background: var(--trail-canvas);
+}
+.junction[data-lit="true"] { border-color: var(--trail-accent); }
+.entry {
+  position: absolute;
+  top: -3px;
+  right: 19px;
+  white-space: nowrap;
   color: var(--trail-muted);
-  border-bottom: 1px solid var(--trail-line);
+  background: var(--trail-canvas);
+  padding: 0.12rem 0.34rem;
+  border-radius: 0.2rem;
+  font-size: clamp(0.62rem, 2.7cqw, 0.75rem);
+  font-weight: 650;
 }
-.mapCaption span + span { display: inline-flex; gap: 0.3rem; align-items: center; }
-.map {
-  height: clamp(21rem, 56svh, 36rem);
-  overflow-y: auto;
-  overscroll-behavior-x: none;
-  scrollbar-color: var(--trail-line) var(--trail-canvas);
-  scrollbar-width: thin;
-  background-image: radial-gradient(var(--trail-line) 0.8px, transparent 0.9px);
-  background-size: 16px 16px;
-}
-.map:focus-visible { outline: 2px solid var(--trail-accent); outline-offset: -2px; }
-.field { position: relative; overflow: hidden; }
-.tracks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-.tracks path { fill: none; stroke: color-mix(in srgb, var(--trail-muted) 52%, var(--trail-canvas)); stroke-width: 2; stroke-linejoin: round; stroke-dasharray: 3 5; }
-.tracks path[data-lit="true"] { stroke: var(--trail-accent); stroke-width: 2.5; stroke-dasharray: none; }
-.position { position: absolute; }
-.landmark, .junction, .marker { transform: translate(-50%, -50%); position: absolute; left: 0; top: 0; }
-.junction { width: 13px; height: 13px; border: 2px solid var(--trail-line); border-radius: 3px; background: var(--trail-canvas); }
-.junction[data-lit="true"] { border-color: var(--trail-accent); background: var(--trail-canvas); }
-.landmark {
-  white-space: nowrap; display: flex; gap: 0.45rem; align-items: center;
-  padding: 0.32rem 0.65rem; border-radius: 999px; border: 1px solid var(--trail-line);
-  color: var(--trail-muted); background: var(--trail-canvas); font-size: 0.75rem; font-weight: 650;
-}
-.landmark[data-lit="true"] { color: var(--trail-accent); border-color: var(--trail-accent); }
 
-.marker {
-  --marker-line: var(--trail-line);
+.marker, .checkpoint {
+  --marker-edge: var(--trail-line);
   display: grid;
-  gap: 0.25rem;
-  align-items: center;
-  width: min(26cqw, 10rem);
-  min-height: 61px;
-  padding: 0.38rem 0.48rem;
-  border: 1px solid var(--marker-line);
-  border-radius: 0.6rem;
-  background-color: var(--trail-surface);
-  color: var(--trail-ink);
-  cursor: pointer;
   text-align: left;
-  transition: border-color 140ms ease, box-shadow 140ms ease, translate 140ms ease;
+  cursor: pointer;
+  border: 1px solid var(--marker-edge);
+  border-radius: 0.6rem;
+  background: var(--trail-surface);
+  color: var(--trail-ink);
+  transition: translate 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
 }
-.trail { container-type: inline-size; }
-.field[data-view="world"] .marker { width: min(36cqw, 14rem); min-height: 70px; grid-template-columns: auto 1fr; column-gap: 0.45rem; padding-inline: 0.55rem; }
-.field[data-view="world"] .markerTitle { font-size: clamp(0.72rem, 1.2vw, 0.93rem); }
-.field[data-view="world"] .markerCount { grid-column: 2; }
-.marker[data-status="available"] { --marker-line: var(--trail-accent); box-shadow: 0 0 0 2px color-mix(in srgb, var(--trail-accent) 20%, transparent); }
-.marker[data-status="completed"] { --marker-line: color-mix(in srgb, var(--trail-accent) 65%, var(--trail-line)); background: color-mix(in srgb, var(--trail-accent) 10%, var(--trail-surface)); }
-.marker[data-status="locked"] { border-style: dashed; color: var(--trail-muted); }
-.marker[data-status="available"] svg, .marker[data-status="completed"] svg { color: var(--trail-accent); }
-.marker:is(:hover, :focus-visible) { --marker-line: var(--trail-accent); translate: 0 -2px; }
-.marker:focus-visible { outline: 2px solid var(--trail-accent); outline-offset: 3px; }
-.marker:active { translate: 0 1px; }
-.markerCode { display: flex; align-items: center; justify-content: space-between; font-weight: 700; font-variant-numeric: tabular-nums; }
-.markerTitle { font-size: 0.75rem; font-weight: 650; line-height: 1.15; overflow-wrap: anywhere; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
-.markerCount { color: var(--trail-muted); font-size: 0.66rem; }
-
-.guide {
-  display: grid;
-  align-content: start;
-  gap: 0.85rem;
-  padding: 1rem;
-  border-top: 1px solid var(--trail-line);
+.marker {
+  width: min(28cqw, 17rem);
+  min-height: 70px;
+  align-content: center;
+  gap: 0.28rem;
+  padding: 0.4rem clamp(0.36rem, 1.5cqw, 1rem);
+  scroll-margin-block: 5rem;
+}
+.markerCode {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   color: var(--trail-muted);
+  font-family: var(--font-mono, monospace), monospace;
+  font-weight: 700;
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+}
+.markerTitle {
+  font-size: clamp(0.71rem, 2.8cqw, 0.96rem);
+  font-weight: 690;
+  line-height: 1.18;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+.marker[data-status="available"] { --marker-edge: var(--trail-accent); }
+.marker[data-next="true"] { box-shadow: 0 0 0 3px color-mix(in srgb, var(--trail-accent) 26%, transparent), 0 5px 14px rgb(0 0 0 / 18%); }
+.marker[data-status="completed"] {
+  --marker-edge: color-mix(in srgb, var(--trail-accent) 65%, var(--trail-line));
+  background: color-mix(in srgb, var(--trail-accent) 13%, var(--trail-surface));
+}
+.marker[data-status="locked"], .checkpoint[data-status="locked"] { color: var(--trail-muted); border-style: dashed; }
+.marker:not([data-status="locked"]) svg, .checkpoint:not([data-status="locked"]) > svg { color: var(--trail-accent); }
+.marker:is(:hover, :focus-visible), .checkpoint:is(:hover, :focus-visible) { --marker-edge: var(--trail-accent); translate: 0 -2px; }
+.marker:focus-visible, .checkpoint:focus-visible { outline: 2px solid var(--trail-accent); outline-offset: 3px; }
+.marker:active, .checkpoint:active { translate: 0 1px; }
+.checkpoint {
+  width: min(77cqw, 25rem);
+  min-height: 62px;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: clamp(0.45rem, 1.5cqw, 0.85rem);
+  padding: 0.55rem 0.78rem;
+  border-radius: 0.72rem;
+}
+.checkpoint strong { display: block; font-weight: 750; font-size: clamp(0.84rem, 3.25cqw, 1.12rem); line-height: 1.15; }
+.checkpoint small { display: block; margin-top: 0.22rem; color: var(--trail-muted); font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+.checkpoint[data-status="completed"] small { color: var(--trail-accent); }
+.routeTag {
+  font-size: 0.65rem;
+  white-space: nowrap;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.25rem;
+  color: var(--trail-muted);
+  border: 1px solid var(--trail-line);
+}
+
+.trailhead {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.85rem, 2.8cqw, 2rem);
+  padding: clamp(1rem, 4cqw, 1.85rem);
+  margin-inline: clamp(0.6rem, 2cqw, 1.4rem);
+  border: 1px solid var(--trail-line);
+  border-top-color: var(--trail-accent);
+  background: var(--trail-surface);
+  border-radius: 0.9rem;
+  scroll-margin-bottom: 6rem;
+}
+.trailheadMark {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--trail-accent);
+  color: var(--trail-canvas);
+}
+.trailheadCopy { flex: 1; min-width: 0; }
+.kicker { font: 700 0.7rem var(--font-mono, monospace), monospace; color: var(--trail-accent); letter-spacing: 0.09em; text-transform: uppercase; }
+.trailhead h1 { margin-top: 0.2rem; font-size: clamp(1.35rem, 5.8cqw, 2.45rem); font-weight: 800; letter-spacing: -0.045em; line-height: 1.05; }
+.trailhead p { margin-top: 0.48rem; color: var(--trail-muted); font-size: 0.84rem; line-height: 1.4; max-width: 55ch; }
+.trailheadActions { display: flex; flex-wrap: wrap; gap: 0.35rem 0.7rem; flex: none; }
+.action, .secondary {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  padding: 0.4rem 0.72rem;
+  border-radius: 0.45rem;
   font-size: 0.82rem;
-  line-height: 1.5;
+  font-weight: 720;
+  cursor: pointer;
 }
-.guide h3 { font-weight: 700; color: var(--trail-ink); margin-bottom: 0.15rem; font-size: 0.92rem; }
-.legend { display: flex; flex-wrap: wrap; gap: 0.55rem 0.8rem; padding-bottom: 0.7rem; border-bottom: 1px solid var(--trail-line); font-size: 0.75rem; }
-.legend span { display: flex; align-items: center; gap: 0.3rem; }
-.legend span:not(:last-child) svg { color: var(--trail-accent); }
-.skills { list-style: none; padding: 0; margin-top: 0.6rem; display: grid; gap: 0.55rem; }
-.skills li { display: grid; grid-template-columns: 1.15rem 1fr; gap: 0.45rem; align-items: start; }
-.skills li svg { margin-top: 0.17rem; }
-.skills li[data-covered="true"] svg { color: var(--trail-accent); }
-.skills strong { display: block; color: var(--trail-ink); font-weight: 650; }
-.skills small { font-size: 0.75rem; }
-.links { display: grid; }
-.links button { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; min-height: 44px; border-bottom: 1px solid var(--trail-line); color: var(--trail-ink); font-weight: 650; cursor: pointer; text-align: left; }
-.links button:hover { color: var(--trail-accent); }
-.action {
-  display: inline-flex; align-items: center; justify-content: center; gap: 0.55rem;
-  min-height: 44px; padding: 0.35rem 0.8rem; border-radius: 0.5rem;
-  background: var(--trail-accent); color: var(--trail-canvas); font-size: 0.82rem;
-  font-weight: 750; cursor: pointer; text-decoration: none;
-}
+.action { background: var(--trail-accent); color: var(--trail-canvas); text-decoration: none; }
 .action:hover { filter: brightness(1.1); }
-.action:active { scale: 0.99; }
+.secondary { color: var(--trail-ink); }
+.secondary:hover { text-decoration: underline; }
+.finish {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 0 0.55rem;
+  padding: 2rem 0.85rem 0.6rem;
+  font-weight: 750;
+  color: var(--trail-muted);
+}
+.finish[data-lit="true"] { color: var(--trail-accent); }
 
 .lessonDialog {
-  color: var(--text-color, #eee); background: var(--sub-alt-color, #262626);
-  border: 1px solid var(--sub-color, #a0a0a0); border-radius: 0.95rem;
-  width: min(29rem, calc(100% - 2rem)); padding: 1.2rem; margin: auto;
-  height: auto; max-height: calc(100dvh - 2rem); overflow: auto;
-  --trail-accent: var(--main-color, #e2b714);
-  --trail-canvas: var(--bg-color, #1c1c1c);
+  color: var(--trail-ink);
+  background: var(--trail-surface);
+  border: 1px solid var(--trail-line);
+  border-radius: 0.9rem;
+  width: min(31rem, calc(100% - 2rem));
+  padding: 1.2rem;
+  margin: auto;
+  height: auto;
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
 }
 .lessonDialog[open] { display: block; }
 .lessonDialog::backdrop { background: rgb(0 0 0 / 58%); }
-.dialogTop { display: flex; align-items: center; justify-content: space-between; gap: 0.45rem; color: var(--main-color); }
+.dialogTop { display: flex; align-items: center; justify-content: space-between; gap: 0.45rem; color: var(--trail-accent); font-size: 0.79rem; font-weight: 700; }
 .dialogTop span { display: flex; align-items: center; gap: 0.45rem; }
 .dialogTop button { min-width: 44px; min-height: 44px; display: grid; place-items: center; cursor: pointer; }
-.lessonDialog h3 { font-size: 1.28rem; font-weight: 750; line-height: 1.2; overflow-wrap: anywhere; }
-.lessonDialog p { margin-top: 0.65rem; font-size: 0.88rem; line-height: 1.5; overflow-wrap: anywhere; }
+.lessonDialog h2 { font-size: 1.45rem; font-weight: 780; line-height: 1.15; overflow-wrap: anywhere; }
+.lessonDialog p { margin-top: 0.65rem; font-size: 0.9rem; line-height: 1.5; overflow-wrap: anywhere; }
 .lessonDialog .action { margin-top: 0.9rem; }
+.skills { list-style: none; padding: 0; margin-top: 0.8rem; display: grid; gap: 0.6rem; }
+.skills li { display: grid; grid-template-columns: 1rem 1fr; gap: 0.5rem; align-items: start; }
+.skills li svg { margin-top: 0.16rem; }
+.skills li[data-covered="true"] svg { color: var(--trail-accent); }
+.skills strong { display: block; font-weight: 650; }
+.skills small { display: block; color: var(--trail-muted); font-size: 0.78rem; overflow-wrap: anywhere; }
 
-@container (min-width: 650px) {
-  .body { grid-template-columns: minmax(0, 2fr) minmax(15rem, 1fr); }
-  .guide { border-top: 0; border-left: 1px solid var(--trail-line); padding: 1.1rem 1.25rem; }
-  .marker { width: min(15cqw, 10rem); }
-  .field[data-view="world"] .marker { width: min(26cqw, 14rem); }
+@container (max-width: 640px) {
+  .trailhead { flex-wrap: wrap; gap: 0.45rem 0.75rem; }
+  .trailheadMark { align-self: flex-start; }
+  .trailheadActions { margin-left: 3.45rem; flex: 1 1 auto; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .marker { transition: none; }
-  .marker:is(:hover, :focus-visible, :active) { translate: none; }
+  .marker, .checkpoint { transition: none; }
+  .marker:is(:hover, :focus-visible, :active), .checkpoint:is(:hover, :focus-visible, :active) { translate: none; }
 }

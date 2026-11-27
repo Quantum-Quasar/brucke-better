@@ -13,7 +13,6 @@ const DailyInsightCard = dynamic(
 import { WeeklyPracticeBadge } from "@/components/common/WeeklyPracticeBadge";
 import { TrailMap } from "@/components/trail/TrailMap";
 import { GermanTrailMap } from "@/components/trail/GermanTrailMap";
-import { GERMAN_CHAPTERS } from "@/data/german-trail";
 import { useAppStore } from "@/lib/store";
 import { isModifiedClick, useAppNavigation } from "@/lib/app-navigation";
 import { getLanguageDefinition } from "@/data/languages";
@@ -75,12 +74,14 @@ export default function HomePage() {
   const langLabel = `${language.name} through English`;
 
   return (
-    <div className="max-w-5xl mx-auto px-4 pt-3 pb-6 font-sans">
+    <div className={activeLanguageId === "de" ? "font-sans" : "max-w-5xl mx-auto px-4 pt-3 pb-6 font-sans"}>
       {/* compact trail heading — stars/flawless live in the title bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 py-1.5">
-        <h1 className="text-[11px] font-mono text-[var(--main-color)] font-semibold uppercase tracking-wider">
-          the trail
-        </h1>
+      <div className={`mx-auto flex max-w-5xl flex-wrap items-center gap-2 py-1.5 ${activeLanguageId === "de" ? "justify-end px-4" : "justify-between"}`}>
+        {activeLanguageId !== "de" && (
+          <h1 className="text-[11px] font-mono text-[var(--main-color)] font-semibold uppercase tracking-wider">
+            the trail
+          </h1>
+        )}
         <div className="flex flex-wrap items-center gap-2">
           <WeeklyPracticeBadge />
           <Link
@@ -115,7 +116,7 @@ export default function HomePage() {
           )
         ) : (
         <>
-          {isFirstVisit && (
+          {activeLanguageId !== "de" && isFirstVisit && (
             <section className="first-visit-hero mt-2 mb-5 rounded-xl border border-[var(--main-color)]/30 bg-[var(--sub-alt-color)] p-5 sm:p-7 space-y-4">
               <div className="space-y-2 max-w-2xl">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-[var(--main-color)] font-semibold">
@@ -137,7 +138,7 @@ export default function HomePage() {
                   you can decode instead of a list you memorize.
                 </p>
                 <p className="text-xs font-mono text-[var(--sub-color)]">
-                  {activeLanguageId === "de" ? `${Object.keys(GERMAN_CHAPTERS).length} chapters` : `${topicCount} topics`} · {lessonCount} lessons · {language.flag} {language.name}
+                  {topicCount} topics · {lessonCount} lessons · {language.flag} {language.name}
                 </p>
               </div>
               <div className="flex flex-wrap items-center gap-2.5">
@@ -153,7 +154,7 @@ export default function HomePage() {
                   }}
                   className="inline-flex items-center gap-2 px-4 py-2 rounded bg-[var(--main-color)] hover:opacity-90 text-[var(--bg-color)] font-bold text-sm font-mono transition"
                 >
-                  {activeLanguageId === "de" ? "Start lesson 1" : "Start topic 1"} <ArrowRight className="w-4 h-4" />
+                  Start topic 1 <ArrowRight className="w-4 h-4" />
                 </Link>
                 <button
                   type="button"
@@ -170,9 +171,10 @@ export default function HomePage() {
             </section>
           )}
 
-          {activeLanguageId === "de" ? <GermanTrailMap /> : <TrailMap />}
+          {activeLanguageId !== "de" && <TrailMap />}
           {todayInsight ? (
-            <DailyInsightCard insight={todayInsight} languageName={language.name} />
+            <DailyInsightCard insight={todayInsight} languageName={language.name}
+              className={activeLanguageId === "de" ? "static! mx-auto mt-2" : undefined} />
           ) : insightsError ? (
             <button
               type="button"
@@ -184,6 +186,7 @@ export default function HomePage() {
               daily insight unavailable — retry
             </button>
           ) : null}
+          {activeLanguageId === "de" && <GermanTrailMap />}
         </>
         )
       ) : (

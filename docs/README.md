@@ -131,12 +131,12 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
 ## Core Features
 
 1. **The Trail Map (`/` — the homepage)**:
-   - **German:** a bottom-to-top world map of 13 chapters, each with its own branching lesson map. Completing a stop opens its connected next stops; at a merge, either incoming route is sufficient.
-   - Clear a chapter by reaching its distinct-lesson target and completing one lesson for each listed skill. Cleared chapters open connected chapters; unchosen routes stay playable. The shortest finish is 85 lessons, with alternatives both within chapters and at the word-building and location forks.
+   - **German:** one bottom-up, document-scrolling Trail with lesson forks, joins and inline checkpoints. No map switching. Completing a lesson opens its connected next stops; either incoming route is sufficient at a merge.
+   - A checkpoint opens the path ahead after a distinct-lesson target and one completion per listed skill. Unchosen routes stay playable. The shortest finish is 85 lessons.
    - All 179 lessons are preserved, including extra practice and stories. The campaign in `src/data/german-trail.ts` groups the unchanged lesson IDs; `src/data/curriculum.ts` retains the authoring inventory.
    - French, Spanish and Dutch retain the sequential topic map, recommendations, and course-specific checkpoints.
    - The first lesson leads with usable German. Historical notes, margin notes and linguistic background are collapsed optional disclosures.
-   - Both maps use DOM buttons and SVG paths. For German, the same directed graph draws the paths and computes unlocks.
+   - The German Trail uses DOM buttons and SVG paths drawn from the graphs that compute unlocks.
    - Every German core from Topic 5 includes mixed-pattern recognition using previously taught words, without naming the answer's pattern in the prompt.
    - Taught German vocabulary has assessed retrieval in at least two distinct trail lessons. Declarations, hints, banks and duplicate surfaces do not count; `bun scripts/audit-recurrence.ts --strict` reports the encounter map by lesson and exercise type. This is a minimum practice floor, not a promise of retention.
    - 5-part card-by-card lesson wizard (Hook, Pattern, Transformation Table, Bite-Sized Practice, Summary & Retries) in the in-page lesson reader.

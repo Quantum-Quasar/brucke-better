@@ -87,8 +87,7 @@ for (const [language, languageName, familyId] of [
 test("German map nodes are keyboard operable and a locked path is preview only", async ({ page }) => {
   await seed(page, "de", { completedLessons: [1, 2, 4] });
   await page.goto("/");
-  await keyboardActivate(page, page.getByRole("button", { name: "First words, Playable", exact: true }));
-  const map = page.getByRole("region", { name: "First words lesson map" });
+  const map = page.getByRole("region", { name: "The German Trail" });
   for (const [id, status] of [[1, "Completed"], [6, "Playable"], [7, "Locked"]]) {
     const node = map.getByRole("button", { name: new RegExp(`^Lesson ${id}:.*, ${status}$`) });
     await keyboardActivate(page, node);
@@ -104,7 +103,6 @@ test("reduced motion stops trail and badge animation without hiding layout, and 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await seed(page);
   await page.goto("/");
-  await page.getByRole("button", { name: "First words, Playable", exact: true }).click();
   const node = page.getByRole("button", { name: /^Lesson 1:.*, Playable$/ });
   await expect(node).toBeVisible();
   expect(await node.evaluate((element) => getComputedStyle(element).transitionProperty)).toBe("none");
