@@ -4,8 +4,9 @@
   --trail-ink: var(--text-color);
   --trail-muted: var(--sub-color);
   --trail-accent: var(--main-color);
-  --trail-line: color-mix(in srgb, var(--trail-muted) 40%, var(--trail-canvas));
-  --trail-field: color-mix(in srgb, var(--trail-surface) 54%, var(--trail-canvas));
+  --trail-line: color-mix(in srgb, var(--trail-muted) 56%, var(--trail-canvas));
+  --trail-field: color-mix(in srgb, var(--trail-surface) 65%, var(--trail-canvas));
+  --trail-pin: 48px;
   color: var(--trail-ink);
   display: flex;
   flex-direction: column-reverse;
@@ -18,109 +19,145 @@
 .stage {
   position: relative;
   content-visibility: auto;
-  background: linear-gradient(90deg, transparent, var(--trail-field) 14% 86%, transparent);
-}
-.stage:nth-of-type(even) {
-  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--trail-accent) 4%, var(--trail-field)) 14% 86%, transparent);
+  background: radial-gradient(ellipse at 50% 50%, var(--trail-field), transparent 74%);
 }
 .tracks { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
-.tracks path { fill: none; stroke: var(--trail-line); stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 3 6; }
+.tracks path { fill: none; stroke: var(--trail-line); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 2 7; }
 .tracks path[data-lit="true"] { stroke: var(--trail-accent); stroke-width: 3; stroke-dasharray: none; }
-.tracks path.bracket { stroke-width: 1.5; stroke-dasharray: 2 4; }
+.tracks path.threshold { stroke-width: 1.5; stroke-dasharray: 1 5; }
 .switches circle { fill: var(--trail-canvas); stroke: var(--trail-line); stroke-width: 2; vector-effect: non-scaling-stroke; }
 .switches circle[data-lit="true"] { stroke: var(--trail-accent); }
 .position { position: absolute; transform: translate(-50%, -50%); }
 .junction {
   display: block;
-  width: 12px;
-  height: 12px;
+  width: 10px;
+  height: 10px;
   border: 2px solid var(--trail-line);
   border-radius: 50%;
-  background: var(--trail-canvas);
+  background: var(--trail-field);
 }
 .junction[data-lit="true"] { border-color: var(--trail-accent); }
 .entry {
   position: absolute;
   top: -3px;
-  right: 19px;
+  left: 16px;
   white-space: nowrap;
   color: var(--trail-muted);
-  background: var(--trail-canvas);
-  padding: 0.12rem 0.34rem;
-  border-radius: 0.2rem;
-  font-size: clamp(0.62rem, 2.7cqw, 0.75rem);
-  font-weight: 650;
+  background: var(--trail-field);
+  padding: 0.15rem 0.38rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
-.marker, .checkpoint {
-  --marker-edge: var(--trail-line);
-  display: grid;
-  text-align: left;
-  cursor: pointer;
-  border: 1px solid var(--marker-edge);
-  border-radius: 0.6rem;
-  background: var(--trail-surface);
-  color: var(--trail-ink);
-  transition: translate 150ms ease, border-color 150ms ease, box-shadow 150ms ease;
-}
 .marker {
-  width: min(28cqw, 17rem);
-  min-height: 70px;
-  align-content: center;
-  gap: 0.28rem;
-  padding: 0.4rem clamp(0.36rem, 1.5cqw, 1rem);
+  display: grid;
+  justify-items: center;
+  width: min(25cqw, 14rem);
+  color: var(--trail-ink);
+  transform: translate(-50%, calc(var(--trail-pin) / -2));
+  cursor: pointer;
   scroll-margin-block: 5rem;
 }
-.markerCode {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.pin {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--trail-pin);
+  height: var(--trail-pin);
+  border: 2px solid var(--trail-line);
+  border-radius: 50%;
+  background: var(--trail-field);
   color: var(--trail-muted);
-  font-family: var(--font-mono, monospace), monospace;
-  font-weight: 700;
-  font-size: 0.75rem;
+  font: 700 0.9rem var(--font-mono, monospace), monospace;
   font-variant-numeric: tabular-nums;
+  transition: translate 150ms ease, border-color 150ms ease, background-color 150ms ease;
+}
+.pinStatus {
+  position: absolute;
+  display: block;
+  box-sizing: content-box;
+  right: -3px;
+  bottom: -3px;
+  padding: 3px;
+  border: 1px solid var(--trail-line);
+  border-radius: 50%;
+  background: var(--trail-field);
 }
 .markerTitle {
-  font-size: clamp(0.71rem, 2.8cqw, 0.96rem);
-  font-weight: 690;
-  line-height: 1.18;
-  overflow-wrap: anywhere;
   display: -webkit-box;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
+  max-width: 100%;
+  margin-top: 4px;
+  padding-inline: 0.3rem;
   overflow: hidden;
+  overflow-wrap: anywhere;
+  border-radius: 0.25rem;
+  background: var(--trail-field);
+  font-size: clamp(0.75rem, 1.8cqw, 0.9rem);
+  text-align: center;
+  font-weight: 630;
+  line-height: 1.2;
 }
-.marker[data-status="available"] { --marker-edge: var(--trail-accent); }
-.marker[data-next="true"] { box-shadow: 0 0 0 3px color-mix(in srgb, var(--trail-accent) 26%, transparent), 0 5px 14px rgb(0 0 0 / 18%); }
-.marker[data-status="completed"] {
-  --marker-edge: color-mix(in srgb, var(--trail-accent) 65%, var(--trail-line));
-  background: color-mix(in srgb, var(--trail-accent) 13%, var(--trail-surface));
+.marker[data-status="locked"] { color: var(--trail-muted); }
+.marker[data-status="available"] .pin, .marker[data-status="available"] .pinStatus {
+  border-color: var(--trail-accent);
+  color: var(--trail-accent);
 }
-.marker[data-status="locked"], .checkpoint[data-status="locked"] { color: var(--trail-muted); border-style: dashed; }
-.marker:not([data-status="locked"]) svg, .checkpoint:not([data-status="locked"]) > svg { color: var(--trail-accent); }
-.marker:is(:hover, :focus-visible), .checkpoint:is(:hover, :focus-visible) { --marker-edge: var(--trail-accent); translate: 0 -2px; }
-.marker:focus-visible, .checkpoint:focus-visible { outline: 2px solid var(--trail-accent); outline-offset: 3px; }
-.marker:active, .checkpoint:active { translate: 0 1px; }
+.marker[data-next="true"] .pin {
+  border-color: var(--trail-accent);
+  background: var(--trail-accent);
+  color: var(--trail-canvas);
+}
+.marker[data-status="completed"] .pin, .marker[data-status="completed"] .pinStatus {
+  border-color: var(--trail-accent);
+  background: color-mix(in srgb, var(--trail-accent) 20%, var(--trail-field));
+  color: var(--trail-accent);
+}
+.marker:focus-visible, .checkpoint:focus-visible {
+  outline: 2px solid var(--trail-accent);
+  outline-offset: 4px;
+}
+.marker:focus-visible { border-radius: 0.45rem; }
+.marker:active .pin, .checkpoint:active { translate: 0 1px; }
 .checkpoint {
-  width: min(77cqw, 25rem);
+  display: grid;
+  width: min(82cqw, 26rem);
   min-height: 62px;
   grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: clamp(0.45rem, 1.5cqw, 0.85rem);
-  padding: 0.55rem 0.78rem;
-  border-radius: 0.72rem;
-}
-.checkpoint strong { display: block; font-weight: 750; font-size: clamp(0.84rem, 3.25cqw, 1.12rem); line-height: 1.15; }
-.checkpoint small { display: block; margin-top: 0.22rem; color: var(--trail-muted); font-size: 0.75rem; font-variant-numeric: tabular-nums; }
-.checkpoint[data-status="completed"] small { color: var(--trail-accent); }
-.routeTag {
-  font-size: 0.65rem;
-  white-space: nowrap;
-  padding: 0.15rem 0.35rem;
-  border-radius: 0.25rem;
-  color: var(--trail-muted);
+  gap: 0.75rem;
+  padding: 0.6rem 0.85rem;
+  text-align: left;
+  cursor: pointer;
   border: 1px solid var(--trail-line);
+  border-radius: 0.7rem;
+  background: var(--trail-surface);
+  color: var(--trail-ink);
+  transition: translate 150ms ease, border-color 150ms ease;
+}
+.checkpointFlag {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--trail-line);
+  border-radius: 50%;
+  color: var(--trail-muted);
+}
+.checkpoint[data-status="available"] .checkpointFlag, .checkpoint[data-status="completed"] .checkpointFlag {
+  border-color: var(--trail-accent);
+  color: var(--trail-accent);
+}
+.checkpoint strong { display: block; font-weight: 700; font-size: clamp(0.9rem, 3.3cqw, 1.1rem); line-height: 1.12; }
+.checkpoint small { display: block; margin-top: 0.18rem; color: var(--trail-muted); font-size: 0.75rem; font-variant-numeric: tabular-nums; }
+.checkpoint[data-status="completed"] small { color: var(--trail-accent); }
+.meter { display: block; margin-top: 0.33rem; height: 3px; border-radius: 3px; background: var(--trail-line); overflow: hidden; }
+.meter > span { display: block; height: 100%; background: var(--trail-accent); transform-origin: left; }
+.routeTag { font-size: 0.75rem; white-space: nowrap; color: var(--trail-muted); }
+@media (hover: hover) and (pointer: fine) {
+  .marker:hover .pin, .checkpoint:hover { border-color: var(--trail-accent); translate: 0 -2px; }
 }
 
 .trailhead {
@@ -128,11 +165,9 @@
   align-items: center;
   gap: clamp(0.85rem, 2.8cqw, 2rem);
   padding: clamp(1rem, 4cqw, 1.85rem);
-  margin-inline: clamp(0.6rem, 2cqw, 1.4rem);
-  border: 1px solid var(--trail-line);
-  border-top-color: var(--trail-accent);
-  background: var(--trail-surface);
-  border-radius: 0.9rem;
+  margin-inline: clamp(0.85rem, 3cqw, 2rem);
+  border-top: 1px solid var(--trail-line);
+  background: var(--trail-canvas);
   scroll-margin-bottom: 6rem;
 }
 .trailheadMark {
@@ -146,9 +181,9 @@
   color: var(--trail-canvas);
 }
 .trailheadCopy { flex: 1; min-width: 0; }
-.kicker { font: 700 0.7rem var(--font-mono, monospace), monospace; color: var(--trail-accent); letter-spacing: 0.09em; text-transform: uppercase; }
-.trailhead h1 { margin-top: 0.2rem; font-size: clamp(1.35rem, 5.8cqw, 2.45rem); font-weight: 800; letter-spacing: -0.045em; line-height: 1.05; }
-.trailhead p { margin-top: 0.48rem; color: var(--trail-muted); font-size: 0.84rem; line-height: 1.4; max-width: 55ch; }
+.kicker { font: 650 0.75rem var(--font-mono, monospace), monospace; color: var(--trail-accent); }
+.trailhead h1 { margin-top: 0.2rem; font-size: clamp(1.5rem, 5.8cqw, 2.5rem); font-weight: 720; letter-spacing: -0.035em; line-height: 1.08; }
+.trailhead p { margin-top: 0.48rem; color: var(--trail-muted); font-size: 0.88rem; line-height: 1.4; max-width: 54ch; }
 .trailheadActions { display: flex; flex-wrap: wrap; gap: 0.35rem 0.7rem; flex: none; }
 .action, .secondary {
   display: inline-flex;
@@ -205,12 +240,17 @@
 .skills strong { display: block; font-weight: 650; }
 .skills small { display: block; color: var(--trail-muted); font-size: 0.78rem; overflow-wrap: anywhere; }
 
+@container (min-width: 700px) {
+  .stage { --trail-pin: 56px; }
+  .pin { font-size: 1rem; }
+}
 @container (max-width: 640px) {
+  .markerTitle { -webkit-line-clamp: 3; }
   .trailhead { flex-wrap: wrap; gap: 0.45rem 0.75rem; }
   .trailheadMark { align-self: flex-start; }
   .trailheadActions { margin-left: 3.45rem; flex: 1 1 auto; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .marker, .checkpoint { transition: none; }
-  .marker:is(:hover, :focus-visible, :active), .checkpoint:is(:hover, :focus-visible, :active) { translate: none; }
+  .pin, .checkpoint { transition: none; }
+  .marker:is(:hover, :active) .pin, .checkpoint:is(:hover, :active) { translate: none; }
 }

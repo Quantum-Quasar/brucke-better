@@ -40,12 +40,27 @@ test.describe("mobile shell", () => {
   });
 
   test("a first German visit opens at the bottom with lesson 1 in view", async ({ page }) => {
+    await page.setViewportSize({ width: 320, height: 740 });
     await page.goto("/");
     await waitForApp(page);
     const start = page.getByRole("link", { name: "Start lesson 1", exact: true });
     const first = page.getByRole("button", { name: /^Lesson 1:/ });
     await expect(start).toBeInViewport();
     await expect(first).toBeInViewport();
+    const trail = page.getByRole("region", { name: "The German Trail" });
+    const lanes = await trail.getByRole("button", { name: /^Lesson (2|3|102):/ }).evaluateAll((nodes) =>
+      nodes.map((node) => {
+        const { left, right, height } = node.getBoundingClientRect();
+        return { left, right, height };
+      }).sort((a, b) => a.left - b.left)
+    );
+    expect(lanes).toHaveLength(3);
+    expect(lanes[0].left).toBeGreaterThanOrEqual(0);
+    expect(lanes[2].right).toBeLessThanOrEqual(320);
+    for (const [index, lane] of lanes.entries()) {
+      expect(lane.height).toBeGreaterThanOrEqual(44);
+      if (index > 0) expect(lane.left).toBeGreaterThan(lanes[index - 1].right);
+    }
     const y = await page.evaluate(() => window.scrollY);
     expect(y).toBeGreaterThan(4000);
     await page.mouse.wheel(0, -450);

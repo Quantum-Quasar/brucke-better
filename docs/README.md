@@ -136,7 +136,7 @@ Visit `http://localhost:3000` in your browser. Deployment: [`DEPLOYMENT.md`](./D
    - All 179 lessons are preserved, including extra practice and stories. The campaign in `src/data/german-trail.ts` groups the unchanged lesson IDs; `src/data/curriculum.ts` retains the authoring inventory.
    - French, Spanish and Dutch retain the sequential topic map, recommendations, and course-specific checkpoints.
    - The first lesson leads with usable German. Historical notes, margin notes and linguistic background are collapsed optional disclosures.
-   - The German Trail uses DOM buttons and SVG paths drawn from the graphs that compute unlocks.
+   - Numbered lesson stops use distinct locked, playable and completed states. The curved SVG paths follow the graphs that compute unlocks; checkpoint cards show how many completions count toward the next stretch.
    - Every German core from Topic 5 includes mixed-pattern recognition using previously taught words, without naming the answer's pattern in the prompt.
    - Taught German vocabulary has assessed retrieval in at least two distinct trail lessons. Declarations, hints, banks and duplicate surfaces do not count; `bun scripts/audit-recurrence.ts --strict` reports the encounter map by lesson and exercise type. This is a minimum practice floor, not a promise of retention.
    - 5-part card-by-card lesson wizard (Hook, Pattern, Transformation Table, Bite-Sized Practice, Summary & Retries) in the in-page lesson reader.

@@ -29,13 +29,17 @@ for (const { value, level } of GERMAN_WORLD.stops) {
   stageLevel = level;
 }
 
-const STEP = 92;
-const TOP = 135;
-const GATE = 47;
+const STEP = 104;
+const TOP = 132;
+const GATE = 48;
 const CENTER = 500;
-const xOf = (lane: number) => CENTER + lane * 313;
+const ENTRY_GAP = 44;
 const statusText: Record<NodeStatus, string> = { available: "Playable", completed: "Completed", locked: "Locked" };
 const icons = { available: Play, completed: Check, locked: Lock };
+
+function stopX({ lane, level }: TrailStop<number>, direction: number) {
+  return CENTER + lane * 275 + Math.round(47 * Math.sin(level * 0.63)) * direction;
+}
 
 function Track({ d, active, from, to }: { d: string; active: boolean; from?: string | number; to?: string | number }) {
   return <path d={d} vectorEffect="non-scaling-stroke" data-lit={active} data-path-from={from} data-path-to={to} />;
@@ -48,13 +52,13 @@ function TrailStage({ ids, campaign, nextId, ready, onSelect }: {
   ready: boolean;
   onSelect: (stop: GermanChapterId | number) => void;
 }) {
-  const routes = ids.map((id) => ({ id, height: TOP + GERMAN_CHAPTERS[id].map.height * STEP + 33 }));
+  const routes = ids.map((id) => ({ id, height: TOP + GERMAN_CHAPTERS[id].map.height * STEP + ENTRY_GAP }));
   const height = routes.reduce((sum, route) => sum + route.height, 0);
   const parallel = routes.length === 2;
   let bottom = height;
   const positioned = routes.map((route) => {
     bottom -= route.height;
-    return { ...route, top: bottom, entry: bottom + route.height - 33 };
+    return { ...route, top: bottom, entry: bottom + route.height - ENTRY_GAP };
   });
   const [lower, upper] = positioned;
   const entryOpen = campaign.chapters.get(lower.id)!.status !== "locked";
@@ -62,47 +66,51 @@ function TrailStage({ ids, campaign, nextId, ready, onSelect }: {
   const upperCleared = upper !== undefined && campaign.world.traversed.has(upper.id);
 
   return (
-    <div className={styles.stage} style={{ height }} data-fork={parallel}>
+    <div className={styles.stage} style={{ height }}>
       <svg className={styles.tracks} viewBox={`0 0 1000 ${height}`} preserveAspectRatio="none" aria-hidden="true">
         {parallel ? (
           <>
-            <Track d={`M500 ${height}V${height - 14}H975V${upper.entry}H500`} active={entryOpen} to={upper.id} />
-            <Track d={`M500 ${lower.top + GATE}H25V14H500`} active={lowerCleared} from={lower.id} />
-            <Track d={`M500 ${GATE}V14`} active={upperCleared} from={upper.id} />
-            <Track d="M500 14V0" active={lowerCleared || upperCleared} />
+            <Track d={`M500 ${height}V${height - 16}C500 ${height - 43} 968 ${height - 29} 968 ${height - 86}V${upper.entry + 54}C968 ${upper.entry + 8} 500 ${upper.entry + 32} 500 ${upper.entry}`} active={entryOpen} to={upper.id} />
+            <Track d={`M500 ${lower.top + GATE}C370 ${lower.top + GATE} 32 ${lower.top + GATE - 8} 32 ${lower.top + GATE - 57}V72C32 25 500 48 500 16`} active={lowerCleared} from={lower.id} />
+            <Track d={`M500 ${GATE}V16`} active={upperCleared} from={upper.id} />
+            <Track d="M500 16V0" active={lowerCleared || upperCleared} />
           </>
         ) : <Track d={`M500 ${GATE}V0`} active={lowerCleared} from={lower.id} />}
         <Track d={`M500 ${height}V${lower.entry}`} active={entryOpen} to={lower.id} />
-        {positioned.map(({ id, top }) => {
+        {positioned.map(({ id, top }, route) => {
           const graph = GERMAN_CHAPTERS[id].map;
           const traversed = campaign.chapters.get(id)!.traversed;
+          const direction = route === 0 ? 1 : -1;
           const yOf = (level: number) => top + TOP + (graph.height - level) * STEP;
           const line = (from: TrailStop<number>, to: TrailStop<number>) => {
-            const ax = xOf(from.lane), bx = xOf(to.lane);
+            const ax = stopX(from, direction), bx = stopX(to, direction);
             const ay = yOf(from.level), by = yOf(to.level);
             if (ax === bx) return `M${ax} ${ay}V${by}`;
-            const bend = from.value === null ? ay - 25 : to.value === null ? by + 25 : (ay + by) / 2;
-            return `M${ax} ${ay}V${bend}H${bx}V${by}`;
+            const bend = Math.min(76, (ay - by) * 0.62);
+            return `M${ax} ${ay}C${ax} ${ay - bend} ${bx} ${by + bend} ${bx} ${by}`;
           };
           return <g key={id}>
-            <path className={styles.bracket} d={`M190 ${top + 98}V${top + 88}H810V${top + 98}M500 ${top + 88}V${top + GATE}`} vectorEffect="non-scaling-stroke" />
+            <path className={styles.threshold} d={`M500 ${top + GATE}V${top + 94}`} vectorEffect="non-scaling-stroke" />
             {[false, true].flatMap((lit) => graph.links.flatMap(([from, to]) => traversed.has(from) !== lit ? [] : [
               <Track key={`${from}-${to}`} d={line(graph.byKey.get(from)!, graph.byKey.get(to)!)} active={lit} from={from} to={to} />,
             ]))}
           </g>;
         })}
         {parallel && <g className={styles.switches}>
-          <circle cx={CENTER} cy={height - 14} r={5} data-lit={entryOpen} />
-          <circle cx={CENTER} cy={14} r={5} data-lit={lowerCleared || upperCleared} />
+          <circle cx={CENTER} cy={height - 16} r={5} data-lit={entryOpen} />
+          <circle cx={CENTER} cy={16} r={5} data-lit={lowerCleared || upperCleared} />
         </g>}
       </svg>
       {positioned.map(({ id, top }, route) => {
         const chapter = GERMAN_CHAPTERS[id];
         const progress = campaign.chapters.get(id)!;
+        const clearProgress = Math.min(progress.count / chapter.clearCount, 1);
+        const direction = route === 0 ? 1 : -1;
         return (
           <div key={id} data-trail-section={id} role="group" aria-label={chapter.title}>
-            {chapter.map.stops.map(({ key, value, level, lane }) => {
-              const point = { left: `${xOf(lane) / 10}%`, top: top + TOP + (chapter.map.height - level) * STEP };
+            {chapter.map.stops.map((stop) => {
+              const { key, value, level } = stop;
+              const point = { left: `${stopX(stop, direction) / 10}%`, top: top + TOP + (chapter.map.height - level) * STEP };
               if (value === null) return (
                 <div key={key} className={styles.position} style={point} aria-hidden="true">
                   <span className={styles.junction} data-lit={progress.traversed.has(key)} />
@@ -118,15 +126,24 @@ function TrailStage({ ids, campaign, nextId, ready, onSelect }: {
                   data-lesson-stop={value} data-status={status} data-next={value === nextId} disabled={!ready}
                   aria-label={`Lesson ${value}: ${lesson.title}, ${statusText[status]}`}
                   onClick={() => onSelect(value)}>
-                  <span className={styles.markerCode}><span>{String(value).padStart(2, "0")}</span><Icon size={15} aria-hidden="true" /></span>
+                  <span className={styles.pin} aria-hidden="true">
+                    <span>{String(value).padStart(2, "0")}</span>
+                    <Icon className={styles.pinStatus} size={11} />
+                  </span>
                   <span className={styles.markerTitle}>{lesson.title}</span>
                 </button>
               );
             })}
             <button className={`${styles.position} ${styles.checkpoint}`} style={{ left: "50%", top: top + GATE }}
               type="button" data-checkpoint={id} data-status={progress.status} disabled={!ready} onClick={() => onSelect(id)}>
-              <Flag size={18} aria-hidden="true" />
-              <span><strong>{chapter.title}</strong><small>{progress.status === "completed" ? "Cleared" : `${Math.min(progress.count, chapter.clearCount)} / ${chapter.clearCount} to clear`}</small></span>
+              <span className={styles.checkpointFlag} aria-hidden="true">
+                {progress.status === "completed" ? <Check size={17} /> : <Flag size={17} />}
+              </span>
+              <span>
+                <strong>{chapter.title}</strong>
+                <small>{progress.status === "completed" ? "Cleared" : `${Math.min(progress.count, chapter.clearCount)} / ${chapter.clearCount} to clear`}</small>
+                <span className={styles.meter} aria-hidden="true"><span style={{ scale: `${clearProgress} 1` }} /></span>
+              </span>
               {parallel && <span className={styles.routeTag}>Route {route === 0 ? "A" : "B"}</span>}
             </button>
           </div>
@@ -183,7 +200,7 @@ export function GermanTrailMap() {
         <div className={styles.trailheadCopy}>
           <span className={styles.kicker}>Trailhead · {campaign.nodes.size} lessons</span>
           <h1 id={headingId}>The German Trail</h1>
-          <p>Follow the trail up. Finishing a lesson opens its connected neighbours; at a merge, either incoming path is enough.</p>
+          <p>Follow the paths up. Finish a lesson to open the connected stops. Where paths meet, either route is enough.</p>
         </div>
         <div className={styles.trailheadActions}>
           <Link href={lessonHref("de", 1)} data-next-lesson-start className={styles.action}
