@@ -800,7 +800,7 @@ function Legend({ onClose }: { onClose: () => void }) {
         Tap a square to see what it is, then press <strong>Play</strong> (or tap it again). The pink frame is what you picked; the arrow is your next
         step. You only ever need the next one.
       </p>
-      <ul className="q-legend">
+      <ul className="q-maplegend">
         {rows.map((row) => (
           <li key={row.text}>
             <span className="q-tile-map q-tile-map--demo" data-status={row.status} data-kind={row.kind} data-required={row.kind === "core" || undefined}>

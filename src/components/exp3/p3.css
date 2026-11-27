@@ -3020,14 +3020,14 @@ body:has(.pxl) .font-mono {
 }
 
 /* legend */
-.q-legend {
+.q-maplegend {
   list-style: none;
   margin: 24px 0 0;
   padding: 0;
   display: grid;
   gap: 14px;
 }
-.q-legend li {
+.q-maplegend li {
   --zone: var(--q-paper);
   --cell: 52px;
   display: grid;

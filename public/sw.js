@@ -28,6 +28,10 @@ const routes = new Set([
   "/exp-ui3/review",
   "/exp-ui3/words",
   "/exp-ui3/settings",
+  "/exp-ui4",
+  "/exp-ui4/review",
+  "/exp-ui4/words",
+  "/exp-ui4/settings",
 ]);
 const shellLimit = 120;
 const mediaLimit = 200;
