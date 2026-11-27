@@ -795,3 +795,196 @@ The app already has the hard part: a distinctive teaching idea and a solid techn
 
 
 "German: Your First Week" survival path: Today, the first everyday useful phrase ("Ein Glas Wasser, bitte") doesn't appear until Lesson 5. Should we add a short 5-session starter path—built from existing lessons and dialogues—focused on ordering a drink, introducing yourself, and handling basic exchanges before diving into sound shifts?
+
+
+
+
+
+Analyzed FamilyMatrixExercise.tsx:L70-120
+Analyzed FamilyMatrixExercise.tsx:L225-275
+Analyzed VariantEnglishExercise.tsx:L65-95
+Analyzed LiteralGloss.tsx:L95-130
+Analyzed DictationExercise.tsx:L95-190
+Analyzed use-classic-exercise.ts:L180-220
+Analyzed progress-backup.ts:L1-75
+Analyzed backup-slice.ts:L55-120
+Analyzed README.md:L140-220
+Analyzed ARCHITECTURE.md:L190-270
+Analyzed srs.ts:L200-290
+Analyzed DangerZoneSettings.tsx:L225-259
+Analyzed BehaviorSettings.tsx:L60-95
+Analyzed PlacementCheck.tsx:L50-80
+Analyzed trail-map.ts:L555-605
+Analyzed SpokenTurnReplyExercise.tsx:L85-155
+Analyzed PronounCompressionExercise.tsx:L60-120
+Analyzed AUDIT_MANIFEST.md:L105-145
+Analyzed srs.ts:L1-35
+Analyzed mistake-notebook.ts:L1-55
+Analyzed DangerZoneSettings.tsx:L55-115
+Analyzed page.tsx:L155-235
+Viewed DialoguePractice.tsx:255-100
+Analyzed DialoguePractice.tsx:L255-290
+Analyzed GenderGuessLab.tsx:L15-55
+Analyzed page.tsx:L1-45
+Analyzed mistake-notebook.ts:L55-95
+Analyzed BottomNav.tsx:L1-45
+Analyzed ci.yml:L1-89
+Analyzed README.md:L80-120
+Ran verify git working tree is clean
+Analyzed curriculum-recurrence.test.ts:L1-60
+Analyzed BottomNav.tsx:L45-100
+Analyzed audio.ts:L75-151
+Ran verify curriculum branch attachments and git cleanliness
+Analyzed audio.ts:L1-45
+Analyzed curriculum.ts:L470-565
+Analyzed curriculum.ts:L420-470
+Analyzed audio.ts:L46-75
+
+# Repository Audit & Suggestions — Brücke (`german-app-better-ux`)
+
+This is a **read-only** audit of the codebase, content pipelines, tests, build, and learner experience prioritized against [NORTH_STAR.md](file:///home/shaurya/gemini-tmp/german-app-better-ux/docs/NORTH_STAR.md). No source files were modified (`git status --short` is clean).
+
+---
+
+## Executive Summary & Baseline Checks
+
+The architecture, security boundaries (hostile backup sanitization, 2 KB cookie cap, prototype-pollution guards), static Next.js 16 export (546 pre-rendered pages), and German content integrity checks are generally strong. However, several real bugs currently affect **data durability**, **answer grading**, **theme contrast**, **trail rendering**, **Vitest health**, and **cross-language parity**.
+
+| Check | Result | Notes |
+| --- | --- | --- |
+| `bun run check:compendium` | Pass | 1227 words, 32 compounds, 16 false friends, 28 insights |
+| `bun run lint` (`oxlint`) | Pass (5 warnings) | 0 errors across 912 files; 5 `react-hooks/exhaustive-deps` warnings |
+| `bun run typecheck` | Pass | Clean `tsc --noEmit` |
+| `bun run build` (`ALLOW_LOCAL_SITE_URL=1`) | Pass | 546 static pages compiled; warns on `/home/shaurya/package-lock.json` outside git root |
+| `bun scripts/audit-word-refs.ts` | Pass | German word references resolve |
+| `bun scripts/audit-teasers.ts` | Pass | 179 lessons / 109 trail nodes, 0 title drift, 0 teaser flags |
+| `bun scripts/audit-wording.ts` | Pass | Check logic has a bug noted below (P1) |
+| `bun scripts/audit-vocab-balance.ts --strict` | Pass | 671 taught words, 14.5% zero-new, 84 allowlisted `PRE_EXISTING` drift hits |
+| `bun scripts/audit-recurrence.ts --strict` | Pass | 671 taught / 556 reference-only, 0 below floor, 282 at 3+ lessons |
+| `bun run audit:assets` | Pass | 733 files (7.98 MiB) |
+| `bun run test` | **Fail (`EXIT:1`)** | Discovers `.worktrees/**` (185 files; 22 failed) |
+| `bunx vitest run --exclude ".worktrees/**"` | **Fail (`84/85` files)** | 1006/1007 tests pass; `next-action.test.ts` fails under Node `--localstorage-file` stub |
+| `bun run test:e2e` / `test:product` | Not run | Not executed during this read-only audit |
+
+---
+
+## 🔴 Critical Issues (P0 — Data Durability, Broken Grading, Failing Suite)
+
+### 1. IndexedDB durable backup is write-only, and `savedAt` breaks persistence deduplication
+- **Locations:** [persistence.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/lib/store/persistence.ts#L258-L276), [hydration-slice.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/lib/store/hydration-slice.ts#L53-L56), [idb-backup.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/lib/idb-backup.ts#L52-L72)
+- **Why it matters:**
+  1. `saveIdbStateSnapshot` writes every state snapshot to IndexedDB, but `loadIdbStateSnapshot` has **zero callers** anywhere in `src/`. If `localStorage` is evicted or cleared, the app cannot recover the IndexedDB snapshot — defeating its purpose.
+  2. `persistence.ts:258` computes `serialized = JSON.stringify(toPersist)` *without* `savedAt`, yet line 273-276 stores `JSON.stringify({ ...toPersist, savedAt })` into `persistenceRuntime.lastSerialized`. As a result, `serialized === persistenceRuntime.lastSerialized` on line 259 never matches, and `JSON.stringify(duringBootParsed) !== persistenceRuntime.lastSerialized` in [hydration-slice.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/lib/store/hydration-slice.ts#L56) also always compares a `savedAt`-stripped string against a `savedAt`-bearing string (`externalDuringBoot` misfires during boot).
+- **Fix:** Normalize `lastSerialized` to exclude `savedAt` on both write and boot comparisons, and wire an async `loadIdbStateSnapshot()` fallback in `hydrateFromStorage()` when `localStorage` is missing/corrupt or older than IDB (subject to `progressResetAt`).
+
+### 2. German `matchesDiacritics` strips genuine `ae`/`oe`/`ue` digraphs on the target too, accepting wrong words
+- **Location:** [letter-diff.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/lib/letter-diff.ts#L245-L249)
+- **Why it matters:** Lines 248-249 normalize `/ae/g`, `/oe/g`, `/ue/g` on **both** `userLower` and `targetLower`. Real German words with `eu`/`au`/`ue` vowels collapse onto wrong words: e.g. typing `"neu"` against target `"neue"` (or `"Fraun"` vs `"Frauen"`, `"neun"` vs `"neuen"`, `"Abenteur"` vs `"Abenteuer"`) becomes `exact` when `umlautTolerance` (`lazyMode`, enabled by default on touch devices) is active, or `"Almost right"` with an umlaut hint when off — teaching wrong German endings.
+- **Fix:** Only fold *umlauts on the target* (`ä` ↔ `ae`, `ö` ↔ `oe`, `ü` ↔ `ue`) rather than unconditionally collapsing `ue`→`u` on `targetLower` too, or compare `normalizeGermanUmlauts(targetLower)` against a digraph-expanded user input only where the target actually contains `ä/ö/ü` (or an authored ASCII equivalent).
+
+### 3. Tailwind v4 `dark:` variant ignores in-app theme toggle, breaking contrast across 187 themes
+- **Locations:** [globals.css](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/app/globals.css#L1), [layout.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/app/layout.tsx#L116-L120), [gender.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/lib/gender.ts#L24-L48), [themes.test.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/tests/themes.test.ts#L170-L182), [read/page.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/app/read/page.tsx#L18-L26), [GenderGuessLab.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/practice/GenderGuessLab.tsx#L21-L34), [DialoguePractice.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/practice/DialoguePractice.tsx#L265-L283)
+- **Why it matters:** `theme-runtime.ts` and `layout.tsx` toggle `.dark` and `.light` classes on `<html>` to track the selected Monkeytype theme (`isDark`). However, `globals.css` has only `@import "tailwindcss";` without `@custom-variant dark (&:where(.dark, .dark *));`. In Tailwind v4, `dark:` defaults to `@media (prefers-color-scheme: dark)`. On a dark OS using a light app theme (or a light OS using the default dark `alduin` theme), `GenderBadge`, `/read` word highlights, `GenderGuessLab`, `DialoguePractice`, `WeeklyMixedTest`, and `GenderGuideBanner` apply the wrong contrast palette. (`themes.test.ts:170-182` only checks the class string, not compiled CSS behavior.)
+- **Fix:** Add `@custom-variant dark (&:where(.dark, .dark *));` in `globals.css` and ensure default dark theme (`alduin`) starts with class `dark` on `<html>` before cached script runs.
+
+### 4. `bun run test` fails out of the box (`.worktrees/**` collision + Node `localStorage` error)
+- **Locations:** [vitest.config.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/vitest.config.ts#L16), [next-action.test.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/tests/next-action.test.ts#L168-L173)
+- **Why it matters:**
+  1. `vitest.config.ts` does not exclude `.worktrees/**`, so `bun run test` sweeps in `.worktrees/taste-and-design-preview/` (185 test files total, 21 worktree files failing).
+  2. Even excluding `.worktrees/**`, [next-action.test.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/tests/next-action.test.ts#L170-L173) checks `if (typeof localStorage !== "undefined") localStorage.removeItem(...)`. Under this Node/Vitest environment (`Warning: --localstorage-file was provided without a valid path`), `globalThis.localStorage` is a stub object without `.removeItem`, throwing `TypeError: localStorage.removeItem is not a function`.
+- **Fix:** Add `".worktrees/**"` to `exclude` in `vitest.config.ts` and guard `typeof localStorage?.removeItem === "function"` in `next-action.test.ts`.
+
+---
+
+## 🟡 Medium Issues (P1 — UX Defects, Grading Inconsistencies, Pipeline & Cross-Language Gaps)
+
+### 5. Exercise widgets drift in grading, `recordMistake`, `vocab_hints`, and char bar behavior
+- **Locations:**
+  - [FamilyMatrixExercise.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/lesson/FamilyMatrixExercise.tsx#L86-L265):
+    - Line 86 grades `[target]` only instead of `[target, ...(exercise.accepted_answers ?? [])]` (despite line 107 passing `accepted_answers` to diagnosis).
+    - Omits `recordMistake` on wrong answers and `recordPracticeDay` on completion.
+    - Line 234 mounts `<GermanCharBar>` unconditionally, ignoring `settings.showCharBar === "off"`.
+    - Clicking `"I don’t know — show the family"` (lines 245-248) queues a retry without calling `onError` (so no `SentenceCard` or `failCounts` entry is recorded), and clicking `"Continue"` (lines 255-260) on a retry calls `onSuccess()`, draining the retry queue even though the learner gave up.
+  - [VariantEnglishExercise.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/lesson/VariantEnglishExercise.tsx#L71-L88) & [LiteralGloss.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/lesson/LiteralGloss.tsx#L100-L125): omit `recordMistake` and `recordPracticeDay`; `LiteralGloss` omits `languageId: activeLanguageId` in `evaluateAnswerAccuracy`; `VariantEnglishExercise` lacks `1-9` / `Enter` shortcuts supported in peer widgets.
+  - [use-classic-exercise.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/lesson/use-classic-exercise.ts#L189-L211): in `stopOnError === "letter"`, compares only `exercise.target_answer` (ignoring `accepted_answers`) at `userInput.length` (breaks mid-string edits/pastes), whereas Review typing in [use-review-answers.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/review/use-review-answers.ts#L140-L165) checks `accepted_answers` and expanded targets.
+  - [DictationExercise.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/lesson/DictationExercise.tsx#L155-L176): keeps `"Write down the sentence you heard"` prompt label unchanged even after switching into text-only fallback mode; [PronounCompressionExercise.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/lesson/PronounCompressionExercise.tsx) and [SpokenTurnReplyExercise.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/lesson/SpokenTurnReplyExercise.tsx) don't surface `exercise.vocab_hints` before submission like sibling widgets.
+
+### 6. `TrailMap` windowing pulls Branch 5060 into an early "Part 2" header & legend icons collide
+- **Locations:** [TrailMap.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/trail/TrailMap.tsx#L109-L132), [TrailMap.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/trail/TrailMap.tsx#L269-L274), [trail-map.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/lib/trail-map.ts#L215-L218), [curriculum.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/data/curriculum.ts#L455-L460)
+- **Why it matters:** `buildTrailLayout` treats any required branch whose `attach === lastTopicCoreId` as `"Part 2"` epilogue branches at the end of the map. When `TrailMap` windows to `frontierTopic === 7` (`maxVisibleTopic === 9`), `lastTopicCoreId` becomes `9` — matching Branch `5060` (`attach: 9, required: true`, "The Imperative Line"), abruptly hoisting Topic 9's imperative branch into a "Part 2" header until the user advances past Topic 7 or clicks "Show all". Additionally, lines 270 and 273 render the exact same `<BookOpen />` icon for both `"required story"` and `"extra practice"` in the map legend.
+- **Fix:** Pass an explicit `epilogueTopicId` (the course's final topic, `30`) instead of `data.topics[data.topics.length - 1]?.core.id`, and use distinct legend visuals matching `MapNode.tsx`.
+
+### 7. Review mode visual/UX bugs (`article_` hyphen strip, non-German tile distractors, accepted-answer diff, shortcut modifier guard)
+- **Locations:**
+  - [ReviewSessionCard.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/review/ReviewSessionCard.tsx#L223-L299) vs [word-entities-core.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/lib/word-entities-core.ts#L227): `word-entities-core.ts` sets `english_cognate` to `` `- ${word.target_word}` `` (hyphen), while `ReviewSessionCard.tsx` lines 223, 244, and 297 strip `/^_\s*/` (underscore) instead of `/^-\s*/`, leaving literal `"- Hund"` inside article blanks and `<ShiftPair>` on reveal.
+  - [ReviewSessionCard.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/review/ReviewSessionCard.tsx#L313): character-level diff compares against `currentWord.target_word` even when `use-review-answers.ts:119` matched an entry in `accepted_answers` as `exact`, flagging a valid alternative in red.
+  - [review-modes.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/lib/review-modes.ts#L216-L244): single-word `generateWordTiles` hardcodes German suffixes (`["st", "ung", "te", "heit", "isch", "ig", "keit"]`) and German endings (`en`/`el`/`er`) even for French, Spanish, and Dutch cards.
+  - [use-review-controller.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/review/use-review-controller.ts#L605-L786): `handleGlobalKeyDown` does not bail on `e.metaKey || e.ctrlKey || e.altKey`, so shortcuts like `Ctrl+R`/`Cmd+R` or tab switches (`Ctrl+1..4`) can trigger tile selection or review grading.
+
+### 8. `OnboardingModal` keyboard finish can use a stale placement topic
+- **Location:** [OnboardingModal.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/common/OnboardingModal.tsx#L90-L124)
+- **Why it matters:** The `keydown` effect on line 99 calls `finishOnboarding()` (which opens `placedAtTopic` on first run), yet suppresses `exhaustive-deps` and omits `placedAtTopic` and `effectiveLanguageId` from the dependency array. Taking the placement check or changing the topic dropdown on step 2 and pressing `Enter` can open topic `1` instead of the newly chosen topic.
+
+### 9. Settings search hides matching sections when section-level keywords omit UI labels
+- **Locations:** [settings/page.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/app/settings/page.tsx#L31-L65), [BehaviorSettings.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/settings/BehaviorSettings.tsx#L73), [DangerZoneSettings.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/settings/DangerZoneSettings.tsx#L246)
+- **Why it matters:** `sectionVisible` gates entire `<section>` elements using `SECTION_TERMS`. Words supported inside child `matchesSearch` calls — `"forgiving"`, `"standard"`, `"preset"`, `"version"`, `"build"`, `"diagnostics"`, `"bug"`, `"report"`, `"support"` — are missing from `SECTION_TERMS.behavior` and `SECTION_TERMS.danger_zone`. Searching `"diagnostics"` or `"forgiving"` hides the matching section and shows `"No settings match"`. Also `SECTIONS` includes `{ id: "backup" }` (which is nested inside `#danger_zone` cleanly for scrollToSection, though excluded from `SECTION_TERMS`).
+- **Fix:** Derive section visibility directly from a shared search-term registry per section rather than maintaining two separate keyword lists.
+
+### 10. Mistake Notebook isn't backed up in JSON exports or cleared by `resetProgress`
+- **Locations:** [progress-backup.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/lib/progress-backup.ts#L14-L34), [backup-slice.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/lib/store/backup-slice.ts#L63-L110), [mistake-notebook.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/lib/mistake-notebook.ts#L72)
+- **Why it matters:** `brucke.mistakeNotebook.v1` is persisted outside `useAppStore`, so downloading a JSON backup drops the user's mistake history across devices, and `"Reset all progress"` leaves previous mistakes behind on `/mistakes`.
+
+### 11. Content audits & Master Web skip or lose fidelity on sibling courses (`fr`, `es`, `nl`) and `audit-wording.ts`
+- **Locations:** [compendium-fr.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/data/french/compendium-fr.ts#L526), [compendium-es.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/data/spanish/compendium-es.ts#L498), [compendium-nl.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/data/dutch/compendium-nl.ts#L598), [master-graph.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/lib/master-graph.ts#L172-L265), [audit-wording.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/scripts/audit-wording.ts#L62-L122), [export-client-data.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/scripts/export-client-data.ts#L84-L89), [ci.yml](file:///home/shaurya/gemini-tmp/german-app-better-ux/.github/workflows/ci.yml#L38-L56)
+- **Why it matters:**
+  1. French, Spanish, and Dutch compendia set `dailyInsights: []` even though each language ships 40 insights, so `/atlas` Master Web renders 0 insight nodes (`master-graph.ts:254`) for those languages.
+  2. Unlike German (where 2/179 `summary.use_example` sentences have `mcq_distractors`? wait: all 4 languages' `Sentence Patterns` deck relies on `summary.use_example.mcq_distractors`, which is `0/133` in `fr`, `0/133` in `es`, `0/85` in `nl`, `2/179` in `de`), so sentence-card MCQ mode is effectively disabled across almost all lessons.
+  3. All CI content scripts (`audit-word-refs`, `audit-teasers`, `audit-wording`, `audit-vocab-balance`, `audit-recurrence`) run only on German; French lessons `3002`, `5031`, `5032` and Spanish `5032` place `trap_*` IDs directly in `lesson.word_ids` / `table_word_ids` (20 occurrences in `fr`, 6 in `es`), which resolve via `entities` cleanly but are unmonitored by the German audits.
+  4. `audit-wording.ts:94-122` compares consecutive *exercises* inside a lesson rather than consecutive trail *nodes* (so repeated prompts across adjacent lessons separated by another exercise type go undetected, while repeated `derive` prompts within one lesson trip the 4-node rule), and builds an unused `explanations` `Map`.
+  5. `exportClientData` uses `process.cwd()` for `panoramaMapPath` while deriving `exerciseCountsPath` from `shiftNamesPath`, and `ci.yml` line 55 omits `src/data/panorama-lesson-map.json` from its generated-metadata diff check.
+
+---
+
+## 🟢 Low / Documentation & Maintainability Issues (P2)
+
+### 12. Contradictory SRS & Navigation Claims Across App UI and Docs
+- **[about/page.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/app/about/page.tsx#L133-L219)** still describes the spaced repetition scheduler as `"SuperMemo-2 (SM-2)"` while [srs.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/lib/srs.ts#L1-L277) implements **FSRS-4.5**.
+- **[ARCHITECTURE.md](file:///home/shaurya/gemini-tmp/german-app-better-ux/docs/ARCHITECTURE.md#L196-L200)** states `"FSRS-4.5 (src/lib/srs.ts, 21-day mastery)"` and immediately follows it with SM-2's `EF'` formula and `"mastered at repetitions ≥ 3 && interval ≥ 7"` (actual code threshold: `MASTERY_INTERVAL_DAYS = 21`).
+- **[docs/README.md](file:///home/shaurya/gemini-tmp/german-app-better-ux/docs/README.md#L149-L206)** contradicts both itself and shipped behavior: line 162 cites the actual `"4-tab bottom navigation"` ([BottomNav.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/navigation/BottomNav.tsx#L42-L71)) while line 206 still says `"Six-tab bottom dock"`; line 149 (and `ARCHITECTURE.md:260`) says placement `"never ... opens a locked core"` whereas [PlacementCheck.tsx](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/components/common/PlacementCheck.tsx#L67) and [trail-map.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/lib/trail-map.ts#L578-L593) explicitly bypass prior gates/topics (`Topics 1–${recommended - 1} and their checkpoints are now unlocked`). Also [AUDIT_MANIFEST.md](file:///home/shaurya/gemini-tmp/german-app-better-ux/AUDIT_MANIFEST.md#L134) omits the shipped `/trail/[lang]/[id]` SSG route when describing in-page views.
+
+### 13. Remaining React hook warnings & minor UX polish
+- `oxlint` reports 5 `react-hooks/exhaustive-deps` warnings (`use-review-controller.ts:790`, `LiteralGloss.tsx:159`, `use-classic-exercise.ts:180`, `use-lesson-progress.ts:86`, `TranscribeExercise.tsx:126`).
+- [reading-lens.ts](file:///home/shaurya/gemini-tmp/german-app-better-ux/src/lib/reading-lens.ts#L186-L205) inflection fallbacks (`-e/-n`, `-st`, `-t`) only handle German/Dutch stems, leaving conjugated French/Spanish verbs unmatched in `/read`.
+- `scripts/audit-vocab-balance.ts:48-65` still carries 64 allowlisted `PRE_EXISTING` German tokens (84 runtime hits) used in lessons prior to formal word introduction.
+
+---
+
+## Phased Remediation Roadmap
+
+### Phase 1 — Correctness, Tests & Data Safety (Quick Wins)
+1. **Fix Tailwind `dark:` variant & boot class** (`globals.css`, `layout.tsx`) so all 187 themes apply light/dark badge and highlight contrast properly.
+2. **Fix German `matchesDiacritics` target digraph over-folding** (`letter-diff.ts`) and add unit tests (`neue` vs `neu`, `neuen` vs `neun`).
+3. **Fix Vitest hygiene** (`vitest.config.ts` excluding `.worktrees/**`; `next-action.test.ts` guarding `localStorage.removeItem`).
+4. **Fix `OnboardingModal` `useEffect` deps** (`placedAtTopic`, `effectiveLanguageId`) and **Settings search `SECTION_TERMS`**.
+
+### Phase 2 — Persistence, Trail & Review Polish
+5. **Fix `savedAt` serialization mismatch & wire `loadIdbStateSnapshot` recovery** cleanly into `store/hydration-slice.ts`.
+6. **Fix `TrailMap` epilogue topic ID vs windowing** (`epilogueTopicId` fixed to final topic `30`) + differentiate legend icons.
+7. **Unify exercise widgets** (`FamilyMatrixExercise` `accepted_answers`, `"I don't know"`/`Continue` retry semantics, `showCharBar` guard; `recordMistake`/`recordPracticeDay` across `VariantEnglishExercise`, `LiteralGloss`, `FamilyMatrixExercise`; `ReviewSessionCard` `/^-\s*/` strip + accepted-answer diff target; language-appropriate tile distractors in `review-modes.ts`; modifier-key guard in `use-review-controller.ts`).
+8. **Include `MistakeNotebook`** in JSON backup/restore (`progress-backup.ts`) and `resetProgress` (`backup-slice.ts`).
+
+### Phase 3 — Pipeline Hygiene, Sibling Courses & Doc Sync
+9. **Fix `audit-wording.ts`** consecutive-node tracking + **sync `panorama-lesson-map.json`** in `export-client-data.ts` (`ROOT` instead of `process.cwd()`) and `.github/workflows/ci.yml`.
+10. **Align docs & `/about`** (`FSRS-4.5`, 21-day mastery, 4-tab nav, placement gate bypass, `/trail/[lang]/[id]`).
+
+---
+
+## Product & Learner-Experience Suggestions (Beyond Bug Fixes)
+
+1. **Cross-Language Feature Parity on Existing Surfaces:**
+   - **Insights in Master Web (`/atlas`):** Thread each language's 40 cultural insights (`insights-fr.ts`, `insights-es.ts`, `insights-nl.ts`) into `compendium.dailyInsights` or `buildMasterGraph` so the visual web is equally rich outside German.
+   - **Conjugation-aware matching in `/read`:** Extend `candidateKeys` in `reading-lens.ts` for French (`-er`/`-ir`/`-re`, `-ais/-ait/-ez/-ons`) and Spanish (`-ar`/`-er`/`-ir`, `-o/-as/-a/-amos/-an`) so sample passages and pasted beginner texts highlight recognized stems rather than marking known verbs unknown.
+   - **Daily Review Budget parity with Sentence Process Review:** Consider surfacing how sentence replay contributes toward daily workload or letting learners see combined due counts (vocabulary + failed sentence processes) on the main `/review` header.
+2. **Pre-Introduced Token Cleanup:** Burn down the 64 allowlisted `PRE_EXISTING` drift tokens (`84` hits in `audit-vocab-balance.ts`)—especially early Topic 1–14 tokens (`1:deutsch`, `1:brücke`, `2:soll`, `9:kaffee`, `9:tee`, `12:weiß`)—by either rewording those early sentences or adding `vocab_hints`, so absolute beginners aren't quizzed cold before seeing those words taught.
+3. **Clearer Failed-Attempt Feedback in Typing Review:** Using the matched `bestTarget` (from `gradeLessonAnswer`) in `ReviewSessionCard`'s character diff and `"I don't know"` handling in `FamilyMatrixExercise` ensures learners never get conflicting red highlights or accidentally mark a skipped family card as solved.
+4. **End-to-End Verification:** After applying Phase 1–2 fixes, run `bun run test:e2e --trace retain-on-failure` and `bun run test:product` locally against a production `bun run build` so browser hydration, storage, and mobile 4G budgets are verified alongside unit tests.
