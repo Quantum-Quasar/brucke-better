@@ -27,7 +27,7 @@ Client views fetch only individual exported payloads, never these aggregates.
 ## The method every course follows
 
 The German and sibling courses all obey the same design principles (the long form is in
-`docs/dont open untill mentioned/thinking-method-short.md`; open it only when working on the
+`docs/dump/thinking-method-short.md`; open it only when working on the
 method itself):
 
 1. **Import knowledge.** Teach only what the learner cannot already convert from English.

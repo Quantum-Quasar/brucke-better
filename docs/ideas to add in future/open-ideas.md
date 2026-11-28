@@ -31,7 +31,7 @@ frequency ranks, the German recurrence floor and core mixed-pattern practice are
 ## Product
 
 - **More languages** beyond German, French, Spanish and Dutch (Norwegian — "the Viking half of
-  English" — was the top candidate on the shortlist in `../dont open untill mentioned/future plans.md`).
+  English" — was the top candidate on the shortlist in `../dump/future plans.md`).
 - **Readlang-style reader integration:** read real German text with tap-to-translate feeding the
   Review Hub.
 - **Typing challenges and ranks** — speed-typing competitions on top of the typing mechanics.

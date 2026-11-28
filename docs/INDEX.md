@@ -41,7 +41,7 @@ Use `bun run test` for current suite totals rather than maintaining a second tes
 
 ## Do not open unless the task is about it
 
-- `docs/dont open untill mentioned/` — working notes; see its README. Contains the long
+- `docs/dump/` — working notes; see its README. Contains the long
   Thinking Method design (`thinking-method-short.md`).
 - `docs/thinking-method-images/` — gitignored, local only.
 

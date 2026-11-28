@@ -14,7 +14,7 @@ over every other doc). Before touching lessons or `word_connections.md`, read
 
 ## Do not open unless the user explicitly asks
 
-- **`docs/dont open untill mentioned/`** — working notes, not reference
+- **`docs/dump/`** — working notes, not reference
   material. Tracked so the work travels; they may contradict the shipped
   code. `thinking-method-short.md` alone is ~130 KB and will flood your context.
   If the user asks for a broad sweep ("read everything", "be thorough"),

@@ -221,7 +221,7 @@ Docs map and off-limits folders: [`INDEX.md`](./INDEX.md).
 > These surfaces shipped with the Thinking Method upgrade, which also amends §4.5: surgical
 > edits to existing lessons are permitted (never `id`/`slug`/`title`/`phase`/`shift_categories`/
 > position; at most one exercise swap per lesson per batch; lessons 1–10 are add-only).
-> The method's design rationale lives in `docs/dont open untill mentioned/thinking-method-short.md`
+> The method's design rationale lives in `docs/dump/thinking-method-short.md`
 > (large; open it only when the task is about the method itself).
 
 ### 7.1 `transcribe` invariants (tests enforce most of this)
